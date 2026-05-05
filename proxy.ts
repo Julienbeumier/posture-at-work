@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
     request: { headers: request.headers },
   });
@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
-  // Skip middleware if Supabase isn't configured yet
+  // Skip if Supabase isn't configured yet
   if (!supabaseUrl.startsWith("http") || supabaseKey.length <= 10) {
     return response;
   }
