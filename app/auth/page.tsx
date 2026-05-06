@@ -25,13 +25,13 @@ function AuthForm() {
     });
   }, [redirect, router]);
 
-  async function handleMagicLink(e: React.FormEvent<HTMLFormElement>) {
+  async function handleMagicLink(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
     setLoading(true);
     setError("");
     const supabase = createClient();
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000");
     const { error: err } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -50,7 +50,7 @@ function AuthForm() {
     setOauthLoading(true);
     setError("");
     const supabase = createClient();
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000");
     const { error: err } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
