@@ -2,290 +2,621 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import BackgroundBlobs from "@/components/BackgroundBlobs";
 
-const features = [
+const T = {
+  h: "var(--font-nunito), sans-serif",
+  b: "var(--font-jakarta), sans-serif",
+};
+
+const pillars = [
   {
-    icon: "⚡",
-    title: "Rapide",
-    description: "5 minutes chrono. Pas d'inscription, pas de blabla.",
+    icon: "💻",
+    title: "Setup & Ergonomie",
+    desc: "Écran, clavier, chaise — chaque centimètre compte pour ta colonne.",
+    bg: "rgba(43,92,230,0.08)",
+    border: "rgba(43,92,230,0.18)",
+    titleColor: "#a8c0ff",
+    blob: "rgba(43,92,230,0.25)",
   },
   {
-    icon: "🎯",
-    title: "Personnalisé",
-    description: "Tes résultats sont calculés selon tes vraies réponses.",
+    icon: "🩺",
+    title: "Douleurs & Inconfort",
+    desc: "Localise tes zones de tension et comprends leur origine réelle.",
+    bg: "rgba(226,75,74,0.07)",
+    border: "rgba(226,75,74,0.15)",
+    titleColor: "#f09595",
+    blob: "rgba(226,75,74,0.3)",
   },
   {
-    icon: "💡",
-    title: "Actionnable",
-    description: "Des conseils concrets à appliquer dès aujourd'hui.",
+    icon: "⏱️",
+    title: "Habitudes de travail",
+    desc: "Pauses, posture spontanée, téléphone — tes automatismes te trahissent.",
+    bg: "rgba(212,98,42,0.07)",
+    border: "rgba(212,98,42,0.15)",
+    titleColor: "#f4a261",
+    blob: "rgba(212,98,42,0.25)",
+  },
+  {
+    icon: "🌙",
+    title: "Sommeil & Énergie",
+    desc: "La fatigue amplifie toutes les douleurs. Hydratation et récupération.",
+    bg: "rgba(45,106,79,0.08)",
+    border: "rgba(45,106,79,0.18)",
+    titleColor: "#74c69d",
+    blob: "rgba(45,106,79,0.3)",
+  },
+  {
+    icon: "🍽️",
+    title: "Nutrition & Vitalité",
+    desc: "Ce que tu manges à midi conditionne ton après-midi entier.",
+    bg: "rgba(124,58,237,0.07)",
+    border: "rgba(124,58,237,0.15)",
+    titleColor: "#a78bfa",
+    blob: "rgba(124,58,237,0.25)",
+  },
+  {
+    icon: "🤖",
+    title: "Analyse IA posturale",
+    desc: "Claude Vision analyse ta posture réelle en temps réel via ta caméra.",
+    bg: "rgba(29,158,117,0.07)",
+    border: "rgba(29,158,117,0.15)",
+    titleColor: "#5dcaa5",
+    blob: "rgba(29,158,117,0.25)",
   },
 ];
 
 const stats = [
-  { value: "73%", label: "des travailleurs sédentaires ont des douleurs chroniques" },
-  { value: "2x", label: "plus de risques cardio après 8h assises/jour" },
-  { value: "5min", label: "pour obtenir ton bilan complet" },
+  { value: "5min", label: "pour ton bilan complet" },
+  { value: "360°", label: "analyse corps & environnement" },
+  { value: "6", label: "dimensions analysées" },
 ];
+
+const scorePreview = [
+  { label: "Setup", score: 72, color: "#2b5ce6" },
+  { label: "Douleurs", score: 38, color: "#e24b4a" },
+  { label: "Habitudes", score: 55, color: "#d4622a" },
+  { label: "Sommeil", score: 80, color: "#2d6a4f" },
+  { label: "Nutrition", score: 45, color: "#7c3aed" },
+];
+
+function fadeUp(delay = 0) {
+  return {
+    initial: { opacity: 0, y: 24 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.6, delay },
+  };
+}
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-[#0a0a0a] overflow-hidden">
-      {/* Background gradient blobs */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div
-          className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full opacity-20"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(34,197,94,0.3) 0%, transparent 70%)",
-          }}
-        />
-        <div
-          className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full opacity-15"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(59,130,246,0.3) 0%, transparent 70%)",
-          }}
-        />
-      </div>
+    <main style={{ minHeight: "100vh", overflowX: "hidden" }}>
+      <BackgroundBlobs />
 
-      {/* Nav */}
-      <nav className="relative z-10 flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🧘</span>
-          <span className="font-bold text-lg text-white">PostureAtWork</span>
-        </div>
-        <Link
-          href="/questionnaire"
-          className="text-sm font-medium text-slate-400 hover:text-white transition-colors"
-        >
-          Commencer →
-        </Link>
-      </nav>
-
-      {/* Hero */}
-      <section className="relative z-10 flex flex-col items-center text-center px-6 pt-16 pb-24 max-w-4xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase mb-6 border border-green-500/30 text-green-400 bg-green-500/10">
-            Bilan santé gratuit • Résultats immédiats
+      {/* ── HERO ── */}
+      <section
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: 760,
+          margin: "0 auto",
+          padding: "140px 24px 80px",
+          textAlign: "center",
+        }}
+      >
+        {/* Chip */}
+        <motion.div {...fadeUp(0)} style={{ marginBottom: 28 }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "7px 18px",
+              borderRadius: 100,
+              background: "rgba(43,92,230,0.15)",
+              color: "#a8c0ff",
+              fontSize: 12,
+              fontFamily: T.h,
+              fontWeight: 700,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+              border: "1px solid rgba(43,92,230,0.25)",
+            }}
+          >
+            <span
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: "50%",
+                background: "#74c69d",
+                display: "inline-block",
+                animation: "pulse 2s infinite",
+              }}
+            />
+            Bilan santé gratuit · Résultats immédiats
           </span>
         </motion.div>
 
+        {/* H1 */}
         <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-white mb-6"
+          {...fadeUp(0.1)}
+          style={{
+            fontFamily: T.h,
+            fontWeight: 900,
+            fontSize: "clamp(32px, 5vw, 54px)",
+            lineHeight: 1.15,
+            letterSpacing: "-0.5px",
+            color: "#f0f0fa",
+            marginBottom: 20,
+          }}
         >
-          Votre corps souffre
+          La pire posture, c'est celle
           <br />
-          <span
-            style={{
-              background: "linear-gradient(135deg, #22c55e, #3b82f6)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
-            au bureau.
-          </span>
-          <br />
-          Découvrez pourquoi.
+          qu'on garde{" "}
+          <span style={{ color: "#7c9fff" }}>trop longtemps.</span>
         </motion.h1>
 
+        {/* Subtitle */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-slate-400 text-lg sm:text-xl max-w-xl mb-10 leading-relaxed"
+          {...fadeUp(0.2)}
+          style={{
+            fontFamily: T.b,
+            fontSize: 17,
+            lineHeight: 1.7,
+            color: "rgba(220,220,245,0.65)",
+            maxWidth: 520,
+            margin: "0 auto 36px",
+          }}
         >
-          En 5 minutes, obtenez un screening complet de votre santé au travail
-          — posture, douleurs, énergie — et des recommandations concrètes
-          adaptées à votre situation.
+          En 5 minutes, obtiens un screening complet de ta santé au travail —
+          posture, douleurs, énergie, nutrition — et des conseils actionnables
+          adaptés à ta situation réelle.
         </motion.p>
 
+        {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex flex-col sm:flex-row gap-4 items-center"
+          {...fadeUp(0.3)}
+          style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}
         >
-          <Link href="/questionnaire">
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              className="relative px-8 py-4 rounded-2xl font-bold text-base text-white overflow-hidden group"
+          <Link href="/questionnaire" style={{ textDecoration: "none", width: "100%", maxWidth: 380 }}>
+            <div
               style={{
-                background: "linear-gradient(135deg, #22c55e, #16a34a)",
-                boxShadow: "0 0 40px rgba(34,197,94,0.35)",
+                display: "block",
+                width: "100%",
+                padding: "18px 24px",
+                borderRadius: 100,
+                background: "#2b5ce6",
+                color: "#ffffff",
+                fontFamily: T.h,
+                fontWeight: 800,
+                fontSize: 16,
+                textAlign: "center",
+                cursor: "pointer",
+                boxShadow: "0 0 40px rgba(43,92,230,0.4)",
               }}
             >
-              <span className="relative z-10">Commencer mon bilan →</span>
-              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
-            </motion.button>
+              Commencer mon bilan gratuit →
+            </div>
           </Link>
-          <p className="text-slate-500 text-sm">
+          <Link href="/final-report" style={{ textDecoration: "none", width: "100%", maxWidth: 380 }}>
+            <div
+              style={{
+                display: "block",
+                width: "100%",
+                padding: "15px 24px",
+                borderRadius: 100,
+                background: "rgba(255,255,255,0.08)",
+                color: "rgba(255,255,255,0.82)",
+                border: "1px solid rgba(255,255,255,0.22)",
+                fontFamily: T.h,
+                fontWeight: 700,
+                fontSize: 15,
+                textAlign: "center",
+                cursor: "pointer",
+              }}
+            >
+              Voir un exemple de rapport
+            </div>
+          </Link>
+          <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 13, fontFamily: T.b }}>
             Gratuit · Sans inscription · 5 min
           </p>
         </motion.div>
       </section>
 
-      {/* Stats */}
-      <section className="relative z-10 max-w-5xl mx-auto px-6 mb-24">
+      {/* ── STATS ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+          {...fadeUp(0)}
+          style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}
         >
-          {stats.map((stat, i) => (
+          {stats.map((s, i) => (
             <div
               key={i}
-              className="glass rounded-2xl p-6 text-center"
               style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.07)",
+                padding: "28px 20px",
+                borderRadius: 18,
+                background: "rgba(255,255,255,0.04)",
+                border: "0.5px solid rgba(255,255,255,0.07)",
+                textAlign: "center",
               }}
             >
-              <div className="text-3xl font-extrabold text-green-400 mb-2">
-                {stat.value}
+              <div
+                style={{
+                  fontFamily: T.h,
+                  fontWeight: 900,
+                  fontSize: 36,
+                  color: "#f0f0fa",
+                  marginBottom: 6,
+                  letterSpacing: "-0.5px",
+                }}
+              >
+                {s.value}
               </div>
-              <div className="text-slate-400 text-sm leading-relaxed">
-                {stat.label}
+              <div style={{ color: "rgba(220,220,245,0.40)", fontSize: 13, fontFamily: T.b }}>
+                {s.label}
               </div>
             </div>
           ))}
         </motion.div>
       </section>
 
-      {/* Features */}
-      <section className="relative z-10 max-w-5xl mx-auto px-6 mb-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            Pourquoi faire ce bilan ?
+      {/* ── PILLARS ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto 80px", padding: "0 24px" }}>
+        <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 48 }}>
+          <h2
+            style={{
+              fontFamily: T.h,
+              fontWeight: 900,
+              fontSize: 32,
+              color: "#f0f0fa",
+              letterSpacing: "-0.5px",
+              marginBottom: 12,
+            }}
+          >
+            6 dimensions analysées
           </h2>
-          <p className="text-slate-400">
-            La plupart des douleurs liées au travail sont évitables.
+          <p style={{ color: "rgba(220,220,245,0.65)", fontFamily: T.b, fontSize: 15 }}>
+            Une vue complète de ta santé au travail — pas juste la posture.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {features.map((f, i) => (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
+          {pillars.map((p, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 + i * 0.1 }}
-              className="rounded-2xl p-6 text-center"
+              {...fadeUp(i * 0.07)}
               style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.07)",
+                padding: "24px",
+                borderRadius: 20,
+                background: p.bg,
+                border: `0.5px solid ${p.border}`,
+                position: "relative",
+                overflow: "hidden",
               }}
             >
-              <div className="text-4xl mb-4">{f.icon}</div>
-              <h3 className="text-white font-bold text-lg mb-2">{f.title}</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                {f.description}
+              {/* Blob */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: -30,
+                  right: -30,
+                  width: 100,
+                  height: 100,
+                  borderRadius: "50%",
+                  background: p.blob,
+                  filter: "blur(30px)",
+                  opacity: 0.6,
+                }}
+              />
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  background: p.bg,
+                  border: `1px solid ${p.border}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 22,
+                  marginBottom: 14,
+                  position: "relative",
+                }}
+              >
+                {p.icon}
+              </div>
+              <h3
+                style={{
+                  fontFamily: T.h,
+                  fontWeight: 800,
+                  fontSize: 16,
+                  color: p.titleColor,
+                  marginBottom: 8,
+                  position: "relative",
+                }}
+              >
+                {p.title}
+              </h3>
+              <p
+                style={{
+                  color: "rgba(220,220,245,0.55)",
+                  fontSize: 13,
+                  lineHeight: 1.6,
+                  fontFamily: T.b,
+                  position: "relative",
+                }}
+              >
+                {p.desc}
               </p>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* What you'll get */}
-      <section className="relative z-10 max-w-5xl mx-auto px-6 mb-24">
-        <div
-          className="rounded-3xl p-8 sm:p-12"
+      {/* ── SCORE PREVIEW ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 700, margin: "0 auto 80px", padding: "0 24px" }}>
+        <motion.div
+          {...fadeUp(0)}
           style={{
-            background:
-              "linear-gradient(135deg, rgba(34,197,94,0.08), rgba(59,130,246,0.08))",
-            border: "1px solid rgba(34,197,94,0.2)",
+            padding: "36px 32px",
+            borderRadius: 22,
+            background: "rgba(43,92,230,0.08)",
+            border: "0.5px solid rgba(43,92,230,0.18)",
           }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-                Ce que vous obtenez
-              </h2>
-              <ul className="space-y-3">
-                {[
-                  "Score global sur 100 avec analyse détaillée",
-                  "4 indicateurs : Posture, Douleurs, Énergie, Habitudes",
-                  "Interprétation personnalisée de vos résultats",
-                  "2-3 exercices ciblés selon vos points faibles",
-                  "Rapport complet envoyé par email",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <span className="text-green-400 font-bold mt-0.5">✓</span>
-                    <span className="text-slate-300 text-sm">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex justify-center">
-              <div
-                className="w-48 h-48 rounded-full flex items-center justify-center"
+          <p
+            style={{
+              fontFamily: T.h,
+              fontWeight: 700,
+              fontSize: 10,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+              color: "rgba(220,220,245,0.40)",
+              marginBottom: 20,
+            }}
+          >
+            Exemple de rapport
+          </p>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 28 }}>
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: "50%",
+                background: "rgba(43,92,230,0.12)",
+                border: "3px solid rgba(43,92,230,0.35)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <span
                 style={{
-                  background:
-                    "conic-gradient(#22c55e 0deg 252deg, rgba(255,255,255,0.05) 252deg 360deg)",
-                  boxShadow: "0 0 60px rgba(34,197,94,0.2)",
+                  fontFamily: T.h,
+                  fontWeight: 900,
+                  fontSize: 20,
+                  color: "#a8c0ff",
                 }}
               >
-                <div
-                  className="w-36 h-36 rounded-full flex flex-col items-center justify-center"
-                  style={{ background: "#0a0a0a" }}
-                >
-                  <span className="text-4xl font-extrabold text-white">70</span>
-                  <span className="text-slate-400 text-xs">exemple</span>
-                </div>
-              </div>
+                58
+              </span>
+            </div>
+            <div>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: "#f0f0fa", marginBottom: 4 }}>
+                Score global
+              </p>
+              <span
+                style={{
+                  padding: "4px 12px",
+                  borderRadius: 100,
+                  background: "rgba(212,98,42,0.15)",
+                  color: "#f4a261",
+                  border: "1px solid rgba(212,98,42,0.3)",
+                  fontSize: 12,
+                  fontFamily: T.h,
+                  fontWeight: 700,
+                }}
+              >
+                Zones à améliorer
+              </span>
             </div>
           </div>
-        </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {scorePreview.map((s, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span
+                  style={{
+                    width: 72,
+                    color: "rgba(220,220,245,0.55)",
+                    fontSize: 12,
+                    fontFamily: T.b,
+                    flexShrink: 0,
+                  }}
+                >
+                  {s.label}
+                </span>
+                <div
+                  style={{
+                    flex: 1,
+                    height: 6,
+                    borderRadius: 100,
+                    background: "rgba(255,255,255,0.06)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${s.score}%`,
+                      height: "100%",
+                      borderRadius: 100,
+                      background: s.score >= 70 ? "#2b5ce6" : s.score >= 50 ? "#d4622a" : "#e24b4a",
+                    }}
+                  />
+                </div>
+                <span
+                  style={{
+                    width: 30,
+                    textAlign: "right",
+                    fontFamily: T.h,
+                    fontWeight: 700,
+                    fontSize: 12,
+                    color: s.score >= 70 ? "#a8c0ff" : s.score >= 50 ? "#f4a261" : "#f09595",
+                  }}
+                >
+                  {s.score}
+                </span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </section>
 
-      {/* Final CTA */}
-      <section className="relative z-10 text-center px-6 pb-24">
+      {/* ── TESTIMONIAL ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 700, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
+          {...fadeUp(0)}
+          style={{
+            padding: "36px 32px",
+            borderRadius: 22,
+            background: "rgba(255,255,255,0.03)",
+            border: "0.5px solid rgba(255,255,255,0.07)",
+          }}
         >
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-            Prêt à prendre soin de vous ?
-          </h2>
-          <p className="text-slate-400 mb-8 max-w-md mx-auto">
-            En 5 minutes, vous saurez exactement où vous en êtes et quoi faire.
+          <div
+            style={{
+              fontFamily: "Georgia, serif",
+              fontSize: 40,
+              color: "#2b5ce6",
+              lineHeight: 1,
+              marginBottom: 16,
+            }}
+          >
+            "
+          </div>
+          <p
+            style={{
+              fontFamily: T.b,
+              fontSize: 16,
+              lineHeight: 1.7,
+              color: "rgba(220,220,245,0.88)",
+              marginBottom: 20,
+              fontStyle: "italic",
+            }}
+          >
+            En 5 minutes j'ai compris pourquoi j'avais mal au dos depuis 6 mois.
+            Mon écran était trop bas et je travaillais depuis mon canapé le soir.
+            Deux ajustements simples, la douleur a disparu en 2 semaines.
           </p>
-          <Link href="/questionnaire">
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              className="px-10 py-4 rounded-2xl font-bold text-base text-white"
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div
               style={{
-                background: "linear-gradient(135deg, #22c55e, #16a34a)",
-                boxShadow: "0 0 40px rgba(34,197,94,0.35)",
+                width: 38,
+                height: 38,
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, #2b5ce6, #7c9fff)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+                fontFamily: T.h,
+                fontWeight: 800,
+                fontSize: 13,
+              }}
+            >
+              MA
+            </div>
+            <div>
+              <p style={{ color: "#f0f0fa", fontFamily: T.h, fontWeight: 700, fontSize: 14 }}>
+                Marie A.
+              </p>
+              <p style={{ color: "rgba(220,220,245,0.40)", fontFamily: T.b, fontSize: 12 }}>
+                UX Designer · Paris
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ── BOTTOM CTA ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 700, margin: "0 auto 80px", padding: "0 24px" }}>
+        <motion.div
+          {...fadeUp(0)}
+          style={{
+            padding: "48px 36px",
+            borderRadius: 22,
+            background: "#2b5ce6",
+            textAlign: "center",
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: T.h,
+              fontWeight: 900,
+              fontSize: 28,
+              color: "#fff",
+              letterSpacing: "-0.5px",
+              marginBottom: 12,
+            }}
+          >
+            Prêt à prendre soin de toi ?
+          </h2>
+          <p
+            style={{
+              color: "rgba(255,255,255,0.75)",
+              fontFamily: T.b,
+              fontSize: 15,
+              marginBottom: 28,
+              lineHeight: 1.6,
+            }}
+          >
+            En 5 minutes, tu sauras exactement où tu en es et quoi faire.
+          </p>
+          <Link href="/questionnaire" style={{ textDecoration: "none" }}>
+            <div
+              style={{
+                display: "inline-block",
+                padding: "16px 36px",
+                borderRadius: 100,
+                background: "#ffffff",
+                color: "#2b5ce6",
+                fontFamily: T.h,
+                fontWeight: 800,
+                fontSize: 15,
+                cursor: "pointer",
               }}
             >
               Commencer mon bilan gratuit →
-            </motion.button>
+            </div>
           </Link>
         </motion.div>
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 text-center pb-8 text-slate-600 text-sm">
+      <footer
+        style={{
+          position: "relative",
+          zIndex: 1,
+          textAlign: "center",
+          padding: "0 24px 40px",
+          color: "rgba(220,220,245,0.25)",
+          fontFamily: T.b,
+          fontSize: 13,
+        }}
+      >
         PostureAtWork — Screening santé pour les travailleurs sédentaires
       </footer>
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(0.85); }
+        }
+      `}</style>
     </main>
   );
 }

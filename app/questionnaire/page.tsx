@@ -4,71 +4,63 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { DEFAULT_ANSWERS, type QuestionnaireAnswers } from "@/lib/scoring";
+import BackgroundBlobs from "@/components/BackgroundBlobs";
+
+const T = {
+  h: "var(--font-nunito), sans-serif",
+  b: "var(--font-jakarta), sans-serif",
+};
 
 // ─── Category metadata ────────────────────────────────────────────────────────
 
 const CATEGORIES = [
   {
-    index: 0,
-    id: "cat-1",
-    title: "Ton setup",
-    subtitle: "Poste de travail & ergonomie",
-    emoji: "💻",
-    color: "#22c55e",
+    index: 0, id: "cat-1",
+    title: "Ton setup", subtitle: "Poste de travail & ergonomie", emoji: "💻",
+    color: "#2b5ce6", colorBg: "rgba(43,92,230,0.10)", colorBorder: "rgba(43,92,230,0.20)",
+    selectedBg: "rgba(43,92,230,0.18)", selectedColor: "#a8c0ff",
     requiredQ: ["q1", "q2", "q3", "q4", "q5", "q5b", "q5c"],
   },
   {
-    index: 1,
-    id: "cat-2",
-    title: "Tes douleurs",
-    subtitle: "État de ton corps",
-    emoji: "🩺",
-    color: "#ef4444",
+    index: 1, id: "cat-2",
+    title: "Tes douleurs", subtitle: "État de ton corps", emoji: "🩺",
+    color: "#e24b4a", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
     requiredQ: ["q6", "q7", "q8", "q9", "q10", "q11", "q12", "q12b"],
   },
   {
-    index: 2,
-    id: "cat-3",
-    title: "Habitudes de travail",
-    subtitle: "Pauses & comportements",
-    emoji: "⏱️",
-    color: "#f59e0b",
-    requiredQ: ["q14", "q14b", "q15"], // q13 is slider
+    index: 2, id: "cat-3",
+    title: "Habitudes de travail", subtitle: "Pauses & comportements", emoji: "⏱️",
+    color: "#d4622a", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    requiredQ: ["q14", "q14b", "q15"],
   },
   {
-    index: 3,
-    id: "cat-4",
-    title: "Sommeil & énergie",
-    subtitle: "Récupération & hydratation",
-    emoji: "🌙",
-    color: "#3b82f6",
-    requiredQ: ["q18", "q20"], // q17, q19 are sliders
+    index: 3, id: "cat-4",
+    title: "Sommeil & énergie", subtitle: "Récupération & hydratation", emoji: "🌙",
+    color: "#2d6a4f", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    requiredQ: ["q18", "q20"],
   },
   {
-    index: 4,
-    id: "cat-5",
-    title: "Nutrition & énergie",
-    subtitle: "Alimentation & vitalité",
-    emoji: "🍽️",
-    color: "#f97316",
+    index: 4, id: "cat-5",
+    title: "Nutrition & énergie", subtitle: "Alimentation & vitalité", emoji: "🍽️",
+    color: "#7c3aed", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
+    selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
     requiredQ: ["qn1", "qn2", "qn3", "qn4"],
   },
   {
-    index: 5,
-    id: "cat-6",
-    title: "Ton corps",
-    subtitle: "Historique & habitudes physiques",
-    emoji: "🏃",
-    color: "#8b5cf6",
+    index: 5, id: "cat-6",
+    title: "Ton corps", subtitle: "Historique & habitudes physiques", emoji: "🏃",
+    color: "#1d9e75", colorBg: "rgba(29,158,117,0.08)", colorBorder: "rgba(29,158,117,0.18)",
+    selectedBg: "rgba(29,158,117,0.18)", selectedColor: "#5dcaa5",
     requiredQ: ["q21", "q22", "q23", "q24"],
   },
   {
-    index: 6,
-    id: "cat-7",
-    title: "Ressenti global",
-    subtitle: "Comment tu te sens",
-    emoji: "💭",
-    color: "#ec4899",
+    index: 6, id: "cat-7",
+    title: "Ressenti global", subtitle: "Comment tu te sens", emoji: "💭",
+    color: "#7c3aed", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
+    selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
     requiredQ: ["q25"],
   },
 ] as const;
@@ -95,44 +87,45 @@ function completedCount(answers: QuestionnaireAnswers): number {
   return CATEGORIES.filter((_, i) => isCategoryDone(i, answers)).length;
 }
 
-// ─── Reusable question components ────────────────────────────────────────────
+// ─── Choice components ────────────────────────────────────────────────────────
 
-interface OptionDef {
-  value: string;
-  label: string;
-}
+interface OptionDef { value: string; label: string; }
 
 function ChoiceGrid({
-  options,
-  value,
-  onChange,
-  cols = 2,
+  options, value, onChange, cat,
 }: {
-  options: OptionDef[];
-  value: string;
+  options: OptionDef[]; value: string;
   onChange: (v: string) => void;
-  cols?: 2 | 3;
+  cat: typeof CATEGORIES[number];
 }) {
   return (
-    <div className={`grid gap-2 ${cols === 3 ? "grid-cols-3" : "grid-cols-1 sm:grid-cols-2"}`}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       {options.map((opt) => {
-        const selected = value === opt.value;
+        const sel = value === opt.value;
         return (
-          <motion.button
+          <motion.div
             key={opt.value}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => onChange(opt.value)}
-            className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-left text-sm font-medium transition-all"
             style={{
-              background: selected ? "rgba(34,197,94,0.12)" : "rgba(255,255,255,0.03)",
-              border: selected ? "1px solid rgba(34,197,94,0.45)" : "1px solid rgba(255,255,255,0.07)",
-              color: selected ? "#86efac" : "#94a3b8",
+              padding: "12px 18px",
+              borderRadius: 100,
+              background: sel ? cat.selectedBg : "rgba(255,255,255,0.06)",
+              border: sel ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.10)",
+              color: sel ? cat.selectedColor : "rgba(220,220,245,0.75)",
+              fontSize: 14,
+              fontFamily: T.b,
+              cursor: "pointer",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              transition: "all 0.15s ease",
             }}
           >
-            <span className="flex-1 leading-snug">{opt.label}</span>
-            {selected && <span className="text-green-400 font-bold flex-shrink-0">✓</span>}
-          </motion.button>
+            <span>{opt.label}</span>
+            {sel && <span style={{ color: cat.color, fontWeight: 700, fontSize: 13 }}>✓</span>}
+          </motion.div>
         );
       })}
     </div>
@@ -140,23 +133,13 @@ function ChoiceGrid({
 }
 
 function MultiSelectGrid({
-  options,
-  value,
-  onChange,
-  otherValue,
-  onOtherChange,
+  options, value, onChange, cat, otherValue, onOtherChange,
 }: {
-  options: OptionDef[];
-  value: string[];
-  onChange: (v: string[]) => void;
-  otherValue?: string;
-  onOtherChange?: (v: string) => void;
+  options: OptionDef[]; value: string[]; onChange: (v: string[]) => void;
+  cat: typeof CATEGORIES[number]; otherValue?: string; onOtherChange?: (v: string) => void;
 }) {
   function toggle(val: string) {
-    if (val === "none") {
-      onChange(["none"]);
-      return;
-    }
+    if (val === "none") { onChange(["none"]); return; }
     const withoutNone = value.filter((v) => v !== "none");
     if (withoutNone.includes(val)) {
       const next = withoutNone.filter((v) => v !== val);
@@ -165,35 +148,37 @@ function MultiSelectGrid({
       onChange([...withoutNone, val]);
     }
   }
-
-  const hasOther = value.includes("autre");
-
   return (
-    <div className="space-y-2">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        {options.map((opt) => {
-          const selected = value.includes(opt.value);
-          return (
-            <motion.button
-              key={opt.value}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => toggle(opt.value)}
-              className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-left text-sm font-medium transition-all"
-              style={{
-                background: selected ? "rgba(139,92,246,0.12)" : "rgba(255,255,255,0.03)",
-                border: selected ? "1px solid rgba(139,92,246,0.45)" : "1px solid rgba(255,255,255,0.07)",
-                color: selected ? "#c4b5fd" : "#94a3b8",
-              }}
-            >
-              <span className="flex-1 leading-snug">{opt.label}</span>
-              {selected && <span className="text-purple-400 font-bold flex-shrink-0">✓</span>}
-            </motion.button>
-          );
-        })}
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {options.map((opt) => {
+        const sel = value.includes(opt.value);
+        return (
+          <motion.div
+            key={opt.value}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => toggle(opt.value)}
+            style={{
+              padding: "12px 18px",
+              borderRadius: 100,
+              background: sel ? cat.selectedBg : "rgba(255,255,255,0.06)",
+              border: sel ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.10)",
+              color: sel ? cat.selectedColor : "rgba(220,220,245,0.75)",
+              fontSize: 14,
+              fontFamily: T.b,
+              cursor: "pointer",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span>{opt.label}</span>
+            {sel && <span style={{ color: cat.color, fontWeight: 700 }}>✓</span>}
+          </motion.div>
+        );
+      })}
       <AnimatePresence>
-        {hasOther && onOtherChange && (
+        {value.includes("autre") && onOtherChange && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -204,10 +189,17 @@ function MultiSelectGrid({
               value={otherValue ?? ""}
               onChange={(e) => onOtherChange(e.target.value)}
               placeholder="Précise le problème diagnostiqué…"
-              className="w-full px-4 py-3 rounded-xl text-white text-sm outline-none placeholder-slate-500"
               style={{
-                background: "rgba(139,92,246,0.07)",
-                border: "1px solid rgba(139,92,246,0.3)",
+                width: "100%",
+                padding: "12px 18px",
+                borderRadius: 100,
+                background: cat.colorBg,
+                border: `1px solid ${cat.colorBorder}`,
+                color: "#f0f0fa",
+                fontSize: 14,
+                fontFamily: T.b,
+                outline: "none",
+                boxSizing: "border-box",
               }}
             />
           </motion.div>
@@ -220,29 +212,38 @@ function MultiSelectGrid({
 const PAIN_EMOJIS = ["😊", "🙂", "😐", "😕", "😖", "😫"];
 const PAIN_LABELS = ["Aucune", "Légère", "Modérée", "Importante", "Sévère", "Très sévère"];
 
-function PainScale({ value, onChange }: { value: number | null; onChange: (v: number) => void }) {
+function PainScale({
+  value, onChange, cat,
+}: { value: number | null; onChange: (v: number) => void; cat: typeof CATEGORIES[number]; }) {
   return (
-    <div className="flex gap-1.5 flex-wrap">
+    <div style={{ display: "flex", gap: 8 }}>
       {[0, 1, 2, 3, 4, 5].map((v) => {
         const sel = value === v;
         return (
-          <motion.button
+          <motion.div
             key={v}
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.92 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.93 }}
             onClick={() => onChange(v)}
-            className="flex flex-col items-center gap-0.5 px-2 py-2 rounded-xl transition-all min-w-[52px] flex-1"
             style={{
-              background: sel ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.04)",
-              border: sel ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(255,255,255,0.07)",
+              flex: 1,
+              padding: "10px 4px",
+              borderRadius: 12,
+              background: sel ? cat.selectedBg : "rgba(255,255,255,0.05)",
+              border: sel ? `1px solid ${cat.color}66` : "0.5px solid rgba(255,255,255,0.08)",
+              cursor: "pointer",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 4,
             }}
           >
-            <span className="text-xl leading-none">{PAIN_EMOJIS[v]}</span>
-            <span className="text-xs font-bold" style={{ color: sel ? "#f87171" : "#475569" }}>{v}</span>
-            <span className="text-[9px] leading-tight text-center" style={{ color: sel ? "#fca5a5" : "#334155" }}>
+            <span style={{ fontSize: 18 }}>{PAIN_EMOJIS[v]}</span>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: sel ? cat.selectedColor : "rgba(220,220,245,0.4)" }}>{v}</span>
+            <span style={{ fontSize: 9, color: sel ? cat.selectedColor : "rgba(220,220,245,0.25)", textAlign: "center", lineHeight: 1.2 }}>
               {PAIN_LABELS[v]}
             </span>
-          </motion.button>
+          </motion.div>
         );
       })}
     </div>
@@ -257,28 +258,37 @@ const WELLBEING_OPTIONS = [
   { value: 5, emoji: "🔥", label: "Excellent" },
 ];
 
-function WellbeingScale({ value, onChange }: { value: number | null; onChange: (v: number) => void }) {
+function WellbeingScale({
+  value, onChange, cat,
+}: { value: number | null; onChange: (v: number) => void; cat: typeof CATEGORIES[number]; }) {
   return (
-    <div className="flex gap-2 justify-center">
+    <div style={{ display: "flex", gap: 8 }}>
       {WELLBEING_OPTIONS.map((opt) => {
         const sel = value === opt.value;
         return (
-          <motion.button
+          <motion.div
             key={opt.value}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.93 }}
             onClick={() => onChange(opt.value)}
-            className="flex flex-col items-center gap-1 px-3 py-3 rounded-xl transition-all min-w-[56px] flex-1"
             style={{
-              background: sel ? "rgba(236,72,153,0.15)" : "rgba(255,255,255,0.04)",
-              border: sel ? "1px solid rgba(236,72,153,0.45)" : "1px solid rgba(255,255,255,0.07)",
+              flex: 1,
+              padding: "14px 8px",
+              borderRadius: 14,
+              background: sel ? cat.selectedBg : "rgba(255,255,255,0.05)",
+              border: sel ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.08)",
+              cursor: "pointer",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 6,
             }}
           >
-            <span className="text-2xl leading-none">{opt.emoji}</span>
-            <span className="text-[10px] font-semibold mt-0.5" style={{ color: sel ? "#f9a8d4" : "#475569" }}>
+            <span style={{ fontSize: 24 }}>{opt.emoji}</span>
+            <span style={{ fontSize: 11, fontFamily: T.b, color: sel ? cat.selectedColor : "rgba(220,220,245,0.35)" }}>
               {opt.label}
             </span>
-          </motion.button>
+          </motion.div>
         );
       })}
     </div>
@@ -286,30 +296,37 @@ function WellbeingScale({ value, onChange }: { value: number | null; onChange: (
 }
 
 function SliderInput({
-  value, min, max, step, unit, reference, onChange,
+  value, min, max, step, unit, reference, onChange, cat,
 }: {
-  value: number; min: number; max: number; step: number;
-  unit: string; reference?: string; onChange: (v: number) => void;
+  value: number; min: number; max: number; step: number; unit: string;
+  reference?: string; onChange: (v: number) => void; cat: typeof CATEGORIES[number];
 }) {
   const pct = ((value - min) / (max - min)) * 100;
   return (
-    <div className="space-y-4">
-      <div className="text-center">
-        <span className="text-4xl font-extrabold text-white">{value}</span>
-        <span className="text-slate-400 text-base ml-2">{unit}</span>
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ textAlign: "center" }}>
+        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 40, color: cat.selectedColor }}>{value}</span>
+        <span style={{ color: "rgba(220,220,245,0.40)", fontSize: 16, marginLeft: 8, fontFamily: T.b }}>{unit}</span>
       </div>
-      <div className="flex items-center gap-3">
-        <span className="text-slate-500 text-xs w-6 text-center">{min}</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <span style={{ color: "rgba(220,220,245,0.35)", fontSize: 11, width: 24, textAlign: "center" }}>{min}</span>
         <input
           type="range" min={min} max={max} step={step} value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="flex-1"
-          style={{ background: `linear-gradient(to right, #22c55e ${pct}%, rgba(255,255,255,0.1) ${pct}%)` }}
+          style={{
+            flex: 1,
+            accentColor: cat.color,
+            background: `linear-gradient(to right, ${cat.color} ${pct}%, rgba(255,255,255,0.08) ${pct}%)`,
+            height: 4,
+            borderRadius: 100,
+            outline: "none",
+            appearance: "none",
+          }}
         />
-        <span className="text-slate-500 text-xs w-6 text-center">{max}</span>
+        <span style={{ color: "rgba(220,220,245,0.35)", fontSize: 11, width: 24, textAlign: "center" }}>{max}</span>
       </div>
       {reference && (
-        <p className="text-center text-slate-500 text-xs">{reference}</p>
+        <p style={{ textAlign: "center", color: "rgba(220,220,245,0.35)", fontSize: 12, fontFamily: T.b }}>{reference}</p>
       )}
     </div>
   );
@@ -318,121 +335,144 @@ function SliderInput({
 // ─── Question block wrapper ───────────────────────────────────────────────────
 
 function QBlock({
-  number, question, children, answered,
+  number, question, children, answered, cat,
 }: {
-  number: string; question: string; children: React.ReactNode; answered: boolean;
+  number: string; question: string; children: React.ReactNode;
+  answered: boolean; cat: typeof CATEGORIES[number];
 }) {
   return (
     <div
-      className="rounded-2xl p-5 space-y-4 transition-all duration-300"
       style={{
-        background: answered ? "rgba(34,197,94,0.04)" : "rgba(255,255,255,0.02)",
-        border: answered ? "1px solid rgba(34,197,94,0.15)" : "1px solid rgba(255,255,255,0.06)",
+        padding: "20px",
+        borderRadius: 18,
+        background: answered ? cat.colorBg : "rgba(255,255,255,0.02)",
+        border: answered ? `0.5px solid ${cat.colorBorder}` : "0.5px solid rgba(255,255,255,0.06)",
+        transition: "all 0.3s ease",
+        display: "flex",
+        flexDirection: "column",
+        gap: 14,
       }}
     >
-      <div className="flex items-start gap-3">
-        <span
-          className="flex-shrink-0 w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center mt-0.5"
+      <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+        <div
           style={{
-            background: answered ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.06)",
-            color: answered ? "#22c55e" : "#475569",
+            width: 24,
+            height: 24,
+            borderRadius: "50%",
+            background: answered ? cat.colorBg : "rgba(255,255,255,0.05)",
+            border: answered ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.10)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            fontSize: 11,
+            fontFamily: T.h,
+            fontWeight: 700,
+            color: answered ? cat.color : "rgba(220,220,245,0.35)",
           }}
         >
           {answered ? "✓" : number}
-        </span>
-        <p className="text-slate-200 text-sm font-medium leading-snug">{question}</p>
+        </div>
+        <p
+          style={{
+            color: "#f0f0fa",
+            fontSize: 14,
+            fontFamily: T.b,
+            lineHeight: 1.5,
+            margin: 0,
+          }}
+        >
+          {question}
+        </p>
       </div>
       {children}
     </div>
   );
 }
 
-// ─── Category section wrapper ─────────────────────────────────────────────────
+// ─── Category section ─────────────────────────────────────────────────────────
 
 function CategorySection({
   cat, done, children, onRef,
 }: {
-  cat: (typeof CATEGORIES)[number];
-  done: boolean;
-  children: React.ReactNode;
-  onRef: (el: HTMLElement | null) => void;
+  cat: typeof CATEGORIES[number]; done: boolean;
+  children: React.ReactNode; onRef: (el: HTMLElement | null) => void;
 }) {
   return (
-    <section id={cat.id} ref={onRef} className="scroll-mt-24">
-      <div className="rounded-3xl overflow-hidden mb-4">
+    <section id={cat.id} ref={onRef} style={{ scrollMarginTop: 80 }}>
+      <div style={{ borderRadius: 22, overflow: "hidden", marginBottom: 12 }}>
+        {/* Header */}
         <div
-          className="px-6 py-4 flex items-center justify-between"
           style={{
-            background: `linear-gradient(135deg, ${cat.color}18, ${cat.color}08)`,
-            borderBottom: `1px solid ${cat.color}22`,
+            padding: "20px 22px",
+            background: cat.colorBg,
+            borderBottom: `0.5px solid ${cat.colorBorder}`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">{cat.emoji}</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 12,
+                background: cat.colorBg,
+                border: `0.5px solid ${cat.colorBorder}`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 20,
+              }}
+            >
+              {cat.emoji}
+            </div>
             <div>
-              <h2 className="text-white font-bold text-base">{cat.title}</h2>
-              <p className="text-slate-500 text-xs">{cat.subtitle}</p>
+              <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 17, color: "#f0f0fa", margin: 0, letterSpacing: "-0.3px" }}>
+                {cat.title}
+              </h2>
+              <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 12, fontFamily: T.b, margin: 0 }}>
+                {cat.subtitle}
+              </p>
             </div>
           </div>
           {done && (
-            <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="text-xs font-bold px-2.5 py-1 rounded-full"
-              style={{ background: `${cat.color}22`, color: cat.color, border: `1px solid ${cat.color}44` }}
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              style={{
+                padding: "5px 14px",
+                borderRadius: 100,
+                background: cat.colorBg,
+                border: `1px solid ${cat.colorBorder}`,
+                color: cat.selectedColor,
+                fontFamily: T.h,
+                fontWeight: 700,
+                fontSize: 12,
+              }}
             >
               ✓ Complété
-            </motion.span>
+            </motion.div>
           )}
         </div>
+        {/* Body */}
         <div
-          className="p-4 space-y-3"
           style={{
+            padding: "16px",
             background: "rgba(255,255,255,0.015)",
-            border: `1px solid ${cat.color}15`,
+            border: `0.5px solid ${cat.colorBorder}`,
             borderTop: "none",
+            borderRadius: "0 0 22px 22px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
           }}
         >
           {children}
         </div>
       </div>
     </section>
-  );
-}
-
-// ─── Progress bar ─────────────────────────────────────────────────────────────
-
-function ProgressBar({ answers, onCatClick }: { answers: QuestionnaireAnswers; onCatClick: (id: string) => void }) {
-  const done = CATEGORIES.map((_, i) => isCategoryDone(i, answers));
-  const firstIncomplete = done.findIndex((d) => !d);
-  const active = firstIncomplete === -1 ? CATEGORIES.length - 1 : firstIncomplete;
-
-  return (
-    <div className="flex items-center gap-1 overflow-x-auto pb-0.5">
-      {CATEGORIES.map((cat, i) => {
-        const isDone = done[i];
-        const isActive = i === active;
-        return (
-          <button key={cat.id} onClick={() => onCatClick(cat.id)} className="flex items-center gap-1 flex-shrink-0">
-            <div
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold transition-all"
-              style={{
-                background: isDone ? `${cat.color}20` : isActive ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.03)",
-                border: isDone ? `1px solid ${cat.color}50` : isActive ? "1px solid rgba(255,255,255,0.2)" : "1px solid rgba(255,255,255,0.06)",
-                color: isDone ? cat.color : isActive ? "#e2e8f0" : "#334155",
-              }}
-            >
-              <span>{cat.emoji}</span>
-              <span className="hidden sm:inline">{cat.title}</span>
-              {isDone && <span>✓</span>}
-            </div>
-            {i < CATEGORIES.length - 1 && (
-              <div className="w-3 h-px flex-shrink-0" style={{ background: isDone ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.06)" }} />
-            )}
-          </button>
-        );
-      })}
-    </div>
   );
 }
 
@@ -472,85 +512,125 @@ export default function QuestionnairePage() {
   const done = completedCount(answers);
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a]">
+    <main style={{ minHeight: "100vh", paddingBottom: 120 }}>
+      <BackgroundBlobs blobs={[
+        { top: "0%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 400 },
+        { top: "50%", left: "-8%", color: "rgba(226,75,74,0.08)", size: 350 },
+      ]} />
+
       {/* Sticky header */}
-      <div className="sticky top-0 z-30 bg-[#0a0a0a]/95 backdrop-blur border-b border-white/5">
-        <div className="max-w-2xl mx-auto px-4 py-3 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-white font-bold text-sm">PostureAtWork</span>
-            <span className="text-slate-500 text-xs">{done} / {CATEGORIES.length} catégories</span>
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 30,
+          background: "rgba(15,15,26,0.95)",
+          backdropFilter: "blur(20px)",
+          borderBottom: "0.5px solid rgba(255,255,255,0.07)",
+        }}
+      >
+        <div style={{ maxWidth: 680, margin: "0 auto", padding: "12px 20px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa" }}>PAW</span>
+              <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#7c9fff" }}>.</span>
+            </div>
+            <span style={{ color: "rgba(220,220,245,0.40)", fontSize: 13, fontFamily: T.b }}>
+              {done} / {CATEGORIES.length} catégories
+            </span>
           </div>
-          <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+          {/* Progress bar */}
+          <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden", marginBottom: 10 }}>
             <motion.div
-              className="h-full rounded-full bg-green-500"
+              style={{ height: "100%", borderRadius: 100, background: "#2b5ce6" }}
               animate={{ width: `${(done / CATEGORIES.length) * 100}%` }}
               transition={{ duration: 0.4 }}
             />
           </div>
-          <ProgressBar answers={answers} onCatClick={scrollTo} />
+          {/* Pills */}
+          <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 2 }}>
+            {CATEGORIES.map((cat, i) => {
+              const isDone = isCategoryDone(i, answers);
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => scrollTo(cat.id)}
+                  style={{
+                    padding: "5px 12px",
+                    borderRadius: 100,
+                    background: isDone ? cat.colorBg : "rgba(255,255,255,0.05)",
+                    border: isDone ? `0.5px solid ${cat.colorBorder}` : "0.5px solid rgba(255,255,255,0.08)",
+                    color: isDone ? cat.selectedColor : "rgba(220,220,245,0.35)",
+                    fontFamily: T.h,
+                    fontWeight: 700,
+                    fontSize: 12,
+                    cursor: "pointer",
+                    flexShrink: 0,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {cat.emoji} {isDone ? "✓" : ""}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* Questions */}
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-2 pb-40">
+      <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 20px 40px" }}>
 
-        {/* ── CAT 1 — SETUP ── */}
+        {/* CAT 1 — SETUP */}
         <CategorySection cat={CATEGORIES[0]} done={isCategoryDone(0, answers)} onRef={(el) => { catRefs.current[0] = el; }}>
-          <QBlock number="1" question="Quel est ton setup principal ?" answered={!!answers.q1}>
-            <ChoiceGrid value={answers.q1} onChange={(v) => update("q1", v)} options={[
+          <QBlock number="1" question="Quel est ton setup principal ?" answered={!!answers.q1} cat={CATEGORIES[0]}>
+            <ChoiceGrid cat={CATEGORIES[0]} value={answers.q1} onChange={(v) => update("q1", v)} options={[
               { value: "laptop", label: "💻 Laptop seul" },
               { value: "laptop_screen", label: "💻🖥️ Laptop + écran externe" },
               { value: "desktop", label: "🖥️ Écran fixe desktop" },
               { value: "mixed", label: "🔀 Mixte (bureau + télétravail)" },
             ]} />
           </QBlock>
-
-          <QBlock number="2" question="Où travailles-tu le plus souvent ?" answered={!!answers.q2}>
-            <ChoiceGrid value={answers.q2} onChange={(v) => update("q2", v)} options={[
+          <QBlock number="2" question="Où travailles-tu le plus souvent ?" answered={!!answers.q2} cat={CATEGORIES[0]}>
+            <ChoiceGrid cat={CATEGORIES[0]} value={answers.q2} onChange={(v) => update("q2", v)} options={[
               { value: "office", label: "🏢 Bureau fixe" },
               { value: "remote", label: "🏠 Télétravail" },
               { value: "both", label: "🔀 Les deux" },
               { value: "open", label: "👥 Open space" },
             ]} />
           </QBlock>
-
-          <QBlock number="3" question="Ton écran est-il à hauteur des yeux ?" answered={!!answers.q3}>
-            <ChoiceGrid value={answers.q3} onChange={(v) => update("q3", v)} options={[
+          <QBlock number="3" question="Ton écran est-il à hauteur des yeux ?" answered={!!answers.q3} cat={CATEGORIES[0]}>
+            <ChoiceGrid cat={CATEGORIES[0]} value={answers.q3} onChange={(v) => update("q3", v)} options={[
               { value: "yes", label: "✅ Oui" },
               { value: "approx", label: "🔸 À peu près" },
               { value: "no", label: "❌ Non, il est trop bas" },
               { value: "dunno", label: "🤷 Je sais pas" },
             ]} />
           </QBlock>
-
-          <QBlock number="4" question="Quelle distance entre toi et ton écran ?" answered={!!answers.q4}>
-            <ChoiceGrid value={answers.q4} onChange={(v) => update("q4", v)} options={[
+          <QBlock number="4" question="Quelle distance entre toi et ton écran ?" answered={!!answers.q4} cat={CATEGORIES[0]}>
+            <ChoiceGrid cat={CATEGORIES[0]} value={answers.q4} onChange={(v) => update("q4", v)} options={[
               { value: "close", label: "📏 Moins de 50cm" },
               { value: "ideal", label: "📏 50–70cm (idéal)" },
               { value: "far", label: "📏 Plus de 70cm" },
               { value: "dunno", label: "🤷 Je sais pas" },
             ]} />
           </QBlock>
-
-          <QBlock number="5" question="Ton clavier et ta souris sont-ils proches de toi ?" answered={!!answers.q5}>
-            <ChoiceGrid value={answers.q5} onChange={(v) => update("q5", v)} cols={3} options={[
+          <QBlock number="5" question="Ton clavier et ta souris sont-ils proches de toi ?" answered={!!answers.q5} cat={CATEGORIES[0]}>
+            <ChoiceGrid cat={CATEGORIES[0]} value={answers.q5} onChange={(v) => update("q5", v)} options={[
               { value: "good", label: "✅ Oui, coudes près du corps" },
               { value: "bad", label: "❌ Non, je tends les bras" },
               { value: "trackpad", label: "🖱️ J'utilise le trackpad" },
             ]} />
           </QBlock>
-
-          <QBlock number="6" question="Sur quoi travailles-tu assis ?" answered={!!answers.q5b}>
-            <ChoiceGrid value={answers.q5b} onChange={(v) => update("q5b", v)} options={[
+          <QBlock number="6" question="Sur quoi travailles-tu assis ?" answered={!!answers.q5b} cat={CATEGORIES[0]}>
+            <ChoiceGrid cat={CATEGORIES[0]} value={answers.q5b} onChange={(v) => update("q5b", v)} options={[
               { value: "adjustable", label: "🪑 Siège de bureau réglable" },
               { value: "fixed", label: "🪑 Chaise fixe (salle à manger, cuisine...)" },
               { value: "couch", label: "🛋️ Canapé / lit parfois" },
               { value: "ball", label: "🧘 Ballon / selle ergonomique" },
             ]} />
           </QBlock>
-
-          <QBlock number="7" question="Portes-tu des lunettes ou lentilles pour travailler ?" answered={!!answers.q5c}>
-            <ChoiceGrid value={answers.q5c} onChange={(v) => update("q5c", v)} cols={3} options={[
+          <QBlock number="7" question="Portes-tu des lunettes ou lentilles pour travailler ?" answered={!!answers.q5c} cat={CATEGORIES[0]}>
+            <ChoiceGrid cat={CATEGORIES[0]} value={answers.q5c} onChange={(v) => update("q5c", v)} options={[
               { value: "adapted", label: "✅ Oui, adaptées à l'écran" },
               { value: "not_adapted", label: "👓 Oui, mais pas spéciales écran" },
               { value: "none_needed", label: "❌ Non, je n'en ai pas besoin" },
@@ -558,7 +638,7 @@ export default function QuestionnairePage() {
           </QBlock>
         </CategorySection>
 
-        {/* ── CAT 2 — DOULEURS ── */}
+        {/* CAT 2 — DOULEURS */}
         <CategorySection cat={CATEGORIES[1]} done={isCategoryDone(1, answers)} onRef={(el) => { catRefs.current[1] = el; }}>
           {([
             { key: "q6" as const, label: "Douleur nuque / cou", num: "8" },
@@ -567,13 +647,12 @@ export default function QuestionnairePage() {
             { key: "q9" as const, label: "Douleur poignets / avant-bras", num: "11" },
             { key: "q10" as const, label: "Douleur yeux / maux de tête", num: "12" },
           ] as const).map(({ key, label, num }) => (
-            <QBlock key={key} number={num} question={label} answered={answers[key] !== null}>
-              <PainScale value={answers[key]} onChange={(v) => update(key, v)} />
+            <QBlock key={key} number={num} question={label} answered={answers[key] !== null} cat={CATEGORIES[1]}>
+              <PainScale value={answers[key]} onChange={(v) => update(key, v)} cat={CATEGORIES[1]} />
             </QBlock>
           ))}
-
-          <QBlock number="13" question="Depuis combien de temps as-tu ces douleurs ?" answered={!!answers.q11}>
-            <ChoiceGrid value={answers.q11} onChange={(v) => update("q11", v)} options={[
+          <QBlock number="13" question="Depuis combien de temps as-tu ces douleurs ?" answered={!!answers.q11} cat={CATEGORIES[1]}>
+            <ChoiceGrid cat={CATEGORIES[1]} value={answers.q11} onChange={(v) => update("q11", v)} options={[
               { value: "none", label: "✨ Pas de douleurs" },
               { value: "days", label: "📅 Quelques jours" },
               { value: "weeks", label: "📅 Quelques semaines" },
@@ -581,9 +660,8 @@ export default function QuestionnairePage() {
               { value: "year", label: "⏳ Plus d'un an" },
             ]} />
           </QBlock>
-
-          <QBlock number="14" question="Tes douleurs apparaissent quand ?" answered={!!answers.q12}>
-            <ChoiceGrid value={answers.q12} onChange={(v) => update("q12", v)} options={[
+          <QBlock number="14" question="Tes douleurs apparaissent quand ?" answered={!!answers.q12} cat={CATEGORIES[1]}>
+            <ChoiceGrid cat={CATEGORIES[1]} value={answers.q12} onChange={(v) => update("q12", v)} options={[
               { value: "morning", label: "🌅 Le matin au réveil" },
               { value: "day", label: "☀️ En cours de journée" },
               { value: "end", label: "🌆 En fin de journée" },
@@ -591,9 +669,8 @@ export default function QuestionnairePage() {
               { value: "none", label: "✨ Pas de douleurs" },
             ]} />
           </QBlock>
-
-          <QBlock number="15" question="Tes douleurs disparaissent-elles pendant les vacances ou le week-end ?" answered={!!answers.q12b}>
-            <ChoiceGrid value={answers.q12b} onChange={(v) => update("q12b", v)} options={[
+          <QBlock number="15" question="Tes douleurs disparaissent-elles pendant les vacances ou le week-end ?" answered={!!answers.q12b} cat={CATEGORIES[1]}>
+            <ChoiceGrid cat={CATEGORIES[1]} value={answers.q12b} onChange={(v) => update("q12b", v)} options={[
               { value: "yes", label: "✅ Oui, complètement" },
               { value: "partial", label: "🔸 Partiellement, elles s'atténuent" },
               { value: "no", label: "❌ Non, elles restent même au repos" },
@@ -602,23 +679,21 @@ export default function QuestionnairePage() {
           </QBlock>
         </CategorySection>
 
-        {/* ── CAT 3 — HABITUDES ── */}
+        {/* CAT 3 — HABITUDES */}
         <CategorySection cat={CATEGORIES[2]} done={isCategoryDone(2, answers)} onRef={(el) => { catRefs.current[2] = el; }}>
-          <QBlock number="16" question="Combien d'heures par jour es-tu assis ?" answered={true}>
-            <SliderInput value={answers.q13} min={1} max={12} step={0.5} unit="h / jour" onChange={(v) => update("q13", v)} />
+          <QBlock number="16" question="Combien d'heures par jour es-tu assis ?" answered={true} cat={CATEGORIES[2]}>
+            <SliderInput value={answers.q13} min={1} max={12} step={0.5} unit="h / jour" onChange={(v) => update("q13", v)} cat={CATEGORIES[2]} />
           </QBlock>
-
-          <QBlock number="17" question="Fais-tu des pauses pour te lever ?" answered={!!answers.q14}>
-            <ChoiceGrid value={answers.q14} onChange={(v) => update("q14", v)} options={[
+          <QBlock number="17" question="Fais-tu des pauses pour te lever ?" answered={!!answers.q14} cat={CATEGORIES[2]}>
+            <ChoiceGrid cat={CATEGORIES[2]} value={answers.q14} onChange={(v) => update("q14", v)} options={[
               { value: "never", label: "❌ Jamais" },
               { value: "1x", label: "1️⃣ 1 fois par jour" },
               { value: "2h", label: "🔸 Toutes les 2h" },
               { value: "1h", label: "✅ Toutes les heures ou plus" },
             ]} />
           </QBlock>
-
-          <QBlock number="18" question="Quel type d'activité physique pratiques-tu ?" answered={!!answers.q14b}>
-            <ChoiceGrid value={answers.q14b} onChange={(v) => update("q14b", v)} options={[
+          <QBlock number="18" question="Quel type d'activité physique pratiques-tu ?" answered={!!answers.q14b} cat={CATEGORIES[2]}>
+            <ChoiceGrid cat={CATEGORIES[2]} value={answers.q14b} onChange={(v) => update("q14b", v)} options={[
               { value: "cardio", label: "🏃 Cardio (course, vélo, natation...)" },
               { value: "strength", label: "💪 Musculation / fitness" },
               { value: "yoga", label: "🧘 Yoga / Pilates / étirements" },
@@ -627,9 +702,8 @@ export default function QuestionnairePage() {
               { value: "none", label: "❌ Aucune activité physique" },
             ]} />
           </QBlock>
-
-          <QBlock number="19" question="Comment gères-tu tes appels au bureau ?" answered={!!answers.q15}>
-            <ChoiceGrid value={answers.q15} onChange={(v) => update("q15", v)} options={[
+          <QBlock number="19" question="Comment gères-tu tes appels au bureau ?" answered={!!answers.q15} cat={CATEGORIES[2]}>
+            <ChoiceGrid cat={CATEGORIES[2]} value={answers.q15} onChange={(v) => update("q15", v)} options={[
               { value: "headset", label: "🎧 Casque/écouteurs (mains libres)" },
               { value: "hand", label: "📱 Téléphone à la main" },
               { value: "speaker", label: "☎️ Haut-parleur posé sur le bureau" },
@@ -638,30 +712,23 @@ export default function QuestionnairePage() {
           </QBlock>
         </CategorySection>
 
-        {/* ── CAT 4 — SOMMEIL ── */}
+        {/* CAT 4 — SOMMEIL */}
         <CategorySection cat={CATEGORIES[3]} done={isCategoryDone(3, answers)} onRef={(el) => { catRefs.current[3] = el; }}>
-          <QBlock number="20" question="Combien d'heures dors-tu par nuit ?" answered={true}>
-            <SliderInput value={answers.q17} min={4} max={10} step={0.5} unit="h / nuit" onChange={(v) => update("q17", v)} />
+          <QBlock number="20" question="Combien d'heures dors-tu par nuit ?" answered={true} cat={CATEGORIES[3]}>
+            <SliderInput value={answers.q17} min={4} max={10} step={0.5} unit="h / nuit" onChange={(v) => update("q17", v)} cat={CATEGORIES[3]} />
           </QBlock>
-
-          <QBlock number="21" question="Tu te réveilles comment ?" answered={!!answers.q18}>
-            <ChoiceGrid value={answers.q18} onChange={(v) => update("q18", v)} cols={3} options={[
+          <QBlock number="21" question="Tu te réveilles comment ?" answered={!!answers.q18} cat={CATEGORIES[3]}>
+            <ChoiceGrid cat={CATEGORIES[3]} value={answers.q18} onChange={(v) => update("q18", v)} options={[
               { value: "fresh", label: "😊 Reposé" },
               { value: "tired", label: "😐 Fatigué" },
               { value: "exhausted", label: "😩 Épuisé" },
             ]} />
           </QBlock>
-
-          <QBlock number="22" question="Combien de litres d'eau bois-tu par jour ?" answered={true}>
-            <SliderInput
-              value={answers.q19} min={0} max={3} step={0.25} unit="L"
-              reference="🎯 Objectif recommandé : 1.5 à 2L"
-              onChange={(v) => update("q19", v)}
-            />
+          <QBlock number="22" question="Combien de litres d'eau bois-tu par jour ?" answered={true} cat={CATEGORIES[3]}>
+            <SliderInput value={answers.q19} min={0} max={3} step={0.25} unit="L" reference="🎯 Objectif recommandé : 1.5 à 2L" onChange={(v) => update("q19", v)} cat={CATEGORIES[3]} />
           </QBlock>
-
-          <QBlock number="23" question="Ressens-tu des coups de fatigue dans la journée ?" answered={!!answers.q20}>
-            <ChoiceGrid value={answers.q20} onChange={(v) => update("q20", v)} options={[
+          <QBlock number="23" question="Ressens-tu des coups de fatigue dans la journée ?" answered={!!answers.q20} cat={CATEGORIES[3]}>
+            <ChoiceGrid cat={CATEGORIES[3]} value={answers.q20} onChange={(v) => update("q20", v)} options={[
               { value: "never", label: "✅ Jamais" },
               { value: "sometimes", label: "🔸 Parfois en après-midi" },
               { value: "often", label: "⚠️ Souvent" },
@@ -670,39 +737,36 @@ export default function QuestionnairePage() {
           </QBlock>
         </CategorySection>
 
-        {/* ── CAT 5 — NUTRITION ── */}
+        {/* CAT 5 — NUTRITION */}
         <CategorySection cat={CATEGORIES[4]} done={isCategoryDone(4, answers)} onRef={(el) => { catRefs.current[4] = el; }}>
-          <QBlock number="24" question="Où déjeunes-tu en général ?" answered={!!answers.qn1}>
-            <ChoiceGrid value={answers.qn1} onChange={(v) => update("qn1", v)} options={[
-              { value: "screen", label: "🖥️ Devant mon écran (je travaille en mangeant)" },
+          <QBlock number="24" question="Où déjeunes-tu en général ?" answered={!!answers.qn1} cat={CATEGORIES[4]}>
+            <ChoiceGrid cat={CATEGORIES[4]} value={answers.qn1} onChange={(v) => update("qn1", v)} options={[
+              { value: "screen", label: "🖥️ Devant mon écran" },
               { value: "cafeteria", label: "🏢 En salle de pause / cafétéria" },
               { value: "outside", label: "🚶 Je sors du bureau" },
               { value: "home", label: "🏠 Chez moi (télétravail)" },
             ]} />
           </QBlock>
-
-          <QBlock number="25" question="Comment te sens-tu après le déjeuner ?" answered={!!answers.qn2}>
-            <ChoiceGrid value={answers.qn2} onChange={(v) => update("qn2", v)} options={[
+          <QBlock number="25" question="Comment te sens-tu après le déjeuner ?" answered={!!answers.qn2} cat={CATEGORIES[4]}>
+            <ChoiceGrid cat={CATEGORIES[4]} value={answers.qn2} onChange={(v) => update("qn2", v)} options={[
               { value: "energetic", label: "⚡ Énergique, pas de problème" },
               { value: "slight_dip", label: "😐 Légère baisse, ça passe vite" },
               { value: "crash", label: "😴 Coup de barre systématique" },
               { value: "unfocused", label: "🛋️ Mal à me concentrer pendant 1-2h" },
             ]} />
           </QBlock>
-
-          <QBlock number="26" question="As-tu des fringales dans la journée ?" answered={!!answers.qn3}>
-            <ChoiceGrid value={answers.qn3} onChange={(v) => update("qn3", v)} options={[
+          <QBlock number="26" question="As-tu des fringales dans la journée ?" answered={!!answers.qn3} cat={CATEGORIES[4]}>
+            <ChoiceGrid cat={CATEGORIES[4]} value={answers.qn3} onChange={(v) => update("qn3", v)} options={[
               { value: "never", label: "❌ Jamais" },
               { value: "morning", label: "🔸 Parfois en milieu de matinée" },
               { value: "afternoon", label: "🍫 Souvent en après-midi" },
               { value: "always", label: "🔄 Tout le temps, je grignote régulièrement" },
             ]} />
           </QBlock>
-
-          <QBlock number="27" question="Que manges-tu généralement à midi ?" answered={!!answers.qn4}>
-            <ChoiceGrid value={answers.qn4} onChange={(v) => update("qn4", v)} options={[
+          <QBlock number="27" question="Que manges-tu généralement à midi ?" answered={!!answers.qn4} cat={CATEGORIES[4]}>
+            <ChoiceGrid cat={CATEGORIES[4]} value={answers.qn4} onChange={(v) => update("qn4", v)} options={[
               { value: "balanced", label: "🥗 Repas équilibré (protéines + légumes)" },
-              { value: "sandwich", label: "🥪 Sandwich / repas rapide sur le pouce" },
+              { value: "sandwich", label: "🥪 Sandwich / repas rapide" },
               { value: "hot", label: "🍕 Repas chaud complet" },
               { value: "varies", label: "🤷 Ça varie beaucoup" },
               { value: "skip", label: "☕ Je saute souvent le repas" },
@@ -710,14 +774,13 @@ export default function QuestionnairePage() {
           </QBlock>
         </CategorySection>
 
-        {/* ── CAT 6 — CORPS ── */}
+        {/* CAT 6 — CORPS */}
         <CategorySection cat={CATEGORIES[5]} done={isCategoryDone(5, answers)} onRef={(el) => { catRefs.current[5] = el; }}>
-          <QBlock number="28" question="As-tu déjà eu un professionnel de santé te parler de l'un de ces problèmes ?" answered={answers.q21.length > 0}>
+          <QBlock number="28" question="As-tu déjà eu un professionnel de santé te parler de l'un de ces problèmes ?" answered={answers.q21.length > 0} cat={CATEGORIES[5]}>
             <MultiSelectGrid
-              value={answers.q21}
-              onChange={(v) => update("q21", v)}
-              otherValue={answers.q21_other}
-              onOtherChange={(v) => update("q21_other", v)}
+              value={answers.q21} onChange={(v) => update("q21", v)}
+              otherValue={answers.q21_other} onOtherChange={(v) => update("q21_other", v)}
+              cat={CATEGORIES[5]}
               options={[
                 { value: "none", label: "✨ Non, rien de particulier" },
                 { value: "back", label: "🦴 Problème de dos (hernie, lombalgie, scoliose...)" },
@@ -729,26 +792,23 @@ export default function QuestionnairePage() {
               ]}
             />
           </QBlock>
-
-          <QBlock number="29" question="Fais-tu du sport ?" answered={!!answers.q22}>
-            <ChoiceGrid value={answers.q22} onChange={(v) => update("q22", v)} options={[
+          <QBlock number="29" question="Fais-tu du sport ?" answered={!!answers.q22} cat={CATEGORIES[5]}>
+            <ChoiceGrid cat={CATEGORIES[5]} value={answers.q22} onChange={(v) => update("q22", v)} options={[
               { value: "never", label: "❌ Jamais" },
               { value: "1x", label: "1️⃣ 1x / semaine" },
               { value: "2-3x", label: "💪 2–3x / semaine" },
               { value: "daily", label: "🔥 Tous les jours" },
             ]} />
           </QBlock>
-
-          <QBlock number="30" question="Fais-tu des exercices d'étirement ?" answered={!!answers.q23}>
-            <ChoiceGrid value={answers.q23} onChange={(v) => update("q23", v)} cols={3} options={[
+          <QBlock number="30" question="Fais-tu des exercices d'étirement ?" answered={!!answers.q23} cat={CATEGORIES[5]}>
+            <ChoiceGrid cat={CATEGORIES[5]} value={answers.q23} onChange={(v) => update("q23", v)} options={[
               { value: "never", label: "❌ Jamais" },
               { value: "sometimes", label: "🔸 Parfois" },
               { value: "regularly", label: "✅ Régulièrement" },
             ]} />
           </QBlock>
-
-          <QBlock number="31" question="Comment décris-tu ta posture spontanément ?" answered={!!answers.q24}>
-            <ChoiceGrid value={answers.q24} onChange={(v) => update("q24", v)} options={[
+          <QBlock number="31" question="Comment décris-tu ta posture spontanément ?" answered={!!answers.q24} cat={CATEGORIES[5]}>
+            <ChoiceGrid cat={CATEGORIES[5]} value={answers.q24} onChange={(v) => update("q24", v)} options={[
               { value: "good", label: "✅ Je me tiens bien" },
               { value: "bad", label: "😔 Je m'affaisse souvent" },
               { value: "dunno", label: "🤷 Je ne sais pas" },
@@ -757,10 +817,10 @@ export default function QuestionnairePage() {
           </QBlock>
         </CategorySection>
 
-        {/* ── CAT 7 — RESSENTI ── */}
+        {/* CAT 7 — RESSENTI */}
         <CategorySection cat={CATEGORIES[6]} done={isCategoryDone(6, answers)} onRef={(el) => { catRefs.current[6] = el; }}>
-          <QBlock number="32" question="Comment tu te sens au travail en ce moment ?" answered={answers.q25 !== null}>
-            <WellbeingScale value={answers.q25} onChange={(v) => update("q25", v)} />
+          <QBlock number="32" question="Comment tu te sens au travail en ce moment ?" answered={answers.q25 !== null} cat={CATEGORIES[6]}>
+            <WellbeingScale value={answers.q25} onChange={(v) => update("q25", v)} cat={CATEGORIES[6]} />
           </QBlock>
         </CategorySection>
       </div>
@@ -773,23 +833,39 @@ export default function QuestionnairePage() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
             transition={{ type: "spring", damping: 20 }}
-            className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-6 pt-3"
-            style={{ background: "linear-gradient(to top, #0a0a0a 60%, transparent)" }}
+            style={{
+              position: "fixed",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 40,
+              padding: "16px 20px 24px",
+              background: "linear-gradient(to top, #0f0f1a 60%, transparent)",
+            }}
           >
-            <div className="max-w-2xl mx-auto">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
+            <div style={{ maxWidth: 680, margin: "0 auto" }}>
+              <div
                 onClick={handleSubmit}
-                className="w-full py-4 rounded-2xl font-bold text-white text-base"
                 style={{
-                  background: "linear-gradient(135deg, #22c55e, #16a34a)",
-                  boxShadow: "0 0 40px rgba(34,197,94,0.4)",
+                  display: "block",
+                  width: "100%",
+                  padding: "18px 24px",
+                  borderRadius: 100,
+                  background: "#2b5ce6",
+                  color: "#ffffff",
+                  fontFamily: T.h,
+                  fontWeight: 800,
+                  fontSize: 16,
+                  textAlign: "center",
+                  cursor: "pointer",
+                  boxShadow: "0 0 40px rgba(43,92,230,0.5)",
                 }}
               >
                 Voir mes résultats →
-              </motion.button>
-              <p className="text-center text-slate-600 text-xs mt-2">Toutes les questions sont répondues ✓</p>
+              </div>
+              <p style={{ textAlign: "center", color: "rgba(220,220,245,0.30)", fontSize: 12, fontFamily: T.b, marginTop: 8 }}>
+                Toutes les questions sont répondues ✓
+              </p>
             </div>
           </motion.div>
         )}

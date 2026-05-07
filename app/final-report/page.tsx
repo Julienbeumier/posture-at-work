@@ -12,19 +12,25 @@ import type {
 } from "@/lib/analysis-types";
 import { saveAssessmentForUser, createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
+import BackgroundBlobs from "@/components/BackgroundBlobs";
+
+const T = {
+  h: "var(--font-nunito), sans-serif",
+  b: "var(--font-jakarta), sans-serif",
+};
 
 // ─── Status helpers ───────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<StatusLevel, { color: string; bg: string; border: string; label: string; icon: string }> = {
-  bon: { color: "#22c55e", bg: "rgba(34,197,94,0.08)", border: "rgba(34,197,94,0.25)", label: "Bon", icon: "✅" },
-  attention: { color: "#f59e0b", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.25)", label: "Attention", icon: "⚠️" },
-  critique: { color: "#ef4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.3)", label: "Critique", icon: "🔴" },
+  bon:      { color: "#74c69d", bg: "rgba(116,198,157,0.08)", border: "rgba(116,198,157,0.25)", label: "Bon",      icon: "✅" },
+  attention:{ color: "#f4a261", bg: "rgba(244,162,97,0.08)",  border: "rgba(244,162,97,0.25)",  label: "Attention",icon: "⚠️" },
+  critique: { color: "#f09595", bg: "rgba(240,149,149,0.08)", border: "rgba(240,149,149,0.28)", label: "Critique", icon: "🔴" },
 };
 
 const PRIORITY_COLOR: Record<string, { color: string; label: string }> = {
-  haute: { color: "#ef4444", label: "Priorité haute" },
-  moyenne: { color: "#f59e0b", label: "Priorité moyenne" },
-  optionnel: { color: "#64748b", label: "Optionnel" },
+  haute:     { color: "#f09595", label: "Priorité haute" },
+  moyenne:   { color: "#f4a261", label: "Priorité moyenne" },
+  optionnel: { color: "rgba(220,220,245,0.35)", label: "Optionnel" },
 };
 
 // ─── Reusable components ──────────────────────────────────────────────────────
@@ -32,18 +38,17 @@ const PRIORITY_COLOR: Record<string, { color: string; label: string }> = {
 function StatusBadge({ status }: { status: StatusLevel }) {
   const cfg = STATUS_CONFIG[status];
   return (
-    <span
-      className="text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
-      style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color }}
-    >
+    <span style={{
+      flexShrink: 0, padding: "3px 10px", borderRadius: 100,
+      background: cfg.bg, border: `0.5px solid ${cfg.border}`, color: cfg.color,
+      fontFamily: T.b, fontWeight: 600, fontSize: 11,
+    }}>
       {cfg.icon} {cfg.label}
     </span>
   );
 }
 
-function ExpandableCard({
-  title, status, children, delay = 0,
-}: {
+function ExpandableCard({ title, status, children, delay = 0 }: {
   title: string; status: StatusLevel; children: React.ReactNode; delay?: number;
 }) {
   const [open, setOpen] = useState(false);
@@ -51,18 +56,20 @@ function ExpandableCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className="rounded-2xl overflow-hidden cursor-pointer"
-      style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}
       onClick={() => setOpen((v) => !v)}
+      style={{
+        borderRadius: 16, overflow: "hidden", cursor: "pointer",
+        background: cfg.bg, border: `0.5px solid ${cfg.border}`,
+      }}
     >
-      <div className="flex items-center justify-between px-5 py-4 gap-3">
-        <span className="text-white font-semibold text-sm">{title}</span>
-        <div className="flex items-center gap-2">
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", gap: 12 }}>
+        <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa" }}>{title}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <StatusBadge status={status} />
-          <span className="text-slate-500 text-xs">{open ? "▲" : "▼"}</span>
+          <span style={{ fontSize: 10, color: "rgba(220,220,245,0.3)" }}>{open ? "▲" : "▼"}</span>
         </div>
       </div>
       <AnimatePresence>
@@ -72,9 +79,9 @@ function ExpandableCard({
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.22 }}
-            className="overflow-hidden"
+            style={{ overflow: "hidden" }}
           >
-            <div className="px-5 pb-5 pt-1 border-t" style={{ borderColor: cfg.border }}>
+            <div style={{ padding: "0 18px 16px", borderTop: `0.5px solid ${cfg.border}` }}>
               {children}
             </div>
           </motion.div>
@@ -87,12 +94,12 @@ function ExpandableCard({
 function PostureCard({ label, item, delay = 0 }: { label: string; item: PostureItem; delay?: number }) {
   return (
     <ExpandableCard title={label} status={item.status} delay={delay}>
-      <p className="text-slate-300 text-sm mb-2 leading-relaxed">
-        <span className="font-medium text-white">Observation : </span>
+      <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.7)", lineHeight: 1.65, marginBottom: 8, marginTop: 10 }}>
+        <span style={{ color: "#f0f0fa", fontWeight: 600 }}>Observation : </span>
         {item.observation}
       </p>
-      <p className="text-slate-400 text-sm leading-relaxed">
-        <span className="font-medium text-slate-300">Impact : </span>
+      <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65 }}>
+        <span style={{ color: "rgba(220,220,245,0.75)", fontWeight: 600 }}>Impact : </span>
         {item.impact}
       </p>
     </ExpandableCard>
@@ -102,40 +109,50 @@ function PostureCard({ label, item, delay = 0 }: { label: string; item: PostureI
 function SetupCard({ label, item, delay = 0 }: { label: string; item: SetupItem; delay?: number }) {
   return (
     <ExpandableCard title={label} status={item.status} delay={delay}>
-      <p className="text-slate-300 text-sm mb-2 leading-relaxed">
-        <span className="font-medium text-white">Observation : </span>
+      <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.7)", lineHeight: 1.65, marginBottom: 8, marginTop: 10 }}>
+        <span style={{ color: "#f0f0fa", fontWeight: 600 }}>Observation : </span>
         {item.observation}
       </p>
-      <p className="text-slate-400 text-sm leading-relaxed">
-        <span className="font-medium text-green-400">→ </span>
+      <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65 }}>
+        <span style={{ color: "#74c69d" }}>→ </span>
         {item.recommendation}
       </p>
     </ExpandableCard>
   );
 }
 
-// ─── Score circle (small) ─────────────────────────────────────────────────────
+// ─── Score ring ───────────────────────────────────────────────────────────────
 
-function ScoreRing({ score, size = 80, color }: { score: number; size?: number; color: string }) {
-  const sw = 6;
+function ScoreRing({ score, size = 90, color }: { score: number; size?: number; color: string }) {
+  const sw = 5;
   const r = (size - sw) / 2;
   const circ = 2 * Math.PI * r;
   return (
-    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={sw} />
+    <div style={{ position: "relative", width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+        <circle cx={size / 2} cy={size / 2} r={r} fill="rgba(43,92,230,0.10)" stroke="rgba(43,92,230,0.3)" strokeWidth={sw} />
         <motion.circle
           cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={sw}
-          strokeLinecap="round"
-          strokeDasharray={circ}
+          strokeLinecap="round" strokeDasharray={circ}
           initial={{ strokeDashoffset: circ }}
           animate={{ strokeDashoffset: circ * (1 - score / 100) }}
           transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
         />
       </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-white font-extrabold text-base">{score}</span>
+      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: size === 90 ? 22 : 16, color: "#a8c0ff" }}>{score}</span>
       </div>
+    </div>
+  );
+}
+
+// ─── Section title ────────────────────────────────────────────────────────────
+
+function SectionTitle({ emoji, title }: { emoji: string; title: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+      <span style={{ fontSize: 20 }}>{emoji}</span>
+      <h2 style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", margin: 0 }}>{title}</h2>
     </div>
   );
 }
@@ -156,16 +173,13 @@ export default function FinalReportPage() {
 
     const scoresRaw = sessionStorage.getItem("postureatwork_scores");
     if (scoresRaw) {
-      const scores = JSON.parse(scoresRaw);
-      setQuestionnaireScore(scores.global ?? null);
+      const s = JSON.parse(scoresRaw);
+      setQuestionnaireScore(s.global ?? null);
     }
 
-    createClient().auth.getUser().then(({ data }) => {
-      setUser(data.user ?? null);
-    });
+    createClient().auth.getUser().then(({ data }) => setUser(data.user ?? null));
   }, []);
 
-  // Auto-save when logged in and report is ready
   useEffect(() => {
     if (!user || !report || savedRef.current) return;
     savedRef.current = true;
@@ -179,26 +193,23 @@ export default function FinalReportPage() {
       .catch(() => setSaveStatus("error"));
   }, [user, report]);
 
-  function handlePrint() {
-    window.print();
-  }
-
   if (!report) {
     return (
-      <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-6">
-        <div className="text-center space-y-5 max-w-sm">
-          <div className="text-4xl">📋</div>
-          <h2 className="text-xl font-bold text-white">Aucun rapport trouvé</h2>
-          <p className="text-slate-400 text-sm">
-            Tu n'as pas encore effectué l'analyse vidéo.
+      <main style={{ minHeight: "100vh", background: "#0f0f1a", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
+        <div style={{ textAlign: "center", maxWidth: 340 }}>
+          <div style={{ fontSize: 40, marginBottom: 16 }}>📋</div>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", marginBottom: 10 }}>Aucun rapport trouvé</h2>
+          <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.5)", marginBottom: 24 }}>
+            Tu n&apos;as pas encore effectué l&apos;analyse vidéo.
           </p>
-          <Link href="/video-intro">
-            <button
-              className="w-full py-3 rounded-xl text-sm font-bold text-white mt-2"
-              style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)" }}
-            >
-              Faire l'analyse →
-            </button>
+          <Link href="/video-intro" style={{ textDecoration: "none" }}>
+            <div style={{
+              padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
+              background: "linear-gradient(135deg, #7c3aed, #4f46e5)",
+              fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
+            }}>
+              Faire l&apos;analyse →
+            </div>
           </Link>
         </div>
       </main>
@@ -210,71 +221,81 @@ export default function FinalReportPage() {
     ? Math.round(questionnaireScore * 0.6 + postureScore * 0.4)
     : postureScore;
 
-  const combinedColor =
-    combinedScore >= 70 ? "#22c55e" : combinedScore >= 50 ? "#eab308" : "#ef4444";
+  const combinedColor = combinedScore >= 70 ? "#74c69d" : combinedScore >= 50 ? "#f4a261" : "#f09595";
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] pb-20 print:bg-white print:text-black">
-      {/* Ambient */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden print:hidden">
-        <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] opacity-15"
-          style={{ background: `radial-gradient(ellipse, ${combinedColor}66 0%, transparent 70%)` }}
-        />
-      </div>
+    <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingBottom: 80, position: "relative" }}>
+      <BackgroundBlobs blobs={[
+        { top: "-5%", right: "-5%", color: "rgba(124,58,237,0.12)", size: 480 },
+        { top: "40%", left: "-8%", color: "rgba(43,92,230,0.10)", size: 380 },
+        { bottom: "-10%", right: "15%", color: "rgba(116,198,157,0.08)", size: 400 },
+      ]} />
 
-      {/* Nav */}
-      <div className="relative z-10 px-6 py-5 max-w-2xl mx-auto flex items-center justify-between print:hidden">
-        <Link href="/results" className="text-slate-500 hover:text-slate-300 text-sm transition-colors">
-          ← Résultats
-        </Link>
-        <button
-          onClick={handlePrint}
-          className="text-xs font-semibold px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-colors"
-          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
-        >
-          🖨️ Imprimer
-        </button>
-      </div>
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
 
-      <div className="relative z-10 max-w-2xl mx-auto px-6 space-y-6">
+        {/* Nav */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 80, paddingBottom: 32 }}>
+          <Link href="/results" style={{ textDecoration: "none" }}>
+            <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.4)", cursor: "pointer" }}>← Résultats</span>
+          </Link>
+          <div
+            onClick={() => window.print()}
+            style={{
+              padding: "6px 14px", borderRadius: 100, cursor: "pointer",
+              background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.09)",
+              fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)",
+            }}
+          >
+            🖨️ Imprimer
+          </div>
+        </div>
+
         {/* ── HEADER SCORE ── */}
-        <motion.section
+        <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl p-7 text-center"
-          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
+          style={{
+            borderRadius: 28, padding: "28px 28px 24px", textAlign: "center", marginBottom: 20,
+            background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)",
+          }}
         >
-          <div
-            className="inline-block text-xs font-bold px-3 py-1 rounded-full mb-4"
-            style={{ background: "rgba(139,92,246,0.15)", color: "#a78bfa", border: "1px solid rgba(139,92,246,0.3)" }}
-          >
-            Rapport Analyse IA · Bilan complet
+          {/* Chip */}
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20,
+            padding: "6px 14px", borderRadius: 100,
+            background: "rgba(167,139,250,0.12)", border: "0.5px solid rgba(167,139,250,0.3)",
+          }}>
+            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#a78bfa" }}>
+              Rapport Analyse IA · Bilan complet
+            </span>
           </div>
-          <h1 className="text-2xl font-extrabold text-white mb-6">Ton bilan PostureAtWork complet</h1>
 
-          <div className="flex items-center justify-center gap-10 flex-wrap">
-            <div className="flex flex-col items-center gap-2">
-              <ScoreRing score={combinedScore} size={100} color={combinedColor} />
-              <span className="text-slate-400 text-xs">Score global</span>
+          <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#f0f0fa", marginBottom: 24 }}>
+            Ton bilan PostureAtWork complet
+          </h1>
+
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 32, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+              <ScoreRing score={combinedScore} size={110} color={combinedColor} />
+              <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>Score global</span>
             </div>
-            <div className="flex flex-col items-center gap-2">
-              <ScoreRing score={postureScore} size={80} color="#a78bfa" />
-              <span className="text-slate-400 text-xs">Posture (IA)</span>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+              <ScoreRing score={postureScore} size={82} color="#a78bfa" />
+              <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>Posture (IA)</span>
             </div>
             {questionnaireScore != null && (
-              <div className="flex flex-col items-center gap-2">
-                <ScoreRing score={questionnaireScore} size={80} color="#3b82f6" />
-                <span className="text-slate-400 text-xs">Questionnaire</span>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                <ScoreRing score={questionnaireScore} size={82} color="#7c9fff" />
+                <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>Questionnaire</span>
               </div>
             )}
           </div>
-        </motion.section>
+        </motion.div>
 
         {/* ── POSTURE ANALYSIS ── */}
-        <section>
+        <section style={{ marginBottom: 24 }}>
           <SectionTitle emoji="🧍" title="Analyse posturale" />
-          <div className="space-y-2">
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <PostureCard label="Position de la tête" item={report.posture_analysis.head_position} delay={0.05} />
             <PostureCard label="Position du cou" item={report.posture_analysis.neck_position} delay={0.1} />
             <PostureCard label="Épaules" item={report.posture_analysis.shoulders} delay={0.15} />
@@ -282,19 +303,21 @@ export default function FinalReportPage() {
           </div>
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-            className="mt-3 rounded-2xl px-5 py-4"
-            style={{ background: "rgba(167,139,250,0.07)", border: "1px solid rgba(167,139,250,0.2)" }}
+            style={{
+              marginTop: 10, borderRadius: 16, padding: "14px 18px",
+              background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.2)",
+            }}
           >
-            <p className="text-slate-300 text-sm leading-relaxed">
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.65, margin: 0 }}>
               {report.posture_analysis.overall_observation}
             </p>
           </motion.div>
         </section>
 
         {/* ── SETUP ANALYSIS ── */}
-        <section>
+        <section style={{ marginBottom: 24 }}>
           <SectionTitle emoji="🖥️" title="Analyse de ton setup" />
-          <div className="space-y-2">
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <SetupCard label="Hauteur de l'écran" item={report.setup_analysis.screen_height} delay={0.05} />
             <SetupCard label="Distance à l'écran" item={report.setup_analysis.screen_distance} delay={0.1} />
             <SetupCard label="Clavier & souris" item={report.setup_analysis.keyboard_mouse} delay={0.15} />
@@ -302,86 +325,99 @@ export default function FinalReportPage() {
           </div>
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-            className="mt-3 rounded-2xl px-5 py-4"
-            style={{ background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.2)" }}
+            style={{
+              marginTop: 10, borderRadius: 16, padding: "14px 18px",
+              background: "rgba(43,92,230,0.07)", border: "0.5px solid rgba(43,92,230,0.2)",
+            }}
           >
-            <p className="text-slate-300 text-sm leading-relaxed">
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.65, margin: 0 }}>
               {report.setup_analysis.overall_observation}
             </p>
           </motion.div>
         </section>
 
         {/* ── PRIORITY ACTIONS ── */}
-        <section>
+        <section style={{ marginBottom: 24 }}>
           <SectionTitle emoji="🎯" title="Actions prioritaires" />
-          <div className="space-y-3">
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {report.priority_actions.map((action, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 + i * 0.1 }}
-                className="rounded-2xl p-5"
+                transition={{ delay: 0.05 + i * 0.09 }}
                 style={{
-                  background: i === 0 ? "rgba(239,68,68,0.08)" : "rgba(255,255,255,0.03)",
-                  border: i === 0 ? "1px solid rgba(239,68,68,0.25)" : "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: 20, padding: "18px 20px", position: "relative", overflow: "hidden",
+                  background: i === 0 ? "rgba(240,149,149,0.07)" : "rgba(255,255,255,0.03)",
+                  border: `0.5px solid ${i === 0 ? "rgba(240,149,149,0.25)" : "rgba(255,255,255,0.08)"}`,
                 }}
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <div
-                    className="w-8 h-8 rounded-xl flex items-center justify-center font-extrabold text-sm flex-shrink-0"
-                    style={{
-                      background: i === 0 ? "rgba(239,68,68,0.2)" : "rgba(255,255,255,0.06)",
-                      color: i === 0 ? "#f87171" : "#64748b",
-                    }}
-                  >
-                    {action.rank}
+                {i === 0 && (
+                  <div style={{
+                    position: "absolute", top: -30, right: -30, width: 120, height: 120,
+                    borderRadius: "50%", background: "rgba(240,149,149,0.12)", filter: "blur(28px)", pointerEvents: "none",
+                  }} />
+                )}
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 10, flexShrink: 0,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)",
+                      fontFamily: T.h, fontWeight: 900, fontSize: 13,
+                      color: i === 0 ? "#f09595" : "rgba(220,220,245,0.35)",
+                    }}>
+                      {action.rank}
+                    </div>
+                    <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{action.title}</span>
                   </div>
-                  <h3 className="text-white font-bold text-sm">{action.title}</h3>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 4 }}>
+                    <span style={{ color: "rgba(220,220,245,0.8)", fontWeight: 600 }}>Pourquoi : </span>
+                    {action.why}
+                  </p>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 6 }}>
+                    <span style={{ color: "rgba(220,220,245,0.8)", fontWeight: 600 }}>Comment : </span>
+                    {action.how}
+                  </p>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "#74c69d", fontWeight: 600 }}>
+                    Impact : {action.impact}
+                  </p>
                 </div>
-                <p className="text-slate-400 text-xs mb-1.5 leading-relaxed">
-                  <span className="text-slate-300 font-medium">Pourquoi : </span>
-                  {action.why}
-                </p>
-                <p className="text-slate-400 text-xs mb-1.5 leading-relaxed">
-                  <span className="text-slate-300 font-medium">Comment : </span>
-                  {action.how}
-                </p>
-                <p className="text-green-400 text-xs font-medium">
-                  Impact : {action.impact}
-                </p>
               </motion.div>
             ))}
           </div>
         </section>
 
         {/* ── EXERCISES ── */}
-        <section>
+        <section style={{ marginBottom: 24 }}>
           <SectionTitle emoji="🤸" title="Exercices ciblés" />
-          <div className="space-y-3">
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {report.exercises.map((ex, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 + i * 0.1 }}
-                className="rounded-2xl p-5"
-                style={{ background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.2)" }}
+                transition={{ delay: 0.05 + i * 0.09 }}
+                style={{
+                  borderRadius: 20, padding: "18px 20px",
+                  background: "rgba(43,92,230,0.07)", border: "0.5px solid rgba(43,92,230,0.2)",
+                }}
               >
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <h3 className="text-white font-bold text-sm">{ex.name}</h3>
-                  <span
-                    className="text-xs font-medium px-2.5 py-0.5 rounded-full flex-shrink-0"
-                    style={{ background: "rgba(59,130,246,0.15)", color: "#60a5fa", border: "1px solid rgba(59,130,246,0.3)" }}
-                  >
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
+                  <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{ex.name}</span>
+                  <span style={{
+                    flexShrink: 0, padding: "3px 10px", borderRadius: 100,
+                    background: "rgba(43,92,230,0.15)", color: "#7c9fff",
+                    fontFamily: T.b, fontWeight: 600, fontSize: 11,
+                  }}>
                     {ex.target}
                   </span>
                 </div>
-                <p className="text-slate-400 text-sm leading-relaxed mb-2">{ex.instruction}</p>
-                <div className="flex gap-3 text-xs font-medium">
-                  <span className="text-blue-400">⏱ {ex.duration}</span>
-                  <span className="text-slate-500">·</span>
-                  <span className="text-slate-400">{ex.frequency}</span>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 8 }}>{ex.instruction}</p>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <span style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff" }}>⏱ {ex.duration}</span>
+                  <span style={{ color: "rgba(220,220,245,0.2)" }}>·</span>
+                  <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.4)" }}>{ex.frequency}</span>
                 </div>
               </motion.div>
             ))}
@@ -389,46 +425,46 @@ export default function FinalReportPage() {
         </section>
 
         {/* ── PRODUCTS ── */}
-        <section>
+        <section style={{ marginBottom: 24 }}>
           <SectionTitle emoji="🛍️" title="Produits recommandés" />
-          <div className="space-y-3">
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {report.products.map((product, i) => {
               const pCfg = PRIORITY_COLOR[product.priority] ?? PRIORITY_COLOR.optionnel;
               const amazonUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(product.amazon_search)}`;
               return (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 + i * 0.08 }}
-                  className="rounded-2xl p-5 flex items-start justify-between gap-4"
-                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
+                  transition={{ delay: 0.05 + i * 0.07 }}
+                  style={{
+                    borderRadius: 20, padding: "16px 18px",
+                    display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14,
+                    background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)",
+                  }}
                 >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <h3 className="text-white font-bold text-sm">{product.name}</h3>
-                      <span
-                        className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                        style={{
-                          background: `${pCfg.color}22`,
-                          color: pCfg.color,
-                          border: `1px solid ${pCfg.color}44`,
-                        }}
-                      >
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                      <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{product.name}</span>
+                      <span style={{
+                        padding: "2px 8px", borderRadius: 100,
+                        fontFamily: T.b, fontWeight: 600, fontSize: 11, color: pCfg.color,
+                        background: `${pCfg.color}18`,
+                      }}>
                         {pCfg.label}
                       </span>
                     </div>
-                    <p className="text-slate-400 text-xs leading-relaxed">{product.reason}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", lineHeight: 1.6, margin: 0 }}>{product.reason}</p>
                   </div>
                   <a
                     href={amazonUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="flex-shrink-0 px-3 py-2 rounded-xl text-xs font-bold text-orange-400 transition-colors hover:text-orange-300"
                     style={{
-                      background: "rgba(251,146,60,0.1)",
-                      border: "1px solid rgba(251,146,60,0.3)",
+                      flexShrink: 0, padding: "8px 14px", borderRadius: 100, textDecoration: "none",
+                      background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)",
+                      fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer",
                     }}
                   >
                     Amazon →
@@ -440,134 +476,152 @@ export default function FinalReportPage() {
         </section>
 
         {/* ── FINAL MESSAGE ── */}
-        <motion.section
+        <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="rounded-3xl p-7"
           style={{
-            background: "linear-gradient(135deg, rgba(139,92,246,0.08), rgba(59,130,246,0.08))",
-            border: "1px solid rgba(139,92,246,0.2)",
+            borderRadius: 24, padding: "24px 26px", marginBottom: 16,
+            background: "linear-gradient(135deg, rgba(167,139,250,0.08), rgba(43,92,230,0.08))",
+            border: "0.5px solid rgba(167,139,250,0.2)",
           }}
         >
-          <div className="text-2xl mb-3">🩺</div>
-          <h3 className="text-white font-bold text-base mb-3">Mot de ton kiné IA</h3>
-          <p className="text-slate-300 text-sm leading-relaxed">{report.final_message}</p>
-        </motion.section>
-
-        {/* ── SAVE REPORT ── */}
-        <motion.section
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="rounded-3xl p-7"
-          style={{
-            background: "linear-gradient(135deg, rgba(34,197,94,0.07), rgba(59,130,246,0.07))",
-            border: "1px solid rgba(34,197,94,0.2)",
-          }}
-        >
-          <AnimatePresence mode="wait">
-            {saveStatus === "saved" ? (
-              <motion.div key="saved" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-4">
-                <div className="text-4xl mb-3">🎉</div>
-                <h3 className="text-white font-bold text-lg mb-2">Rapport sauvegardé !</h3>
-                <p className="text-slate-400 text-sm">Retrouve-le dans ton dashboard.</p>
-                <Link href="/dashboard" className="inline-block mt-4 text-green-400 text-sm font-semibold hover:text-green-300 transition-colors">
-                  Voir mon dashboard →
-                </Link>
-              </motion.div>
-            ) : saveStatus === "saving" ? (
-              <motion.div key="saving" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-4">
-                <div className="text-2xl mb-3 animate-pulse">💾</div>
-                <p className="text-slate-400 text-sm">Sauvegarde en cours…</p>
-              </motion.div>
-            ) : user ? (
-              <motion.div key="autosave" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <div className="text-2xl mb-3">💾</div>
-                <h3 className="text-white font-bold text-lg mb-1">Sauvegarde ton rapport</h3>
-                <p className="text-slate-400 text-sm mb-4">Connecté en tant que <span className="text-white">{user.email}</span>.</p>
-                {saveStatus === "error" && (
-                  <p className="text-red-400 text-xs mb-3">Erreur lors de la sauvegarde. <button onClick={() => { savedRef.current = false; setSaveStatus("idle"); }} className="underline">Réessayer</button></p>
-                )}
-              </motion.div>
-            ) : (
-              <motion.div key="unauthenticated" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <div className="text-2xl mb-3">💾</div>
-                <h3 className="text-white font-bold text-lg mb-1">Sauvegarder mon rapport</h3>
-                <p className="text-slate-400 text-sm mb-5">Crée un compte gratuit pour accéder à ton bilan depuis n'importe où.</p>
-                <motion.button
-                  whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                  onClick={() => router.push("/auth?redirect=/final-report")}
-                  className="w-full py-3.5 rounded-xl font-bold text-white text-sm"
-                  style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)", boxShadow: "0 0 20px rgba(34,197,94,0.3)" }}
-                >
-                  Créer mon compte gratuit →
-                </motion.button>
-                <p className="text-slate-600 text-xs mt-3 text-center">Déjà un compte ? <button onClick={() => router.push("/auth?redirect=/final-report")} className="text-slate-400 hover:text-white transition-colors underline">Se connecter</button></p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.section>
+          <div style={{ fontSize: 24, marginBottom: 10 }}>🩺</div>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", marginBottom: 8 }}>Mot de ton kiné IA</p>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.7, margin: 0 }}>
+            {report.final_message}
+          </p>
+        </motion.div>
 
         {/* ── STRETCHING CTA ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
+          transition={{ delay: 0.25 }}
+          style={{ marginBottom: 16 }}
         >
-          <Link href="/stretching">
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="rounded-3xl p-6 cursor-pointer flex items-center justify-between gap-4"
-              style={{
-                background: "linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1))",
-                border: "1px solid rgba(59,130,246,0.25)",
-              }}
-            >
+          <Link href="/stretching" style={{ textDecoration: "none" }}>
+            <div style={{
+              borderRadius: 24, padding: "20px 24px", cursor: "pointer", position: "relative", overflow: "hidden",
+              background: "linear-gradient(135deg, rgba(43,92,230,0.10), rgba(124,58,237,0.10))",
+              border: "0.5px solid rgba(43,92,230,0.25)",
+              display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
+            }}>
               <div>
-                <div className="text-2xl mb-1">🤸</div>
-                <h3 className="text-white font-bold text-base mb-0.5">Faire mes étirements maintenant</h3>
-                <p className="text-slate-400 text-sm">Programme guidé · 5 à 15 min · ciblé sur tes points faibles</p>
+                <div style={{ fontSize: 22, marginBottom: 4 }}>🤸</div>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0, marginBottom: 2 }}>Faire mes étirements maintenant</p>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: 0 }}>Programme guidé · 5 à 15 min · ciblé sur tes points faibles</p>
               </div>
-              <span className="text-blue-400 text-xl flex-shrink-0">→</span>
-            </motion.div>
+              <span style={{ fontSize: 20, color: "#7c9fff", flexShrink: 0 }}>→</span>
+            </div>
           </Link>
         </motion.div>
 
-        {/* ── ACTIONS ── */}
-        <div className="flex gap-3 print:hidden">
-          <Link href="/results" className="flex-1">
-            <motion.button
-              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-              className="w-full py-3 rounded-xl text-slate-400 text-sm font-medium hover:text-white transition-colors"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
-            >
+        {/* ── SAVE REPORT ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          style={{
+            borderRadius: 24, padding: "24px 26px", marginBottom: 16,
+            background: "linear-gradient(135deg, rgba(116,198,157,0.07), rgba(43,92,230,0.07))",
+            border: "0.5px solid rgba(116,198,157,0.2)",
+          }}
+        >
+          <AnimatePresence mode="wait">
+            {saveStatus === "saved" ? (
+              <motion.div key="saved" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: "center", padding: "12px 0" }}>
+                <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa", marginBottom: 6 }}>Rapport sauvegardé !</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)", marginBottom: 14 }}>Retrouve-le dans ton dashboard.</p>
+                <Link href="/dashboard" style={{ textDecoration: "none" }}>
+                  <div style={{
+                    display: "inline-block", padding: "10px 24px", borderRadius: 100,
+                    background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)",
+                    fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#74c69d", cursor: "pointer",
+                  }}>
+                    Voir mon dashboard →
+                  </div>
+                </Link>
+              </motion.div>
+            ) : saveStatus === "saving" ? (
+              <motion.div key="saving" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: "center", padding: "12px 0" }}>
+                <div style={{ fontSize: 24, marginBottom: 8 }}>💾</div>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)" }}>Sauvegarde en cours…</p>
+              </motion.div>
+            ) : user ? (
+              <motion.div key="autosave" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div style={{ fontSize: 24, marginBottom: 10 }}>💾</div>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", marginBottom: 4 }}>Sauvegarde ton rapport</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)", marginBottom: 0 }}>
+                  Connecté en tant que <span style={{ color: "#f0f0fa" }}>{user.email}</span>.
+                </p>
+                {saveStatus === "error" && (
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595", marginTop: 8 }}>
+                    Erreur lors de la sauvegarde.{" "}
+                    <span
+                      onClick={() => { savedRef.current = false; setSaveStatus("idle"); }}
+                      style={{ textDecoration: "underline", cursor: "pointer" }}
+                    >
+                      Réessayer
+                    </span>
+                  </p>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div key="unauthenticated" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div style={{ fontSize: 24, marginBottom: 10 }}>💾</div>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", marginBottom: 6 }}>Sauvegarder mon rapport</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)", marginBottom: 20, lineHeight: 1.65 }}>
+                  Crée un compte gratuit pour accéder à ton bilan depuis n&apos;importe où.
+                </p>
+                <div
+                  onClick={() => router.push("/auth?redirect=/final-report")}
+                  style={{
+                    padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
+                    background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.35)",
+                    fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
+                  }}
+                >
+                  Créer mon compte gratuit →
+                </div>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.35)", textAlign: "center", marginTop: 12 }}>
+                  Déjà un compte ?{" "}
+                  <span
+                    onClick={() => router.push("/auth?redirect=/final-report")}
+                    style={{ color: "rgba(220,220,245,0.55)", textDecoration: "underline", cursor: "pointer" }}
+                  >
+                    Se connecter
+                  </span>
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* ── BOTTOM ACTIONS ── */}
+        <div style={{ display: "flex", gap: 10 }}>
+          <Link href="/results" style={{ textDecoration: "none", flex: 1 }}>
+            <div style={{
+              padding: "12px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
+              background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)",
+              fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)",
+            }}>
               ← Résultats
-            </motion.button>
+            </div>
           </Link>
-          <Link href="/questionnaire" className="flex-1">
-            <motion.button
-              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-              className="w-full py-3 rounded-xl text-slate-400 text-sm font-medium hover:text-white transition-colors"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
-            >
+          <Link href="/questionnaire" style={{ textDecoration: "none", flex: 1 }}>
+            <div style={{
+              padding: "12px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
+              background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)",
+              fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)",
+            }}>
               🔄 Refaire
-            </motion.button>
+            </div>
           </Link>
         </div>
+
       </div>
     </main>
-  );
-}
-
-// ─── Section title helper ─────────────────────────────────────────────────────
-
-function SectionTitle({ emoji, title }: { emoji: string; title: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-3">
-      <span className="text-xl">{emoji}</span>
-      <h2 className="text-white font-bold text-base">{title}</h2>
-    </div>
   );
 }
