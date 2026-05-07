@@ -157,6 +157,10 @@ function scoreInterpretation(
       if (score >= 70) return "Ton mode de vie actif compense bien la sédentarité du travail.";
       if (score >= 50) return "Un peu plus de sport ou d'étirements ferait une nette différence.";
       return "Ton corps manque de mouvement pour contrebalancer la sédentarité. C'est réversible avec peu d'efforts.";
+    case "nutrition":
+      if (score >= 70) return "Ton alimentation soutient bien ton énergie et ta concentration tout au long de la journée.";
+      if (score >= 50) return "Quelques ajustements dans tes habitudes alimentaires amélioreraient ton énergie au bureau.";
+      return `${answers.qn1 === "screen" ? "Manger devant l'écran empêche la vraie récupération. " : ""}Ton alimentation crée des pics glycémiques qui épuisent ta concentration.`;
     default:
       return "";
   }
@@ -173,8 +177,9 @@ const SUB_SCORES: {
   { key: "setup", label: "Setup & ergonomie", emoji: "💻", weight: "20%" },
   { key: "pain", label: "Douleurs", emoji: "🩺", weight: "30%" },
   { key: "habits", label: "Habitudes de travail", emoji: "⏱️", weight: "20%" },
-  { key: "sleep_energy", label: "Sommeil & énergie", emoji: "🌙", weight: "15%" },
-  { key: "lifestyle", label: "Mode de vie actif", emoji: "🏃", weight: "15%" },
+  { key: "sleep_energy", label: "Sommeil & énergie", emoji: "🌙", weight: "10%" },
+  { key: "lifestyle", label: "Mode de vie actif", emoji: "🏃", weight: "10%" },
+  { key: "nutrition", label: "Nutrition & énergie", emoji: "🍽️", weight: "10%" },
 ];
 
 const PRIORITY_CONFIG = {
