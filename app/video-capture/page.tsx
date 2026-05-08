@@ -14,6 +14,7 @@ type Phase =
   | "not-supported"
   | "step1"
   | "between"
+  | "step2-prep"
   | "step2"
   | "processing"
   | "done";
@@ -37,13 +38,25 @@ const STEP1_SPEECH: Array<{ t: number; text: string }> = [
 const STEP2_SPEECH: Array<{ t: number; text: string }> = [
   {
     t: 0,
-    text: "Maintenant filme ton bureau lentement de gauche à droite. On va analyser ton setup.",
+    text: "Parfait. Maintenant recule à environ 2 à 3 mètres de ton bureau. Tiens ton téléphone à hauteur des yeux.",
+  },
+  {
+    t: 5,
+    text: "Lance le balayage. Commence par la gauche, et filme lentement vers la droite pour capturer tout ton setup.",
+  },
+  {
+    t: 10,
+    text: "Continue doucement... on veut voir ton écran, ta chaise, ton clavier et l'espace autour.",
+  },
+  {
+    t: 15,
+    text: "Parfait, on a tout ce qu'il faut !",
   },
 ];
 
 // Frame capture timestamps (seconds from start)
 const STEP1_FRAME_TIMES = [8, 18, 28, 38];
-const STEP2_FRAME_TIMES = [5, 12];
+const STEP2_FRAME_TIMES = [4, 9, 14];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -272,7 +285,7 @@ export default function VideoCapturePage() {
       // sessionStorage might be full — trim quality and retry
       const trimmed: StoredFrames = {
         posture: framesRef.current.posture.slice(0, 4),
-        bureau: framesRef.current.bureau.slice(0, 2),
+        bureau: framesRef.current.bureau.slice(0, 3),
       };
       sessionStorage.setItem("postureatwork_frames", JSON.stringify(trimmed));
     }
@@ -456,7 +469,7 @@ export default function VideoCapturePage() {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
-              onClick={startStep2}
+              onClick={() => setPhase("step2-prep")}
               className="w-full py-4 rounded-2xl font-bold text-white text-base"
               style={{
                 background: "linear-gradient(135deg, #2563eb, #4f46e5)",
@@ -464,6 +477,50 @@ export default function VideoCapturePage() {
               }}
             >
               Étape 2 : Filmer le bureau →
+            </motion.button>
+          </motion.div>
+        )}
+
+        {/* ── STEP 2 PREP ── */}
+        {phase === "step2-prep" && (
+          <motion.div
+            key="step2-prep"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="max-w-sm w-full text-center space-y-5"
+          >
+            <div className="text-5xl">🖥️</div>
+            <h2 className="text-xl font-bold text-white">Avant de filmer ton bureau</h2>
+
+            <div
+              className="rounded-2xl p-5 text-left space-y-3"
+              style={{ background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.2)" }}
+            >
+              {[
+                { icon: "📍", text: "Recule à 2–3 mètres de ton bureau" },
+                { icon: "⬆️", text: "Tiens ton téléphone à hauteur des yeux" },
+                { icon: "💡", text: "Assure-toi que la pièce est bien éclairée" },
+                { icon: "🔄", text: "Tu vas balayer de gauche à droite lentement" },
+              ].map(({ icon, text }) => (
+                <div key={text} className="flex items-center gap-3">
+                  <span className="text-xl flex-shrink-0">{icon}</span>
+                  <span className="text-slate-200 text-sm">{text}</span>
+                </div>
+              ))}
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={startStep2}
+              className="w-full py-4 rounded-2xl font-bold text-white text-base"
+              style={{
+                background: "linear-gradient(135deg, #2563eb, #4f46e5)",
+                boxShadow: "0 0 30px rgba(59,130,246,0.3)",
+              }}
+            >
+              C&apos;est bon, je suis prêt →
             </motion.button>
           </motion.div>
         )}
