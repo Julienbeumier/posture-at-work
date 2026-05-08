@@ -151,10 +151,10 @@ export default function LandingPage() {
             marginBottom: 20,
           }}
         >
-          La pire posture, c'est celle
+          8h assis par jour.
           <br />
-          qu'on garde{" "}
-          <span style={{ color: "#7c9fff" }}>trop longtemps.</span>
+          Ton corps mérite{" "}
+          <span style={{ color: "#7c9fff" }}>mieux.</span>
         </motion.h1>
 
         {/* Subtitle */}
