@@ -229,11 +229,12 @@ export default function LandingPage() {
       <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div
           {...fadeUp(0)}
-          style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}
+          className="grid grid-cols-2 md:grid-cols-3 gap-4"
         >
           {stats.map((s, i) => (
             <div
               key={i}
+              className={i === 2 ? "hidden md:block" : ""}
               style={{
                 padding: "28px 20px",
                 borderRadius: 18,
