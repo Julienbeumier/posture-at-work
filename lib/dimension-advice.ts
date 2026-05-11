@@ -22,7 +22,10 @@ function pickExercises(keys: string[]): Exercise[] {
 }
 
 function pickProducts(keys: string[]): Product[] {
-  return keys.map((k) => PRODUCTS[k]).filter(Boolean);
+  const items = keys.map((k) => PRODUCTS[k]).filter(Boolean) as Product[];
+  // Sort: haute first, then moyenne, then premium; max 3
+  const order = { haute: 0, moyenne: 1, premium: 2 };
+  return items.sort((a, b) => order[a.priority] - order[b.priority]).slice(0, 3);
 }
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
@@ -35,12 +38,12 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
   if (answers.q1 === "laptop") {
     detected.push("Tu travailles sur laptop sans écran externe. C'est la configuration la plus risquée pour la posture cervicale.");
     tipIds.push("s4");
-    productKeys.push("laptop_stand", "ergo_keyboard");
+    productKeys.push("laptop_stand");
   }
   if (answers.q3 === "non" || answers.q3 === "no") {
     detected.push("Ton écran est en dessous de la hauteur des yeux. Ta tête s'incline en permanence, ce qui charge ta nuque de 12 à 22 kg.");
     tipIds.push("s2");
-    if (!productKeys.includes("screen_stand")) productKeys.push("screen_stand");
+    if (!productKeys.includes("screen_riser")) productKeys.push("screen_riser");
   }
   if (answers.q5b === "couch" || answers.q5b === "canapé") {
     detected.push("Tu travailles parfois depuis le canapé. 1h dans cette position = 3h de tension musculaire à récupérer.");
@@ -52,7 +55,14 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
   }
   if (answers.q9 !== null && (answers.q9 ?? 0) >= 2) {
     tipIds.push("s10");
-    if (!productKeys.includes("wrist_rest")) productKeys.push("wrist_rest");
+    if (!productKeys.includes("vertical_mouse")) productKeys.push("vertical_mouse");
+  }
+  const q8 = answers.q8 ?? 0;
+  if (q8 >= 2 || scores.setup < 50) {
+    if (!productKeys.includes("footrest")) productKeys.push("footrest");
+  }
+  if (answers.q13 >= 8 && scores.habits < 50) {
+    if (!productKeys.includes("standing_desk")) productKeys.push("standing_desk");
   }
 
   // Fill defaults if not enough
@@ -62,8 +72,7 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
   if (!tipIds.includes("s3")) tipIds.push("s3");
   if (!tipIds.includes("s9")) tipIds.push("s9");
   if (!tipIds.includes("s6")) tipIds.push("s6");
-  if (productKeys.length === 0) productKeys.push("screen_stand", "lumbar_cushion");
-  if (!productKeys.includes("monitor_arm") && productKeys.length < 3) productKeys.push("monitor_arm");
+  if (productKeys.length === 0) productKeys.push("screen_riser", "footrest");
 
   const consequences = scores.setup < 50
     ? "Un écran mal positionné génère une tension cervicale permanente. À force, les muscles raccourcissent et les vertèbres se compriment. Le laptop seul oblige à courber le dos pour voir l'écran, ce qui accumule des heures de compression discale chaque semaine."
@@ -103,9 +112,11 @@ function douleursAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensio
     tipIds.push("d6");
     exerciseKeys.push("lumbar_flexion", "thoracic_rotation");
     productKeys.push("lumbar_cushion");
+    if (answers.q22 === "never") productKeys.push("balance_cushion");
   } else if (q8 >= 1) {
     detected.push(`Tu as des tensions lombaires légères (${q8}/5). Les longues sessions assises sans soutien en sont souvent la cause.`);
     exerciseKeys.push("lumbar_flexion");
+    productKeys.push("lumbar_cushion");
   }
 
   if (answers.q12b === "no") {
@@ -125,12 +136,13 @@ function douleursAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensio
 
   tipIds.push("d1", "d7", "d8");
 
+  if (productKeys.length === 0) productKeys.push("lumbar_cushion");
+
   const consequences = scores.pain < 50
     ? "Les douleurs non traitées s'installent et deviennent chroniques en quelques mois. La tension musculaire protège les zones douloureuses mais fatigue les muscles voisins. Le cercle vicieux douleur → protection → fatigue → douleur s'amplifie sans intervention."
     : "Des douleurs modérées signalent que ton corps compense. Agir maintenant évite la chronicisation — 80% des douleurs de bureau disparaissent avec des ajustements simples.";
 
   if (exerciseKeys.length === 0) exerciseKeys.push("chin_tuck", "chest_open");
-  if (productKeys.length === 0) productKeys.push("lumbar_cushion", "hot_water_bottle", "massage_ball");
 
   return {
     detected,
@@ -175,7 +187,6 @@ function habitudesAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
   }
 
   tipIds.push("h8", "h5", "h9");
-  if (productKeys.length === 0) productKeys.push("desk_timer", "walking_pad");
 
   const consequences = scores.habits < 50
     ? "Rester assis sans bouger comprime les disques intervertébraux, ralentit la circulation et contracture les muscles posturaux. Après 6h assis, la pression discale lombaire équivaut à soulever 20 kg en continu."
@@ -197,10 +208,12 @@ function sommeilAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimension
   const tipIds: string[] = [];
   const productKeys: string[] = [];
 
+  const needsBlueLightGlasses =
+    answers.q17 <= 6 || answers.q18 === "exhausted" || answers.q20 === "often" || answers.q20 === "always";
+
   if (answers.q17 <= 6) {
     detected.push(`Tu dors moins de ${answers.q17}h par nuit. Un manque de sommeil amplifie directement la perception de la douleur.`);
     tipIds.push("sl4", "sl1");
-    productKeys.push("sleep_mask", "blue_light_glasses");
   } else if (answers.q17 <= 7) {
     detected.push(`Tu dors environ ${answers.q17}h — c'est à la limite du minimum recommandé.`);
     tipIds.push("sl1");
@@ -209,7 +222,6 @@ function sommeilAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimension
   if (answers.q18 === "exhausted") {
     detected.push("Tu te réveilles épuisé. Ton corps ne récupère pas suffisamment — souvent lié à la qualité plus qu'à la durée du sommeil.");
     tipIds.push("sl9", "sl2");
-    productKeys.push("cervical_pillow");
   } else if (answers.q18 === "tired") {
     detected.push("Tu te réveilles souvent fatigué. Des petits ajustements sur l'environnement de sommeil peuvent faire une grande différence.");
   }
@@ -217,8 +229,10 @@ function sommeilAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimension
   if (answers.q20 === "often" || answers.q20 === "always") {
     detected.push("Tu utilises souvent des écrans le soir. La lumière bleue décale ton horloge biologique et réduit la qualité du sommeil profond.");
     tipIds.push("sl3", "sl2");
-    if (!productKeys.includes("blue_light_glasses")) productKeys.push("blue_light_glasses");
   }
+
+  if (needsBlueLightGlasses) productKeys.push("blue_light_glasses");
+  if (productKeys.length === 0) productKeys.push("blue_light_glasses");
 
   if (detected.length === 0) {
     detected.push("Ton sommeil semble correct. Maintenir ces habitudes est essentiel pour la récupération musculaire et cognitive.");
@@ -229,8 +243,6 @@ function sommeilAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimension
   const consequences = scores.sleep_energy < 50
     ? "Un manque de sommeil réduit le seuil de tolérance à la douleur, augmente le cortisol et ralentit la réparation musculaire. Après 2 nuits courtes, la douleur perçue augmente de 25%."
     : "Un sommeil de qualité est la base de la récupération. Les muscles réparent la nuit ce que le bureau abîme le jour — c'est littéralement ce qui se passe.";
-
-  if (productKeys.length === 0) productKeys.push("sleep_mask", "cervical_pillow", "blue_light_glasses");
 
   return {
     detected,

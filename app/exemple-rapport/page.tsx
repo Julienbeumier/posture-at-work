@@ -88,22 +88,22 @@ const EXERCISES = [
 
 const PRODUCTS = [
   {
-    name: "Support laptop réglable",
-    reason: "Indispensable avec un laptop seul. Élève l'écran à hauteur des yeux en quelques secondes. Le modèle aluminium tient dans un sac.",
+    name: "Rehausseur écran GRIFEMA",
+    reason: "Écran trop bas + laptop seul — ce rehausseur amène l'écran exactement à hauteur des yeux et supprime la flexion cervicale permanente.",
     priority: "haute" as const,
-    amazon_search: "support laptop ergonomique réglable aluminium",
+    url: "https://amzn.to/4dpX8r8",
   },
   {
-    name: "Clavier sans fil compact",
-    reason: "Obligatoire avec le support laptop — sinon les bras restent en l'air. Modèle compact pour garder la souris près.",
+    name: "Support laptop ergonomique",
+    reason: "Un laptop seul impose une flexion permanente de la nuque. Ce support corrige ça et libère la place pour un vrai clavier.",
     priority: "haute" as const,
-    amazon_search: "clavier sans fil compact bureau ergonomique",
+    url: "https://amzn.to/laptop-stand",
   },
   {
-    name: "Coussin lombaire",
-    reason: "9h assis sur une chaise standard sans soutien lombaire comprime les disques. Un bon coussin coûte moins qu'une séance kiné.",
-    priority: "moyenne" as const,
-    amazon_search: "coussin lombaire chaise bureau ergonomique",
+    name: "Lunettes anti-lumière bleue Horus X",
+    reason: "6h de sommeil + réveil fatigué. La lumière bleue le soir décale ton horloge biologique de 2h — ces lunettes bloquent ça.",
+    priority: "haute" as const,
+    url: "https://amzn.to/4txbYCb",
   },
 ];
 
@@ -499,7 +499,7 @@ export default function ExempleRapportPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {PRODUCTS.map((p, i) => {
               const pCfg = PRIORITY_COLOR[p.priority] ?? PRIORITY_COLOR.optionnel;
-              const url = `https://www.amazon.fr/s?k=${encodeURIComponent(p.amazon_search)}`;
+              const url = p.url;
               return (
                 <div
                   key={i}

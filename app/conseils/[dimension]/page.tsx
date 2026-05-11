@@ -45,8 +45,14 @@ function ExerciseCard({ ex, color }: { ex: Exercise; color: string }) {
   );
 }
 
+const PRIORITY_STYLE = {
+  haute:   { color: "#f09595", label: "Priorité haute" },
+  moyenne: { color: "#f4a261", label: "Priorité moyenne" },
+  premium: { color: "#a78bfa", label: "Premium" },
+};
+
 function ProductCard({ p }: { p: Product }) {
-  const url = `https://www.amazon.fr/s?k=${encodeURIComponent(p.amazon_search)}`;
+  const pStyle = PRIORITY_STYLE[p.priority];
   return (
     <div style={{
       borderRadius: 18, padding: "16px 18px",
@@ -54,11 +60,20 @@ function ProductCard({ p }: { p: Product }) {
       background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)",
     }}>
       <div style={{ flex: 1 }}>
-        <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", margin: "0 0 4px" }}>{p.name}</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", margin: 0 }}>{p.name}</p>
+          <span style={{
+            padding: "2px 8px", borderRadius: 100,
+            fontFamily: T.b, fontWeight: 600, fontSize: 11,
+            color: pStyle.color, background: `${pStyle.color}18`,
+          }}>
+            {pStyle.label}
+          </span>
+        </div>
         <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", lineHeight: 1.6, margin: 0 }}>{p.reason}</p>
       </div>
       <a
-        href={url}
+        href={p.url}
         target="_blank"
         rel="noopener noreferrer"
         style={{

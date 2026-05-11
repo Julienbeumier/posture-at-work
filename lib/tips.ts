@@ -18,7 +18,8 @@ export interface Exercise {
 export interface Product {
   name: string;
   reason: string;
-  amazon_search: string;
+  url: string;
+  priority: "haute" | "moyenne" | "premium";
 }
 
 // ─── Dimension metadata ───────────────────────────────────────────────────────
@@ -223,69 +224,55 @@ export const EXERCISES: Record<string, Exercise> = {
 // ─── Products database ────────────────────────────────────────────────────────
 
 export const PRODUCTS: Record<string, Product> = {
-  screen_stand: {
-    name: "Support écran réglable",
-    reason: "Élève l'écran à hauteur des yeux pour supprimer la flexion cervicale chronique.",
-    amazon_search: "support écran réglable ergonomique bureau",
-  },
-  monitor_arm: {
-    name: "Bras articulé pour écran",
-    reason: "Permet d'ajuster précisément la hauteur et la distance de l'écran en quelques secondes.",
-    amazon_search: "bras articulé écran moniteur bureau réglable",
+  // Setup
+  screen_riser: {
+    name: "Rehausseur écran GRIFEMA",
+    reason: "Ton écran est trop bas — ce rehausseur l'amène exactement à hauteur des yeux.",
+    url: "https://amzn.to/4dpX8r8",
+    priority: "haute",
   },
   laptop_stand: {
     name: "Support laptop ergonomique",
-    reason: "Élève le laptop pour placer l'écran à hauteur des yeux. Indispensable si tu n'as pas d'écran externe.",
-    amazon_search: "support laptop ergonomique réglable aluminium",
+    reason: "Un laptop seul impose une flexion permanente de la nuque — ce support corrige ça.",
+    url: "https://amzn.to/laptop-stand",
+    priority: "haute",
   },
-  wrist_rest: {
-    name: "Repose-poignets souris",
-    reason: "Réduit la tension sur le canal carpien et soulage les tendinites de poignet.",
-    amazon_search: "repose poignet souris ergonomique gel bureau",
+  vertical_mouse: {
+    name: "Souris verticale Trust Verto",
+    reason: "Réduit la torsion du poignet de 60% — idéale si tu as des douleurs aux poignets.",
+    url: "https://amzn.to/trust-verto",
+    priority: "haute",
   },
-  ergo_keyboard: {
-    name: "Clavier ergonomique",
-    reason: "Positionne les poignets dans l'axe naturel et réduit les tensions dans l'avant-bras.",
-    amazon_search: "clavier ergonomique split sans fil bureau",
+  footrest: {
+    name: "Repose-pieds réglable",
+    reason: "Stabilise ta posture et soulage la pression sur le bas du dos.",
+    url: "https://amzn.to/footrest",
+    priority: "moyenne",
   },
+  standing_desk: {
+    name: "Bureau assis-debout SONGMICS",
+    reason: "Alterner assis/debout réduit les douleurs lombaires de 50% sur la journée.",
+    url: "https://amzn.to/songmics-desk",
+    priority: "premium",
+  },
+  // Douleurs
   lumbar_cushion: {
-    name: "Coussin lombaire",
-    reason: "Maintient la lordose naturelle quand ton dossier de chaise est insuffisant.",
-    amazon_search: "coussin lombaire chaise bureau ergonomique",
+    name: "Coussin lombaire FORTEM",
+    reason: "Maintient la courbure naturelle du dos et soulage immédiatement le bas du dos.",
+    url: "https://amzn.to/fortem-lumbar",
+    priority: "haute",
   },
-  hot_water_bottle: {
-    name: "Bouillotte",
-    reason: "La chaleur détend les muscles contracturés rapidement. Idéale pour le bas du dos.",
-    amazon_search: "bouillotte électrique dorsale chauffante",
+  balance_cushion: {
+    name: "Coussin d'équilibre BODYMATE",
+    reason: "Active les muscles profonds du dos et améliore la posture sans effort.",
+    url: "https://amzn.to/bodymate",
+    priority: "moyenne",
   },
-  massage_ball: {
-    name: "Balle de massage",
-    reason: "Libère les points de tension dans les trapèzes et les épaules en quelques minutes.",
-    amazon_search: "balle massage lacrosse trigger point myofascial",
-  },
-  desk_timer: {
-    name: "Minuteur de bureau",
-    reason: "Rappel visuel pour les pauses actives. Plus efficace que les alarmes téléphone.",
-    amazon_search: "minuteur cube bureau pomodoro silencieux",
-  },
-  walking_pad: {
-    name: "Tapis de marche sous bureau",
-    reason: "Permet de marcher doucement pendant le travail assis ou debout.",
-    amazon_search: "tapis marche bureau sous desk walking pad",
-  },
-  sleep_mask: {
-    name: "Masque de nuit",
-    reason: "Bloque toute lumière parasite et améliore la qualité du sommeil profond.",
-    amazon_search: "masque nuit sommeil confortable 3D",
-  },
-  cervical_pillow: {
-    name: "Oreiller ergonomique cervical",
-    reason: "Maintient l'alignement de la nuque pendant le sommeil et réduit les douleurs matinales.",
-    amazon_search: "oreiller ergonomique cervical orthopédique mousse mémoire",
-  },
+  // Sommeil
   blue_light_glasses: {
-    name: "Lunettes anti-lumière bleue",
-    reason: "Réduit la fatigue oculaire et limite la perturbation du cycle du sommeil le soir.",
-    amazon_search: "lunettes anti lumière bleue écran filtre",
+    name: "Lunettes anti-lumière bleue Horus X",
+    reason: "La lumière bleue le soir décale ton horloge biologique de 2h — ces lunettes bloquent ça.",
+    url: "https://amzn.to/4txbYCb",
+    priority: "haute",
   },
 };
