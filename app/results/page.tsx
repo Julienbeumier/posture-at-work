@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { generatePDF, type PDFData } from "@/lib/generate-pdf";
 import {
   calculateScores,
   getRecommendations,
@@ -208,35 +207,6 @@ export default function ResultsPage() {
   const [answers, setAnswers] = useState<QuestionnaireAnswers | null>(null);
   const [scores, setScores] = useState<Scores | null>(null);
   const [activeTab, setActiveTab] = useState<"recs" | "exercises">("recs");
-  const [pdfLoading, setPdfLoading] = useState(false);
-
-  async function handlePDF() {
-    if (!scores || !answers) return;
-    setPdfLoading(true);
-    const recs2 = getRecommendations(scores, answers);
-    const exs = getExercises(scores, answers);
-    const pdfData: PDFData = {
-      globalScore: scores.global,
-      subScores: SUB_SCORES.map((s) => ({
-        label: s.label,
-        score: scores[s.key],
-        color: s.dimensionColor,
-      })),
-      recommendations: recs2.slice(0, 5).map((r) => ({
-        title: r.title,
-        description: r.description,
-        priority: r.priority,
-      })),
-      exercises: exs.slice(0, 3).map((e) => ({
-        name: e.name,
-        duration: e.duration,
-        instruction: e.description,
-      })),
-    };
-    await generatePDF(pdfData);
-    setPdfLoading(false);
-  }
-
   useEffect(() => {
     const stored = localStorage.getItem("paw_answers");
     const parsed: QuestionnaireAnswers = stored
@@ -530,34 +500,6 @@ export default function ResultsPage() {
               Sauvegarder mon rapport →
             </div>
           </Link>
-        </motion.div>
-
-        {/* ── PDF ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.65 }}
-          style={{ marginBottom: 16 }}
-        >
-          <div
-            onClick={handlePDF}
-            style={{
-              padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: pdfLoading ? "default" : "pointer",
-              background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.12)",
-              fontFamily: T.h, fontWeight: 700, fontSize: 14, color: pdfLoading ? "rgba(220,220,245,0.35)" : "#f0f0fa",
-              transition: "all 0.2s ease",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            }}
-          >
-            {pdfLoading ? (
-              <>
-                <span style={{ display: "inline-block", animation: "spin 1s linear infinite", fontSize: 14 }}>⏳</span>
-                Génération en cours…
-              </>
-            ) : (
-              "📄 Télécharger mon rapport PDF"
-            )}
-          </div>
         </motion.div>
 
         {/* ── BOTTOM ACTIONS ── */}

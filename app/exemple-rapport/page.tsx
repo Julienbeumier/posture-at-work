@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
-import { generatePDF } from "@/lib/generate-pdf";
 
 const T = {
   h: "var(--font-nunito), sans-serif",
@@ -244,20 +243,6 @@ function SubScoreBar({ label, emoji, score, dimensionColor, dimensionPath, delay
 
 export default function ExempleRapportPage() {
   const [activeTab, setActiveTab] = useState<"recs" | "exercises">("recs");
-  const [pdfLoading, setPdfLoading] = useState(false);
-
-  async function handlePDF() {
-    setPdfLoading(true);
-    await generatePDF({
-      globalScore: SCORES.global,
-      subScores: SUB_SCORES.map((s) => ({ label: s.label, score: s.score, color: s.dimensionColor })),
-      recommendations: RECS.map((r) => ({ title: r.title, description: r.description, priority: r.priority })),
-      exercises: EXERCISES.map((e) => ({ name: e.name, duration: e.duration, instruction: e.instruction })),
-      products: PRODUCTS.map((p) => ({ name: p.name, reason: p.reason, url: p.url })),
-    });
-    setPdfLoading(false);
-  }
-
   return (
     <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingBottom: 80, position: "relative" }}>
       <BackgroundBlobs blobs={[
@@ -570,28 +555,6 @@ export default function ExempleRapportPage() {
           <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.7, margin: 0 }}>
             Thomas, ton profil est très représentatif des développeurs qui travaillent sur laptop depuis chez eux. Les 2 premières actions — support laptop et élimination du déjeuner-écran — auront un impact immédiat sur ta nuque et ton énergie de l'après-midi. Commence par là cette semaine. Le reste suivra naturellement.
           </p>
-        </motion.div>
-
-        {/* ── PDF ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.42 }}
-          style={{ marginBottom: 16 }}
-        >
-          <div
-            onClick={handlePDF}
-            style={{
-              padding: "13px 0", borderRadius: 100, textAlign: "center",
-              cursor: pdfLoading ? "default" : "pointer",
-              background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.12)",
-              fontFamily: T.h, fontWeight: 700, fontSize: 14,
-              color: pdfLoading ? "rgba(220,220,245,0.35)" : "#f0f0fa",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            }}
-          >
-            {pdfLoading ? "⏳ Génération en cours…" : "📄 Télécharger le rapport de Thomas (PDF)"}
-          </div>
         </motion.div>
 
         {/* ── CTA ── */}
