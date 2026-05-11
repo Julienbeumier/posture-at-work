@@ -199,7 +199,7 @@ export default function LandingPage() {
               Commencer mon bilan gratuit →
             </div>
           </Link>
-          <Link href="/final-report" style={{ textDecoration: "none", width: "100%", maxWidth: 380 }}>
+          <Link href="/exemple-rapport" style={{ textDecoration: "none", width: "100%", maxWidth: 380 }}>
             <div
               style={{
                 display: "block",
