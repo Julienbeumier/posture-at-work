@@ -219,9 +219,6 @@ export default function LandingPage() {
               Voir un exemple de rapport
             </div>
           </Link>
-          <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 13, fontFamily: T.b }}>
-            Gratuit · Sans inscription · 5 min
-          </p>
         </motion.div>
       </section>
 

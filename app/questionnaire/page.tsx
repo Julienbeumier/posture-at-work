@@ -305,8 +305,7 @@ function SliderInput({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div style={{ textAlign: "center" }}>
-        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 40, color: cat.selectedColor }}>{value}</span>
-        <span style={{ color: "rgba(220,220,245,0.40)", fontSize: 16, marginLeft: 8, fontFamily: T.b }}>{unit}</span>
+        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 40, color: cat.selectedColor }}>{value}<span style={{ fontSize: 22 }}>{unit}</span></span>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <span style={{ color: "rgba(220,220,245,0.35)", fontSize: 11, width: 24, textAlign: "center" }}>{min}</span>
@@ -682,7 +681,7 @@ export default function QuestionnairePage() {
         {/* CAT 3 — HABITUDES */}
         <CategorySection cat={CATEGORIES[2]} done={isCategoryDone(2, answers)} onRef={(el) => { catRefs.current[2] = el; }}>
           <QBlock number="16" question="Combien d'heures par jour es-tu assis ?" answered={true} cat={CATEGORIES[2]}>
-            <SliderInput value={answers.q13} min={1} max={12} step={0.5} unit="h / jour" onChange={(v) => update("q13", v)} cat={CATEGORIES[2]} />
+            <SliderInput value={answers.q13} min={1} max={12} step={0.5} unit="h" reference="⏱ Heures assis par jour" onChange={(v) => update("q13", v)} cat={CATEGORIES[2]} />
           </QBlock>
           <QBlock number="17" question="Fais-tu des pauses pour te lever ?" answered={!!answers.q14} cat={CATEGORIES[2]}>
             <ChoiceGrid cat={CATEGORIES[2]} value={answers.q14} onChange={(v) => update("q14", v)} options={[
@@ -715,7 +714,7 @@ export default function QuestionnairePage() {
         {/* CAT 4 — SOMMEIL */}
         <CategorySection cat={CATEGORIES[3]} done={isCategoryDone(3, answers)} onRef={(el) => { catRefs.current[3] = el; }}>
           <QBlock number="20" question="Combien d'heures dors-tu par nuit ?" answered={true} cat={CATEGORIES[3]}>
-            <SliderInput value={answers.q17} min={4} max={10} step={0.5} unit="h / nuit" onChange={(v) => update("q17", v)} cat={CATEGORIES[3]} />
+            <SliderInput value={answers.q17} min={4} max={10} step={0.5} unit="h" reference="😴 Heures de sommeil par nuit" onChange={(v) => update("q17", v)} cat={CATEGORIES[3]} />
           </QBlock>
           <QBlock number="21" question="Tu te réveilles comment ?" answered={!!answers.q18} cat={CATEGORIES[3]}>
             <ChoiceGrid cat={CATEGORIES[3]} value={answers.q18} onChange={(v) => update("q18", v)} options={[
