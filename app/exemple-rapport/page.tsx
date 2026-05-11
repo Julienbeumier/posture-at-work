@@ -23,12 +23,12 @@ const SCORES = {
 };
 
 const SUB_SCORES = [
-  { key: "setup",        label: "Setup & ergonomie",   emoji: "💻", score: 32, dimensionColor: "#7c9fff" },
-  { key: "pain",         label: "Douleurs",             emoji: "🩺", score: 48, dimensionColor: "#f09595" },
-  { key: "habits",       label: "Habitudes de travail", emoji: "⏱️", score: 55, dimensionColor: "#f4a261" },
-  { key: "sleep_energy", label: "Sommeil & énergie",    emoji: "🌙", score: 45, dimensionColor: "#74c69d" },
-  { key: "lifestyle",    label: "Mode de vie actif",    emoji: "🏃", score: 60, dimensionColor: "#5dcaa5" },
-  { key: "nutrition",    label: "Nutrition & énergie",  emoji: "🍽️", score: 30, dimensionColor: "#a78bfa" },
+  { key: "setup",        label: "Setup & ergonomie",   emoji: "💻", score: 32, dimensionColor: "#7c9fff", dimensionPath: "/conseils/setup" },
+  { key: "pain",         label: "Douleurs",             emoji: "🩺", score: 48, dimensionColor: "#f09595", dimensionPath: "/conseils/douleurs" },
+  { key: "habits",       label: "Habitudes de travail", emoji: "⏱️", score: 55, dimensionColor: "#f4a261", dimensionPath: "/conseils/habitudes" },
+  { key: "sleep_energy", label: "Sommeil & énergie",    emoji: "🌙", score: 45, dimensionColor: "#74c69d", dimensionPath: "/conseils/sommeil" },
+  { key: "lifestyle",    label: "Mode de vie actif",    emoji: "🏃", score: 60, dimensionColor: "#5dcaa5", dimensionPath: "/conseils/lifestyle" },
+  { key: "nutrition",    label: "Nutrition & énergie",  emoji: "🍽️", score: 30, dimensionColor: "#a78bfa", dimensionPath: "/conseils/nutrition" },
 ];
 
 const RECS = [
@@ -174,8 +174,8 @@ function ScoreCircle({ score }: { score: number }) {
 
 // ─── Sub-score bar ────────────────────────────────────────────────────────────
 
-function SubScoreBar({ label, emoji, score, dimensionColor, delay = 0 }: {
-  label: string; emoji: string; score: number; dimensionColor: string; delay?: number;
+function SubScoreBar({ label, emoji, score, dimensionColor, dimensionPath, delay = 0 }: {
+  label: string; emoji: string; score: number; dimensionColor: string; dimensionPath: string; delay?: number;
 }) {
   const color = scoreBarColor(score);
   const [expanded, setExpanded] = useState(false);
@@ -230,9 +230,11 @@ function SubScoreBar({ label, emoji, score, dimensionColor, delay = 0 }: {
           )}
         </AnimatePresence>
       </div>
-      <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600, color: dimensionColor }}>
-        Voir mon plan détaillé →
-      </span>
+      <Link href={dimensionPath} style={{ textDecoration: "none" }}>
+        <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600, color: dimensionColor, cursor: "pointer" }}>
+          Voir mon plan détaillé →
+        </span>
+      </Link>
     </motion.div>
   );
 }
@@ -354,13 +356,14 @@ export default function ExempleRapportPage() {
             <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.3)" }}>Clique pour détails</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-            {SUB_SCORES.map(({ key, label, emoji, score, dimensionColor }, i) => (
+            {SUB_SCORES.map(({ key, label, emoji, score, dimensionColor, dimensionPath }, i) => (
               <SubScoreBar
                 key={key}
                 label={label}
                 emoji={emoji}
                 score={score}
                 dimensionColor={dimensionColor}
+                dimensionPath={dimensionPath}
                 delay={0.1 + i * 0.07}
               />
             ))}
