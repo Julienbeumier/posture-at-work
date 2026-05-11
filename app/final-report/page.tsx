@@ -430,7 +430,7 @@ export default function FinalReportPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {report.products.map((product, i) => {
               const pCfg = PRIORITY_COLOR[product.priority] ?? PRIORITY_COLOR.optionnel;
-              const amazonUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(product.amazon_search)}`;
+              const amazonUrl = `https://www.amazon.com.be/s?k=${encodeURIComponent(product.amazon_search)}`;
               return (
                 <motion.div
                   key={i}

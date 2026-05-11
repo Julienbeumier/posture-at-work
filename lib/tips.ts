@@ -234,7 +234,7 @@ export const PRODUCTS: Record<string, Product> = {
   laptop_stand: {
     name: "Support laptop ergonomique",
     reason: "Un laptop seul impose une flexion permanente de la nuque — ce support corrige ça.",
-    url: "https://amzn.to/laptop-stand",
+    url: "https://www.amazon.com.be/Glangeh-Ordinateur-Ergonomique-Compatible-dOrdinateurs/dp/B0BZHL98WT?linkCode=sl1&tag=ergocheck-21&language=fr_BE&ref_=as_li_ss_tl",
     priority: "haute",
   },
   vertical_mouse: {
