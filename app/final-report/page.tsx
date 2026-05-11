@@ -11,6 +11,7 @@ import type {
   SetupItem,
 } from "@/lib/analysis-types";
 import { saveAssessmentForUser, createClient } from "@/lib/supabase";
+import { generatePDF, type PDFData } from "@/lib/generate-pdf";
 import type { User } from "@supabase/supabase-js";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 
@@ -165,7 +166,43 @@ export default function FinalReportPage() {
   const [questionnaireScore, setQuestionnaireScore] = useState<number | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [pdfLoading, setPdfLoading] = useState(false);
   const savedRef = useRef(false);
+
+  async function handlePDF() {
+    if (!report) return;
+    setPdfLoading(true);
+    const scoresRaw = sessionStorage.getItem("postureatwork_scores");
+    const scores = scoresRaw ? JSON.parse(scoresRaw) : {};
+    const pdfData: PDFData = {
+      globalScore: combinedScore ?? report.posture_analysis.score,
+      subScores: [
+        { label: "Posture tête", score: report.posture_analysis.score, color: "#7c9fff" },
+        { label: "Hauteur écran", score: report.setup_analysis.screen_height.status === "bon" ? 80 : report.setup_analysis.screen_height.status === "attention" ? 50 : 25, color: "#f4a261" },
+        { label: "Distance écran", score: report.setup_analysis.screen_distance.status === "bon" ? 80 : report.setup_analysis.screen_distance.status === "attention" ? 50 : 25, color: "#5dcaa5" },
+        { label: "Clavier/souris", score: report.setup_analysis.keyboard_mouse.status === "bon" ? 80 : report.setup_analysis.keyboard_mouse.status === "attention" ? 50 : 25, color: "#f09595" },
+        { label: "Siège", score: report.setup_analysis.chair_setup.status === "bon" ? 80 : report.setup_analysis.chair_setup.status === "attention" ? 50 : 25, color: "#a78bfa" },
+        ...(scores.global != null ? [{ label: "Bilan questionnaire", score: scores.global, color: "#74c69d" }] : []),
+      ],
+      recommendations: report.priority_actions.slice(0, 5).map((a) => ({
+        title: a.title,
+        description: `${a.why} ${a.how}`.trim(),
+        priority: a.rank === 1 ? "urgent" : "important",
+      })),
+      exercises: report.exercises.slice(0, 3).map((e) => ({
+        name: e.name,
+        duration: e.duration,
+        instruction: e.instruction,
+      })),
+      products: report.products.map((p) => ({
+        name: p.name,
+        reason: p.reason,
+        url: `https://www.amazon.com.be/s?k=${encodeURIComponent(p.amazon_search)}`,
+      })),
+    };
+    await generatePDF(pdfData);
+    setPdfLoading(false);
+  }
 
   useEffect(() => {
     const raw = sessionStorage.getItem("postureatwork_report");
@@ -598,6 +635,21 @@ export default function FinalReportPage() {
             )}
           </AnimatePresence>
         </motion.div>
+
+        {/* ── PDF ── */}
+        <div
+          onClick={handlePDF}
+          style={{
+            marginBottom: 16, padding: "13px 0", borderRadius: 100, textAlign: "center",
+            cursor: pdfLoading ? "default" : "pointer",
+            background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.12)",
+            fontFamily: T.h, fontWeight: 700, fontSize: 14,
+            color: pdfLoading ? "rgba(220,220,245,0.35)" : "#f0f0fa",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+          }}
+        >
+          {pdfLoading ? "⏳ Génération en cours…" : "📄 Télécharger mon rapport PDF"}
+        </div>
 
         {/* ── BOTTOM ACTIONS ── */}
         <div style={{ display: "flex", gap: 10 }}>

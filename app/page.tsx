@@ -69,7 +69,6 @@ const pillars = [
 const stats = [
   { value: "5min", label: "pour ton bilan complet" },
   { value: "360°", label: "analyse corps & environnement" },
-  { value: "6", label: "dimensions analysées" },
 ];
 
 const scorePreview = [
@@ -226,13 +225,13 @@ export default function LandingPage() {
       <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div
           {...fadeUp(0)}
-          className="grid grid-cols-2 md:grid-cols-3 gap-4"
+          style={{ display: "flex", gap: 10 }}
         >
           {stats.map((s, i) => (
             <div
               key={i}
-              className={i === 2 ? "hidden md:block" : ""}
               style={{
+                flex: 1,
                 padding: "28px 20px",
                 borderRadius: 18,
                 background: "rgba(255,255,255,0.04)",
