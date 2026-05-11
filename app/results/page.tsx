@@ -85,9 +85,10 @@ function ScoreCircle({ score }: { score: number }) {
 // ─── Sub-score bar ────────────────────────────────────────────────────────────
 
 function SubScoreBar({
-  label, emoji, score, interpretation, delay = 0,
+  label, emoji, score, interpretation, dimensionPath, dimensionColor, delay = 0,
 }: {
-  label: string; emoji: string; score: number; interpretation: string; delay?: number;
+  label: string; emoji: string; score: number; interpretation: string;
+  dimensionPath: string; dimensionColor: string; delay?: number;
 }) {
   const color = scoreBarColor(score);
   const [expanded, setExpanded] = useState(false);
@@ -97,39 +98,55 @@ function SubScoreBar({
       initial={{ opacity: 0, x: -16 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, delay }}
-      onClick={() => setExpanded((v) => !v)}
-      style={{ cursor: "pointer" }}
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-        <span style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)" }}>
-          <span>{emoji}</span>
-          <span>{label}</span>
-        </span>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color }}>{score}</span>
-          <span style={{ fontSize: 10, color: "rgba(220,220,245,0.3)" }}>{expanded ? "▲" : "▼"}</span>
+      <div
+        onClick={() => setExpanded((v) => !v)}
+        style={{ cursor: "pointer" }}
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)" }}>
+            <span>{emoji}</span>
+            <span>{label}</span>
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color }}>{score}</span>
+            <span style={{ fontSize: 10, color: "rgba(220,220,245,0.3)" }}>{expanded ? "▲" : "▼"}</span>
+          </div>
         </div>
+        <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden", marginBottom: 4 }}>
+          <motion.div
+            style={{ height: "100%", borderRadius: 100, background: color }}
+            initial={{ width: 0 }}
+            animate={{ width: `${score}%` }}
+            transition={{ duration: 0.8, delay: delay + 0.15, ease: "easeOut" }}
+          />
+        </div>
+        <AnimatePresence>
+          {expanded && (
+            <motion.p
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.5)", lineHeight: 1.6, paddingTop: 4, paddingBottom: 2 }}
+            >
+              {interpretation}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
-      <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden", marginBottom: 4 }}>
-        <motion.div
-          style={{ height: "100%", borderRadius: 100, background: color }}
-          initial={{ width: 0 }}
-          animate={{ width: `${score}%` }}
-          transition={{ duration: 0.8, delay: delay + 0.15, ease: "easeOut" }}
-        />
-      </div>
-      <AnimatePresence>
-        {expanded && (
-          <motion.p
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.5)", lineHeight: 1.6, paddingTop: 4 }}
-          >
-            {interpretation}
-          </motion.p>
-        )}
-      </AnimatePresence>
+      <Link
+        href={dimensionPath}
+        style={{ textDecoration: "none" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <span style={{
+          display: "inline-block", marginTop: 4,
+          fontFamily: T.b, fontSize: 11, fontWeight: 600,
+          color: dimensionColor, cursor: "pointer",
+        }}>
+          Voir mon plan détaillé →
+        </span>
+      </Link>
     </motion.div>
   );
 }
@@ -169,13 +186,13 @@ function scoreInterpretation(key: keyof Scores, score: number, answers: Question
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
-const SUB_SCORES: { key: keyof Omit<Scores, "global">; label: string; emoji: string }[] = [
-  { key: "setup", label: "Setup & ergonomie", emoji: "💻" },
-  { key: "pain", label: "Douleurs", emoji: "🩺" },
-  { key: "habits", label: "Habitudes de travail", emoji: "⏱️" },
-  { key: "sleep_energy", label: "Sommeil & énergie", emoji: "🌙" },
-  { key: "lifestyle", label: "Mode de vie actif", emoji: "🏃" },
-  { key: "nutrition", label: "Nutrition & énergie", emoji: "🍽️" },
+const SUB_SCORES: { key: keyof Omit<Scores, "global">; label: string; emoji: string; dimensionPath: string; dimensionColor: string }[] = [
+  { key: "setup",       label: "Setup & ergonomie",    emoji: "💻", dimensionPath: "/conseils/setup",     dimensionColor: "#7c9fff" },
+  { key: "pain",        label: "Douleurs",              emoji: "🩺", dimensionPath: "/conseils/douleurs",  dimensionColor: "#f09595" },
+  { key: "habits",      label: "Habitudes de travail",  emoji: "⏱️", dimensionPath: "/conseils/habitudes", dimensionColor: "#f4a261" },
+  { key: "sleep_energy",label: "Sommeil & énergie",     emoji: "🌙", dimensionPath: "/conseils/sommeil",   dimensionColor: "#74c69d" },
+  { key: "lifestyle",   label: "Mode de vie actif",     emoji: "🏃", dimensionPath: "/conseils/lifestyle", dimensionColor: "#5dcaa5" },
+  { key: "nutrition",   label: "Nutrition & énergie",   emoji: "🍽️", dimensionPath: "/conseils/nutrition", dimensionColor: "#a78bfa" },
 ];
 
 const PRIORITY_STYLE = {
@@ -283,13 +300,15 @@ export default function ResultsPage() {
             <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.3)" }}>Clique pour détails</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-            {SUB_SCORES.map(({ key, label, emoji }, i) => (
+            {SUB_SCORES.map(({ key, label, emoji, dimensionPath, dimensionColor }, i) => (
               <SubScoreBar
                 key={key}
                 label={label}
                 emoji={emoji}
                 score={scores[key]}
                 interpretation={scoreInterpretation(key, scores[key], answers)}
+                dimensionPath={dimensionPath}
+                dimensionColor={dimensionColor}
                 delay={0.1 + i * 0.07}
               />
             ))}
