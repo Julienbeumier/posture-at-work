@@ -502,7 +502,7 @@ export default function FinalReportPage() {
           transition={{ delay: 0.25 }}
           style={{ marginBottom: 16 }}
         >
-          <Link href="/stretching" style={{ textDecoration: "none" }}>
+          <Link href="/mobilite" style={{ textDecoration: "none" }}>
             <div style={{
               borderRadius: 24, padding: "20px 24px", cursor: "pointer", position: "relative", overflow: "hidden",
               background: "linear-gradient(135deg, rgba(43,92,230,0.10), rgba(124,58,237,0.10))",

@@ -109,7 +109,7 @@ export default function Navbar() {
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {user ? (
             <>
-              <Link href="/stretching" style={{ textDecoration: "none" }}>
+              <Link href="/mobilite" style={{ textDecoration: "none" }}>
                 <div
                   style={{
                     padding: "7px 16px",
@@ -122,7 +122,7 @@ export default function Navbar() {
                     cursor: "pointer",
                   }}
                 >
-                  Étirements
+                  Mobilité
                 </div>
               </Link>
               <Link href="/dashboard" style={{ textDecoration: "none" }}>
