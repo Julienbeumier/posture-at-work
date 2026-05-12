@@ -179,6 +179,21 @@ function SubScoreBar({ label, emoji, score, dimensionColor, dimensionPath, delay
 }) {
   const color = scoreBarColor(score);
   const [expanded, setExpanded] = useState(false);
+  const [displayed, setDisplayed] = useState(0);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      let cur = 0;
+      const inc = score / 40;
+      const iv = setInterval(() => {
+        cur += inc;
+        if (cur >= score) { setDisplayed(score); clearInterval(iv); }
+        else setDisplayed(Math.round(cur));
+      }, 20);
+      return () => clearInterval(iv);
+    }, delay * 1000);
+    return () => clearTimeout(t);
+  }, [score, delay]);
 
   const interpretations: Record<string, string> = {
     setup: "Laptop seul + écran trop bas = la combinaison la plus risquée pour les cervicales. Thomas génère 22 kg de tension sur la nuque en permanence.",
@@ -201,7 +216,7 @@ function SubScoreBar({ label, emoji, score, dimensionColor, dimensionPath, delay
             <span>{emoji}</span><span>{label}</span>
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color }}>{score}</span>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color }}>{displayed}</span>
             <span style={{ fontSize: 10, color: "rgba(220,220,245,0.3)" }}>{expanded ? "▲" : "▼"}</span>
           </div>
         </div>
@@ -363,7 +378,7 @@ export default function ExempleRapportPage() {
                 score={score}
                 dimensionColor={dimensionColor}
                 dimensionPath={dimensionPath}
-                delay={0.1 + i * 0.07}
+                delay={i * 0.15}
               />
             ))}
           </div>

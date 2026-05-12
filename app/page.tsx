@@ -184,7 +184,7 @@ export default function LandingPage() {
           {...fadeUp(0.3)}
           style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}
         >
-          <Link href="/questionnaire" style={{ textDecoration: "none", width: "100%", maxWidth: 380 }}>
+          <Link href="/onboarding" style={{ textDecoration: "none", width: "100%", maxWidth: 380 }}>
             <div
               style={{
                 display: "block",

@@ -477,11 +477,26 @@ function CategorySection({
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
+const TOAST_MESSAGES = [
+  "💻 Setup analysé — on commence à voir ton profil",
+  "🩺 Données douleurs enregistrées — tu avances bien",
+  "⏱️ Mi-parcours ! Tes habitudes sont claires",
+  "🌙 Presque fini — encore 2 catégories",
+  "🥗 Excellente donnée — ton profil prend forme",
+  "🏃 Dernière ligne droite !",
+];
+
 export default function QuestionnairePage() {
   const router = useRouter();
   const [answers, setAnswers] = useState<QuestionnaireAnswers>(DEFAULT_ANSWERS);
+  const [firstname, setFirstname] = useState("");
+  const [toast, setToast] = useState<string | null>(null);
   const catRefs = useRef<(HTMLElement | null)[]>(Array(CATEGORIES.length).fill(null));
   const scrolledCats = useRef<Set<number>>(new Set());
+
+  useEffect(() => {
+    setFirstname(localStorage.getItem("paw_firstname") ?? "");
+  }, []);
 
   const update = useCallback(<K extends keyof QuestionnaireAnswers>(key: K, value: QuestionnaireAnswers[K]) => {
     setAnswers((prev) => ({ ...prev, [key]: value }));
@@ -491,12 +506,18 @@ export default function QuestionnairePage() {
     CATEGORIES.forEach((_, i) => {
       if (i < CATEGORIES.length - 1 && isCategoryDone(i, answers) && !scrolledCats.current.has(i)) {
         scrolledCats.current.add(i);
+        if (i < TOAST_MESSAGES.length) {
+          let msg = TOAST_MESSAGES[i];
+          if (i === 1 && firstname) msg = `${msg} ${firstname}`;
+          setToast(msg);
+          setTimeout(() => setToast(null), 1800);
+        }
         setTimeout(() => {
           catRefs.current[i + 1]?.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 350);
       }
     });
-  }, [answers]);
+  }, [answers, firstname]);
 
   function scrollTo(id: string) {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -576,8 +597,49 @@ export default function QuestionnairePage() {
         </div>
       </div>
 
+      {/* Toast */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            key={toast}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              position: "fixed", bottom: 24, left: 0, right: 0,
+              display: "flex", justifyContent: "center",
+              zIndex: 50, pointerEvents: "none",
+            }}
+          >
+            <div style={{
+              background: "rgba(43,92,230,0.90)",
+              backdropFilter: "blur(10px)",
+              borderRadius: 100,
+              padding: "12px 24px",
+              color: "#ffffff",
+              fontFamily: T.b,
+              fontWeight: 700,
+              fontSize: 14,
+              whiteSpace: "nowrap",
+            }}>
+              {toast}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Questions */}
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 20px 40px" }}>
+
+        {/* Greeting */}
+        {firstname && (
+          <div style={{ textAlign: "center", paddingBottom: 12 }}>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color: "rgba(220,220,245,0.55)" }}>
+              Bonjour {firstname} 👋
+            </span>
+          </div>
+        )}
 
         {/* CAT 1 — SETUP */}
         <CategorySection cat={CATEGORIES[0]} done={isCategoryDone(0, answers)} onRef={(el) => { catRefs.current[0] = el; }}>

@@ -165,9 +165,11 @@ export default function FinalReportPage() {
   const [questionnaireScore, setQuestionnaireScore] = useState<number | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [firstname, setFirstname] = useState("");
   const savedRef = useRef(false);
 
   useEffect(() => {
+    setFirstname(localStorage.getItem("paw_firstname") ?? "");
     const raw = sessionStorage.getItem("postureatwork_report");
     if (raw) setReport(JSON.parse(raw));
 
@@ -271,7 +273,7 @@ export default function FinalReportPage() {
           </div>
 
           <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#f0f0fa", marginBottom: 24 }}>
-            Ton bilan PostureAtWork complet
+            {firstname ? `Le bilan complet de ${firstname}` : "Ton bilan PostureAtWork complet"}
           </h1>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 32, flexWrap: "wrap" }}>

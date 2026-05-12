@@ -92,6 +92,21 @@ function SubScoreBar({
 }) {
   const color = scoreBarColor(score);
   const [expanded, setExpanded] = useState(false);
+  const [displayed, setDisplayed] = useState(0);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      let cur = 0;
+      const inc = score / 40;
+      const iv = setInterval(() => {
+        cur += inc;
+        if (cur >= score) { setDisplayed(score); clearInterval(iv); }
+        else setDisplayed(Math.round(cur));
+      }, 20);
+      return () => clearInterval(iv);
+    }, delay * 1000);
+    return () => clearTimeout(t);
+  }, [score, delay]);
 
   return (
     <motion.div
@@ -109,7 +124,7 @@ function SubScoreBar({
             <span>{label}</span>
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color }}>{score}</span>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color }}>{displayed}</span>
             <span style={{ fontSize: 10, color: "rgba(220,220,245,0.3)" }}>{expanded ? "▲" : "▼"}</span>
           </div>
         </div>
@@ -207,6 +222,12 @@ export default function ResultsPage() {
   const [answers, setAnswers] = useState<QuestionnaireAnswers | null>(null);
   const [scores, setScores] = useState<Scores | null>(null);
   const [activeTab, setActiveTab] = useState<"recs" | "exercises">("recs");
+  const [firstname, setFirstname] = useState("");
+
+  useEffect(() => {
+    setFirstname(localStorage.getItem("paw_firstname") ?? "");
+  }, []);
+
   useEffect(() => {
     const stored = localStorage.getItem("paw_answers");
     const parsed: QuestionnaireAnswers = stored
@@ -271,9 +292,10 @@ export default function ResultsPage() {
 
           <div>
             <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "#f0f0fa", margin: 0, marginBottom: 8, lineHeight: 1.2 }}>
-              Ton bilan PostureAtWork
+              {firstname ? `Le bilan de ${firstname}` : "Ton bilan PostureAtWork"}
             </h1>
             <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.55)", lineHeight: 1.7, maxWidth: 420, margin: "0 auto" }}>
+              {firstname ? `Voici ce qu'on a analysé pour toi, ${firstname}. ` : ""}
               {scores.global >= 70
                 ? "Tu as de bonnes bases. Affine les détails pour atteindre un confort optimal."
                 : scores.global >= 50
@@ -308,7 +330,7 @@ export default function ResultsPage() {
                 interpretation={scoreInterpretation(key, scores[key], answers)}
                 dimensionPath={dimensionPath}
                 dimensionColor={dimensionColor}
-                delay={0.1 + i * 0.07}
+                delay={i * 0.15}
               />
             ))}
           </div>
