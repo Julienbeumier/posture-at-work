@@ -18,6 +18,7 @@ const pillars = [
     border: "rgba(43,92,230,0.18)",
     titleColor: "#a8c0ff",
     blob: "rgba(43,92,230,0.25)",
+    iconBg: "rgba(43,92,230,0.18)",
   },
   {
     icon: "🩺",
@@ -27,6 +28,7 @@ const pillars = [
     border: "rgba(226,75,74,0.15)",
     titleColor: "#f09595",
     blob: "rgba(226,75,74,0.3)",
+    iconBg: "rgba(226,75,74,0.18)",
   },
   {
     icon: "⏱️",
@@ -36,6 +38,7 @@ const pillars = [
     border: "rgba(212,98,42,0.15)",
     titleColor: "#f4a261",
     blob: "rgba(212,98,42,0.25)",
+    iconBg: "rgba(212,98,42,0.18)",
   },
   {
     icon: "🌙",
@@ -45,6 +48,7 @@ const pillars = [
     border: "rgba(45,106,79,0.18)",
     titleColor: "#74c69d",
     blob: "rgba(45,106,79,0.3)",
+    iconBg: "rgba(45,106,79,0.18)",
   },
   {
     icon: "🍽️",
@@ -54,6 +58,7 @@ const pillars = [
     border: "rgba(124,58,237,0.15)",
     titleColor: "#a78bfa",
     blob: "rgba(124,58,237,0.25)",
+    iconBg: "rgba(124,58,237,0.18)",
   },
   {
     icon: "🤖",
@@ -63,6 +68,7 @@ const pillars = [
     border: "rgba(29,158,117,0.15)",
     titleColor: "#5dcaa5",
     blob: "rgba(29,158,117,0.25)",
+    iconBg: "rgba(29,158,117,0.18)",
   },
 ];
 
@@ -203,11 +209,11 @@ export default function LandingPage() {
               style={{
                 display: "block",
                 width: "100%",
-                padding: "15px 24px",
+                padding: "16px 24px",
                 borderRadius: 100,
-                background: "rgba(255,255,255,0.08)",
-                color: "rgba(255,255,255,0.82)",
-                border: "1px solid rgba(255,255,255,0.22)",
+                background: "transparent",
+                color: "rgba(255,255,255,0.85)",
+                border: "1.5px solid rgba(255,255,255,0.35)",
                 fontFamily: T.h,
                 fontWeight: 700,
                 fontSize: 15,
@@ -312,12 +318,11 @@ export default function LandingPage() {
                   width: 44,
                   height: 44,
                   borderRadius: 12,
-                  background: p.bg,
-                  border: `1px solid ${p.border}`,
+                  background: p.iconBg,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: 22,
+                  fontSize: 20,
                   marginBottom: 14,
                   position: "relative",
                 }}
