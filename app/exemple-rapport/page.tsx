@@ -89,21 +89,27 @@ const EXERCISES = [
 const PRODUCTS = [
   {
     name: "Rehausseur écran GRIFEMA",
-    reason: "Écran trop bas + laptop seul — ce rehausseur amène l'écran exactement à hauteur des yeux et supprime la flexion cervicale permanente.",
+    reason: "Ton écran trop bas force ta tête à s'incliner — ça représente 12kg de charge supplémentaire sur ta nuque. Ce rehausseur règle ça en 2 minutes",
     priority: "haute" as const,
-    url: "https://amzn.to/4dpX8r8",
+    url: "https://amzn.to/4uGNQ0y",
+    price: "~28€",
+    badge: "Priorité #1",
   },
   {
     name: "Support laptop ergonomique",
-    reason: "Un laptop seul impose une flexion permanente de la nuque. Ce support corrige ça et libère la place pour un vrai clavier.",
+    reason: "Un laptop seul impose une flexion permanente de la nuque — ce support corrige ça immédiatement et libère la place pour un vrai clavier",
     priority: "haute" as const,
-    url: "https://www.amazon.com.be/Glangeh-Ordinateur-Ergonomique-Compatible-dOrdinateurs/dp/B0BZHL98WT?linkCode=sl1&tag=ergocheck-21&language=fr_BE&ref_=as_li_ss_tl",
+    url: "https://amzn.to/3RBejyl",
+    price: "~30€",
+    badge: "Indispensable",
   },
   {
     name: "Lunettes anti-lumière bleue Horus X",
-    reason: "6h de sommeil + réveil fatigué. La lumière bleue le soir décale ton horloge biologique de 2h — ces lunettes bloquent ça.",
+    reason: "La lumière bleue le soir décale ton horloge biologique de 2h — ces lunettes bloquent ça pour retrouver un sommeil naturel",
     priority: "haute" as const,
-    url: "https://amzn.to/4txbYCb",
+    url: "https://amzn.to/4tws0fk",
+    price: "~30€",
+    badge: "Bestseller",
   },
 ];
 
@@ -513,41 +519,29 @@ export default function ExempleRapportPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {PRODUCTS.map((p, i) => {
               const pCfg = PRIORITY_COLOR[p.priority] ?? PRIORITY_COLOR.optionnel;
-              const url = p.url;
               return (
-                <div
-                  key={i}
-                  style={{
-                    borderRadius: 20, padding: "16px 18px",
-                    display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14,
-                    background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)",
-                  }}
-                >
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{p.name}</span>
-                      <span style={{
-                        padding: "2px 8px", borderRadius: 100,
-                        fontFamily: T.b, fontWeight: 600, fontSize: 11, color: pCfg.color,
-                        background: `${pCfg.color}18`,
-                      }}>
-                        {pCfg.label}
-                      </span>
+                <div key={i} style={{ borderRadius: 16, padding: "16px 18px", position: "relative", overflow: "hidden", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
+                  {p.badge && (
+                    <span style={{ position: "absolute", top: 12, right: 12, padding: "2px 9px", borderRadius: 100, fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#74c69d", background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)" }}>
+                      {p.badge}
+                    </span>
+                  )}
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                    <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(43,92,230,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>🛒</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{p.name}</span>
+                        <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, color: pCfg.color, background: `${pCfg.color}18` }}>{pCfg.label}</span>
+                      </div>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.50)", lineHeight: 1.6, margin: "0 0 12px" }}>{p.reason}</p>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{p.price}</span>
+                        <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ padding: "8px 16px", borderRadius: 100, textDecoration: "none", background: "#2b5ce6", boxShadow: "0 2px 12px rgba(43,92,230,0.35)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#fff", flexShrink: 0 }}>
+                          Voir sur Amazon →
+                        </a>
+                      </div>
                     </div>
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", lineHeight: 1.6, margin: 0 }}>{p.reason}</p>
                   </div>
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      flexShrink: 0, padding: "8px 14px", borderRadius: 100, textDecoration: "none",
-                      background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)",
-                      fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261",
-                    }}
-                  >
-                    Amazon →
-                  </a>
                 </div>
               );
             })}

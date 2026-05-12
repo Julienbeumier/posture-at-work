@@ -82,6 +82,17 @@ function ScoreCircle({ score }: { score: number }) {
   );
 }
 
+// ─── Inline product per dimension ────────────────────────────────────────────
+
+const DIM_INLINE_PRODUCTS: Record<string, { name: string; url: string; reason: string; price: string }> = {
+  "/conseils/setup":     { name: "Rehausseur écran GRIFEMA",           url: "https://amzn.to/4uGNQ0y", reason: "Écran trop bas → charge cervicale +12kg sur la nuque",    price: "~28€" },
+  "/conseils/douleurs":  { name: "Coussin lombaire FORTEM",             url: "https://amzn.to/4uK2owE", reason: "Soulage les douleurs lombaires dès la première utilisation", price: "~30€" },
+  "/conseils/habitudes": { name: "Bureau assis-debout SONGMICS",        url: "https://amzn.to/4fcmzPe", reason: "Alterner assis/debout réduit les douleurs lombaires de 50%", price: "~200€" },
+  "/conseils/sommeil":   { name: "Lunettes anti-lumière bleue Horus X", url: "https://amzn.to/4tws0fk", reason: "Bloque la lumière bleue pour retrouver un sommeil naturel",  price: "~30€" },
+  "/conseils/lifestyle": { name: "Coussin d'équilibre BODYMATE",        url: "https://amzn.to/3Rh9avh", reason: "Active les muscles du dos sans effort conscient",           price: "~30€" },
+  "/conseils/nutrition": { name: "Gourde graduée avec horaires 1.5L",   url: "https://amzn.to/3RAs14A", reason: "Rappel d'hydratation tout au long de la journée",          price: "~15€" },
+};
+
 // ─── Sub-score bar ────────────────────────────────────────────────────────────
 
 function SubScoreBar({
@@ -162,6 +173,27 @@ function SubScoreBar({
           Voir mon plan détaillé →
         </span>
       </Link>
+      {score < 70 && DIM_INLINE_PRODUCTS[dimensionPath] && (() => {
+        const p = DIM_INLINE_PRODUCTS[dimensionPath];
+        return (
+          <div style={{
+            marginTop: 10, padding: "10px 14px", borderRadius: 12,
+            background: `${dimensionColor}10`, border: `0.5px solid ${dimensionColor}30`,
+            display: "flex", alignItems: "center", gap: 10,
+          }}>
+            <span style={{ fontSize: 16, flexShrink: 0 }}>🛒</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#f0f0fa", margin: 0 }}>{p.name}</p>
+              <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.45)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.reason}</p>
+            </div>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: dimensionColor, flexShrink: 0 }}>{p.price}</span>
+            <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{
+              padding: "5px 12px", borderRadius: 100, textDecoration: "none", flexShrink: 0,
+              background: "#2b5ce6", fontFamily: T.b, fontWeight: 700, fontSize: 11, color: "#fff",
+            }}>Amazon →</a>
+          </div>
+        );
+      })()}
     </motion.div>
   );
 }

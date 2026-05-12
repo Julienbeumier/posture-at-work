@@ -56,35 +56,54 @@ function ProductCard({ p }: { p: Product }) {
   const pStyle = PRIORITY_STYLE[p.priority];
   return (
     <div style={{
-      borderRadius: 18, padding: "16px 18px",
-      display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14,
-      background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)",
+      borderRadius: 16, padding: "16px 18px", position: "relative", overflow: "hidden",
+      background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)",
     }}>
-      <div style={{ flex: 1 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", margin: 0 }}>{p.name}</p>
-          <span style={{
-            padding: "2px 8px", borderRadius: 100,
-            fontFamily: T.b, fontWeight: 600, fontSize: 11,
-            color: pStyle.color, background: `${pStyle.color}18`,
-          }}>
-            {pStyle.label}
-          </span>
+      {/* Badge produit */}
+      {p.badge && (
+        <span style={{
+          position: "absolute", top: 12, right: 12,
+          padding: "2px 9px", borderRadius: 100,
+          fontFamily: T.b, fontWeight: 700, fontSize: 10,
+          color: "#74c69d", background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)",
+        }}>
+          {p.badge}
+        </span>
+      )}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+        {/* Icône Amazon */}
+        <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(43,92,230,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
+          🛒
         </div>
-        <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", lineHeight: 1.6, margin: 0 }}>{p.reason}</p>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", margin: 0 }}>{p.name}</p>
+            <span style={{
+              padding: "2px 8px", borderRadius: 100, flexShrink: 0,
+              fontFamily: T.b, fontWeight: 600, fontSize: 10,
+              color: pStyle.color, background: `${pStyle.color}18`,
+            }}>
+              {pStyle.label}
+            </span>
+          </div>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.50)", lineHeight: 1.6, margin: "0 0 12px" }}>{p.reason}</p>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+            <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{p.price}</span>
+            <a
+              href={p.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                padding: "8px 16px", borderRadius: 100, textDecoration: "none",
+                background: "#2b5ce6", boxShadow: "0 2px 12px rgba(43,92,230,0.35)",
+                fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#fff", cursor: "pointer", flexShrink: 0,
+              }}
+            >
+              Voir sur Amazon →
+            </a>
+          </div>
+        </div>
       </div>
-      <a
-        href={p.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          flexShrink: 0, padding: "8px 14px", borderRadius: 100, textDecoration: "none",
-          background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)",
-          fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer",
-        }}
-      >
-        Amazon →
-      </a>
     </div>
   );
 }

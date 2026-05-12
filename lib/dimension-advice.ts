@@ -23,8 +23,7 @@ function pickExercises(keys: string[]): Exercise[] {
 
 function pickProducts(keys: string[]): Product[] {
   const items = keys.map((k) => PRODUCTS[k]).filter(Boolean) as Product[];
-  // Sort: haute first, then moyenne, then premium; max 3
-  const order = { haute: 0, moyenne: 1, premium: 2 };
+  const order = { haute: 0, premium: 1, moyenne: 2 };
   return items.sort((a, b) => order[a.priority] - order[b.priority]).slice(0, 3);
 }
 
@@ -38,12 +37,12 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
   if (answers.q1 === "laptop") {
     detected.push("Tu travailles sur laptop sans écran externe. C'est la configuration la plus risquée pour la posture cervicale.");
     tipIds.push("s4");
-    productKeys.push("laptop_stand");
+    productKeys.push("support_laptop");
   }
   if (answers.q3 === "non" || answers.q3 === "no") {
     detected.push("Ton écran est en dessous de la hauteur des yeux. Ta tête s'incline en permanence, ce qui charge ta nuque de 12 à 22 kg.");
     tipIds.push("s2");
-    if (!productKeys.includes("screen_riser")) productKeys.push("screen_riser");
+    if (!productKeys.includes("rehausseur_ecran")) productKeys.push("rehausseur_ecran");
   }
   if (answers.q5b === "couch" || answers.q5b === "canapé") {
     detected.push("Tu travailles parfois depuis le canapé. 1h dans cette position = 3h de tension musculaire à récupérer.");
@@ -55,14 +54,14 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
   }
   if (answers.q9 !== null && (answers.q9 ?? 0) >= 2) {
     tipIds.push("s10");
-    if (!productKeys.includes("vertical_mouse")) productKeys.push("vertical_mouse");
+    if (!productKeys.includes("souris_verticale")) productKeys.push("souris_verticale");
   }
   const q8 = answers.q8 ?? 0;
   if (q8 >= 2 || scores.setup < 50) {
-    if (!productKeys.includes("footrest")) productKeys.push("footrest");
+    if (!productKeys.includes("repose_pieds")) productKeys.push("repose_pieds");
   }
   if (answers.q13 >= 8 && scores.habits < 50) {
-    if (!productKeys.includes("standing_desk")) productKeys.push("standing_desk");
+    if (!productKeys.includes("bureau_assis_debout")) productKeys.push("bureau_assis_debout");
   }
 
   // Fill defaults if not enough
@@ -72,7 +71,7 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
   if (!tipIds.includes("s3")) tipIds.push("s3");
   if (!tipIds.includes("s9")) tipIds.push("s9");
   if (!tipIds.includes("s6")) tipIds.push("s6");
-  if (productKeys.length === 0) productKeys.push("screen_riser", "footrest");
+  if (productKeys.length === 0) productKeys.push("rehausseur_ecran", "repose_pieds");
 
   const consequences = scores.setup < 50
     ? "Un écran mal positionné génère une tension cervicale permanente. À force, les muscles raccourcissent et les vertèbres se compriment. Le laptop seul oblige à courber le dos pour voir l'écran, ce qui accumule des heures de compression discale chaque semaine."
@@ -111,12 +110,12 @@ function douleursAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensio
     detected.push(`Ton bas du dos est sous pression (${q8}/5). Cette douleur est typique d'une position assise prolongée sans soutien lombaire.`);
     tipIds.push("d6");
     exerciseKeys.push("lumbar_flexion", "thoracic_rotation");
-    productKeys.push("lumbar_cushion");
-    if (answers.q22 === "never") productKeys.push("balance_cushion");
+    productKeys.push("coussin_lombaire", "foam_roller");
+    if (answers.q22 === "never") productKeys.push("coussin_equilibre");
   } else if (q8 >= 1) {
     detected.push(`Tu as des tensions lombaires légères (${q8}/5). Les longues sessions assises sans soutien en sont souvent la cause.`);
     exerciseKeys.push("lumbar_flexion");
-    productKeys.push("lumbar_cushion");
+    productKeys.push("coussin_lombaire");
   }
 
   if (answers.q12b === "no") {
@@ -127,7 +126,7 @@ function douleursAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensio
   if (answers.q11 === "months" || answers.q11 === "year") {
     detected.push("Tes douleurs durent depuis plusieurs mois. Une douleur chronique se traite différemment d'une douleur aiguë.");
     tipIds.push("d2");
-    productKeys.push("hot_water_bottle");
+    productKeys.push("foam_roller");
   }
 
   if (detected.length === 0) {
@@ -136,7 +135,7 @@ function douleursAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensio
 
   tipIds.push("d1", "d7", "d8");
 
-  if (productKeys.length === 0) productKeys.push("lumbar_cushion");
+  if (productKeys.length === 0) productKeys.push("coussin_lombaire");
 
   const consequences = scores.pain < 50
     ? "Les douleurs non traitées s'installent et deviennent chroniques en quelques mois. La tension musculaire protège les zones douloureuses mais fatigue les muscles voisins. Le cercle vicieux douleur → protection → fatigue → douleur s'amplifie sans intervention."
@@ -163,7 +162,7 @@ function habitudesAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
   if (answers.q13 >= 8) {
     detected.push(`Tu es assis plus de ${answers.q13}h par jour. Au-delà de 6h, les risques cardiovasculaires et musculo-squelettiques augmentent significativement.`);
     tipIds.push("h1", "h4");
-    productKeys.push("desk_timer");
+    productKeys.push("coussin_equilibre");
   } else if (answers.q13 >= 6) {
     detected.push(`Tu passes environ ${answers.q13}h assis par jour. C'est proche du seuil critique — les pauses actives sont essentielles.`);
     tipIds.push("h1");
@@ -231,8 +230,10 @@ function sommeilAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimension
     tipIds.push("sl3", "sl2");
   }
 
-  if (needsBlueLightGlasses) productKeys.push("blue_light_glasses");
-  if (productKeys.length === 0) productKeys.push("blue_light_glasses");
+  if (needsBlueLightGlasses) productKeys.push("lunettes_horus");
+  if (answers.q6 !== null && (answers.q6 ?? 0) >= 2) productKeys.push("oreiller_cervical");
+  if (scores.sleep_energy < 50) productKeys.push("luminette");
+  if (productKeys.length === 0) productKeys.push("lunettes_horus");
 
   if (detected.length === 0) {
     detected.push("Ton sommeil semble correct. Maintenir ces habitudes est essentiel pour la récupération musculaire et cognitive.");
@@ -292,12 +293,17 @@ function nutritionAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
     ? "Les pics glycémiques créent une fatigue cérébrale qui se traduit par une difficulté à se concentrer, des envies de sucre, et une posture qui s'affaisse progressivement. Le cerveau représente 20% de la consommation d'énergie — il est le premier touché par une nutrition inadaptée."
     : "L'énergie alimentaire conditionne directement ta concentration et ton tonus musculaire postural. Un repas trop lourd et ton dos s'affaisse d'un centimètre en moins d'une heure.";
 
+  const nutritionProducts: string[] = [];
+  if ((answers.q19 ?? 0) <= 4) nutritionProducts.push("gourde_graduee");
+  if (answers.qn2 === "crash" || scores.nutrition < 50) nutritionProducts.push("luminette");
+  if (nutritionProducts.length === 0) nutritionProducts.push("gourde_graduee");
+
   return {
     detected,
     consequences,
     tips: pickTips([...new Set(tipIds)].slice(0, 5), "nutrition"),
-    exercises: [],  // No specific exercises for nutrition
-    products: [],   // No specific products
+    exercises: [],
+    products: pickProducts(nutritionProducts.slice(0, 2)),
   };
 }
 
@@ -362,4 +368,13 @@ export function getDimensionAdvice(
 
 export function isValidDimension(s: string): s is Dimension {
   return ["setup", "douleurs", "habitudes", "sommeil", "nutrition", "lifestyle"].includes(s);
+}
+
+export function getTopProduct(
+  dimension: Dimension,
+  answers: QuestionnaireAnswers,
+  scores: Scores
+): Product | null {
+  const advice = getDimensionAdvice(dimension, answers, scores);
+  return advice.products[0] ?? null;
 }

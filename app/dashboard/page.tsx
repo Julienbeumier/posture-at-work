@@ -59,6 +59,15 @@ const DIM_META: Record<string, { label: string; emoji: string; color: string; ic
   nutrition:    { label: "Nutrition & énergie", emoji: "🍽️", color: "#a78bfa", iconBg: "rgba(124,58,237,0.18)", path: "/conseils/nutrition" },
 };
 
+const DIM_PRODUCTS: Record<string, { name: string; url: string; price: string }> = {
+  setup:        { name: "Rehausseur écran GRIFEMA",           url: "https://amzn.to/4uGNQ0y", price: "~28€" },
+  pain:         { name: "Coussin lombaire FORTEM",             url: "https://amzn.to/4uK2owE", price: "~30€" },
+  habits:       { name: "Bureau assis-debout SONGMICS",        url: "https://amzn.to/4fcmzPe", price: "~200€" },
+  sleep_energy: { name: "Lunettes anti-lumière bleue Horus X", url: "https://amzn.to/4tws0fk", price: "~30€" },
+  lifestyle:    { name: "Coussin d'équilibre BODYMATE",        url: "https://amzn.to/3Rh9avh", price: "~30€" },
+  nutrition:    { name: "Gourde graduée avec horaires 1.5L",   url: "https://amzn.to/3RAs14A", price: "~15€" },
+};
+
 const SHORTCUTS = [
   { icon: "🧘", title: "Étirements",    desc: "Programme du jour · 10 min", href: "/stretching",        scoreKey: null, bg: "rgba(45,106,79,0.10)",  border: "rgba(45,106,79,0.20)",  iconBg: "rgba(45,106,79,0.20)",  color: "#74c69d", blob: "rgba(45,106,79,0.25)" },
   { icon: "📊", title: "Mes scores",    desc: "6 dimensions · Voir détails",  href: "/results",           scoreKey: null, bg: "rgba(43,92,230,0.10)",  border: "rgba(43,92,230,0.20)",  iconBg: "rgba(43,92,230,0.20)",  color: "#7c9fff", blob: "rgba(43,92,230,0.25)" },
@@ -499,6 +508,28 @@ export default function DashboardPage() {
               );
             })}
           </div>
+
+          {/* Produit recommandé pour la dimension la plus faible */}
+          {latest && (() => {
+            const dimKeys = ["setup", "pain", "habits", "sleep_energy", "lifestyle", "nutrition"] as const;
+            const weakest = dimKeys.reduce((a, b) =>
+              (latest.scores[a] ?? 100) <= (latest.scores[b] ?? 100) ? a : b
+            );
+            const prod = DIM_PRODUCTS[weakest];
+            const meta = DIM_META[weakest === "pain" ? "pain" : weakest === "habits" ? "habits" : weakest === "sleep_energy" ? "sleep_energy" : weakest === "lifestyle" ? "lifestyle" : weakest === "nutrition" ? "nutrition" : "setup"];
+            if (!prod || !meta) return null;
+            return (
+              <div style={{ marginTop: 12, padding: "12px 16px", borderRadius: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 14, flexShrink: 0 }}>💡</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 11, color: "rgba(220,220,245,0.45)", margin: "0 0 2px" }}>Recommandé pour toi :</p>
+                  <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 12, color: "#f0f0fa", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</p>
+                </div>
+                <span style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 700, fontSize: 12, color: meta.color, flexShrink: 0 }}>{prod.price}</span>
+                <a href={prod.url} target="_blank" rel="noopener noreferrer" style={{ padding: "5px 12px", borderRadius: 100, textDecoration: "none", background: "#2b5ce6", fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 700, fontSize: 11, color: "#fff", flexShrink: 0 }}>Amazon →</a>
+              </div>
+            );
+          })()}
         </motion.div>
 
         {/* ── S4 : CHECK-IN ── */}
