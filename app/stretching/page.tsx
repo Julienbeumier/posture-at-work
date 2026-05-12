@@ -322,25 +322,30 @@ export default function StretchingPage() {
 
               <div className="text-6xl">{exercise.emoji}</div>
               <div>
-                <h2 className="text-2xl font-extrabold text-white mb-1">{exercise.name}</h2>
-                <p className="text-slate-400 text-sm">{exercise.target}</p>
+                <h2 className="text-xl font-extrabold text-white mb-2 break-words">{exercise.name}</h2>
+                <span
+                  className="text-xs px-2.5 py-1 rounded-full font-medium inline-block"
+                  style={{ background: `${color}18`, color, border: `1px solid ${color}33`, wordBreak: "break-word", whiteSpace: "normal" }}
+                >
+                  {exercise.target}
+                </span>
               </div>
 
               <div
                 className="rounded-2xl px-5 py-4 text-left space-y-3"
                 style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
               >
-                <p className="text-slate-200 text-sm leading-relaxed">{exercise.instruction}</p>
-                <div className="flex items-center gap-2 pt-1">
+                <p className="text-slate-200 text-sm leading-relaxed break-words">{exercise.instruction}</p>
+                <div className="flex flex-wrap items-center gap-2 pt-1">
                   <span
                     className="text-xs px-2.5 py-1 rounded-full font-medium"
-                    style={{ background: `${color}18`, color, border: `1px solid ${color}33` }}
+                    style={{ background: `${color}18`, color, border: `1px solid ${color}33`, whiteSpace: "nowrap" }}
                   >
                     {exercise.reps}
                   </span>
                   <span className="text-slate-600 text-xs">{exercise.frequency}</span>
                 </div>
-                <p className="text-slate-500 text-xs">✨ {exercise.benefit}</p>
+                <p className="text-slate-500 text-xs break-words">✨ {exercise.benefit}</p>
               </div>
 
               <motion.button

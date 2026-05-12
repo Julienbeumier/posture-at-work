@@ -7,6 +7,7 @@ import Link from "next/link";
 import { DEFAULT_ANSWERS, type QuestionnaireAnswers, type Scores } from "@/lib/scoring";
 import { getDimensionAdvice, isValidDimension, type DimensionAdvice } from "@/lib/dimension-advice";
 import { DIMENSION_META, type Exercise, type Product } from "@/lib/tips";
+import { createClient } from "@/lib/supabase";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 
 const T = {
@@ -97,24 +98,49 @@ export default function DimensionPage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (!isValidDimension(dimensionParam)) { setReady(true); return; }
+    async function load() {
+      if (!isValidDimension(dimensionParam)) { setReady(true); return; }
 
-    const answersRaw = sessionStorage.getItem("postureatwork_answers") || localStorage.getItem("paw_answers");
-    const scoresRaw = sessionStorage.getItem("postureatwork_scores");
+      const answersRaw = sessionStorage.getItem("postureatwork_answers") || localStorage.getItem("paw_answers");
+      const scoresRaw = sessionStorage.getItem("postureatwork_scores");
 
-    const answers: QuestionnaireAnswers = answersRaw
-      ? { ...DEFAULT_ANSWERS, ...JSON.parse(answersRaw) }
-      : DEFAULT_ANSWERS;
+      const answers: QuestionnaireAnswers = answersRaw
+        ? { ...DEFAULT_ANSWERS, ...JSON.parse(answersRaw) }
+        : DEFAULT_ANSWERS;
 
-    const scores: Scores = scoresRaw
-      ? JSON.parse(scoresRaw)
-      : { global: 0, setup: 0, pain: 0, habits: 0, sleep_energy: 0, lifestyle: 0, nutrition: 0 };
+      let scores: Scores;
 
-    const meta = DIMENSION_META[dimensionParam];
-    const dimensionScore = scores[meta.scoreKey as keyof Scores] as number ?? 0;
-    setScore(dimensionScore);
-    setAdvice(getDimensionAdvice(dimensionParam, answers, scores));
-    setReady(true);
+      if (scoresRaw) {
+        scores = JSON.parse(scoresRaw);
+      } else {
+        // Fallback: fetch latest assessment from Supabase
+        try {
+          const supabase = createClient();
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const { data } = await supabase
+              .from("assessments")
+              .select("scores")
+              .eq("user_id", user.id)
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            scores = data?.scores ?? { global: 0, setup: 0, pain: 0, habits: 0, sleep_energy: 0, lifestyle: 0, nutrition: 0 };
+          } else {
+            scores = { global: 0, setup: 0, pain: 0, habits: 0, sleep_energy: 0, lifestyle: 0, nutrition: 0 };
+          }
+        } catch {
+          scores = { global: 0, setup: 0, pain: 0, habits: 0, sleep_energy: 0, lifestyle: 0, nutrition: 0 };
+        }
+      }
+
+      const meta = DIMENSION_META[dimensionParam];
+      const dimensionScore = (scores[meta.scoreKey as keyof Scores] as number) ?? 0;
+      setScore(dimensionScore);
+      setAdvice(getDimensionAdvice(dimensionParam, answers, scores));
+      setReady(true);
+    }
+    load();
   }, [dimensionParam]);
 
   if (!ready) {

@@ -16,6 +16,7 @@ function AuthForm() {
   const [loading, setLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState(false);
   const [error, setError] = useState("");
+  const [consented, setConsented] = useState(false);
 
   // If already logged in, redirect
   useEffect(() => {
@@ -147,6 +148,20 @@ function AuthForm() {
                 <div className="flex-1 h-px bg-white/8" />
               </div>
 
+              {/* Consent */}
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consented}
+                  onChange={(e) => setConsented(e.target.checked)}
+                  className="mt-0.5 flex-shrink-0 accent-green-500"
+                />
+                <span className="text-slate-400 text-xs leading-relaxed">
+                  J&apos;accepte de recevoir mon rapport et des conseils ergonomiques par email.{" "}
+                  <a href="/politique-confidentialite" className="text-slate-300 underline">Voir notre politique de confidentialité.</a>
+                </span>
+              </label>
+
               {/* Magic link */}
               <form onSubmit={handleMagicLink} className="space-y-3">
                 <input
@@ -164,14 +179,14 @@ function AuthForm() {
                   onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.09)")}
                 />
                 <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: consented ? 1.01 : 1 }}
+                  whileTap={{ scale: consented ? 0.98 : 1 }}
                   type="submit"
-                  disabled={loading}
-                  className="w-full py-3.5 rounded-xl font-bold text-white text-sm disabled:opacity-60"
+                  disabled={loading || !consented}
+                  className="w-full py-3.5 rounded-xl font-bold text-white text-sm disabled:opacity-40"
                   style={{
                     background: "linear-gradient(135deg, #22c55e, #16a34a)",
-                    boxShadow: "0 0 24px rgba(34,197,94,0.3)",
+                    boxShadow: consented ? "0 0 24px rgba(34,197,94,0.3)" : "none",
                   }}
                 >
                   {loading ? "Envoi…" : "Recevoir un lien magique →"}

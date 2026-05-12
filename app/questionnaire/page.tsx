@@ -216,7 +216,7 @@ function PainScale({
   value, onChange, cat,
 }: { value: number | null; onChange: (v: number) => void; cat: typeof CATEGORIES[number]; }) {
   return (
-    <div style={{ display: "flex", gap: 8 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6 }}>
       {[0, 1, 2, 3, 4, 5].map((v) => {
         const sel = value === v;
         return (
@@ -226,8 +226,7 @@ function PainScale({
             whileTap={{ scale: 0.93 }}
             onClick={() => onChange(v)}
             style={{
-              flex: 1,
-              padding: "10px 4px",
+              height: 60,
               borderRadius: 12,
               background: sel ? cat.selectedBg : "rgba(255,255,255,0.05)",
               border: sel ? `1px solid ${cat.color}66` : "0.5px solid rgba(255,255,255,0.08)",
@@ -235,12 +234,14 @@ function PainScale({
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: 4,
+              justifyContent: "center",
+              gap: 2,
+              overflow: "hidden",
             }}
           >
-            <span style={{ fontSize: 18 }}>{PAIN_EMOJIS[v]}</span>
-            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: sel ? cat.selectedColor : "rgba(220,220,245,0.4)" }}>{v}</span>
-            <span style={{ fontSize: 9, color: sel ? cat.selectedColor : "rgba(220,220,245,0.25)", textAlign: "center", lineHeight: 1.2 }}>
+            <span style={{ fontSize: 16 }}>{PAIN_EMOJIS[v]}</span>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 11, color: sel ? cat.selectedColor : "rgba(220,220,245,0.4)" }}>{v}</span>
+            <span style={{ fontSize: 8, color: sel ? cat.selectedColor : "rgba(220,220,245,0.25)", textAlign: "center", lineHeight: 1.1, overflow: "hidden", padding: "0 2px", width: "100%" }}>
               {PAIN_LABELS[v]}
             </span>
           </motion.div>
@@ -262,7 +263,7 @@ function WellbeingScale({
   value, onChange, cat,
 }: { value: number | null; onChange: (v: number) => void; cat: typeof CATEGORIES[number]; }) {
   return (
-    <div style={{ display: "flex", gap: 8 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 6 }}>
       {WELLBEING_OPTIONS.map((opt) => {
         const sel = value === opt.value;
         return (
@@ -272,8 +273,7 @@ function WellbeingScale({
             whileTap={{ scale: 0.93 }}
             onClick={() => onChange(opt.value)}
             style={{
-              flex: 1,
-              padding: "14px 8px",
+              height: 68,
               borderRadius: 14,
               background: sel ? cat.selectedBg : "rgba(255,255,255,0.05)",
               border: sel ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.08)",
@@ -281,11 +281,13 @@ function WellbeingScale({
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: 6,
+              justifyContent: "center",
+              gap: 5,
+              overflow: "hidden",
             }}
           >
-            <span style={{ fontSize: 24 }}>{opt.emoji}</span>
-            <span style={{ fontSize: 11, fontFamily: T.b, color: sel ? cat.selectedColor : "rgba(220,220,245,0.35)" }}>
+            <span style={{ fontSize: 22 }}>{opt.emoji}</span>
+            <span style={{ fontSize: 9, fontFamily: T.b, color: sel ? cat.selectedColor : "rgba(220,220,245,0.35)", textAlign: "center", overflow: "hidden", padding: "0 3px", width: "100%" }}>
               {opt.label}
             </span>
           </motion.div>
@@ -532,7 +534,7 @@ export default function QuestionnairePage() {
   const done = completedCount(answers);
 
   return (
-    <main style={{ minHeight: "100vh", paddingBottom: 120 }}>
+    <main style={{ minHeight: "100vh", paddingBottom: 80 }}>
       <BackgroundBlobs blobs={[
         { top: "0%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 400 },
         { top: "50%", left: "-8%", color: "rgba(226,75,74,0.08)", size: 350 },

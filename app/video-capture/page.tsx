@@ -12,6 +12,7 @@ type Phase =
   | "requesting"
   | "denied"
   | "not-supported"
+  | "step1-preview"
   | "step1"
   | "between"
   | "step2-prep"
@@ -145,6 +146,7 @@ export default function VideoCapturePage() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [elapsed, setElapsed] = useState(0);
   const [currentInstruction, setCurrentInstruction] = useState("");
+  const [facingMode, setFacingMode] = useState<"environment" | "user">("environment");
 
   // Cleanup on unmount
   useEffect(() => {
@@ -164,19 +166,17 @@ export default function VideoCapturePage() {
     return id;
   }
 
-  async function requestCamera() {
+  async function requestCamera(mode?: "environment" | "user") {
     if (!navigator.mediaDevices?.getUserMedia) {
       setPhase("not-supported");
       return;
     }
     setPhase("requesting");
+    const activeMode = mode ?? facingMode;
     try {
+      if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: "environment" },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
+        video: { facingMode: { ideal: activeMode }, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false,
       });
       streamRef.current = stream;
@@ -184,10 +184,16 @@ export default function VideoCapturePage() {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
       }
-      startStep1();
+      setPhase("step1-preview");
     } catch {
       setPhase("denied");
     }
+  }
+
+  async function switchCamera() {
+    const next = facingMode === "environment" ? "user" : "environment";
+    setFacingMode(next);
+    await requestCamera(next);
   }
 
   const startStep1 = useCallback(() => {
@@ -299,14 +305,22 @@ export default function VideoCapturePage() {
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-6">
-      {/* Hidden video element for camera stream */}
+      {/* Live camera preview — visible during preview/recording phases */}
       <video
         ref={videoRef}
-        className="fixed pointer-events-none"
-        style={{ width: 1, height: 1, opacity: 0, top: -9999 }}
         muted
         playsInline
+        style={{
+          position: "fixed", inset: 0, width: "100%", height: "100%",
+          objectFit: "cover", pointerEvents: "none", zIndex: 0,
+          opacity: ["step1-preview", "step1", "step2-prep", "step2"].includes(phase) ? 1 : 0,
+          transition: "opacity 0.4s ease",
+        }}
       />
+      {/* Dark overlay when camera is active */}
+      {["step1-preview", "step1", "step2-prep", "step2"].includes(phase) && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.40)", zIndex: 1, pointerEvents: "none" }} />
+      )}
 
       <AnimatePresence mode="wait">
         {/* ── IDLE ── */}
@@ -329,7 +343,7 @@ export default function VideoCapturePage() {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
-              onClick={requestCamera}
+              onClick={() => requestCamera()}
               className="w-full py-4 rounded-2xl font-bold text-white text-base"
               style={{
                 background: "linear-gradient(135deg, #7c3aed, #4f46e5)",
@@ -396,49 +410,89 @@ export default function VideoCapturePage() {
           </motion.div>
         )}
 
+        {/* ── STEP 1 PREVIEW ── */}
+        {phase === "step1-preview" && (
+          <motion.div
+            key="step1-preview"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: "fixed", inset: 0, zIndex: 10, display: "flex", flexDirection: "column" }}
+          >
+            {/* Camera flip + label */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 20px 0" }}>
+              <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100, background: "rgba(167,139,250,0.20)", color: "#a78bfa", border: "1px solid rgba(167,139,250,0.35)" }}>
+                Étape 1 / 2 — Profil assis
+              </span>
+              <button
+                onClick={switchCamera}
+                style={{ width: 42, height: 42, borderRadius: 21, background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)", color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              >🔄</button>
+            </div>
+
+            {/* Silhouette guide */}
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
+              <svg width="70" height="140" viewBox="0 0 70 140" opacity={0.35}>
+                <circle cx="35" cy="14" r="12" fill="white" />
+                <rect x="22" y="28" width="26" height="52" rx="8" fill="white" />
+                <rect x="8" y="30" width="12" height="38" rx="6" fill="white" />
+                <rect x="50" y="30" width="12" height="38" rx="6" fill="white" />
+                <rect x="22" y="76" width="11" height="50" rx="6" fill="white" />
+                <rect x="37" y="76" width="11" height="50" rx="6" fill="white" />
+              </svg>
+              <p style={{ color: "rgba(255,255,255,0.65)", fontSize: 13, textAlign: "center", maxWidth: 240 }}>
+                Cadre-toi de profil, de la tête aux genoux
+              </p>
+            </div>
+
+            {/* Bottom CTA */}
+            <div style={{ padding: "0 20px 40px" }}>
+              <button
+                onClick={startStep1}
+                style={{ width: "100%", padding: "17px 0", borderRadius: 100, background: "linear-gradient(135deg, #7c3aed, #4f46e5)", boxShadow: "0 0 30px rgba(124,58,237,0.45)", color: "#fff", fontWeight: 800, fontSize: 16, border: "none", cursor: "pointer" }}
+              >
+                C&apos;est bon, je lance →
+              </button>
+            </div>
+          </motion.div>
+        )}
+
         {/* ── STEP 1 ── */}
         {phase === "step1" && (
           <motion.div
             key="step1"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="max-w-sm w-full flex flex-col items-center gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: "fixed", inset: 0, zIndex: 10, display: "flex", flexDirection: "column" }}
           >
-            {/* Step indicator */}
-            <div className="flex items-center gap-2">
-              <span
-                className="text-xs font-bold px-3 py-1 rounded-full"
-                style={{ background: "rgba(167,139,250,0.15)", color: "#a78bfa", border: "1px solid rgba(167,139,250,0.3)" }}
-              >
+            {/* Top bar */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 20px 0" }}>
+              <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100, background: "rgba(167,139,250,0.20)", color: "#a78bfa", border: "1px solid rgba(167,139,250,0.35)" }}>
                 Étape 1 / 2 — Profil assis
+              </span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: "#f09595", display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f09595", display: "inline-block", animation: "pulse 1s infinite" }} />
+                REC
               </span>
             </div>
 
-            {/* Countdown */}
-            <CountdownCircle elapsed={elapsed} total={STEP1_DURATION} color="#a78bfa" />
-
-            {/* Current instruction */}
-            <div
-              className="w-full rounded-2xl px-5 py-4 text-center min-h-[72px] flex items-center justify-center"
-              style={{ background: "rgba(167,139,250,0.08)", border: "1px solid rgba(167,139,250,0.2)" }}
-            >
-              <p className="text-slate-200 text-sm leading-relaxed font-medium">
-                {currentInstruction || "Prends ta position de travail habituelle…"}
-              </p>
+            {/* Countdown centered */}
+            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <CountdownCircle elapsed={elapsed} total={STEP1_DURATION} color="#a78bfa" />
             </div>
 
-            {/* Progress bar */}
-            <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full rounded-full"
-                style={{ background: "#a78bfa", width: `${Math.min((elapsed / STEP1_DURATION) * 100, 100)}%`, transition: "width 0.1s linear" }}
-              />
+            {/* Bottom: instruction + progress */}
+            <div style={{ padding: "0 20px 40px", display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ borderRadius: 16, padding: "14px 18px", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(10px)", border: "1px solid rgba(167,139,250,0.25)", minHeight: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <p style={{ color: "rgba(220,220,245,0.90)", fontSize: 13, textAlign: "center", fontWeight: 600, lineHeight: 1.5 }}>
+                  {currentInstruction || "Prends ta position de travail habituelle…"}
+                </p>
+              </div>
+              <div style={{ height: 4, background: "rgba(255,255,255,0.10)", borderRadius: 100, overflow: "hidden" }}>
+                <div style={{ height: "100%", background: "#a78bfa", width: `${Math.min((elapsed / STEP1_DURATION) * 100, 100)}%`, transition: "width 0.1s linear", borderRadius: 100 }} />
+              </div>
             </div>
-
-            <p className="text-slate-600 text-xs text-center">
-              Reste immobile dans ta position naturelle
-            </p>
           </motion.div>
         )}
 
@@ -529,41 +583,36 @@ export default function VideoCapturePage() {
         {phase === "step2" && (
           <motion.div
             key="step2"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="max-w-sm w-full flex flex-col items-center gap-6"
+            style={{ position: "fixed", inset: 0, zIndex: 10, display: "flex", flexDirection: "column" }}
           >
-            <div className="flex items-center gap-2">
-              <span
-                className="text-xs font-bold px-3 py-1 rounded-full"
-                style={{ background: "rgba(59,130,246,0.15)", color: "#60a5fa", border: "1px solid rgba(59,130,246,0.3)" }}
-              >
+            {/* Top bar */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 20px 0" }}>
+              <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100, background: "rgba(59,130,246,0.20)", color: "#60a5fa", border: "1px solid rgba(59,130,246,0.35)" }}>
                 Étape 2 / 2 — Vue bureau
+              </span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: "#f09595", display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f09595", display: "inline-block" }} />
+                REC
               </span>
             </div>
 
-            <CountdownCircle elapsed={elapsed} total={STEP2_DURATION} color="#3b82f6" />
-
-            <div
-              className="w-full rounded-2xl px-5 py-4 text-center min-h-[72px] flex items-center justify-center"
-              style={{ background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.2)" }}
-            >
-              <p className="text-slate-200 text-sm leading-relaxed font-medium">
-                {currentInstruction || "Filme ton bureau lentement de gauche à droite…"}
-              </p>
+            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <CountdownCircle elapsed={elapsed} total={STEP2_DURATION} color="#3b82f6" />
             </div>
 
-            <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full"
-                style={{ background: "#3b82f6", width: `${Math.min((elapsed / STEP2_DURATION) * 100, 100)}%`, transition: "width 0.1s linear" }}
-              />
+            <div style={{ padding: "0 20px 40px", display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ borderRadius: 16, padding: "14px 18px", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(10px)", border: "1px solid rgba(59,130,246,0.25)", minHeight: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <p style={{ color: "rgba(220,220,245,0.90)", fontSize: 13, textAlign: "center", fontWeight: 600, lineHeight: 1.5 }}>
+                  {currentInstruction || "Filme ton bureau lentement de gauche à droite…"}
+                </p>
+              </div>
+              <div style={{ height: 4, background: "rgba(255,255,255,0.10)", borderRadius: 100, overflow: "hidden" }}>
+                <div style={{ height: "100%", background: "#3b82f6", width: `${Math.min((elapsed / STEP2_DURATION) * 100, 100)}%`, transition: "width 0.1s linear", borderRadius: 100 }} />
+              </div>
             </div>
-
-            <p className="text-slate-600 text-xs text-center">
-              Pan lent de gauche à droite
-            </p>
           </motion.div>
         )}
 

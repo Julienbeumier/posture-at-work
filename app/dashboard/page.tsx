@@ -250,6 +250,8 @@ export default function DashboardPage() {
   const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
   const [loading, setLoading] = useState(true);
   const [firstname, setFirstname] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const loadData = useCallback(async () => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
@@ -297,6 +299,16 @@ export default function DashboardPage() {
   }, [router]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  async function deleteAccount() {
+    if (!user) return;
+    setDeleteLoading(true);
+    const supabase = createClient();
+    await supabase.from("assessments").delete().eq("user_id", user.id);
+    await supabase.from("daily_checkins").delete().eq("user_id", user.id);
+    await supabase.auth.signOut();
+    router.replace("/");
+  }
 
   async function saveCheckin() {
     if (!user) return;
@@ -803,12 +815,66 @@ export default function DashboardPage() {
           </motion.div>
         )}
 
+        {/* ── DELETE ACCOUNT ── */}
+        <div style={{ textAlign: "center", paddingTop: 8 }}>
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            style={{ background: "none", border: "none", fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "rgba(240,149,149,0.45)", cursor: "pointer", textDecoration: "underline" }}
+          >
+            Supprimer mon compte
+          </button>
+        </div>
+
       </div>
 
-      {/* Modal */}
+      {/* Assessment Modal */}
       <AnimatePresence>
         {selectedAssessment && (
           <AssessmentModal assessment={selectedAssessment} onClose={() => setSelectedAssessment(null)} />
+        )}
+      </AnimatePresence>
+
+      {/* Delete Account Modal */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(8px)" }}
+            onClick={() => setShowDeleteModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ borderRadius: 24, padding: 28, width: "100%", maxWidth: 360, background: "#141422", border: "0.5px solid rgba(240,149,149,0.25)" }}
+            >
+              <div style={{ fontSize: 36, textAlign: "center", marginBottom: 14 }}>⚠️</div>
+              <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 17, color: "#f0f0fa", textAlign: "center", marginBottom: 10 }}>
+                Supprimer mon compte
+              </p>
+              <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "rgba(220,220,245,0.55)", textAlign: "center", lineHeight: 1.65, marginBottom: 24 }}>
+                Es-tu sûr ? Toutes tes données seront supprimées définitivement (bilans, check-ins, scores). Cette action est irréversible.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <button
+                  onClick={deleteAccount}
+                  disabled={deleteLoading}
+                  style={{ padding: "13px 0", borderRadius: 100, background: "#e24b4a", border: "none", color: "#fff", fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 14, cursor: deleteLoading ? "default" : "pointer", opacity: deleteLoading ? 0.6 : 1 }}
+                >
+                  {deleteLoading ? "Suppression…" : "Oui, supprimer définitivement"}
+                </button>
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  style={{ padding: "12px 0", borderRadius: 100, background: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.10)", color: "rgba(220,220,245,0.50)", fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer" }}
+                >
+                  Annuler
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </main>
