@@ -173,6 +173,7 @@ export default function DimensionPage() {
   const [advice, setAdvice] = useState<DimensionAdvice | null>(null);
   const [score, setScore] = useState<number>(0);
   const [ready, setReady] = useState(false);
+  const [hasBilan, setHasBilan] = useState(true);
   const [checked, setChecked] = useState<boolean[]>(new Array(10).fill(false));
 
   useEffect(() => {
@@ -181,6 +182,34 @@ export default function DimensionPage() {
 
       const answersRaw = sessionStorage.getItem("postureatwork_answers") || localStorage.getItem("paw_answers");
       const scoresRaw = sessionStorage.getItem("postureatwork_scores");
+
+      // If no local data, check Supabase before deciding if there's a bilan
+      if (!answersRaw && !scoresRaw) {
+        try {
+          const supabase = createClient();
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) { setHasBilan(false); setReady(true); return; }
+          const { data } = await supabase
+            .from("assessments").select("scores, answers")
+            .eq("user_id", user.id).order("created_at", { ascending: false })
+            .limit(1).maybeSingle();
+          if (!data?.scores) { setHasBilan(false); setReady(true); return; }
+          // Use Supabase data
+          const sa: QuestionnaireAnswers = data.answers
+            ? { ...DEFAULT_ANSWERS, ...(data.answers as Partial<QuestionnaireAnswers>) }
+            : DEFAULT_ANSWERS;
+          const ss = data.scores as Scores;
+          const meta = DIMENSION_META[dimensionParam];
+          setScore((ss[meta.scoreKey as keyof Scores] as number) ?? 0);
+          setAdvice(getDimensionAdvice(dimensionParam, sa, ss));
+          setReady(true);
+          return;
+        } catch {
+          setHasBilan(false);
+          setReady(true);
+          return;
+        }
+      }
 
       const answers: QuestionnaireAnswers = answersRaw
         ? { ...DEFAULT_ANSWERS, ...JSON.parse(answersRaw) }
@@ -235,6 +264,34 @@ export default function DimensionPage() {
         <div style={{ textAlign: "center" }}>
           <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", marginBottom: 12 }}>Dimension inconnue</p>
           <Link href="/results" style={{ textDecoration: "none", color: "#7c9fff", fontFamily: T.b, fontSize: 14 }}>← Retour aux résultats</Link>
+        </div>
+      </main>
+    );
+  }
+
+  if (!hasBilan) {
+    const m = DIMENSION_META[dimensionParam] ?? DIMENSION_META["setup"];
+    return (
+      <main style={{ minHeight: "100vh", background: "#0f0f1a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 24px", position: "relative" }}>
+        <BackgroundBlobs blobs={[{ top: "-5%", right: "-5%", color: m.colorBg, size: 400 }]} />
+        <div style={{ position: "relative", zIndex: 1, maxWidth: 400, width: "100%", textAlign: "center" }}>
+          <div style={{ width: 64, height: 64, borderRadius: 20, background: m.colorBg, border: `0.5px solid ${m.colorBorder}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 20px" }}>
+            🔍
+          </div>
+          <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "#f0f0fa", margin: "0 0 10px", lineHeight: 1.3 }}>
+            Ton analyse {m.label.toLowerCase()} n&apos;est pas encore disponible
+          </p>
+          <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.50)", lineHeight: 1.65, margin: "0 0 28px" }}>
+            Fais ton bilan en 5 minutes pour découvrir ton score {m.label.toLowerCase()} et recevoir des conseils vraiment personnalisés.
+          </p>
+          <Link href="/onboarding" style={{ textDecoration: "none" }}>
+            <div style={{ padding: "14px 0", borderRadius: 100, background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.4)", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 14 }}>
+              Faire mon bilan maintenant →
+            </div>
+          </Link>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.30)", margin: 0 }}>
+            Gratuit · Sans inscription · 5 minutes
+          </p>
         </div>
       </main>
     );

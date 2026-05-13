@@ -484,13 +484,14 @@ export default function DashboardPage() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             {SHORTCUTS.map((s) => {
               const score = s.scoreKey && latest ? (latest.scores[s.scoreKey as keyof typeof latest.scores] ?? null) : null;
-              // When no assessment: "Mes scores" → redirect to questionnaire
               const noAssessment = !latest;
-              const href = noAssessment && s.href === "/results" ? "/questionnaire" : s.href;
+              // Cards linking to /conseils or /results without a bilan → redirect to /onboarding
+              const isLocked = noAssessment && (s.href.startsWith("/conseils") || s.href === "/results");
+              const href = isLocked ? "/onboarding" : s.href;
               const desc = score != null
                 ? `${score}/100 · ${statusLabel(score)}`
-                : noAssessment && s.href === "/results"
-                ? "Faire mon premier bilan →"
+                : isLocked
+                ? "🔒 Après ton bilan"
                 : (s.desc ?? "");
               return (
                 <Link key={s.title} href={href} style={{ textDecoration: "none" }}>
