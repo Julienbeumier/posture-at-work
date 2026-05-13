@@ -69,7 +69,7 @@ const DIM_PRODUCTS: Record<string, { name: string; url: string; price: string }>
 };
 
 const SHORTCUTS = [
-  { icon: "🧘", title: "Étirements",    desc: "Programme du jour · 10 min", href: "/mobilite",        scoreKey: null, bg: "rgba(45,106,79,0.10)",  border: "rgba(45,106,79,0.20)",  iconBg: "rgba(45,106,79,0.20)",  color: "#74c69d", blob: "rgba(45,106,79,0.25)" },
+  { icon: "🧘", title: "Mobilité",    desc: "Programme du jour · 10 min", href: "/mobilite",        scoreKey: null, bg: "rgba(45,106,79,0.10)",  border: "rgba(45,106,79,0.20)",  iconBg: "rgba(45,106,79,0.20)",  color: "#74c69d", blob: "rgba(45,106,79,0.25)" },
   { icon: "📊", title: "Mes scores",    desc: "6 dimensions · Voir détails",  href: "/results",           scoreKey: null, bg: "rgba(43,92,230,0.10)",  border: "rgba(43,92,230,0.20)",  iconBg: "rgba(43,92,230,0.20)",  color: "#7c9fff", blob: "rgba(43,92,230,0.25)" },
   { icon: "🪑", title: "Setup",         desc: null, href: "/conseils/setup",    scoreKey: "setup",      bg: "rgba(212,98,42,0.08)",  border: "rgba(212,98,42,0.18)",  iconBg: "rgba(212,98,42,0.20)",  color: "#f4a261", blob: "rgba(212,98,42,0.25)" },
   { icon: "🤕", title: "Douleurs",      desc: null, href: "/conseils/douleurs", scoreKey: "pain",       bg: "rgba(226,75,74,0.08)",  border: "rgba(226,75,74,0.18)",  iconBg: "rgba(226,75,74,0.20)",  color: "#f09595", blob: "rgba(226,75,74,0.25)" },
@@ -554,7 +554,7 @@ export default function DashboardPage() {
                 <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", marginBottom: 16 }}>Reviens demain pour maintenir ton streak.</p>
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>
                   <div style={{ padding: "12px 0", borderRadius: 100, background: "rgba(45,106,79,0.20)", border: "0.5px solid rgba(45,106,79,0.35)", fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#74c69d" }}>
-                    🧘 Faire mes étirements →
+                    🧘 Faire mes exercices →
                   </div>
                 </Link>
               </motion.div>
@@ -674,7 +674,7 @@ export default function DashboardPage() {
           <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0, marginBottom: 16 }}>Objectifs de la semaine</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {[
-              { icon: "🧘", label: "Étirements quotidiens", done: exercisesDays, total: 5, color: "#74c69d" },
+              { icon: "🧘", label: "Exercices quotidiens", done: exercisesDays, total: 5, color: "#74c69d" },
               { icon: "💧", label: "Hydratation 1.5L/jour", done: waterDays, total: 7, color: "#7c9fff" },
               { icon: "⏱️", label: "Pauses actives ×3/jour", done: breaksDays, total: 5, color: "#f4a261" },
             ].map((g) => (

@@ -495,26 +495,36 @@ export default function FinalReportPage() {
           </p>
         </motion.div>
 
-        {/* ── STRETCHING CTA ── */}
+        {/* ── PROGRAMME D'EXERCICES ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          style={{ marginBottom: 16 }}
+          style={{
+            marginBottom: 16, borderRadius: 22, padding: "20px 22px",
+            background: "rgba(45,106,79,0.08)", border: "0.5px solid rgba(45,106,79,0.20)",
+          }}
         >
-          <Link href="/mobilite" style={{ textDecoration: "none" }}>
-            <div style={{
-              borderRadius: 24, padding: "20px 24px", cursor: "pointer", position: "relative", overflow: "hidden",
-              background: "linear-gradient(135deg, rgba(43,92,230,0.10), rgba(124,58,237,0.10))",
-              border: "0.5px solid rgba(43,92,230,0.25)",
-              display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
-            }}>
-              <div>
-                <div style={{ fontSize: 22, marginBottom: 4 }}>🤸</div>
-                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0, marginBottom: 2 }}>Faire mes étirements maintenant</p>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: 0 }}>Programme guidé · 5 à 15 min · ciblé sur tes points faibles</p>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#74c69d", margin: "0 0 14px" }}>
+            🧘 Programme recommandé pour toi
+          </p>
+          {[
+            { emoji: "🦆", name: "Rétraction cervicale", reps: "10 rép. × 5 sec", zone: "Nuque" },
+            { emoji: "🌿", name: "Flexion lombaire", reps: "45 sec × 2", zone: "Bas du dos" },
+            { emoji: "💜", name: "Cohérence cardiaque", reps: "2 minutes", zone: "Stress & mental" },
+          ].map((ex, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: i < 2 ? "0.5px solid rgba(255,255,255,0.05)" : "none" }}>
+              <span style={{ fontSize: 18, width: 32, textAlign: "center" }}>{ex.emoji}</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#f0f0fa", margin: 0 }}>{ex.name}</p>
+                <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", margin: 0 }}>{ex.reps}</p>
               </div>
-              <span style={{ fontSize: 20, color: "#7c9fff", flexShrink: 0 }}>→</span>
+              <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(116,198,157,0.12)", fontFamily: T.b, fontSize: 10, color: "#74c69d" }}>{ex.zone}</span>
+            </div>
+          ))}
+          <Link href="/mobilite?program=cible_cervicales" style={{ textDecoration: "none" }}>
+            <div style={{ marginTop: 14, padding: "12px 0", borderRadius: 100, textAlign: "center", background: "#2b5ce6", boxShadow: "0 4px 16px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#fff" }}>
+              Accéder à mon programme complet →
             </div>
           </Link>
         </motion.div>

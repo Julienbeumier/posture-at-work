@@ -220,7 +220,7 @@ function scoreInterpretation(key: keyof Scores, score: number, answers: Question
       return `${answers.q18 === "exhausted" ? "Te réveiller épuisé est un signal fort. " : ""}Le manque de récupération amplifie toutes les douleurs.`;
     case "lifestyle":
       if (score >= 70) return "Ton mode de vie actif compense bien la sédentarité du travail.";
-      if (score >= 50) return "Un peu plus de sport ou d'étirements ferait une nette différence.";
+      if (score >= 50) return "Un peu plus de sport ou d'exercices ferait une nette différence.";
       return "Ton corps manque de mouvement pour contrebalancer la sédentarité. C'est réversible avec peu d'efforts.";
     case "nutrition":
       if (score >= 70) return "Ton alimentation soutient bien ton énergie et ta concentration tout au long de la journée.";
@@ -485,6 +485,46 @@ export default function ResultsPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* ── PROCHAINES ÉTAPES ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.42 }}
+          style={{ marginBottom: 16 }}
+        >
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", margin: "0 0 12px" }}>
+            Tes prochaines étapes
+          </p>
+          {(() => {
+            const lowestDim = SUB_SCORES.reduce((a, b) => scores[a.key] <= scores[b.key] ? a : b);
+            return (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                <Link href="/mobilite" style={{ textDecoration: "none" }}>
+                  <div style={{ borderRadius: 18, padding: "16px 14px", background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)", textAlign: "center", cursor: "pointer" }}>
+                    <div style={{ fontSize: 24, marginBottom: 8 }}>🧘</div>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#7c9fff", margin: "0 0 4px" }}>Exercices</p>
+                    <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.40)", margin: 0 }}>Programme guidé</p>
+                  </div>
+                </Link>
+                <Link href={lowestDim.dimensionPath} style={{ textDecoration: "none" }}>
+                  <div style={{ borderRadius: 18, padding: "16px 14px", background: "rgba(124,58,237,0.10)", border: "0.5px solid rgba(124,58,237,0.25)", textAlign: "center", cursor: "pointer" }}>
+                    <div style={{ fontSize: 24, marginBottom: 8 }}>🎯</div>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#a78bfa", margin: "0 0 4px" }}>Plan prioritaire</p>
+                    <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.40)", margin: 0 }}>{lowestDim.label}</p>
+                  </div>
+                </Link>
+                <Link href="/video-intro" style={{ textDecoration: "none" }}>
+                  <div style={{ borderRadius: 18, padding: "16px 14px", background: "rgba(45,106,79,0.10)", border: "0.5px solid rgba(45,106,79,0.25)", textAlign: "center", cursor: "pointer" }}>
+                    <div style={{ fontSize: 24, marginBottom: 8 }}>🎬</div>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#74c69d", margin: "0 0 4px" }}>Analyse IA</p>
+                    <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.40)", margin: 0 }}>Posture vidéo</p>
+                  </div>
+                </Link>
+              </div>
+            );
+          })()}
+        </motion.div>
 
         {/* ── VIDEO IA CTA ── */}
         <motion.div

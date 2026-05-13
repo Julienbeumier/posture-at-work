@@ -137,6 +137,32 @@ export default function MobilitePage() {
   // ── Load profile & compute personalized program ───────────────────────────
 
   useEffect(() => {
+    // Deep linking via ?program= param
+    const paramMap: Record<string, { id: string; tab: Tab }> = {
+      setup:            { id: "bureau_pause",      tab: "bureau" },
+      douleurs:         { id: "cible_cervicales",  tab: "pour_moi" },
+      habitudes:        { id: "bureau_pause",      tab: "bureau" },
+      sommeil:          { id: "maison_recup",      tab: "maison" },
+      nutrition:        { id: "bureau_express",    tab: "bureau" },
+      lifestyle:        { id: "maison_reveil",     tab: "maison" },
+      nuque:            { id: "cible_cervicales",  tab: "pour_moi" },
+      dos:              { id: "cible_lombaires",   tab: "pour_moi" },
+      epaules:          { id: "cible_epaules",     tab: "pour_moi" },
+      cible_cervicales: { id: "cible_cervicales",  tab: "pour_moi" },
+      cible_lombaires:  { id: "cible_lombaires",   tab: "pour_moi" },
+      cible_epaules:    { id: "cible_epaules",     tab: "pour_moi" },
+      bureau_express:   { id: "bureau_express",    tab: "bureau" },
+      bureau_pause:     { id: "bureau_pause",      tab: "bureau" },
+      maison_reveil:    { id: "maison_reveil",     tab: "maison" },
+      maison_recup:     { id: "maison_recup",      tab: "maison" },
+    };
+    const qParam = new URLSearchParams(window.location.search).get("program");
+    if (qParam && paramMap[qParam]) {
+      const { id, tab: newTab } = paramMap[qParam];
+      const found = [...PROGRAMS, ...TARGETED_PROGRAMS].find(p => p.id === id);
+      if (found) { setActiveProgram(found); setTab(newTab); }
+    }
+
     // Streak from Supabase
     createClient().auth.getUser().then(async ({ data }) => {
       if (!data.user) return;

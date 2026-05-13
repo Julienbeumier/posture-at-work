@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { DEFAULT_ANSWERS, type QuestionnaireAnswers, type Scores } from "@/lib/scoring";
 import { getDimensionAdvice, isValidDimension, type DimensionAdvice } from "@/lib/dimension-advice";
-import { DIMENSION_META, type Exercise, type Product } from "@/lib/tips";
+import { DIMENSION_META, type Product } from "@/lib/tips";
+import { EXERCISES, type Exercise } from "@/lib/exercises";
 import { createClient } from "@/lib/supabase";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 
@@ -29,22 +30,79 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ExerciseCard({ ex, color }: { ex: Exercise; color: string }) {
+function ExercisePreview({ ex, color }: { ex: Exercise; color: string }) {
   return (
     <div style={{
-      borderRadius: 18, padding: "18px 20px",
-      background: "rgba(45,106,79,0.07)", border: "0.5px solid rgba(45,106,79,0.2)",
+      display: "flex", alignItems: "center", gap: 12, padding: "12px 16px",
+      borderRadius: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)",
     }}>
-      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", margin: "0 0 6px" }}>{ex.name}</p>
-      <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.6)", lineHeight: 1.65, margin: "0 0 10px" }}>{ex.instruction}</p>
-      <div style={{ display: "flex", gap: 12 }}>
-        <span style={{ fontFamily: T.b, fontSize: 12, color }}>⏱ {ex.duration}</span>
-        <span style={{ color: "rgba(220,220,245,0.2)" }}>·</span>
-        <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>{ex.frequency}</span>
+      <div style={{ width: 40, height: 40, borderRadius: 12, background: `${ex.zoneColor}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
+        {ex.emoji}
+      </div>
+      <div style={{ flex: 1 }}>
+        <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#f0f0fa", margin: 0 }}>{ex.name}</p>
+        <div style={{ display: "flex", gap: 8, marginTop: 3 }}>
+          <span style={{ fontFamily: T.b, fontSize: 11, color }}>⏱ {ex.reps}</span>
+          <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.3)" }}>·</span>
+          <span style={{ padding: "1px 7px", borderRadius: 100, background: `${ex.zoneColor}18`, fontFamily: T.b, fontSize: 10, color: ex.zoneColor }}>{ex.zone}</span>
+        </div>
       </div>
     </div>
   );
 }
+
+// ─── Immediate actions per dimension ─────────────────────────────────────────
+
+const IMMEDIATE_ACTIONS: Record<string, string[]> = {
+  setup: [
+    "Surélève ton écran avec des livres ou un support",
+    "Recule ton clavier à 5cm du bord du bureau",
+    "Redresse ton dos et colle les omoplates — fais-le maintenant",
+  ],
+  douleurs: [
+    "Lève-toi et marche 2 minutes maintenant",
+    "Applique de la chaleur sur la zone douloureuse 10 min",
+    "Fais la rétraction cervicale — 10 reps, maintenant",
+  ],
+  habitudes: [
+    "Programme une alarme toutes les heures sur ton téléphone",
+    "Pose un verre d'eau sur ton bureau maintenant",
+    "Lève-toi et fais 10 pas — juste maintenant",
+  ],
+  sommeil: [
+    "Ce soir : téléphone en mode nuit à partir de 21h",
+    "Couche-toi 30 min plus tôt ce soir",
+    "Éteins tous les écrans 45 min avant de dormir",
+  ],
+  nutrition: [
+    "Prépare un verre d'eau et bois-le maintenant",
+    "Demain midi : mange loin de ton écran, juste 20 min",
+    "Remplace ton prochain grignotage par des noix ou du fruit",
+  ],
+  lifestyle: [
+    "Prends 5 minutes pour une marche rapide maintenant",
+    "Planifie une séance de sport dans ton agenda cette semaine",
+    "Debout et étire-toi en lisant la prochaine action",
+  ],
+};
+
+const DIM_EXERCISE_IDS: Record<string, string[]> = {
+  setup:     ["chin_tuck", "scapular_retraction", "lumbar_extension"],
+  douleurs:  ["chin_tuck", "lumbar_flexion", "chest_opener"],
+  habitudes: ["marching", "chair_squat", "rule_20_20_20"],
+  sommeil:   ["body_scan", "coherence_cardiaque", "neck_massage"],
+  nutrition: ["coherence_cardiaque", "rule_20_20_20", "body_scan"],
+  lifestyle: ["marching", "lateral_flexion", "calf_stretch"],
+};
+
+const DIM_PROGRAM: Record<string, string> = {
+  setup:     "bureau_pause",
+  douleurs:  "cible_cervicales",
+  habitudes: "bureau_pause",
+  sommeil:   "maison_recup",
+  nutrition: "bureau_express",
+  lifestyle: "maison_reveil",
+};
 
 const PRIORITY_STYLE = {
   haute:   { color: "#f09595", label: "Priorité haute" },
@@ -115,6 +173,7 @@ export default function DimensionPage() {
   const [advice, setAdvice] = useState<DimensionAdvice | null>(null);
   const [score, setScore] = useState<number>(0);
   const [ready, setReady] = useState(false);
+  const [checked, setChecked] = useState<boolean[]>(new Array(10).fill(false));
 
   useEffect(() => {
     async function load() {
@@ -320,32 +379,89 @@ export default function DimensionPage() {
           </div>
         </motion.div>
 
-        {/* ── EXERCICES ── */}
-        {advice.exercises.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            style={{ marginBottom: 16 }}
-          >
-            <SectionTitle>🤸 Tes exercices ciblés</SectionTitle>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {advice.exercises.map((ex, i) => (
-                <ExerciseCard key={i} ex={ex} color={meta.color} />
-              ))}
-            </div>
-          </motion.div>
-        )}
+        {/* ── BLOC A : ACTIONS IMMÉDIATES ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.28 }}
+          style={{
+            borderRadius: 20, padding: "20px 22px", marginBottom: 16,
+            background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)",
+          }}
+        >
+          <SectionTitle>⚡ Actions immédiates</SectionTitle>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {(IMMEDIATE_ACTIONS[dimensionParam] ?? []).map((action, i) => {
+              const isChecked = checked[i];
+              return (
+                <div
+                  key={i}
+                  onClick={() => setChecked(prev => { const n = [...prev]; n[i] = !n[i]; return n; })}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 12, padding: "12px 14px",
+                    borderRadius: 12, cursor: "pointer",
+                    background: isChecked ? "rgba(116,198,157,0.10)" : "rgba(255,255,255,0.04)",
+                    border: isChecked ? "0.5px solid rgba(116,198,157,0.30)" : "0.5px solid rgba(255,255,255,0.07)",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  <div style={{
+                    width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+                    background: isChecked ? "#74c69d" : "rgba(255,255,255,0.06)",
+                    border: isChecked ? "none" : "0.5px solid rgba(255,255,255,0.15)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    {isChecked && <span style={{ fontSize: 11, color: "#0f0f1a", fontWeight: 900 }}>✓</span>}
+                  </div>
+                  <p style={{
+                    fontFamily: T.b, fontSize: 13, margin: 0,
+                    color: isChecked ? "rgba(220,220,245,0.45)" : "#f0f0fa",
+                    textDecoration: isChecked ? "line-through" : "none",
+                  }}>{action}</p>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
 
-        {/* ── PRODUITS ── */}
+        {/* ── BLOC B : PROGRAMME D'EXERCICES ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.32 }}
+          style={{
+            borderRadius: 20, padding: "20px 22px", marginBottom: 16,
+            background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)",
+          }}
+        >
+          <SectionTitle>🧘 Ton programme d'exercices</SectionTitle>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+            {(DIM_EXERCISE_IDS[dimensionParam] ?? []).map(id => {
+              const ex = EXERCISES[id];
+              if (!ex) return null;
+              return <ExercisePreview key={id} ex={ex} color={meta.color} />;
+            })}
+          </div>
+          <Link href={`/mobilite?program=${DIM_PROGRAM[dimensionParam] ?? "bureau_pause"}`} style={{ textDecoration: "none" }}>
+            <div style={{
+              padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
+              background: "#2b5ce6", boxShadow: "0 4px 20px rgba(43,92,230,0.35)",
+              fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
+            }}>
+              Lancer le programme complet →
+            </div>
+          </Link>
+        </motion.div>
+
+        {/* ── BLOC C : PRODUITS ── */}
         {advice.products.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 }}
+            transition={{ delay: 0.36 }}
             style={{ marginBottom: 20 }}
           >
-            <SectionTitle>🛍️ Produits recommandés</SectionTitle>
+            <SectionTitle>🛒 Produits qui aident</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {advice.products.map((p, i) => (
                 <ProductCard key={i} p={p} />
@@ -365,13 +481,13 @@ export default function DimensionPage() {
               ← Mes résultats
             </div>
           </Link>
-          <Link href="/stretching" style={{ textDecoration: "none", flex: 1 }}>
+          <Link href="/mobilite" style={{ textDecoration: "none", flex: 1 }}>
             <div style={{
               padding: "12px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
               background: meta.colorBg, border: `0.5px solid ${meta.colorBorder}`,
               fontFamily: T.b, fontWeight: 600, fontSize: 13, color: meta.color,
             }}>
-              🤸 Mes étirements
+              🧘 Mes exercices
             </div>
           </Link>
         </div>

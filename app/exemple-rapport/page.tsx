@@ -476,34 +476,42 @@ export default function ExempleRapportPage() {
               transition={{ duration: 0.2 }}
               style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}
             >
-              {EXERCISES.map((ex, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.08 }}
-                  style={{
-                    borderRadius: 20, padding: "20px 22px",
-                    background: "rgba(43,92,230,0.07)", border: "0.5px solid rgba(43,92,230,0.2)",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-                    <span style={{ fontSize: 28 }}>{ex.emoji}</span>
-                    <div>
-                      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", margin: 0 }}>{ex.name}</p>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
-                        <span style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff" }}>⏱ {ex.duration}</span>
-                        <span style={{ color: "rgba(220,220,245,0.2)", fontSize: 10 }}>·</span>
-                        <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.4)" }}>{ex.target}</span>
-                      </div>
-                    </div>
+              {/* Actions immédiates Thomas */}
+              <div style={{ borderRadius: 18, padding: "18px 20px", background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)" }}>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#7c9fff", margin: "0 0 12px" }}>⚡ Actions immédiates</p>
+                {[
+                  "Surélève ton écran avec des livres — maintenant",
+                  "Fais la rétraction cervicale : 10 reps, maintenant",
+                ].map((action, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.07)", marginBottom: i === 0 ? 8 : 0 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: 6, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.15)", flexShrink: 0 }} />
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "#f0f0fa", margin: 0 }}>{action}</p>
                   </div>
-                  <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, margin: "0 0 6px" }}>
-                    {ex.instruction}
-                  </p>
-                  <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.35)" }}>{ex.frequency}</span>
-                </motion.div>
-              ))}
+                ))}
+              </div>
+              {/* Programme exercices */}
+              <div style={{ borderRadius: 18, padding: "18px 20px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)" }}>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", margin: "0 0 12px" }}>🧘 Programme nuque & dos</p>
+                {[
+                  { emoji: "🦆", name: "Rétraction cervicale", reps: "10 rép. × 5 sec", zone: "Nuque" },
+                  { emoji: "↔️", name: "Inclinaison latérale nuque", reps: "30 sec par côté", zone: "Cervicales" },
+                  { emoji: "🌿", name: "Flexion lombaire", reps: "45 sec × 2", zone: "Bas du dos" },
+                ].map((ex, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: i < 2 ? "0.5px solid rgba(255,255,255,0.05)" : "none" }}>
+                    <span style={{ fontSize: 18, width: 28, textAlign: "center" }}>{ex.emoji}</span>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#f0f0fa", margin: 0 }}>{ex.name}</p>
+                      <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", margin: 0 }}>{ex.reps}</p>
+                    </div>
+                    <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(226,75,74,0.12)", fontFamily: T.b, fontSize: 10, color: "#f09595" }}>{ex.zone}</span>
+                  </div>
+                ))}
+                <Link href="/mobilite?program=nuque" style={{ textDecoration: "none" }}>
+                  <div style={{ marginTop: 14, padding: "12px 0", borderRadius: 100, textAlign: "center", background: "#2b5ce6", boxShadow: "0 4px 16px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#fff" }}>
+                    Lancer le programme complet →
+                  </div>
+                </Link>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
