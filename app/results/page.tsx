@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase";
 import {
   calculateScores,
   getRecommendations,
@@ -251,6 +253,7 @@ const PRIORITY_STYLE = {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function ResultsPage() {
+  const router = useRouter();
   const [answers, setAnswers] = useState<QuestionnaireAnswers | null>(null);
   const [scores, setScores] = useState<Scores | null>(null);
   const [activeTab, setActiveTab] = useState<"recs" | "exercises">("recs");
@@ -264,16 +267,55 @@ export default function ResultsPage() {
   }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem("paw_answers");
-    const parsed: QuestionnaireAnswers = stored
-      ? { ...DEFAULT_ANSWERS, ...JSON.parse(stored) }
-      : DEFAULT_ANSWERS;
-    setAnswers(parsed);
-    const s = calculateScores(parsed);
-    setScores(s);
-    sessionStorage.setItem("postureatwork_scores", JSON.stringify(s));
-    sessionStorage.setItem("postureatwork_answers", JSON.stringify(parsed));
-  }, []);
+    async function load() {
+      // 1. sessionStorage (fastest — set immediately after questionnaire)
+      const ssScores = sessionStorage.getItem("postureatwork_scores");
+      const ssAnswers = sessionStorage.getItem("postureatwork_answers");
+      if (ssScores && ssAnswers) {
+        setScores(JSON.parse(ssScores));
+        setAnswers({ ...DEFAULT_ANSWERS, ...JSON.parse(ssAnswers) });
+        return;
+      }
+
+      // 2. localStorage paw_answers (set after questionnaire submit)
+      const stored = localStorage.getItem("paw_answers");
+      if (stored) {
+        const parsed: QuestionnaireAnswers = { ...DEFAULT_ANSWERS, ...JSON.parse(stored) };
+        const s = calculateScores(parsed);
+        setAnswers(parsed);
+        setScores(s);
+        sessionStorage.setItem("postureatwork_scores", JSON.stringify(s));
+        sessionStorage.setItem("postureatwork_answers", JSON.stringify(parsed));
+        return;
+      }
+
+      // 3. Supabase latest assessment
+      const { data: { user } } = await createClient().auth.getUser();
+      if (user) {
+        const { data } = await createClient()
+          .from("assessments")
+          .select("scores, answers")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (data?.scores) {
+          const parsedAnswers: QuestionnaireAnswers = data.answers
+            ? { ...DEFAULT_ANSWERS, ...(data.answers as Partial<QuestionnaireAnswers>) }
+            : DEFAULT_ANSWERS;
+          setScores(data.scores as Scores);
+          setAnswers(parsedAnswers);
+          sessionStorage.setItem("postureatwork_scores", JSON.stringify(data.scores));
+          sessionStorage.setItem("postureatwork_answers", JSON.stringify(parsedAnswers));
+          return;
+        }
+      }
+
+      // 4. Nothing found → send to questionnaire
+      router.replace("/questionnaire");
+    }
+    load();
+  }, [router]);
 
   async function sendBilanEmail() {
     if (!emailInput || !scores || !answers) return;
