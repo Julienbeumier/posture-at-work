@@ -255,6 +255,9 @@ export default function ResultsPage() {
   const [scores, setScores] = useState<Scores | null>(null);
   const [activeTab, setActiveTab] = useState<"recs" | "exercises">("recs");
   const [firstname, setFirstname] = useState("");
+  const [emailInput, setEmailInput] = useState("");
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
 
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
@@ -271,6 +274,28 @@ export default function ResultsPage() {
     sessionStorage.setItem("postureatwork_scores", JSON.stringify(s));
     sessionStorage.setItem("postureatwork_answers", JSON.stringify(parsed));
   }, []);
+
+  async function sendBilanEmail() {
+    if (!emailInput || !scores || !answers) return;
+    setEmailLoading(true);
+    const recs2 = getRecommendations(scores, answers);
+    const exs = getExercises(scores, answers);
+    await fetch("/api/emails/send-bilan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: emailInput,
+        firstname,
+        scores,
+        recommendations: recs2.slice(0, 3).map(r => r.title),
+        topExercise: exs[0]
+          ? { name: exs[0].name, duration: exs[0].duration, instruction: exs[0].description }
+          : { name: "Rétraction cervicale", duration: "10 rép. × 5 sec", instruction: "Rentre doucement le menton vers la gorge. Tiens 5 secondes. Répète 10 fois." },
+      }),
+    });
+    setEmailSent(true);
+    setEmailLoading(false);
+  }
 
   if (!scores || !answers) {
     return (
@@ -579,19 +604,64 @@ export default function ResultsPage() {
           }}
         >
           <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", margin: 0, marginBottom: 6 }}>
-            Sauvegarde ton rapport
+            Reçois ton rapport par email
           </p>
-          <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 18 }}>
-            Crée un compte gratuit pour conserver tes résultats, suivre ta progression et accéder au rapport IA complet.
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 16 }}>
+            Tes 3 priorités + un exercice ciblé — directement dans ta boîte.
           </p>
-          <Link href="/final-report" style={{ textDecoration: "none" }}>
+
+          <AnimatePresence mode="wait">
+            {emailSent ? (
+              <motion.div
+                key="sent"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                style={{ padding: "14px 18px", borderRadius: 14, background: "rgba(45,106,79,0.15)", border: "0.5px solid rgba(116,198,157,0.35)", display: "flex", alignItems: "center", gap: 10 }}
+              >
+                <span style={{ fontSize: 18 }}>📧</span>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "#74c69d", margin: 0 }}>
+                  Ton rapport a été envoyé à <strong>{emailInput}</strong> !
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input
+                    type="email"
+                    value={emailInput}
+                    onChange={e => setEmailInput(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && sendBilanEmail()}
+                    placeholder="ton@email.com"
+                    style={{
+                      flex: 1, padding: "12px 16px", borderRadius: 12,
+                      background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.15)",
+                      color: "#f0f0fa", fontSize: 14, fontFamily: T.b, outline: "none",
+                    }}
+                  />
+                  <div
+                    onClick={sendBilanEmail}
+                    style={{
+                      padding: "12px 18px", borderRadius: 12, cursor: emailLoading ? "default" : "pointer",
+                      background: emailInput ? "#2b5ce6" : "rgba(43,92,230,0.25)",
+                      fontFamily: T.h, fontWeight: 800, fontSize: 13,
+                      color: emailInput ? "#fff" : "rgba(255,255,255,0.3)",
+                      flexShrink: 0, transition: "all 0.2s",
+                    }}
+                  >
+                    {emailLoading ? "…" : "Envoyer"}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <Link href="/final-report" style={{ textDecoration: "none", display: "block", marginTop: 12 }}>
             <div style={{
               padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-              background: "#2b5ce6",
-              boxShadow: "0 4px 24px rgba(43,92,230,0.35)",
-              fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
+              background: "transparent", border: "0.5px solid rgba(43,92,230,0.40)",
+              fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#7c9fff",
             }}>
-              Sauvegarder mon rapport →
+              Sauvegarder sur mon compte →
             </div>
           </Link>
         </motion.div>
