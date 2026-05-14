@@ -174,6 +174,7 @@ export default function DimensionPage() {
   const [score, setScore] = useState<number>(0);
   const [ready, setReady] = useState(false);
   const [hasBilan, setHasBilan] = useState(true);
+  const [isExampleMode, setIsExampleMode] = useState(false);
   const [checked, setChecked] = useState<boolean[]>(new Array(10).fill(false));
 
   useEffect(() => {
@@ -184,7 +185,17 @@ export default function DimensionPage() {
       const scoresRaw = sessionStorage.getItem("postureatwork_scores");
 
       // If no local data, check Supabase before deciding if there's a bilan
+      if (sessionStorage.getItem("paw_example_mode") === "true") {
+        setIsExampleMode(true);
+      }
+
       if (!answersRaw && !scoresRaw) {
+        // Still skip Supabase check in example mode
+        if (sessionStorage.getItem("paw_example_mode") === "true") {
+          setHasBilan(true);
+          setReady(true);
+          return;
+        }
         try {
           const supabase = createClient();
           const { data: { user } } = await supabase.auth.getUser();
@@ -310,11 +321,27 @@ export default function DimensionPage() {
       <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
 
         {/* Nav */}
-        <div style={{ paddingTop: 80, paddingBottom: 32 }}>
-          <Link href="/results" style={{ textDecoration: "none" }}>
-            <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.4)", cursor: "pointer" }}>← Mes résultats</span>
+        <div style={{ paddingTop: 80, paddingBottom: isExampleMode ? 16 : 32 }}>
+          <Link href={isExampleMode ? "/exemple-rapport" : "/results"} style={{ textDecoration: "none" }}>
+            <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.4)", cursor: "pointer" }}>
+              {isExampleMode ? "← Exemple de rapport" : "← Mes résultats"}
+            </span>
           </Link>
         </div>
+
+        {/* Bandeau exemple */}
+        {isExampleMode && (
+          <div style={{
+            marginBottom: 20, padding: "10px 16px", borderRadius: 12,
+            background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.20)",
+            display: "flex", alignItems: "center", gap: 8,
+          }}>
+            <span style={{ fontSize: 14 }}>📋</span>
+            <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(168,192,255,0.75)" }}>
+              Ceci est un exemple basé sur le profil de Thomas
+            </span>
+          </div>
+        )}
 
         {/* ── HEADER ── */}
         <motion.div

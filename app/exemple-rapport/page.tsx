@@ -262,8 +262,36 @@ function SubScoreBar({ label, emoji, score, dimensionColor, dimensionPath, delay
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
+const THOMAS_SCORES = {
+  global: 45, setup: 32, pain: 48, habits: 55,
+  sleep_energy: 45, nutrition: 30, lifestyle: 60,
+};
+
+const THOMAS_ANSWERS = {
+  q1: "laptop_seul", q2: "teletravail", q3: "non_trop_bas",
+  q4: "moins_50cm", q5: "trackpad", q5b: "chaise_fixe", q5c: "pas_besoin",
+  q6: 3, q7: 2, q8: 2, q9: 1, q10: 2,
+  q11: "plusieurs_mois", q12: "fin_journee", q12b: "partiellement",
+  q13: 9, q14: "jamais", q14b: "cardio", q15: "tete_baissee",
+  q16: "parfois", q17: 6, q18: "fatigue", q19: 1.5, q20: "souvent",
+  q21: ["rien"], q22: "1x_semaine", q23: "jamais",
+  q24: "affaissement", q25: 2,
+  qn1: "devant_ecran", qn2: "coup_de_barre", qn3: "apres_midi", qn4: "sandwich",
+};
+
+function clearExampleMode() {
+  sessionStorage.removeItem("paw_example_mode");
+}
+
 export default function ExempleRapportPage() {
   const [activeTab, setActiveTab] = useState<"recs" | "exercises">("recs");
+
+  useEffect(() => {
+    sessionStorage.setItem("postureatwork_scores", JSON.stringify(THOMAS_SCORES));
+    sessionStorage.setItem("postureatwork_answers", JSON.stringify(THOMAS_ANSWERS));
+    sessionStorage.setItem("paw_example_mode", "true");
+  }, []);
+
   return (
     <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingBottom: 80, position: "relative" }}>
       <BackgroundBlobs blobs={[
@@ -285,7 +313,7 @@ export default function ExempleRapportPage() {
           📋 Ceci est un exemple de rapport
         </span>
         <span style={{ color: "rgba(220,220,245,0.3)", fontSize: 13 }}>—</span>
-        <Link href="/questionnaire" style={{ textDecoration: "none" }}>
+        <Link href="/questionnaire" onClick={clearExampleMode} style={{ textDecoration: "none" }}>
           <span style={{
             fontFamily: T.b, fontWeight: 700, fontSize: 13, color: "#7c9fff", cursor: "pointer",
           }}>
@@ -591,7 +619,7 @@ export default function ExempleRapportPage() {
           <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 20 }}>
             5 minutes. Gratuit. Personnalisé selon tes vraies réponses.
           </p>
-          <Link href="/questionnaire" style={{ textDecoration: "none" }}>
+          <Link href="/questionnaire" onClick={clearExampleMode} style={{ textDecoration: "none" }}>
             <div style={{
               padding: "14px 0", borderRadius: 100, cursor: "pointer",
               background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.4)",
