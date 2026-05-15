@@ -10,6 +10,7 @@ import { DIMENSION_META, type Product } from "@/lib/tips";
 import { EXERCISES, type Exercise } from "@/lib/exercises";
 import { createClient } from "@/lib/supabase";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
+import { getJobContent, getScoreInterpretation } from "@/lib/job-content";
 
 const T = {
   h: "var(--font-nunito), sans-serif",
@@ -176,6 +177,11 @@ export default function DimensionPage() {
   const [hasBilan, setHasBilan] = useState(true);
   const [isExampleMode, setIsExampleMode] = useState(false);
   const [checked, setChecked] = useState<boolean[]>(new Array(10).fill(false));
+  const [jobType, setJobType] = useState<string>("bureau");
+
+  useEffect(() => {
+    setJobType(localStorage.getItem("paw_job_type") ?? "bureau");
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -382,7 +388,32 @@ export default function DimensionPage() {
               <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 12, color: badge.color }}>{badge.label}</span>
             </div>
           </div>
+
+          {/* Job-specific score interpretation */}
+          {(() => {
+            const jc = getJobContent(jobType);
+            const dimKey = meta.scoreKey;
+            const interp = getScoreInterpretation(jc, dimKey, score);
+            if (!interp) return null;
+            return (
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.60)", lineHeight: 1.65, margin: "14px 0 0", borderTop: "0.5px solid rgba(255,255,255,0.07)", paddingTop: 14 }}>
+                {jc.emoji} {interp}
+              </p>
+            );
+          })()}
         </motion.div>
+
+        {/* Job intro card (non-bureau profiles) */}
+        {jobType !== "bureau" && (() => {
+          const jc = getJobContent(jobType);
+          return (
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
+              style={{ borderRadius: 16, padding: "14px 18px", marginBottom: 16, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)", display: "flex", alignItems: "flex-start", gap: 10 }}>
+              <span style={{ fontSize: 20, flexShrink: 0 }}>{jc.emoji}</span>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.70)", lineHeight: 1.65, margin: 0 }}>{jc.intro}</p>
+            </motion.div>
+          );
+        })()}
 
         {/* ── CE QU'ON A DÉTECTÉ ── */}
         <motion.div
@@ -553,6 +584,27 @@ export default function DimensionPage() {
             </div>
           </motion.div>
         )}
+
+        {/* ── LE SAVIEZ-VOUS ── */}
+        {(() => {
+          const jc = getJobContent(jobType);
+          const facts = jc.risk_profile.did_you_know;
+          if (!facts.length) return null;
+          return (
+            <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}
+              style={{ borderRadius: 20, padding: "20px 22px", marginBottom: 16, background: "rgba(167,139,250,0.06)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
+              <SectionTitle>💡 Le saviez-vous ?</SectionTitle>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {facts.map((fact, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                    <span style={{ color: "#a78bfa", fontSize: 14, flexShrink: 0, marginTop: 1 }}>•</span>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.6, margin: 0 }}>{fact}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          );
+        })()}
 
         {/* ── BOTTOM ACTIONS ── */}
         <div style={{ display: "flex", gap: 10 }}>

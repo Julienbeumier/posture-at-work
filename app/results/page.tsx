@@ -14,6 +14,7 @@ import {
   type Scores,
 } from "@/lib/scoring";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
+import { getJobContent } from "@/lib/job-content";
 
 const T = {
   h: "var(--font-nunito), sans-serif",
@@ -262,8 +263,11 @@ export default function ResultsPage() {
   const [emailSent, setEmailSent] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
 
+  const [jobType, setJobType] = useState("bureau");
+
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
+    setJobType(localStorage.getItem("paw_job_type") ?? "bureau");
   }, []);
 
   useEffect(() => {
@@ -402,6 +406,17 @@ export default function ResultsPage() {
                 : "Ton corps envoie des signaux importants. Agis sur les priorités urgentes dès maintenant."}
             </p>
           </div>
+
+          {/* Job intro */}
+          {jobType !== "bureau" && (() => {
+            const jc = getJobContent(jobType);
+            return (
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 18px", borderRadius: 14, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)", maxWidth: 480, textAlign: "left" }}>
+                <span style={{ fontSize: 20, flexShrink: 0 }}>{jc.emoji}</span>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.65, margin: 0 }}>{jc.intro}</p>
+              </div>
+            );
+          })()}
         </motion.div>
 
         {/* ── 6 SOUS-SCORES ── */}
@@ -592,6 +607,27 @@ export default function ResultsPage() {
             );
           })()}
         </motion.div>
+
+        {/* ── LE SAVIEZ-VOUS ── */}
+        {(() => {
+          const jc = getJobContent(jobType);
+          const facts = jc.risk_profile.did_you_know;
+          if (!facts.length) return null;
+          return (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.48 }}
+              style={{ borderRadius: 22, padding: "20px 22px", marginBottom: 16, background: "rgba(167,139,250,0.06)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#a78bfa", margin: "0 0 12px" }}>💡 Le saviez-vous ?</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {facts.map((fact, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                    <span style={{ color: "#a78bfa", fontSize: 14, flexShrink: 0, marginTop: 1 }}>•</span>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.6, margin: 0 }}>{fact}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          );
+        })()}
 
         {/* ── VIDEO IA CTA ── */}
         <motion.div
