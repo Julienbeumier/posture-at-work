@@ -464,3 +464,167 @@ export function getExercises(
 
   return ex.slice(0, 3);
 }
+
+// ─── Job-specific scoring ────────────────────────────────────────────────────
+
+import type { GenericAnswers, JobType } from "./questionnaire-profiles";
+
+function painFromScales(answers: GenericAnswers, keys: string[]): number {
+  let total = 0; let count = 0;
+  for (const k of keys) {
+    const v = answers[k];
+    if (typeof v === "number" && v >= 0) { total += v; count++; }
+  }
+  if (count === 0) return 70;
+  return clamp(100 - (total / count) * 20);
+}
+
+function sleepFromAnswers(answers: GenericAnswers, sleepKey: string, wakeKey: string): number {
+  let s = 70;
+  const h = answers[sleepKey];
+  if (typeof h === "number") {
+    if (h >= 7) s = 80; else if (h >= 6) s = 60; else s = 35;
+  }
+  const wake = answers[wakeKey];
+  if (wake === "epuise") s -= 20; else if (wake === "repose") s += 10;
+  return clamp(s);
+}
+
+function calcDeboutScores(a: GenericAnswers): Scores {
+  let setup = 55;
+  if (a["d_tapis"] === "oui") setup += 15;
+  if (a["d_chaussures"] === "oui_pro") setup += 20; else if (a["d_chaussures"] === "non") setup -= 25;
+  if (a["d_siege"] === "jamais") setup -= 15; else if (a["d_siege"] === "oui_souvent") setup += 10;
+  if (a["d_variation"] === "non") setup -= 15; else if (a["d_variation"] === "oui") setup += 10;
+  setup = clamp(setup);
+
+  const pain = painFromScales(a, ["d_doul_pieds","d_doul_genoux","d_doul_dos","d_doul_jambes","d_doul_nuque"]);
+
+  let habits = 50;
+  if (a["d_pauses"] === "regulier") habits += 30; else if (a["d_pauses"] === "parfois") habits += 15; else if (a["d_pauses"] === "jamais") habits -= 20;
+  if (a["d_gestes"] === "toujours") habits -= 15; else if (a["d_gestes"] === "jamais") habits += 10;
+  habits = clamp(habits);
+
+  const sleep_energy = sleepFromAnswers(a, "d_sommeil", "d_reveil");
+
+  let lifestyle = 55;
+  if (a["d_recup"] === "sport") lifestyle += 20; else if (a["d_recup"] === "rien") lifestyle -= 15;
+  lifestyle = clamp(lifestyle);
+
+  let nutrition = 60;
+  const hydra = a["d_hydratation"] as number;
+  if (typeof hydra === "number") { if (hydra >= 2) nutrition += 15; else if (hydra < 1) nutrition -= 20; }
+  nutrition = clamp(nutrition);
+
+  const global = clamp(setup * 0.2 + pain * 0.3 + habits * 0.2 + sleep_energy * 0.15 + lifestyle * 0.1 + nutrition * 0.05);
+  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition };
+}
+
+function calcArtisanScores(a: GenericAnswers): Scores {
+  let setup = 55;
+  if (a["a_epi"] === "plusieurs") setup += 20; else if (a["a_epi"] === "rien") setup -= 20;
+  if (a["a_technique"] === "aide") setup += 15; else if (a["a_technique"] === "seul_non") setup -= 20;
+  setup = clamp(setup);
+
+  const pain = painFromScales(a, ["a_doul_dos","a_doul_genoux","a_doul_epaules","a_doul_poignets","a_doul_nuque"]);
+
+  let habits = 50;
+  if (a["a_gestes"] === "toujours") habits -= 20; else if (a["a_gestes"] === "jamais") habits += 10;
+  if (a["a_courbe"] === "tres_souvent") habits -= 20; else if (a["a_courbe"] === "jamais") habits += 10;
+  if (a["a_inconfort"] === "presque_toujours") habits -= 20;
+  habits = clamp(habits);
+
+  const sleep_energy = sleepFromAnswers(a, "a_sommeil", "a_reveil");
+
+  let lifestyle = 50;
+  if (a["a_sport"] === "regulier") lifestyle += 20; else if (a["a_sport"] === "non") lifestyle -= 5;
+  if (a["a_etirements"] === "oui") lifestyle += 15;
+  lifestyle = clamp(lifestyle);
+
+  const global = clamp(setup * 0.15 + pain * 0.35 + habits * 0.25 + sleep_energy * 0.15 + lifestyle * 0.1);
+  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition: 60 };
+}
+
+function calcTransportScores(a: GenericAnswers): Scores {
+  let setup = 55;
+  if (a["t_siege"] === "oui_regle") setup += 20; else if (a["t_siege"] === "non") setup -= 20;
+  if (a["t_lombaire"] === "integre") setup += 15; else if (a["t_lombaire"] === "non") setup -= 15;
+  if (a["t_distance_volant"] === "oui") setup += 10;
+  setup = clamp(setup);
+
+  const pain = painFromScales(a, ["t_doul_dos","t_doul_nuque","t_doul_epaules","t_doul_jambes"]);
+
+  let habits = 50;
+  if (a["t_pauses"] === "2h") habits += 30; else if (a["t_pauses"] === "jamais") habits -= 25;
+  if (a["t_que_pauses"] === "marche" || a["t_que_pauses"] === "etirements") habits += 10;
+  habits = clamp(habits);
+
+  const sleep_energy = sleepFromAnswers(a, "t_sommeil", "t_reveil");
+  if (a["t_somnolence"] === "souvent") sleep_energy && 0; // just flag
+
+  let lifestyle = 55;
+  if (a["t_stress"] === "tres_souvent") lifestyle -= 20; else if (a["t_stress"] === "jamais") lifestyle += 10;
+  if (a["t_pression"] === "tres_forte") lifestyle -= 20;
+  lifestyle = clamp(lifestyle);
+
+  const global = clamp(setup * 0.2 + pain * 0.3 + habits * 0.2 + sleep_energy * 0.15 + lifestyle * 0.15);
+  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition: 60 };
+}
+
+function calcMedicalScores(a: GenericAnswers): Scores {
+  let setup = 55;
+  if (a["m_materiel"] === "oui_toujours") setup += 20; else if (a["m_materiel"] === "pas_dispo") setup -= 15;
+  setup = clamp(setup);
+
+  const pain = painFromScales(a, ["m_doul_dos","m_doul_epaules","m_doul_poignets","m_doul_nuque","m_doul_jambes"]);
+
+  let habits = 55;
+  if (a["m_mobilisation"] === "tres_souvent" && a["m_materiel"] === "pas_dispo") habits -= 25;
+  habits = clamp(habits);
+
+  const sleep_energy = sleepFromAnswers(a, "m_sommeil", "m_reveil");
+  if (a["m_gardes"] === "toujours") sleep_energy && 0;
+  if (a["m_fatigue_chrono"] === "souvent") { /* handled */ }
+
+  let lifestyle = 55;
+  if (a["m_burnout"] === "souvent") lifestyle -= 25; else if (a["m_burnout"] === "non") lifestyle += 10;
+  if (a["m_charge_emo"] === "tres_lourde") lifestyle -= 20;
+  lifestyle = clamp(lifestyle);
+
+  const global = clamp(setup * 0.15 + pain * 0.3 + habits * 0.2 + sleep_energy * 0.2 + lifestyle * 0.15);
+  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition: 60 };
+}
+
+function calcEnseignementScores(a: GenericAnswers): Scores {
+  let setup = 60;
+  if (a["e_bureau"] === "ergo") setup += 15; else if (a["e_bureau"] === "non") setup -= 20;
+  if (a["e_prep_lieu"] === "canape_lit") setup -= 15;
+  setup = clamp(setup);
+
+  const pain = painFromScales(a, ["e_doul_nuque","e_doul_dos","e_doul_jambes"]);
+
+  let habits = 55;
+  if (a["e_surcharge"] === "burnout") habits -= 30; else if (a["e_surcharge"] === "souvent") habits -= 15;
+  if (a["e_bruit"] === "toujours") habits -= 10;
+  habits = clamp(habits);
+
+  const sleep_energy = sleepFromAnswers(a, "e_sommeil", "e_reveil");
+
+  let lifestyle = 60;
+  if (a["e_voix"] === "souvent") lifestyle -= 15;
+  lifestyle = clamp(lifestyle);
+
+  const global = clamp(setup * 0.2 + pain * 0.25 + habits * 0.25 + sleep_energy * 0.15 + lifestyle * 0.15);
+  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition: 60 };
+}
+
+export function calculateJobScores(jobType: JobType, answers: GenericAnswers): Scores {
+  switch (jobType) {
+    case "debout":       return calcDeboutScores(answers);
+    case "artisan":      return calcArtisanScores(answers);
+    case "transport":    return calcTransportScores(answers);
+    case "medical":      return calcMedicalScores(answers);
+    case "enseignement": return calcEnseignementScores(answers);
+    default:             return { global: 50, setup: 50, pain: 50, habits: 50, sleep_energy: 50, lifestyle: 50, nutrition: 50 };
+  }
+}

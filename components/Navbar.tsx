@@ -14,6 +14,7 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function Navbar() {
     setUser(null);
     router.push("/");
     setMenuOpen(false);
+    setMobileMenuOpen(false);
   }
 
   const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : "??";
@@ -109,38 +111,43 @@ export default function Navbar() {
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {user ? (
             <>
-              <Link href="/mobilite" style={{ textDecoration: "none" }}>
-                <div
-                  style={{
-                    padding: "7px 16px",
-                    borderRadius: 100,
-                    background: "rgba(43,92,230,0.18)",
-                    color: "#7c9fff",
-                    border: "0.5px solid rgba(43,92,230,0.30)",
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  Mobilité
-                </div>
-              </Link>
-              <Link href="/dashboard" style={{ textDecoration: "none" }}>
-                <div
-                  style={{
-                    padding: "7px 16px",
-                    borderRadius: 100,
-                    background: "rgba(43,92,230,0.18)",
-                    color: "#7c9fff",
-                    border: "0.5px solid rgba(43,92,230,0.30)",
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  Dashboard
-                </div>
-              </Link>
+              {/* Desktop: Mobilité + Dashboard links */}
+              <span className="hidden md:flex items-center" style={{ gap: 8 }}>
+                <Link href="/mobilite" style={{ textDecoration: "none" }}>
+                  <div
+                    style={{
+                      padding: "7px 16px",
+                      borderRadius: 100,
+                      background: "rgba(43,92,230,0.18)",
+                      color: "#7c9fff",
+                      border: "0.5px solid rgba(43,92,230,0.30)",
+                      fontSize: 13,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Mobilité
+                  </div>
+                </Link>
+                <Link href="/dashboard" style={{ textDecoration: "none" }}>
+                  <div
+                    style={{
+                      padding: "7px 16px",
+                      borderRadius: 100,
+                      background: "rgba(43,92,230,0.18)",
+                      color: "#7c9fff",
+                      border: "0.5px solid rgba(43,92,230,0.30)",
+                      fontSize: 13,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Dashboard
+                  </div>
+                </Link>
+              </span>
+
+              {/* Avatar dropdown (desktop) */}
               <div style={{ position: "relative" }} ref={menuRef}>
                 <div
                   onClick={() => setMenuOpen((v) => !v)}
@@ -218,20 +225,43 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
+
+              {/* Hamburger button (mobile only) */}
+              <button
+                className="md:hidden"
+                onClick={() => setMobileMenuOpen((v) => !v)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#f0f0fa",
+                  fontSize: 24,
+                  cursor: "pointer",
+                  padding: "4px 8px",
+                  lineHeight: 1,
+                }}
+                aria-label="Menu"
+              >
+                ≡
+              </button>
             </>
           ) : (
             <>
-              <Link href="/auth" style={{ textDecoration: "none" }}>
-                <div
-                  style={{
-                    color: "rgba(220,220,245,0.55)",
-                    fontSize: 14,
-                    cursor: "pointer",
-                  }}
-                >
-                  Se connecter
-                </div>
-              </Link>
+              {/* Se connecter — desktop only */}
+              <span className="hidden md:flex">
+                <Link href="/auth" style={{ textDecoration: "none" }}>
+                  <div
+                    style={{
+                      color: "rgba(220,220,245,0.55)",
+                      fontSize: 14,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Se connecter
+                  </div>
+                </Link>
+              </span>
+
+              {/* Mon bilan — always visible */}
               <Link href="/questionnaire" style={{ textDecoration: "none" }}>
                 <div
                   style={{
@@ -249,10 +279,141 @@ export default function Navbar() {
                   Mon bilan
                 </div>
               </Link>
+
+              {/* Hamburger button (mobile only, non-connected) */}
+              <button
+                className="md:hidden"
+                onClick={() => setMobileMenuOpen((v) => !v)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#f0f0fa",
+                  fontSize: 24,
+                  cursor: "pointer",
+                  padding: "4px 8px",
+                  lineHeight: 1,
+                }}
+                aria-label="Menu"
+              >
+                ≡
+              </button>
             </>
           )}
         </div>
       </div>
+
+      {/* Mobile dropdown panel */}
+      {mobileMenuOpen && (
+        <div
+          className="md:hidden"
+          style={{
+            position: "fixed",
+            top: 64,
+            left: 0,
+            right: 0,
+            zIndex: 49,
+            background: "rgba(15,15,26,0.97)",
+            backdropFilter: "blur(20px)",
+            borderBottom: "0.5px solid rgba(255,255,255,0.08)",
+            padding: "12px 24px 20px",
+          }}
+        >
+          {user ? (
+            <>
+              <div
+                style={{
+                  paddingBottom: 12,
+                  marginBottom: 8,
+                  borderBottom: "0.5px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                <p
+                  style={{
+                    color: "rgba(220,220,245,0.40)",
+                    fontSize: 11,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    fontFamily: "var(--font-jakarta), sans-serif",
+                  }}
+                >
+                  {user.email}
+                </p>
+              </div>
+              <Link
+                href="/mobilite"
+                style={{ textDecoration: "none" }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <div
+                  style={{
+                    padding: "13px 0",
+                    color: "#7c9fff",
+                    fontSize: 15,
+                    fontWeight: 600,
+                    fontFamily: "var(--font-nunito), sans-serif",
+                    borderBottom: "0.5px solid rgba(255,255,255,0.06)",
+                    cursor: "pointer",
+                  }}
+                >
+                  Mobilité
+                </div>
+              </Link>
+              <Link
+                href="/dashboard"
+                style={{ textDecoration: "none" }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <div
+                  style={{
+                    padding: "13px 0",
+                    color: "#7c9fff",
+                    fontSize: 15,
+                    fontWeight: 600,
+                    fontFamily: "var(--font-nunito), sans-serif",
+                    borderBottom: "0.5px solid rgba(255,255,255,0.06)",
+                    cursor: "pointer",
+                  }}
+                >
+                  Dashboard
+                </div>
+              </Link>
+              <div
+                onClick={signOut}
+                style={{
+                  padding: "13px 0",
+                  color: "#f09595",
+                  fontSize: 15,
+                  fontWeight: 600,
+                  fontFamily: "var(--font-nunito), sans-serif",
+                  cursor: "pointer",
+                }}
+              >
+                → Déconnexion
+              </div>
+            </>
+          ) : (
+            <Link
+              href="/auth"
+              style={{ textDecoration: "none" }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <div
+                style={{
+                  padding: "13px 0",
+                  color: "rgba(220,220,245,0.65)",
+                  fontSize: 15,
+                  fontWeight: 500,
+                  fontFamily: "var(--font-jakarta), sans-serif",
+                  cursor: "pointer",
+                }}
+              >
+                Se connecter
+              </div>
+            </Link>
+          )}
+        </div>
+      )}
     </nav>
   );
 }

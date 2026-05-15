@@ -488,7 +488,7 @@ const TOAST_MESSAGES = [
   "🏃 Dernière ligne droite !",
 ];
 
-export default function QuestionnairePage() {
+function BureauQuestionnaire() {
   const router = useRouter();
   const [answers, setAnswers] = useState<QuestionnaireAnswers>(DEFAULT_ANSWERS);
   const [firstname, setFirstname] = useState("");
@@ -934,5 +934,34 @@ export default function QuestionnairePage() {
         )}
       </AnimatePresence>
     </main>
+  );
+}
+
+// ─── Dispatcher ───────────────────────────────────────────────────────────────
+
+import ProfileQuestionnaire from "./ProfileQuestionnaire";
+import { PROFILE_CATEGORIES, type JobType } from "@/lib/questionnaire-profiles";
+
+export default function QuestionnairePage() {
+  const [jobType, setJobType] = useState<string>("");
+  const [firstname, setFirstname] = useState<string>("");
+
+  useEffect(() => {
+    setJobType(localStorage.getItem("paw_job_type") ?? "bureau");
+    setFirstname(localStorage.getItem("paw_firstname") ?? "");
+  }, []);
+
+  if (!jobType) return null; // loading
+
+  if (jobType === "bureau" || !PROFILE_CATEGORIES[jobType as Exclude<JobType, "bureau">]) {
+    return <BureauQuestionnaire />;
+  }
+
+  return (
+    <ProfileQuestionnaire
+      categories={PROFILE_CATEGORIES[jobType as Exclude<JobType, "bureau">]}
+      jobType={jobType as JobType}
+      firstname={firstname}
+    />
   );
 }

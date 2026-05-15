@@ -267,6 +267,55 @@ function buildFallbackReport(): AnalysisReport {
   };
 }
 
+// ─── Job-type specific prompts ────────────────────────────────────────────────
+
+const JOB_SYSTEM_PROMPTS: Record<string, string> = {
+  debout: `Tu es un ergonome expert analysant un travailleur en position debout.
+Analyse les images et génère un rapport JSON avec la même structure exacte que le prompt standard.
+Focus spécifique :
+1. POSTURE DEBOUT : dos droit ou courbé, épaules alignées, appui symétrique sur les deux jambes, genoux légèrement fléchis ou bloqués.
+2. PIEDS & JAMBES : type de chaussures visible, présence d'un tapis anti-fatigue, position des pieds.
+3. ESPACE DE TRAVAIL DEBOUT : hauteur du plan de travail adaptée, environnement qui force une posture contrainte.
+4. RECOMMANDATIONS spécifiques au travail debout.
+Retourne le même JSON que demandé.`,
+
+  artisan: `Tu es un ergonome expert analysant un travailleur de terrain.
+Analyse les images et génère un rapport JSON avec la même structure exacte que le prompt standard.
+Focus spécifique :
+1. POSTURE DE TRAVAIL : position du dos (droit, fléchi, en rotation), position des genoux, symétrie pendant le geste.
+2. PORT DE CHARGES : charges visibles et comment elles sont portées, technique de levage.
+3. ENVIRONNEMENT DE TRAVAIL : espace adapté ou contraint, sol stable, outils adaptés.
+4. RISQUES TMS : identifier les TMS probables selon postures observées.
+Retourne le même JSON que demandé.`,
+
+  transport: `Tu es un ergonome expert analysant la posture d'un conducteur.
+Analyse les images et génère un rapport JSON avec la même structure exacte que le prompt standard.
+Focus spécifique :
+1. POSITION ASSISE EN CONDUITE : distance au volant, position du dos, hauteur du siège, position de la nuque.
+2. APPUI LOMBAIRE : présence et efficacité d'un appui lombaire, bas du dos soutenu ou en porte-à-faux.
+3. MEMBRES SUPÉRIEURS : position des bras sur le volant, tension dans les épaules.
+4. ENVIRONNEMENT VÉHICULE : accessibilité des commandes, ergonomie du poste de conduite.
+Retourne le même JSON que demandé.`,
+
+  medical: `Tu es un ergonome expert analysant un professionnel de santé.
+Analyse les images et génère un rapport JSON avec la même structure exacte que le prompt standard.
+Focus spécifique :
+1. POSTURE DE SOIN : position du dos lors des soins, hauteur du plan de soin, symétrie posturale.
+2. GESTES RÉPÉTITIFS : gestes visibles et impact postural, position des poignets.
+3. ENVIRONNEMENT DE SOINS : espace adapté ou contraint, équipements de manutention visibles.
+4. RECOMMANDATIONS adaptées aux contraintes spécifiques du soin.
+Retourne le même JSON que demandé.`,
+
+  enseignement: `Tu es un ergonome expert analysant un enseignant.
+Analyse les images et génère un rapport JSON avec la même structure exacte que le prompt standard.
+Focus spécifique :
+1. POSTURE EN CLASSE : position debout ou assise, dos droit ou voûté, tension dans les épaules.
+2. UTILISATION DU TABLEAU : position des bras, inclinaison de la tête, torsion du tronc.
+3. POSTE DE TRAVAIL : hauteur du bureau ou pupitre, position lors de la préparation.
+4. RECOMMANDATIONS adaptées à l'enseignement.
+Retourne le même JSON que demandé.`,
+};
+
 // ─── Route handler ────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
@@ -282,7 +331,11 @@ export async function POST(req: NextRequest) {
       frames_bureau: string[];
       questionnaire_scores: Record<string, number> | null;
       questionnaire_answers: Record<string, unknown>;
+      job_type?: string;
     };
+
+    const jobType = (body as { job_type?: string }).job_type ?? "bureau";
+    const activePrompt = JOB_SYSTEM_PROMPTS[jobType] ?? SYSTEM_PROMPT;
 
     // Validate frames
     if (!frames_posture?.length || !frames_bureau?.length) {
@@ -329,7 +382,7 @@ Génère le rapport JSON complet comme demandé.
     const message = await client.messages.create({
       model: "claude-sonnet-4-5",
       max_tokens: 4096,
-      system: SYSTEM_PROMPT,
+      system: activePrompt,
       messages: [
         {
           role: "user",

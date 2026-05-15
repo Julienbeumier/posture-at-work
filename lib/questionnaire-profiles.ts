@@ -1,0 +1,738 @@
+export type QuestionType = "choice" | "multiselect" | "slider" | "painscale" | "wellbeing";
+
+export interface QuestionOption { value: string; label: string; }
+
+export interface QuestionDef {
+  id: string;
+  type: QuestionType;
+  label: string;
+  options?: QuestionOption[];
+  min?: number; max?: number; step?: number; unit?: string; reference?: string;
+  alwaysAnswered?: boolean; // sliders
+}
+
+export interface CategoryDef {
+  id: string;
+  title: string;
+  subtitle: string;
+  emoji: string;
+  color: string;
+  colorBg: string;
+  colorBorder: string;
+  selectedBg: string;
+  selectedColor: string;
+  questions: QuestionDef[];
+  requiredQ: string[]; // ids that must be answered for completion
+}
+
+export type JobType = "bureau" | "debout" | "artisan" | "transport" | "medical" | "enseignement";
+
+export type GenericAnswers = Record<string, string | number | string[] | null>;
+
+// ─── Profile defaults ──────────────────────────────────────────────────────
+
+export function defaultAnswers(categories: CategoryDef[]): GenericAnswers {
+  const out: GenericAnswers = {};
+  for (const cat of categories) {
+    for (const q of cat.questions) {
+      if (q.type === "slider") out[q.id] = q.min !== undefined ? Math.round((q.min + (q.max ?? q.min)) / 2) : 5;
+      else if (q.type === "painscale") out[q.id] = null;
+      else if (q.type === "wellbeing") out[q.id] = null;
+      else if (q.type === "multiselect") out[q.id] = [];
+      else out[q.id] = "";
+    }
+  }
+  return out;
+}
+
+// ─── DEBOUT profile ───────────────────────────────────────────────────────
+
+export const DEBOUT_CATEGORIES: CategoryDef[] = [
+  {
+    id: "cat-d1", title: "Ton poste debout", subtitle: "Ergonomie en position debout", emoji: "🦶",
+    color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    requiredQ: ["d_h_debout", "d_tapis", "d_chaussures", "d_siege", "d_variation"],
+    questions: [
+      { id: "d_h_debout", type: "slider", label: "Combien d'heures restes-tu debout par jour ?", min: 1, max: 12, step: 0.5, unit: "h", alwaysAnswered: true },
+      { id: "d_tapis", type: "choice", label: "As-tu un tapis anti-fatigue ?", options: [
+        { value: "oui", label: "✅ Oui" },
+        { value: "non", label: "❌ Non" },
+        { value: "inconnu", label: "🤷 Je sais pas ce que c'est" },
+      ]},
+      { id: "d_chaussures", type: "choice", label: "Tes chaussures sont-elles adaptées au travail debout ?", options: [
+        { value: "oui_pro", label: "✅ Oui, semelles professionnelles" },
+        { value: "oui_confort", label: "🔸 Oui, confortables" },
+        { value: "non", label: "❌ Non" },
+      ]},
+      { id: "d_siege", type: "choice", label: "As-tu accès à un siège dans la journée ?", options: [
+        { value: "oui_souvent", label: "✅ Oui, souvent" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "rarement", label: "⚠️ Rarement" },
+        { value: "jamais", label: "❌ Jamais" },
+      ]},
+      { id: "d_variation", type: "choice", label: "Peux-tu varier ta position dans la journée ?", options: [
+        { value: "oui", label: "✅ Oui, librement" },
+        { value: "un_peu", label: "🔸 Un peu" },
+        { value: "non", label: "❌ Non, position fixe" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-d2", title: "Tes douleurs", subtitle: "Douleurs spécifiques debout", emoji: "🩺",
+    color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
+    requiredQ: ["d_doul_pieds", "d_doul_genoux", "d_doul_dos", "d_doul_jambes", "d_doul_nuque", "d_doul_quand", "d_doul_duree"],
+    questions: [
+      { id: "d_doul_pieds", type: "painscale", label: "Douleur pieds / chevilles" },
+      { id: "d_doul_genoux", type: "painscale", label: "Douleur genoux" },
+      { id: "d_doul_dos", type: "painscale", label: "Douleur bas du dos" },
+      { id: "d_doul_jambes", type: "painscale", label: "Douleur jambes / mollets" },
+      { id: "d_doul_nuque", type: "painscale", label: "Douleur nuque / épaules" },
+      { id: "d_doul_quand", type: "choice", label: "Tes douleurs apparaissent quand ?", options: [
+        { value: "debut", label: "🌅 Début de service" },
+        { value: "milieu", label: "☀️ Milieu de journée" },
+        { value: "fin", label: "🌆 Fin de service" },
+        { value: "toujours", label: "🔄 Tout le temps" },
+        { value: "pas", label: "✨ Pas de douleurs" },
+      ]},
+      { id: "d_doul_duree", type: "choice", label: "Depuis combien de temps ?", options: [
+        { value: "jours", label: "📅 Quelques jours" },
+        { value: "semaines", label: "📅 Quelques semaines" },
+        { value: "mois", label: "📅 Plusieurs mois" },
+        { value: "an", label: "⏳ Plus d'un an" },
+        { value: "pas", label: "✨ Pas de douleurs" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-d3", title: "Gestes & charges", subtitle: "Contraintes physiques", emoji: "💪",
+    color: "#d4622a", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    requiredQ: ["d_charges", "d_gestes", "d_espace"],
+    questions: [
+      { id: "d_charges", type: "choice", label: "Portes-tu des charges dans ton travail ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "legere", label: "📦 Oui, < 5 kg" },
+        { value: "moyenne", label: "📦 Oui, 5-15 kg" },
+        { value: "lourde", label: "⚠️ Oui, > 15 kg" },
+      ]},
+      { id: "d_gestes", type: "choice", label: "Fais-tu des gestes répétitifs ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "toujours", label: "❌ Toute la journée" },
+      ]},
+      { id: "d_espace", type: "choice", label: "Travailles-tu dans un espace restreint ?", options: [
+        { value: "non", label: "✅ Non" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "❌ Souvent" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-d4", title: "Pauses & récupération", subtitle: "Repos et récupération", emoji: "⏱️",
+    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    requiredQ: ["d_pauses", "d_duree_pause", "d_recup"],
+    questions: [
+      { id: "d_pauses", type: "choice", label: "Fais-tu des pauses assises dans la journée ?", options: [
+        { value: "regulier", label: "✅ Oui, régulièrement" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "rarement", label: "⚠️ Rarement" },
+        { value: "jamais", label: "❌ Jamais" },
+      ]},
+      { id: "d_duree_pause", type: "choice", label: "Combien de temps dure ta pause principale ?", options: [
+        { value: "court", label: "< 15 min" },
+        { value: "moyen", label: "15-30 min" },
+        { value: "long", label: "30-60 min" },
+        { value: "tres_long", label: "> 1h" },
+      ]},
+      { id: "d_recup", type: "choice", label: "Comment tu récupères après le travail ?", options: [
+        { value: "sport", label: "🏃 Sport régulier" },
+        { value: "repos", label: "🛋️ Repos / détente" },
+        { value: "marche", label: "🚶 Marche" },
+        { value: "rien", label: "🤷 Rien de spécial" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-d5", title: "Sommeil & énergie", subtitle: "Récupération et hydratation", emoji: "🌙",
+    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    requiredQ: ["d_reveil", "d_fatigue"],
+    questions: [
+      { id: "d_sommeil", type: "slider", label: "Combien d'heures dors-tu par nuit ?", min: 4, max: 10, step: 0.5, unit: "h", alwaysAnswered: true },
+      { id: "d_reveil", type: "choice", label: "Tu te réveilles comment ?", options: [
+        { value: "repose", label: "😊 Reposé" },
+        { value: "fatigue", label: "😐 Fatigué" },
+        { value: "epuise", label: "😩 Épuisé" },
+      ]},
+      { id: "d_fatigue", type: "choice", label: "Ressens-tu de la fatigue en cours de service ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois en milieu/fin" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "toujours", label: "❌ Tout le temps" },
+      ]},
+      { id: "d_hydratation", type: "slider", label: "Combien de litres d'eau bois-tu par jour ?", min: 0, max: 3, step: 0.25, unit: "L", reference: "🎯 Minimum 2L pour un métier debout", alwaysAnswered: true },
+    ],
+  },
+  {
+    id: "cat-d6", title: "Ressenti global", subtitle: "Comment tu te sens", emoji: "💭",
+    color: "#a78bfa", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
+    selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
+    requiredQ: ["d_ressenti", "d_arret"],
+    questions: [
+      { id: "d_ressenti", type: "wellbeing", label: "Comment tu te sens physiquement après une journée ?" },
+      { id: "d_arret", type: "choice", label: "As-tu déjà eu un arrêt maladie lié à tes douleurs ?", options: [
+        { value: "non", label: "✅ Non" },
+        { value: "court", label: "📅 Oui, < 1 semaine" },
+        { value: "long", label: "⏳ Oui, > 1 semaine" },
+      ]},
+    ],
+  },
+];
+
+// ─── ARTISAN profile ──────────────────────────────────────────────────────
+
+export const ARTISAN_CATEGORIES: CategoryDef[] = [
+  {
+    id: "cat-a1", title: "Ton travail physique", subtitle: "Type de travail et postures", emoji: "🔧",
+    color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    requiredQ: ["a_metier", "a_position", "a_hauteur"],
+    questions: [
+      { id: "a_metier", type: "choice", label: "Quel est ton métier principal ?", options: [
+        { value: "macon", label: "🧱 Maçon / BTP" },
+        { value: "elec", label: "⚡ Électricien / plombier" },
+        { value: "peintre", label: "🎨 Peintre / menuisier" },
+        { value: "jardin", label: "🌿 Jardinage / espaces verts" },
+        { value: "autre", label: "🔧 Autre artisan" },
+      ]},
+      { id: "a_h_physique", type: "slider", label: "Combien d'heures de travail physique par jour ?", min: 1, max: 10, step: 0.5, unit: "h", alwaysAnswered: true },
+      { id: "a_position", type: "choice", label: "Tu travailles principalement ?", options: [
+        { value: "debout", label: "🧍 Debout" },
+        { value: "accroupi", label: "🤸 Accroupi / à genoux" },
+        { value: "courbe", label: "🪣 Courbé" },
+        { value: "varie", label: "🔀 Position variée" },
+      ]},
+      { id: "a_hauteur", type: "choice", label: "Travailles-tu en hauteur ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-a2", title: "Port de charges", subtitle: "Manutention et sécurité", emoji: "📦",
+    color: "#d4622a", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    requiredQ: ["a_charges_freq", "a_technique", "a_charges_poids"],
+    questions: [
+      { id: "a_charges_freq", type: "choice", label: "Tu portes des charges lourdes (>10 kg) ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "toujours", label: "❌ Très souvent" },
+      ]},
+      { id: "a_technique", type: "choice", label: "Comment portes-tu les charges ?", options: [
+        { value: "aide", label: "✅ Avec aide (collègue, matériel)" },
+        { value: "seul_ok", label: "🔸 Seul, bonne technique" },
+        { value: "seul_non", label: "❌ Seul, sans vraiment faire attention" },
+      ]},
+      { id: "a_epi", type: "choice", label: "Utilises-tu des équipements de protection ?", options: [
+        { value: "ceinture", label: "🦺 Ceinture lombaire" },
+        { value: "genouilleres", label: "🦵 Genouillères" },
+        { value: "plusieurs", label: "✅ Plusieurs EPI" },
+        { value: "rien", label: "❌ Rien" },
+      ]},
+      { id: "a_charges_poids", type: "choice", label: "Charges les plus lourdes que tu soulèves ?", options: [
+        { value: "leger", label: "📦 < 10 kg" },
+        { value: "moyen", label: "📦 10-25 kg" },
+        { value: "lourd", label: "⚠️ 25-50 kg" },
+        { value: "tres_lourd", label: "🚨 > 50 kg" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-a3", title: "Gestes répétitifs", subtitle: "Contraintes posturales", emoji: "🔄",
+    color: "#7c3aed", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
+    selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
+    requiredQ: ["a_gestes", "a_courbe", "a_inconfort"],
+    questions: [
+      { id: "a_gestes", type: "choice", label: "Fais-tu des gestes répétitifs ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "toujours", label: "❌ Toute la journée" },
+      ]},
+      { id: "a_courbe", type: "choice", label: "Travailles-tu souvent en position courbée ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "tres_souvent", label: "❌ Très souvent" },
+      ]},
+      { id: "a_vibrations", type: "choice", label: "As-tu des vibrations dans ton travail ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois (outils vibrants)" },
+        { value: "souvent", label: "⚠️ Souvent" },
+      ]},
+      { id: "a_inconfort", type: "choice", label: "Travailles-tu dans des positions inconfortables ?", options: [
+        { value: "non", label: "✅ Non" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "presque_toujours", label: "❌ Presque toujours" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-a4", title: "Tes douleurs", subtitle: "Douleurs spécifiques terrain", emoji: "🩺",
+    color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
+    requiredQ: ["a_doul_dos", "a_doul_genoux", "a_doul_epaules", "a_doul_poignets", "a_doul_nuque", "a_doul_limite"],
+    questions: [
+      { id: "a_doul_dos", type: "painscale", label: "Douleur bas du dos" },
+      { id: "a_doul_genoux", type: "painscale", label: "Douleur genoux" },
+      { id: "a_doul_epaules", type: "painscale", label: "Douleur épaules" },
+      { id: "a_doul_poignets", type: "painscale", label: "Douleur poignets / mains" },
+      { id: "a_doul_nuque", type: "painscale", label: "Douleur nuque" },
+      { id: "a_doul_duree", type: "choice", label: "Depuis combien de temps ?", options: [
+        { value: "jours", label: "📅 Quelques jours" },
+        { value: "semaines", label: "📅 Quelques semaines" },
+        { value: "mois", label: "📅 Plusieurs mois" },
+        { value: "an", label: "⏳ Plus d'un an" },
+        { value: "pas", label: "✨ Pas de douleurs" },
+      ]},
+      { id: "a_doul_limite", type: "choice", label: "Tes douleurs t'empêchent-elles de travailler ?", options: [
+        { value: "non", label: "✅ Non" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "adapte", label: "🔧 J'ai adapté mon travail" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-a5", title: "Récupération", subtitle: "Sommeil et habitudes post-chantier", emoji: "🌙",
+    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    requiredQ: ["a_reveil", "a_sport", "a_etirements"],
+    questions: [
+      { id: "a_sommeil", type: "slider", label: "Heures de sommeil par nuit", min: 4, max: 10, step: 0.5, unit: "h", alwaysAnswered: true },
+      { id: "a_reveil", type: "choice", label: "Tu te réveilles comment ?", options: [
+        { value: "repose", label: "😊 Reposé" },
+        { value: "fatigue", label: "😐 Fatigué" },
+        { value: "epuise", label: "😩 Épuisé" },
+      ]},
+      { id: "a_sport", type: "choice", label: "Fais-tu du sport en dehors du travail ?", options: [
+        { value: "regulier", label: "✅ Oui, régulièrement" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "non", label: "❌ Non (le travail est déjà physique)" },
+      ]},
+      { id: "a_etirements", type: "choice", label: "Fais-tu des étirements après le chantier ?", options: [
+        { value: "oui", label: "✅ Oui, régulièrement" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "non", label: "❌ Non" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-a6", title: "Santé & ressenti", subtitle: "Historique et ressenti global", emoji: "💭",
+    color: "#a78bfa", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
+    selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
+    requiredQ: ["a_ressenti", "a_accident"],
+    questions: [
+      { id: "a_accident", type: "choice", label: "As-tu déjà eu un accident de travail ?", options: [
+        { value: "non", label: "✅ Non" },
+        { value: "mineur", label: "🔸 Oui, mineur" },
+        { value: "grave", label: "⚠️ Oui, grave" },
+      ]},
+      { id: "a_maladie_pro", type: "choice", label: "As-tu une reconnaissance de maladie professionnelle ?", options: [
+        { value: "non", label: "✅ Non" },
+        { value: "en_cours", label: "🔸 En cours" },
+        { value: "oui", label: "📋 Oui" },
+      ]},
+      { id: "a_ressenti", type: "wellbeing", label: "Comment tu te sens physiquement globalement ?" },
+    ],
+  },
+];
+
+// ─── TRANSPORT profile ────────────────────────────────────────────────────
+
+export const TRANSPORT_CATEGORIES: CategoryDef[] = [
+  {
+    id: "cat-t1", title: "Ton poste de conduite", subtitle: "Ergonomie véhicule", emoji: "🚗",
+    color: "#7c9fff", colorBg: "rgba(43,92,230,0.08)", colorBorder: "rgba(43,92,230,0.18)",
+    selectedBg: "rgba(43,92,230,0.18)", selectedColor: "#7c9fff",
+    requiredQ: ["t_vehicule", "t_siege", "t_distance_volant", "t_lombaire"],
+    questions: [
+      { id: "t_vehicule", type: "choice", label: "Quel véhicule conduis-tu principalement ?", options: [
+        { value: "voiture", label: "🚗 Voiture" },
+        { value: "camionnette", label: "🚐 Camionnette" },
+        { value: "camion", label: "🚛 Camion" },
+        { value: "bus", label: "🚌 Bus / car" },
+        { value: "plusieurs", label: "🔀 Plusieurs" },
+      ]},
+      { id: "t_h_conduite", type: "slider", label: "Combien d'heures conduis-tu par jour ?", min: 1, max: 12, step: 0.5, unit: "h", alwaysAnswered: true },
+      { id: "t_siege", type: "choice", label: "Ton siège de conduite est-il réglable ?", options: [
+        { value: "oui_regle", label: "✅ Oui, bien réglé" },
+        { value: "oui_mal", label: "🔸 Oui, mais je sais pas régler" },
+        { value: "non", label: "❌ Non" },
+      ]},
+      { id: "t_distance_volant", type: "choice", label: "La distance entre toi et le volant est-elle confortable ?", options: [
+        { value: "oui", label: "✅ Oui" },
+        { value: "approx", label: "🔸 À peu près" },
+        { value: "trop_loin", label: "📏 Non, trop loin" },
+        { value: "trop_pres", label: "📏 Non, trop près" },
+      ]},
+      { id: "t_lombaire", type: "choice", label: "As-tu un appui lombaire dans ton siège ?", options: [
+        { value: "integre", label: "✅ Oui, intégré" },
+        { value: "coussin", label: "🛋️ Oui, coussin ajouté" },
+        { value: "non", label: "❌ Non" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-t2", title: "Douleurs en conduite", subtitle: "Douleurs liées à la position", emoji: "🩺",
+    color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
+    requiredQ: ["t_doul_dos", "t_doul_nuque", "t_doul_jambes", "t_doul_quand", "t_fourmillements"],
+    questions: [
+      { id: "t_doul_dos", type: "painscale", label: "Douleur bas du dos" },
+      { id: "t_doul_nuque", type: "painscale", label: "Douleur nuque" },
+      { id: "t_doul_epaules", type: "painscale", label: "Douleur épaules" },
+      { id: "t_doul_jambes", type: "painscale", label: "Douleur jambes / sciatique" },
+      { id: "t_doul_quand", type: "choice", label: "Tes douleurs apparaissent ?", options: [
+        { value: "debut", label: "🌅 Au début du trajet" },
+        { value: "apres_2h", label: "⏰ Après 1-2h" },
+        { value: "fin", label: "🌆 En fin de journée" },
+        { value: "toujours", label: "🔄 Tout le temps" },
+        { value: "pas", label: "✨ Pas de douleurs" },
+      ]},
+      { id: "t_fourmillements", type: "choice", label: "As-tu des fourmillements dans les jambes ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "toujours", label: "❌ Tout le temps" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-t3", title: "Pauses & posture route", subtitle: "Habitudes de conduite", emoji: "⏱️",
+    color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    requiredQ: ["t_pauses", "t_que_pauses"],
+    questions: [
+      { id: "t_pauses", type: "choice", label: "Fais-tu des pauses régulières en conduite ?", options: [
+        { value: "2h", label: "✅ Toutes les 2h" },
+        { value: "3h", label: "🔸 Toutes les 3-4h" },
+        { value: "rarement", label: "⚠️ Rarement" },
+        { value: "jamais", label: "❌ Jamais" },
+      ]},
+      { id: "t_que_pauses", type: "choice", label: "Que fais-tu pendant tes pauses ?", options: [
+        { value: "marche", label: "🚶 Marche" },
+        { value: "etirements", label: "🧘 Étirements" },
+        { value: "assis", label: "🪑 Rester assis" },
+        { value: "telephone", label: "📱 Téléphone" },
+      ]},
+      { id: "t_regulateur", type: "choice", label: "Utilises-tu le régulateur de vitesse ?", options: [
+        { value: "toujours", label: "✅ Oui, toujours" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "non", label: "❌ Non" },
+      ]},
+      { id: "t_vibrations", type: "choice", label: "As-tu des vibrations importantes ?", options: [
+        { value: "non", label: "✅ Non" },
+        { value: "legeres", label: "🔸 Légères" },
+        { value: "importantes", label: "⚠️ Importantes" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-t4", title: "Sommeil & fatigue route", subtitle: "Récupération essentielle", emoji: "🌙",
+    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    requiredQ: ["t_reveil", "t_somnolence"],
+    questions: [
+      { id: "t_sommeil", type: "slider", label: "Heures de sommeil par nuit", min: 4, max: 10, step: 0.5, unit: "h", alwaysAnswered: true },
+      { id: "t_reveil", type: "choice", label: "Tu te réveilles comment ?", options: [
+        { value: "repose", label: "😊 Reposé" },
+        { value: "fatigue", label: "😐 Fatigué" },
+        { value: "epuise", label: "😩 Épuisé" },
+      ]},
+      { id: "t_somnolence", type: "choice", label: "Ressens-tu de la somnolence en conduisant ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "🚨 Souvent (important pour la sécurité)" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-t5", title: "Stress & charge mentale", subtitle: "Pression et bien-être", emoji: "💭",
+    color: "#a78bfa", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
+    selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
+    requiredQ: ["t_stress", "t_pression", "t_ressenti"],
+    questions: [
+      { id: "t_stress", type: "choice", label: "Le trafic / les délais te stressent-ils ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "tres_souvent", label: "❌ Très souvent" },
+      ]},
+      { id: "t_pression", type: "choice", label: "Ressens-tu une pression sur tes horaires ?", options: [
+        { value: "non", label: "✅ Non" },
+        { value: "legere", label: "🔸 Légère" },
+        { value: "importante", label: "⚠️ Importante" },
+        { value: "tres_forte", label: "❌ Très forte" },
+      ]},
+      { id: "t_ressenti", type: "wellbeing", label: "Comment tu te sens globalement ?" },
+    ],
+  },
+];
+
+// ─── MEDICAL profile ──────────────────────────────────────────────────────
+
+export const MEDICAL_CATEGORIES: CategoryDef[] = [
+  {
+    id: "cat-m1", title: "Ton environnement de soin", subtitle: "Poste de travail médical", emoji: "🏥",
+    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    requiredQ: ["m_specialite", "m_position", "m_gardes"],
+    questions: [
+      { id: "m_specialite", type: "choice", label: "Quelle est ta spécialité ?", options: [
+        { value: "infirmier", label: "💉 Infirmier(e)" },
+        { value: "aide_soignant", label: "🤝 Aide-soignant(e)" },
+        { value: "kine", label: "🏋️ Kinésithérapeute" },
+        { value: "medecin", label: "👨‍⚕️ Médecin" },
+        { value: "dentiste", label: "🦷 Dentiste / chirurgien" },
+        { value: "autre", label: "🏥 Autre paramédical" },
+      ]},
+      { id: "m_position", type: "choice", label: "Tu es principalement ?", options: [
+        { value: "debout", label: "🧍 Debout" },
+        { value: "assis", label: "🪑 Assis" },
+        { value: "les_deux", label: "🔀 Les deux selon les moments" },
+      ]},
+      { id: "m_h_shift", type: "slider", label: "Heures par shift de travail ?", min: 6, max: 14, step: 1, unit: "h", alwaysAnswered: true },
+      { id: "m_gardes", type: "choice", label: "Fais-tu des gardes de nuit ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "toujours", label: "❌ C'est mon rythme habituel" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-m2", title: "Gestes de soin", subtitle: "Postures et manutention", emoji: "💪",
+    color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    requiredQ: ["m_mobilisation", "m_courbe", "m_materiel"],
+    questions: [
+      { id: "m_mobilisation", type: "choice", label: "Fais-tu des mobilisations de patients ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "tres_souvent", label: "❌ Très souvent" },
+      ]},
+      { id: "m_courbe", type: "choice", label: "Travailles-tu souvent courbé sur un patient ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "tres_souvent", label: "❌ Très souvent" },
+      ]},
+      { id: "m_gestes_prec", type: "choice", label: "Fais-tu des gestes de précision répétitifs ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "toujours", label: "❌ Toute la journée" },
+      ]},
+      { id: "m_materiel", type: "choice", label: "Utilises-tu du matériel de manutention ?", options: [
+        { value: "oui_toujours", label: "✅ Oui, toujours" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "rarement", label: "⚠️ Rarement" },
+        { value: "pas_dispo", label: "❌ Pas disponible" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-m3", title: "Douleurs soignants", subtitle: "Zones critiques du soin", emoji: "🩺",
+    color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
+    requiredQ: ["m_doul_dos", "m_doul_epaules", "m_doul_nuque"],
+    questions: [
+      { id: "m_doul_dos", type: "painscale", label: "Douleur bas du dos" },
+      { id: "m_doul_epaules", type: "painscale", label: "Douleur épaules" },
+      { id: "m_doul_poignets", type: "painscale", label: "Douleur poignets" },
+      { id: "m_doul_nuque", type: "painscale", label: "Douleur nuque" },
+      { id: "m_doul_jambes", type: "painscale", label: "Douleur jambes (si debout)" },
+    ],
+  },
+  {
+    id: "cat-m4", title: "Charge mentale", subtitle: "Burn-out et émotionnel", emoji: "🧠",
+    color: "#a78bfa", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
+    selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
+    requiredQ: ["m_charge_emo", "m_burnout"],
+    questions: [
+      { id: "m_charge_emo", type: "choice", label: "La charge émotionnelle de ton travail est ?", options: [
+        { value: "legere", label: "😊 Légère" },
+        { value: "moderee", label: "😐 Modérée" },
+        { value: "importante", label: "😕 Importante" },
+        { value: "tres_lourde", label: "😩 Très lourde" },
+      ]},
+      { id: "m_burnout", type: "choice", label: "Ressens-tu des signes de burn-out ?", options: [
+        { value: "non", label: "✅ Non, ça va" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent — parler en est le premier pas" },
+      ]},
+      { id: "m_soutien", type: "choice", label: "As-tu du soutien psychologique au travail ?", options: [
+        { value: "oui", label: "✅ Oui" },
+        { value: "non_voudrait", label: "🔸 Non, mais j'en voudrais" },
+        { value: "non_ok", label: "😊 Non, et ça va" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-m5", title: "Sommeil & récupération", subtitle: "Indispensable pour les soignants", emoji: "🌙",
+    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    requiredQ: ["m_reveil", "m_fatigue_chrono"],
+    questions: [
+      { id: "m_sommeil", type: "slider", label: "Heures de sommeil par nuit", min: 4, max: 10, step: 0.5, unit: "h", alwaysAnswered: true },
+      { id: "m_reveil", type: "choice", label: "Tu te réveilles comment ?", options: [
+        { value: "repose", label: "😊 Reposé" },
+        { value: "fatigue", label: "😐 Fatigué" },
+        { value: "epuise", label: "😩 Épuisé" },
+      ]},
+      { id: "m_fatigue_chrono", type: "choice", label: "Ressens-tu une fatigue chronique ?", options: [
+        { value: "non", label: "✅ Non" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-m6", title: "Ressenti global", subtitle: "Ton bien-être général", emoji: "💭",
+    color: "#a78bfa", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
+    selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
+    requiredQ: ["m_ressenti_physique", "m_ressenti_mental"],
+    questions: [
+      { id: "m_ressenti_physique", type: "wellbeing", label: "Comment tu te sens physiquement ?" },
+      { id: "m_ressenti_mental", type: "wellbeing", label: "Comment tu te sens mentalement ?" },
+    ],
+  },
+];
+
+// ─── ENSEIGNEMENT profile ─────────────────────────────────────────────────
+
+export const ENSEIGNEMENT_CATEGORIES: CategoryDef[] = [
+  {
+    id: "cat-e1", title: "Ton environnement", subtitle: "Salle de classe et matériel", emoji: "🎓",
+    color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    requiredQ: ["e_niveau", "e_position", "e_bureau"],
+    questions: [
+      { id: "e_niveau", type: "choice", label: "Tu enseignes ?", options: [
+        { value: "primaire", label: "🎨 Primaire" },
+        { value: "college", label: "📚 Collège" },
+        { value: "lycee", label: "🏫 Lycée" },
+        { value: "superieur", label: "🎓 Supérieur" },
+        { value: "formation", label: "💼 Formation professionnelle" },
+      ]},
+      { id: "e_position", type: "choice", label: "Tu es principalement ?", options: [
+        { value: "debout", label: "🧍 Debout" },
+        { value: "assis", label: "🪑 Assis" },
+        { value: "les_deux", label: "🔀 Les deux" },
+      ]},
+      { id: "e_tbi", type: "choice", label: "Ta salle est-elle équipée d'un tableau interactif ?", options: [
+        { value: "oui", label: "✅ Oui, TBI" },
+        { value: "non", label: "🖊️ Non, tableau classique" },
+        { value: "les_deux", label: "🔀 Les deux" },
+      ]},
+      { id: "e_bureau", type: "choice", label: "As-tu un bureau assis pour travailler ?", options: [
+        { value: "ergo", label: "✅ Oui, ergonomique" },
+        { value: "standard", label: "🔸 Oui, standard" },
+        { value: "non", label: "❌ Non, debout seulement" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-e2", title: "Voix & posture", subtitle: "Santé vocale et douleurs", emoji: "🎤",
+    color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
+    requiredQ: ["e_voix", "e_doul_nuque", "e_doul_dos"],
+    questions: [
+      { id: "e_voix", type: "choice", label: "As-tu des problèmes de voix ?", options: [
+        { value: "jamais", label: "✅ Jamais" },
+        { value: "parfois", label: "🔸 Parfois, fatigue vocale" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "ortho", label: "🏥 J'ai consulté un orthophoniste" },
+      ]},
+      { id: "e_bruit", type: "choice", label: "Travailles-tu dans des classes bruyantes ?", options: [
+        { value: "non", label: "✅ Non" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "toujours", label: "❌ Très souvent" },
+      ]},
+      { id: "e_doul_nuque", type: "painscale", label: "Douleur nuque" },
+      { id: "e_doul_dos", type: "painscale", label: "Douleur dos" },
+      { id: "e_doul_jambes", type: "painscale", label: "Douleur jambes (si debout)" },
+    ],
+  },
+  {
+    id: "cat-e3", title: "Charge de travail", subtitle: "Préparation et surcharge", emoji: "📚",
+    color: "#7c3aed", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
+    selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
+    requiredQ: ["e_prep_h", "e_prep_lieu", "e_surcharge"],
+    questions: [
+      { id: "e_prep_h", type: "choice", label: "Heures de préparation par semaine ?", options: [
+        { value: "peu", label: "< 5h" },
+        { value: "moyen", label: "5-10h" },
+        { value: "beaucoup", label: "10-20h" },
+        { value: "tres_bcp", label: "> 20h" },
+      ]},
+      { id: "e_prep_lieu", type: "choice", label: "Ces heures se font ?", options: [
+        { value: "bureau_ergo", label: "✅ Bureau ergonomique" },
+        { value: "table_cuisine", label: "🔸 Table de cuisine" },
+        { value: "canape_lit", label: "⚠️ Canapé / lit" },
+        { value: "mixte", label: "🔀 Mixte" },
+      ]},
+      { id: "e_surcharge", type: "choice", label: "Ressens-tu une surcharge de travail ?", options: [
+        { value: "non", label: "✅ Non" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "burnout", label: "🚨 Signe de burn-out possible" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-e4", title: "Sommeil & ressenti", subtitle: "Récupération et bien-être", emoji: "🌙",
+    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    requiredQ: ["e_reveil", "e_ressenti"],
+    questions: [
+      { id: "e_sommeil", type: "slider", label: "Heures de sommeil par nuit", min: 4, max: 10, step: 0.5, unit: "h", alwaysAnswered: true },
+      { id: "e_reveil", type: "choice", label: "Tu te réveilles comment ?", options: [
+        { value: "repose", label: "😊 Reposé" },
+        { value: "fatigue", label: "😐 Fatigué" },
+        { value: "epuise", label: "😩 Épuisé" },
+      ]},
+      { id: "e_ressenti", type: "wellbeing", label: "Comment tu te sens globalement ?" },
+    ],
+  },
+];
+
+// ─── Profile registry ─────────────────────────────────────────────────────
+
+export const PROFILE_CATEGORIES: Record<Exclude<JobType, "bureau">, CategoryDef[]> = {
+  debout:       DEBOUT_CATEGORIES,
+  artisan:      ARTISAN_CATEGORIES,
+  transport:    TRANSPORT_CATEGORIES,
+  medical:      MEDICAL_CATEGORIES,
+  enseignement: ENSEIGNEMENT_CATEGORIES,
+};
+
+export const JOB_META: Record<JobType, { emoji: string; label: string }> = {
+  bureau:       { emoji: "💻", label: "Bureau / télétravail" },
+  debout:       { emoji: "🏪", label: "Commerce / restauration" },
+  artisan:      { emoji: "🔧", label: "Artisan / terrain" },
+  transport:    { emoji: "🚗", label: "Transport / mobilité" },
+  medical:      { emoji: "🏥", label: "Médical / paramédical" },
+  enseignement: { emoji: "🎓", label: "Enseignement / formation" },
+};
