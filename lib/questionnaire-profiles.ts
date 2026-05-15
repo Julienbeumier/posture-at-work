@@ -49,149 +49,131 @@ export function defaultAnswers(categories: CategoryDef[]): GenericAnswers {
 
 export const DEBOUT_CATEGORIES: CategoryDef[] = [
   {
-    id: "cat-d1", title: "Ton poste debout", subtitle: "Ergonomie en position debout", emoji: "🦶",
+    id: "cat-d1", title: "Ton poste debout", subtitle: "Sol, chaussures et ergonomie", emoji: "🦶",
     color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
     selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
-    requiredQ: ["d_h_debout", "d_tapis", "d_chaussures", "d_siege", "d_variation"],
+    requiredQ: ["q_d1", "q_d2", "q_d3", "q_d5", "q_d6", "q_d7"],
     questions: [
-      { id: "d_h_debout", type: "slider", label: "Combien d'heures restes-tu debout par jour ?", min: 1, max: 12, step: 0.5, unit: "h", alwaysAnswered: true },
-      { id: "d_tapis", type: "choice", label: "As-tu un tapis anti-fatigue ?", options: [
-        { value: "oui", label: "✅ Oui" },
-        { value: "non", label: "❌ Non" },
+      { id: "q_d1", type: "choice", label: "Sur quel type de sol travailles-tu ?", options: [
+        { value: "souple", label: "🟢 Tapis / caoutchouc (sol souple)" },
+        { value: "semi_dur", label: "🟫 Parquet / lino (sol semi-dur)" },
+        { value: "varie", label: "🔀 Ça varie selon les zones" },
+        { value: "dur", label: "🪨 Carrelage / béton (sol dur)" },
+      ]},
+      { id: "q_d2", type: "choice", label: "As-tu un tapis anti-fatigue à ton poste ?", options: [
+        { value: "oui_ergo", label: "✅ Oui, tapis ergonomique" },
+        { value: "oui_fin", label: "🔸 Oui mais fin / inadapté" },
+        { value: "non", label: "❌ Non, sol dur direct" },
         { value: "inconnu", label: "🤷 Je sais pas ce que c'est" },
       ]},
-      { id: "d_chaussures", type: "choice", label: "Tes chaussures sont-elles adaptées au travail debout ?", options: [
-        { value: "oui_pro", label: "✅ Oui, semelles professionnelles" },
-        { value: "oui_confort", label: "🔸 Oui, confortables" },
-        { value: "non", label: "❌ Non" },
+      { id: "q_d3", type: "choice", label: "Tes chaussures de travail sont ?", options: [
+        { value: "semelles_pro", label: "👟 Semelles amortissantes professionnelles" },
+        { value: "baskets", label: "👟 Baskets confortables" },
+        { value: "plates", label: "🥿 Chaussures plates sans amorti" },
+        { value: "ville", label: "👞 Chaussures de ville / talons" },
       ]},
-      { id: "d_siege", type: "choice", label: "As-tu accès à un siège dans la journée ?", options: [
-        { value: "oui_souvent", label: "✅ Oui, souvent" },
-        { value: "parfois", label: "🔸 Parfois" },
-        { value: "rarement", label: "⚠️ Rarement" },
-        { value: "jamais", label: "❌ Jamais" },
+      { id: "q_d4", type: "slider", label: "Combien d'heures restes-tu debout par jour ?", min: 4, max: 12, step: 0.5, unit: "h", reference: "⚠️ Au-delà de 6h debout sans pause = risque élevé", alwaysAnswered: true },
+      { id: "q_d5", type: "choice", label: "Peux-tu varier ta position dans la journée ?", options: [
+        { value: "oui", label: "✅ Oui librement (assis/debout)" },
+        { value: "un_peu", label: "🔸 Un peu, rarement" },
+        { value: "non", label: "❌ Non, position fixe imposée" },
       ]},
-      { id: "d_variation", type: "choice", label: "Peux-tu varier ta position dans la journée ?", options: [
-        { value: "oui", label: "✅ Oui, librement" },
-        { value: "un_peu", label: "🔸 Un peu" },
-        { value: "non", label: "❌ Non, position fixe" },
+      { id: "q_d6", type: "choice", label: "As-tu accès à un siège dans la journée ?", options: [
+        { value: "oui_utilise", label: "✅ Oui et je l'utilise" },
+        { value: "oui_nose_pas", label: "🔸 Oui mais je n'ose pas l'utiliser" },
+        { value: "non", label: "❌ Non, pas de siège disponible" },
+      ]},
+      { id: "q_d7", type: "choice", label: "La hauteur de ton plan de travail est ?", options: [
+        { value: "adapte", label: "✅ Adaptée (coudes légèrement fléchis)" },
+        { value: "trop_bas", label: "⬇️ Trop basse (je me courbe)" },
+        { value: "trop_haut", label: "⬆️ Trop haute (épaules soulevées)" },
+        { value: "pas_plan", label: "🤷 Je n'ai pas de plan de travail fixe" },
       ]},
     ],
   },
   {
-    id: "cat-d2", title: "Tes douleurs", subtitle: "Douleurs spécifiques debout", emoji: "🩺",
+    id: "cat-d2", title: "Tes douleurs spécifiques", subtitle: "Pieds, jambes, dos — les zones clés debout", emoji: "🩺",
     color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
     selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
-    requiredQ: ["d_doul_pieds", "d_doul_genoux", "d_doul_dos", "d_doul_jambes", "d_doul_nuque", "d_doul_quand", "d_doul_duree"],
+    requiredQ: ["q_d8", "q_d9", "q_d10", "q_d11", "q_d12", "q_d13", "q_d14", "q_d15"],
     questions: [
-      { id: "d_doul_pieds", type: "painscale", label: "Douleur pieds / chevilles" },
-      { id: "d_doul_genoux", type: "painscale", label: "Douleur genoux" },
-      { id: "d_doul_dos", type: "painscale", label: "Douleur bas du dos" },
-      { id: "d_doul_jambes", type: "painscale", label: "Douleur jambes / mollets" },
-      { id: "d_doul_nuque", type: "painscale", label: "Douleur nuque / épaules" },
-      { id: "d_doul_quand", type: "choice", label: "Tes douleurs apparaissent quand ?", options: [
-        { value: "debut", label: "🌅 Début de service" },
-        { value: "milieu", label: "☀️ Milieu de journée" },
-        { value: "fin", label: "🌆 Fin de service" },
-        { value: "toujours", label: "🔄 Tout le temps" },
-        { value: "pas", label: "✨ Pas de douleurs" },
+      { id: "q_d8", type: "painscale", label: "Douleurs pieds / talons" },
+      { id: "q_d9", type: "painscale", label: "Douleurs genoux" },
+      { id: "q_d10", type: "painscale", label: "Douleurs bas du dos" },
+      { id: "q_d11", type: "painscale", label: "Douleurs mollets / jambes lourdes" },
+      { id: "q_d12", type: "painscale", label: "Douleurs épaules / nuque" },
+      { id: "q_d13", type: "choice", label: "Tes pieds / talons sont douloureux surtout ?", options: [
+        { value: "premier_pas", label: "🌅 Au premier pas le matin (signe fasciite)" },
+        { value: "cours_service", label: "☀️ En cours de service" },
+        { value: "fin_journee", label: "🌆 En fin de journée uniquement" },
+        { value: "tout_temps", label: "🔄 Tout le temps" },
+        { value: "pas", label: "✨ Pas de douleurs aux pieds" },
       ]},
-      { id: "d_doul_duree", type: "choice", label: "Depuis combien de temps ?", options: [
+      { id: "q_d14", type: "choice", label: "Le soir après le travail, tes jambes sont ?", options: [
+        { value: "normales", label: "✅ Normales, pas de problème" },
+        { value: "lourdes", label: "😐 Un peu lourdes / fatiguées" },
+        { value: "tres_lourdes", label: "😫 Très lourdes, gonflées" },
+        { value: "varices", label: "🔴 Douloureuses avec varices visibles" },
+      ]},
+      { id: "q_d15", type: "choice", label: "Depuis combien de temps as-tu ces douleurs ?", options: [
+        { value: "pas", label: "✨ Pas de douleurs" },
         { value: "jours", label: "📅 Quelques jours" },
         { value: "semaines", label: "📅 Quelques semaines" },
         { value: "mois", label: "📅 Plusieurs mois" },
         { value: "an", label: "⏳ Plus d'un an" },
-        { value: "pas", label: "✨ Pas de douleurs" },
       ]},
     ],
   },
   {
-    id: "cat-d3", title: "Gestes & charges", subtitle: "Contraintes physiques", emoji: "💪",
-    color: "#d4622a", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
-    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
-    requiredQ: ["d_charges", "d_gestes", "d_espace"],
-    questions: [
-      { id: "d_charges", type: "choice", label: "Portes-tu des charges dans ton travail ?", options: [
-        { value: "jamais", label: "✅ Jamais" },
-        { value: "legere", label: "📦 Oui, < 5 kg" },
-        { value: "moyenne", label: "📦 Oui, 5-15 kg" },
-        { value: "lourde", label: "⚠️ Oui, > 15 kg" },
-      ]},
-      { id: "d_gestes", type: "choice", label: "Fais-tu des gestes répétitifs ?", options: [
-        { value: "jamais", label: "✅ Jamais" },
-        { value: "parfois", label: "🔸 Parfois" },
-        { value: "souvent", label: "⚠️ Souvent" },
-        { value: "toujours", label: "❌ Toute la journée" },
-      ]},
-      { id: "d_espace", type: "choice", label: "Travailles-tu dans un espace restreint ?", options: [
-        { value: "non", label: "✅ Non" },
-        { value: "parfois", label: "🔸 Parfois" },
-        { value: "souvent", label: "❌ Souvent" },
-      ]},
-    ],
-  },
-  {
-    id: "cat-d4", title: "Pauses & récupération", subtitle: "Repos et récupération", emoji: "⏱️",
+    id: "cat-d3", title: "Tes habitudes au travail", subtitle: "Pauses, mouvement et contraintes", emoji: "⏱️",
     color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
     selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
-    requiredQ: ["d_pauses", "d_duree_pause", "d_recup"],
+    requiredQ: ["q_d16", "q_d17", "q_d18", "q_d19"],
     questions: [
-      { id: "d_pauses", type: "choice", label: "Fais-tu des pauses assises dans la journée ?", options: [
-        { value: "regulier", label: "✅ Oui, régulièrement" },
-        { value: "parfois", label: "🔸 Parfois" },
+      { id: "q_d16", type: "choice", label: "Fais-tu des pauses assises dans la journée ?", options: [
+        { value: "regulier", label: "✅ Oui régulièrement (toutes les 2h)" },
+        { value: "parfois", label: "🔸 Oui parfois" },
         { value: "rarement", label: "⚠️ Rarement" },
-        { value: "jamais", label: "❌ Jamais" },
+        { value: "jamais", label: "🚫 Jamais — pas le temps ou pas autorisé" },
       ]},
-      { id: "d_duree_pause", type: "choice", label: "Combien de temps dure ta pause principale ?", options: [
-        { value: "court", label: "< 15 min" },
-        { value: "moyen", label: "15-30 min" },
-        { value: "long", label: "30-60 min" },
-        { value: "tres_long", label: "> 1h" },
+      { id: "q_d17", type: "choice", label: "Bouges-tu pendant ton service ?", options: [
+        { value: "beaucoup", label: "✅ Oui, je circule beaucoup" },
+        { value: "parfois", label: "🔸 Parfois mais souvent immobile" },
+        { value: "fixe", label: "❌ Non, poste fixe immobile" },
       ]},
-      { id: "d_recup", type: "choice", label: "Comment tu récupères après le travail ?", options: [
-        { value: "sport", label: "🏃 Sport régulier" },
-        { value: "repos", label: "🛋️ Repos / détente" },
-        { value: "marche", label: "🚶 Marche" },
-        { value: "rien", label: "🤷 Rien de spécial" },
+      { id: "q_d18", type: "choice", label: "Portes-tu des charges dans ton travail ?", options: [
+        { value: "legeres", label: "✅ Non ou très légères (<5 kg)" },
+        { value: "moyennes", label: "🔸 Parfois (5-15 kg)" },
+        { value: "lourdes", label: "⚠️ Souvent (>15 kg)" },
+        { value: "tres_lourdes", label: "🚨 Très souvent et lourd (>25 kg)" },
+      ]},
+      { id: "q_d19", type: "choice", label: "Hydratation pendant le service ?", options: [
+        { value: "reguliere", label: "✅ Je bois régulièrement (>1.5L)" },
+        { value: "parfois", label: "🔸 Parfois, pas assez" },
+        { value: "rarement", label: "❌ Rarement, pas le temps" },
+        { value: "interdit", label: "🚫 Je ne peux pas boire au poste" },
       ]},
     ],
   },
   {
-    id: "cat-d5", title: "Sommeil & énergie", subtitle: "Récupération et hydratation", emoji: "🌙",
-    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
-    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
-    requiredQ: ["d_reveil", "d_fatigue"],
-    questions: [
-      { id: "d_sommeil", type: "slider", label: "Combien d'heures dors-tu par nuit ?", min: 4, max: 10, step: 0.5, unit: "h", alwaysAnswered: true },
-      { id: "d_reveil", type: "choice", label: "Tu te réveilles comment ?", options: [
-        { value: "repose", label: "😊 Reposé" },
-        { value: "fatigue", label: "😐 Fatigué" },
-        { value: "epuise", label: "😩 Épuisé" },
-      ]},
-      { id: "d_fatigue", type: "choice", label: "Ressens-tu de la fatigue en cours de service ?", options: [
-        { value: "jamais", label: "✅ Jamais" },
-        { value: "parfois", label: "🔸 Parfois en milieu/fin" },
-        { value: "souvent", label: "⚠️ Souvent" },
-        { value: "toujours", label: "❌ Tout le temps" },
-      ]},
-      { id: "d_hydratation", type: "slider", label: "Combien de litres d'eau bois-tu par jour ?", min: 0, max: 3, step: 0.25, unit: "L", reference: "🎯 Minimum 2L pour un métier debout", alwaysAnswered: true },
-    ],
-  },
-  {
-    id: "cat-d6", title: "Ressenti global", subtitle: "Comment tu te sens", emoji: "💭",
+    id: "cat-d4", title: "Après le travail", subtitle: "Récupération et ressenti global", emoji: "🌙",
     color: "#a78bfa", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
     selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
-    requiredQ: ["d_ressenti", "d_arret"],
+    requiredQ: ["q_d21"],
     questions: [
-      { id: "d_ressenti", type: "wellbeing", label: "Comment tu te sens physiquement après une journée ?" },
-      { id: "d_arret", type: "choice", label: "As-tu déjà eu un arrêt maladie lié à tes douleurs ?", options: [
-        { value: "non", label: "✅ Non" },
-        { value: "court", label: "📅 Oui, < 1 semaine" },
-        { value: "long", label: "⏳ Oui, > 1 semaine" },
+      { id: "q_d20", type: "multiselect", label: "Que fais-tu après le travail pour récupérer ?", options: [
+        { value: "etirements", label: "🧘 Étirements / yoga" },
+        { value: "natation", label: "🏊 Natation / vélo (faible impact)" },
+        { value: "course", label: "🏃 Course à pied / sport intensif" },
+        { value: "repos", label: "🛋️ Repos passif" },
+        { value: "surelever", label: "🦵 Je surélève les jambes" },
+        { value: "compression", label: "🧦 Je porte des chaussettes de compression" },
       ]},
+      { id: "q_d21", type: "wellbeing", label: "Ressenti global en fin de journée ?" },
     ],
   },
 ];
+
 
 // ─── ARTISAN profile ──────────────────────────────────────────────────────
 

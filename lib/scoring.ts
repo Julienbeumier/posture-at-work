@@ -491,32 +491,77 @@ function sleepFromAnswers(answers: GenericAnswers, sleepKey: string, wakeKey: st
 }
 
 function calcDeboutScores(a: GenericAnswers): Scores {
-  let setup = 55;
-  if (a["d_tapis"] === "oui") setup += 15;
-  if (a["d_chaussures"] === "oui_pro") setup += 20; else if (a["d_chaussures"] === "non") setup -= 25;
-  if (a["d_siege"] === "jamais") setup -= 15; else if (a["d_siege"] === "oui_souvent") setup += 10;
-  if (a["d_variation"] === "non") setup -= 15; else if (a["d_variation"] === "oui") setup += 10;
-  setup = clamp(setup);
+  // ── setup_debout (25%) ───────────────────────────────────────────────────
+  const solScore: Record<string, number> = { souple: 100, semi_dur: 70, varie: 60, dur: 20 };
+  const tapisScore: Record<string, number> = { oui_ergo: 100, oui_fin: 50, non: 0, inconnu: 30 };
+  const chaussuresScore: Record<string, number> = { semelles_pro: 100, baskets: 75, plates: 20, ville: 10 };
+  const variationScore: Record<string, number> = { oui: 100, un_peu: 50, non: 0 };
+  const siegeScore: Record<string, number> = { oui_utilise: 100, oui_nose_pas: 40, non: 0 };
+  const planScore: Record<string, number> = { adapte: 100, trop_bas: 20, trop_haut: 30, pas_plan: 60 };
 
-  const pain = painFromScales(a, ["d_doul_pieds","d_doul_genoux","d_doul_dos","d_doul_jambes","d_doul_nuque"]);
+  const setupComponents = [
+    solScore[a["q_d1"] as string] ?? 50,
+    tapisScore[a["q_d2"] as string] ?? 30,
+    chaussuresScore[a["q_d3"] as string] ?? 50,
+    variationScore[a["q_d5"] as string] ?? 50,
+    siegeScore[a["q_d6"] as string] ?? 50,
+    planScore[a["q_d7"] as string] ?? 60,
+  ];
+  const setup = clamp(Math.round(setupComponents.reduce((s, v) => s + v, 0) / setupComponents.length));
 
-  let habits = 50;
-  if (a["d_pauses"] === "regulier") habits += 30; else if (a["d_pauses"] === "parfois") habits += 15; else if (a["d_pauses"] === "jamais") habits -= 20;
-  if (a["d_gestes"] === "toujours") habits -= 15; else if (a["d_gestes"] === "jamais") habits += 10;
-  habits = clamp(habits);
+  // ── pain_debout (35%) — pondération renforcée ────────────────────────────
+  const pieds = (a["q_d8"] as number ?? 0) * 1.3;
+  const genoux = (a["q_d9"] as number ?? 0) * 1.2;
+  const dos = (a["q_d10"] as number ?? 0) * 1.0;
+  const jambes = (a["q_d11"] as number ?? 0) * 1.1;
+  const nuque = (a["q_d12"] as number ?? 0) * 0.8;
+  const totalWeight = 1.3 + 1.2 + 1.0 + 1.1 + 0.8;
+  let rawPain = 100 - Math.round(((pieds + genoux + dos + jambes + nuque) / totalWeight) * 20);
 
-  const sleep_energy = sleepFromAnswers(a, "d_sommeil", "d_reveil");
+  // Timing pieds bonus/malus
+  const timingMap: Record<string, number> = { premier_pas: -30, cours_service: -15, fin_journee: -5, tout_temps: -25, pas: 20 };
+  rawPain += timingMap[a["q_d13"] as string] ?? 0;
 
-  let lifestyle = 55;
-  if (a["d_recup"] === "sport") lifestyle += 20; else if (a["d_recup"] === "rien") lifestyle -= 15;
+  // Jambes soir
+  const jambeSoirMap: Record<string, number> = { normales: 0, lourdes: -20, tres_lourdes: -40, varices: -60 };
+  rawPain += jambeSoirMap[a["q_d14"] as string] ?? 0;
+
+  const pain = clamp(rawPain);
+
+  // ── habits_debout (20%) ──────────────────────────────────────────────────
+  const pauseMap: Record<string, number> = { regulier: 100, parfois: 60, rarement: 20, jamais: 0 };
+  const mvtMap: Record<string, number> = { beaucoup: 100, parfois: 60, fixe: 10 };
+  const chargeMap: Record<string, number> = { legeres: 100, moyennes: 70, lourdes: 30, tres_lourdes: 0 };
+  const hydraMap: Record<string, number> = { reguliere: 100, parfois: 60, rarement: 20, interdit: 10 };
+  const habits = clamp(Math.round((
+    (pauseMap[a["q_d16"] as string] ?? 50) +
+    (mvtMap[a["q_d17"] as string] ?? 50) +
+    (chargeMap[a["q_d18"] as string] ?? 70) +
+    (hydraMap[a["q_d19"] as string] ?? 50)
+  ) / 4));
+
+  // ── sleep_energy (10%) — pénalité si > 8h debout ET < 6h sommeil ────────
+  let sleep_energy = 70;
+  const hDebout = a["q_d4"] as number ?? 7;
+  if (hDebout >= 8 && sleep_energy > 50) sleep_energy -= 20; // récupération insuffisante
+
+  // ── lifestyle (10%) — récupération après travail ─────────────────────────
+  const recup = a["q_d20"] as string[] ?? [];
+  let lifestyle = 30;
+  if (recup.includes("etirements")) lifestyle += 30;
+  if (recup.includes("natation")) lifestyle += 25;
+  if (recup.includes("surelever")) lifestyle += 20;
+  if (recup.includes("compression")) lifestyle += 15;
+  if (recup.includes("course")) lifestyle += 5;
+  if (recup.includes("repos")) lifestyle += 5;
   lifestyle = clamp(lifestyle);
 
-  let nutrition = 60;
-  const hydra = a["d_hydratation"] as number;
-  if (typeof hydra === "number") { if (hydra >= 2) nutrition += 15; else if (hydra < 1) nutrition -= 20; }
-  nutrition = clamp(nutrition);
+  // ── nutrition (poids réduit) ─────────────────────────────────────────────
+  const nutrition = clamp(hydraMap[a["q_d19"] as string] ?? 50);
 
-  const global = clamp(setup * 0.2 + pain * 0.3 + habits * 0.2 + sleep_energy * 0.15 + lifestyle * 0.1 + nutrition * 0.05);
+  const global = clamp(Math.round(
+    setup * 0.25 + pain * 0.35 + habits * 0.20 + sleep_energy * 0.10 + lifestyle * 0.10
+  ));
   return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition };
 }
 

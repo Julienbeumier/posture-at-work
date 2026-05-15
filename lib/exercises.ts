@@ -13,6 +13,7 @@ export interface Exercise {
   instruction: string;
   benefit: string;
   emoji: string;
+  jobTypes?: string[]; // specific job profiles this exercise targets
 }
 
 export const EXERCISES: Record<string, Exercise> = {
@@ -285,6 +286,68 @@ export const EXERCISES: Record<string, Exercise> = {
     instruction: "Ferme les yeux. Porte ton attention sur les pieds — sont-ils contractés ? Remonte progressivement : mollets, genoux, hanches, ventre, thorax, épaules, nuque, visage. À chaque zone, relâche consciemment la tension.",
     benefit: "Prend conscience des tensions pour mieux les relâcher",
   },
+
+  // ── Debout spécifiques ───────────────────────────────────────────────────
+  short_foot: {
+    id: "short_foot", name: "Short foot", subtitle: "Renforcement voûte plantaire",
+    zone: "Pieds & voûte plantaire", zoneColor: "#e24b4a", duration: 30,
+    reps: "10 répétitions × 3 sec", frequency: "3x par jour",
+    location: ["debout", "bureau", "maison"],
+    difficulty: "moyen", discreet: true, emoji: "🦶",
+    instruction: "Assis ou debout, essaie de raccourcir ton pied en rapprochant la tête des métatarses du talon, SANS fléchir les orteils. La voûte plantaire se soulève légèrement. Tiens 3 secondes. Relâche. L'exercice le plus efficace contre la fasciite plantaire.",
+    benefit: "Renforce les muscles intrinsèques et prévient la fasciite plantaire",
+    jobTypes: ["debout", "artisan", "transport"],
+  },
+  calf_raise_excentric: {
+    id: "calf_raise_excentric", name: "Mollet excentrique", subtitle: "Protocole Alfredson modifié",
+    zone: "Mollets & tendon d'Achille", zoneColor: "#e24b4a", duration: 45,
+    reps: "15 répétitions lentes", frequency: "2x par jour",
+    location: ["debout", "maison"],
+    difficulty: "moyen", discreet: false, emoji: "🦵",
+    instruction: "Debout sur une marche (avant-pied). Monte sur les deux pieds (2 sec). En haut, soulève le pied sain — redescends lentement sur le pied travaillé uniquement (4 sec). La phase de descente est la plus importante. Renforce mollet ET fascia plantaire.",
+    benefit: "Protocole validé contre fasciite plantaire et tendinopathie achilléenne",
+    jobTypes: ["debout"],
+  },
+  fascia_stretch_morning: {
+    id: "fascia_stretch_morning", name: "Étirement fascia matin", subtitle: "Avant le premier pas",
+    zone: "Fascia plantaire", zoneColor: "#e24b4a", duration: 30,
+    reps: "10 × 10 sec", frequency: "Chaque matin avant de se lever",
+    location: ["maison"],
+    difficulty: "facile", discreet: true, emoji: "🛏️",
+    instruction: "Assis au bord du lit, croise le pied douloureux sur le genou. Attrape les orteils et tire-les vers toi. Tu dois sentir l'étirement sous le pied. Tiens 10 secondes. Répète 10 fois AVANT de poser le pied au sol. Réduit la douleur du premier pas de 75%.",
+    benefit: "Réduit la douleur matinale de la fasciite plantaire de 75%",
+    jobTypes: ["debout"],
+  },
+  leg_elevation: {
+    id: "leg_elevation", name: "Surélévation des jambes", subtitle: "Drainage veineux",
+    zone: "Jambes & circulation", zoneColor: "#2d6a4f", duration: 1200,
+    reps: "20 minutes", frequency: "Chaque soir après le travail",
+    location: ["maison"],
+    difficulty: "facile", discreet: false, emoji: "🧘",
+    instruction: "Allongé sur le dos. Place tes jambes à 45° contre un mur ou sur des coussins empilés. Les pieds doivent être au-dessus du niveau du cœur. Reste ainsi 20 minutes. Écoute un podcast, lis. Draine activement les œdèmes et soulage l'insuffisance veineuse.",
+    benefit: "Draine les œdèmes et prévient les varices professionnelles",
+    jobTypes: ["debout", "medical"],
+  },
+  toe_spreading: {
+    id: "toe_spreading", name: "Écartement des orteils", subtitle: "Mobilité du pied",
+    zone: "Pieds & orteils", zoneColor: "#e24b4a", duration: 20,
+    reps: "10 répétitions", frequency: "Matin et soir",
+    location: ["maison", "bureau"],
+    difficulty: "facile", discreet: false, emoji: "🦶",
+    instruction: "Assis, pieds nus. Essaie d'écarter les orteils le plus possible. Tiens 3 secondes. Puis soulève uniquement le gros orteil en gardant les autres au sol. Puis l'inverse. Réveille les muscles intrinsèques du pied atrophiés par les chaussures.",
+    benefit: "Réactive les muscles du pied et prévient la fasciite plantaire",
+    jobTypes: ["debout"],
+  },
+  plantar_massage: {
+    id: "plantar_massage", name: "Auto-massage plantaire", subtitle: "Balle ou bouteille",
+    zone: "Voûte plantaire", zoneColor: "#e24b4a", duration: 120,
+    reps: "2 min par pied", frequency: "Soir après travail",
+    location: ["maison", "bureau"],
+    difficulty: "facile", discreet: false, emoji: "⚾",
+    instruction: "Assis, pose le pied sur une balle de tennis ou une bouteille d'eau. Roule lentement toute la voûte plantaire du talon vers les orteils. Insiste sur les zones tendues. En phase aiguë : utilise une bouteille d'eau GLACÉE — anti-inflammatoire et massage simultanément.",
+    benefit: "Relâche les tensions du fascia et réduit l'inflammation",
+    jobTypes: ["debout"],
+  },
 };
 
 // ─── Programs ─────────────────────────────────────────────────────────────────
@@ -335,6 +398,18 @@ export const PROGRAMS: Program[] = [
     label: "En voyage", icon: "✈️", duration: "8 min", tab: "deplacement",
     description: "8 exercices pour les longs trajets",
     exerciseIds: ["chin_tuck", "shoulder_circles", "thoracic_rotation", "wrist_rotation", "shake_out", "marching", "rule_20_20_20", "coherence_cardiaque"],
+  },
+  {
+    id: "debout_recovery",
+    label: "Récupération debout", icon: "🏪", duration: "15 min", tab: "maison",
+    description: "Programme du soir après une journée debout",
+    exerciseIds: ["fascia_stretch_morning", "calf_raise_excentric", "leg_elevation", "plantar_massage", "short_foot", "toe_spreading"],
+  },
+  {
+    id: "debout_pause",
+    label: "Pause active debout", icon: "⚡", duration: "3 min", tab: "bureau",
+    description: "À faire pendant ton service toutes les 2h",
+    exerciseIds: ["calf_raise_excentric", "marching", "wrist_rotation", "short_foot"],
   },
 ];
 
