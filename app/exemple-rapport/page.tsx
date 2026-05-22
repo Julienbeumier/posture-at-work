@@ -281,6 +281,8 @@ const THOMAS_ANSWERS = {
 
 function clearExampleMode() {
   sessionStorage.removeItem("paw_example_mode");
+  localStorage.removeItem("paw_example_mode");
+  // Ne pas toucher à paw_job_type — l'utilisateur le choisira dans l'onboarding
 }
 
 export default function ExempleRapportPage() {
@@ -289,11 +291,12 @@ export default function ExempleRapportPage() {
   useEffect(() => {
     // Forcer TOUTES les données Thomas — ne jamais lire le sessionStorage existant
     localStorage.setItem("paw_job_type", "bureau");
+    localStorage.setItem("paw_example_mode", "true");   // persistance inter-tab
     localStorage.setItem("paw_firstname", "Thomas");
     localStorage.setItem("paw_age", "26-35");
     localStorage.setItem("paw_hours_week", "35-40h");
 
-    sessionStorage.setItem("paw_example_mode", "true");
+    sessionStorage.setItem("paw_example_mode", "true"); // garde pour la session
     sessionStorage.setItem("postureatwork_scores", JSON.stringify(THOMAS_SCORES));
     sessionStorage.setItem("postureatwork_answers", JSON.stringify(THOMAS_ANSWERS));
   }, []);

@@ -184,8 +184,9 @@ export default function DimensionPage() {
     async function load() {
       if (!isValidDimension(dimensionParam)) { setReady(true); return; }
 
-      // Read jobType — force bureau if in example mode
-      const isExample = sessionStorage.getItem("paw_example_mode") === "true";
+      // Force bureau si mode exemple — vérifie les deux storages
+      const isExample = sessionStorage.getItem("paw_example_mode") === "true"
+                     || localStorage.getItem("paw_example_mode") === "true";
       const storedJobType = isExample ? "bureau" : (localStorage.getItem("paw_job_type") ?? "bureau");
       setJobType(storedJobType);
 
