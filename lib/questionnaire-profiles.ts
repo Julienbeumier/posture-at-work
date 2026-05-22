@@ -204,6 +204,91 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
       { id: "q_d21", type: "wellbeing", label: "Ressenti global en fin de journée ?" },
     ],
   },
+  {
+    id: "cat-d5", title: "Sommeil & récupération", subtitle: "Crampes nocturnes, agitation, douleurs au réveil", emoji: "🌙",
+    color: "#7dd3fc", colorBg: "rgba(14,165,233,0.08)", colorBorder: "rgba(14,165,233,0.18)",
+    selectedBg: "rgba(14,165,233,0.18)", selectedColor: "#7dd3fc",
+    requiredQ: ["q_d_crampes", "q_d_jambes_nuit", "q_d_reveil_douleur"],
+    questions: [
+      { id: "q_d_crampes", type: "choice", label: "As-tu des crampes dans les jambes la nuit ?", note: "Les crampes nocturnes chez les travailleurs debout sont souvent liées à la déshydratation et aux carences en magnésium", options: [
+        { value: "non", label: "✅ Non, jamais" },
+        { value: "parfois", label: "🔸 Parfois (1-2×/mois)" },
+        { value: "souvent", label: "😟 Souvent (plusieurs fois/semaine)" },
+        { value: "toutes_les_nuits", label: "😫 Presque toutes les nuits" },
+      ]},
+      { id: "q_d_jambes_nuit", type: "choice", label: "La nuit, tes jambes sont-elles agitées ou inconfortables ?", options: [
+        { value: "non", label: "✅ Non, aucun problème" },
+        { value: "parfois", label: "🔸 Parfois une sensation d'inconfort" },
+        { value: "souvent_agitees", label: "😟 Souvent agitées, difficile de rester immobile" },
+        { value: "perturbe_sommeil", label: "😫 Oui, ça perturbe mon sommeil régulièrement" },
+      ]},
+      { id: "q_d_reveil_douleur", type: "choice", label: "Te réveilles-tu avec des douleurs physiques ?", options: [
+        { value: "sans_douleur", label: "✅ Non, je me réveille sans douleur" },
+        { value: "raideurs", label: "🔸 Légères raideurs qui passent vite" },
+        { value: "douleurs_jambes", label: "😟 Douleurs aux jambes ou aux pieds au réveil" },
+        { value: "douleurs_importantes", label: "😫 Douleurs importantes qui persistent le matin" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-d6", title: "Nutrition & énergie", subtitle: "Petit-déjeuner, crampes, boissons, pause repas", emoji: "🍽️",
+    color: "#a78bfa", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
+    selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
+    requiredQ: ["q_d_petit_dej", "q_d_crampes_alim", "q_d_energie_boisson", "q_d_repas_service"],
+    questions: [
+      { id: "q_d_petit_dej", type: "choice", label: "Prends-tu un vrai petit-déjeuner avant le travail ?", note: "Sans carburant le matin, tes muscles se relâchent et ta posture s'effondre dès 10h", options: [
+        { value: "complet", label: "✅ Oui, complet (protéines + glucides complexes)" },
+        { value: "leger", label: "🔸 Léger (café + toast)" },
+        { value: "juste_cafe", label: "☕ Juste un café" },
+        { value: "saute", label: "🚫 Je saute souvent le petit-déjeuner" },
+      ]},
+      { id: "q_d_crampes_alim", type: "choice", label: "Ressens-tu des crampes musculaires régulièrement ?", options: [
+        { value: "non", label: "✅ Non, jamais" },
+        { value: "parfois", label: "🔸 Parfois pendant ou après le travail" },
+        { value: "souvent", label: "😟 Souvent — pieds, mollets, cuisses" },
+        { value: "nocturnes_service", label: "😫 Crampes nocturnes et en service" },
+      ]},
+      { id: "q_d_energie_boisson", type: "choice", label: "Bois-tu des boissons sucrées ou énergisantes pour tenir pendant le service ?", options: [
+        { value: "eau", label: "✅ Non, eau principalement" },
+        { value: "parfois_soda", label: "🔸 Parfois un soda ou jus de fruit" },
+        { value: "souvent_energisantes", label: "⚡ Souvent des boissons énergisantes" },
+        { value: "seul_moyen", label: "🔄 Oui, c'est ce qui me fait tenir" },
+      ]},
+      { id: "q_d_repas_service", type: "choice", label: "Manges-tu correctement pendant ta pause repas ?", options: [
+        { value: "repas_chaud", label: "✅ Oui, repas chaud équilibré assis" },
+        { value: "sandwich_assis", label: "🔸 Sandwich ou repas rapide assis" },
+        { value: "debout_travaillant", label: "😐 Je mange debout ou en travaillant" },
+        { value: "saute_pause", label: "🚫 Souvent je saute la pause repas" },
+      ]},
+    ],
+  },
+  {
+    id: "cat-d7", title: "Ton mode de vie", subtitle: "Étirements, activité sportive, suivi médical", emoji: "🏃",
+    color: "#5dcaa5", colorBg: "rgba(93,202,165,0.08)", colorBorder: "rgba(93,202,165,0.18)",
+    selectedBg: "rgba(93,202,165,0.18)", selectedColor: "#5dcaa5",
+    requiredQ: ["q_d_etirements_routine", "q_d_consultation"],
+    questions: [
+      { id: "q_d_etirements_routine", type: "choice", label: "Fais-tu des étirements avant ou après le travail ?", options: [
+        { value: "quotidienne", label: "✅ Oui, routine quotidienne (> 10 min)" },
+        { value: "parfois", label: "🔸 Parfois, quelques étirements" },
+        { value: "rarement", label: "❌ Rarement" },
+        { value: "jamais", label: "🚫 Jamais — je ne sais pas quoi faire" },
+      ]},
+      { id: "q_d_activite_type", type: "multiselect", label: "Quelle activité physique pratiques-tu en dehors du travail ?", options: [
+        { value: "natation_velo_marche", label: "🏊 Natation / vélo / marche (faible impact)" },
+        { value: "course", label: "🏃 Course à pied / sport intensif" },
+        { value: "yoga_pilates", label: "🧘 Yoga / Pilates / étirements" },
+        { value: "sport_collectif", label: "⚽ Sport collectif" },
+        { value: "aucune", label: "❌ Aucune activité en dehors du travail" },
+      ]},
+      { id: "q_d_consultation", type: "choice", label: "As-tu déjà consulté un professionnel de santé pour tes douleurs liées au travail ?", options: [
+        { value: "suivi_regulier", label: "✅ Oui, je suis suivi régulièrement" },
+        { value: "consulte_une_fois", label: "🔸 Oui, j'ai consulté une fois" },
+        { value: "jamais", label: "❌ Non, jamais" },
+        { value: "pas_eu_temps", label: "🤷 Pas eu le temps / pas osé" },
+      ]},
+    ],
+  },
 ];
 
 

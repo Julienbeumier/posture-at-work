@@ -826,39 +826,74 @@ function getDeboutDimensionContent(
       const q_d11 = n("q_d11");
       const q_d14 = String(a("q_d14") ?? "normales");
       const q_d21 = n("q_d21");
+      const q_d_crampes = String(a("q_d_crampes") ?? "");
+      const q_d_jambes_nuit = String(a("q_d_jambes_nuit") ?? "");
+      const q_d_reveil_douleur = String(a("q_d_reveil_douleur") ?? "");
 
-      if (q_d11 >= 2 && q_d14 !== "normales") {
-        detected.push("Tes jambes lourdes en fin de journée peuvent perturber ton sommeil. Le syndrome des jambes sans repos (agitation nocturne, crampes) est fréquent chez les travailleurs debout.");
+      const flagCrampes = q_d_crampes === "souvent" || q_d_crampes === "toutes_les_nuits";
+      const flagJambesSansRepos = q_d_jambes_nuit === "souvent_agitees" || q_d_jambes_nuit === "perturbe_sommeil";
+      const flagDouleurReveil = q_d_reveil_douleur === "douleurs_jambes" || q_d_reveil_douleur === "douleurs_importantes";
+      const flagConsultSommeil = q_d_crampes === "toutes_les_nuits" || q_d_jambes_nuit === "perturbe_sommeil" || q_d_reveil_douleur === "douleurs_importantes";
+
+      if (flagCrampes) {
+        detected.push("Tes crampes nocturnes de mollets ont une cause identifiable : déshydratation + carence en magnésium + muscles épuisés non étirés après le service. Ces 3 facteurs se corrigent facilement.");
       }
-      if (q_d11 >= 3) {
-        detected.push("Douleurs aux mollets la nuit : souvent des crampes liées à la déshydratation et la déplétion en magnésium après une journée physique intense.");
+      if (flagJambesSansRepos) {
+        detected.push("Tes jambes agitées la nuit indiquent une circulation veineuse insuffisante après une journée debout. Ce n'est pas du stress — c'est physique et traitable.");
       }
-      if (q_d21 <= 2) {
+      if (flagDouleurReveil) {
+        detected.push("Te réveiller avec des douleurs aux jambes ou aux pieds est le signal d'une récupération incomplète. Ton corps n'a pas le temps de réparer pendant la nuit.");
+      }
+      if (q_d11 >= 2 && q_d14 !== "normales" && !flagJambesSansRepos) {
+        detected.push("Tes jambes lourdes en fin de journée perturbent potentiellement ton sommeil. La surélévation des jambes le soir est la solution la plus efficace.");
+      }
+      if (q_d21 <= 2 && detected.length === 0) {
         detected.push("Ton énergie est basse en fin de journée — récupération insuffisante pour la charge physique de ton métier.");
       }
       if (detected.length === 0) {
         detected.push("Tu récupères correctement après tes journées debout. Continue à prioriser le sommeil — c'est là que les muscles se réparent.");
       }
+      if (flagConsultSommeil) {
+        detected.push("⚕️ Certains de tes symptômes nocturnes (crampes fréquentes, jambes agitées, douleurs au réveil) méritent un avis médical. PAW t'aide à optimiser ton quotidien mais ne remplace pas un professionnel de santé.");
+      }
+
+      const somTips: DeboutTip[] = [
+        { id: "ds1", icon: "🦵", text: "Surélève les jambes 20 min avant de dormir — draine les œdèmes, améliore le sommeil" },
+        { id: "ds2", icon: "🧊", text: "Bain de pieds froid (15°C) 10 min avant le lit — réduit les inflammations et facilite l'endormissement" },
+        { id: "ds4", icon: "🛏️", text: "Dors avec un oreiller sous les mollets si jambes lourdes — légère élévation toute la nuit" },
+      ];
+      if (flagCrampes) {
+        somTips.push({ id: "ds5", icon: "🧴", text: "Magnésium bisglycinate 300mg le soir — forme la plus absorbable, réduit les crampes en 2 semaines" });
+        somTips.push({ id: "ds6", icon: "💧", text: "Bois 500ml d'eau supplémentaires dans les 2h avant de dormir — avec une pincée de sel" });
+        somTips.push({ id: "ds7", icon: "🤸", text: "Étire tes mollets 2 min avant de dormir : position murale, talon au sol, genou tendu" });
+      }
+      if (flagJambesSansRepos) {
+        somTips.push({ id: "ds8", icon: "🧦", text: "Porte les chaussettes de compression jusqu'au soir — enlève-les au lit" });
+        somTips.push({ id: "ds9", icon: "⚕️", text: "Si l'agitation nocturne persiste 3 semaines : consulte ton médecin — le syndrome des jambes sans repos est traitable" });
+      }
+
+      const somProducts: DeboutProduct[] = [
+        mkProduct("coussin_s", "Coussin surélévation jambes", "20 minutes le soir : draine les œdèmes et améliore la qualité du sommeil", "https://www.amazon.fr/s?k=coussin+surélévation+jambes+récupération&tag=postureatwork-21", "haute", "~25€", "Récupération"),
+      ];
+      if (flagCrampes) {
+        somProducts.push(mkProduct("mag_s", "Magnésium bisglycinate 300mg", "Forme hautement absorbable — réduit crampes, tensions musculaires et fatigue nerveuse", "https://www.amazon.fr/s?k=magnésium+bisglycinate+300mg+complement&tag=postureatwork-21", "haute", "~20€/mois", "Crampes nocturnes"));
+      }
+      if (flagJambesSansRepos) {
+        somProducts.push(mkProduct("bands_som", "Bandes de résistance étirements", "Programme d'étirements mollets et ischio-jambiers en 15 minutes le soir", "https://www.amazon.fr/s?k=bandes+résistance+étirements+récupération&tag=postureatwork-21", "moyenne", "~15€"));
+      }
+
       return {
         detected,
-        consequences: "Un métier debout physiquement exigeant nécessite une récupération de qualité. Sans sommeil suffisant, la fatigue musculaire s'accumule, la douleur s'intensifie et le risque de blessure augmente progressivement.",
-        tips: [
-          { id: "ds1", icon: "🦵", text: "Surélève les jambes 20 min avant de dormir — draine les œdèmes, améliore le sommeil" },
-          { id: "ds2", icon: "🧦", text: "Si crampes nocturnes aux mollets : magnésium le soir (300-400mg) + hydratation en soirée" },
-          { id: "ds3", icon: "🧊", text: "Bain de pieds froid (15°C) 10 min avant le lit — réduit les inflammations et facilite l'endormissement" },
-          { id: "ds4", icon: "🛏️", text: "Dors avec un oreiller sous les mollets si jambes lourdes — légère élévation toute la nuit" },
-        ],
+        consequences: "Un métier debout physiquement exigeant nécessite une récupération nocturne de qualité. Sans étirements et hydratation suffisants après le service, les crampes, jambes lourdes et douleurs au réveil s'installent progressivement.",
+        tips: somTips,
         immediateActions: [
-          "Ce soir : surélève les jambes 20 min contre le mur avant de dormir",
+          flagCrampes ? "Ce soir : étire tes mollets 2 min contre le mur AVANT de te coucher" : "Ce soir : surélève les jambes 20 min contre le mur avant de dormir",
           "Bois un grand verre d'eau avec une pincée de sel ou de magnésium",
           "Masse les mollets avec les pouces vers le haut pendant 2 minutes",
         ],
-        exerciseIds: ["leg_elevation", "plantar_massage", "body_scan", "coherence_cardiaque", "toe_spreading"],
+        exerciseIds: ["leg_elevation", "plantar_massage", "body_scan", "coherence_cardiaque", flagCrampes ? "calf_stretch" : "toe_spreading"],
         programId: "debout_recovery",
-        products: [
-          mkProduct("coussin_s", "Coussin surélévation jambes", "20 minutes le soir : draine les œdèmes et améliore la qualité du sommeil", "https://www.amazon.fr/s?k=coussin+surélévation+jambes+récupération", "haute", "~30€", "Récupération"),
-          mkProduct("mag_s", "Magnésium marin (bisglycinate)", "Réduit les crampes nocturnes des mollets après journée physique", "https://www.amazon.fr/s?k=magnésium+bisglycinate+crampes+mollets", "moyenne", "~15€"),
-        ],
+        products: somProducts,
       };
     }
 
@@ -867,40 +902,161 @@ function getDeboutDimensionContent(
       const q_d19 = String(a("q_d19") ?? "");
       const q_d18 = String(a("q_d18") ?? "");
       const q_d8 = n("q_d8");
+      const q_d_petit_dej = String(a("q_d_petit_dej") ?? "");
+      const q_d_crampes_alim = String(a("q_d_crampes_alim") ?? "");
+      const q_d_energie_boisson = String(a("q_d_energie_boisson") ?? "");
+      const q_d_repas_service = String(a("q_d_repas_service") ?? "");
 
+      const flagPetitDej = q_d_petit_dej === "juste_cafe" || q_d_petit_dej === "saute";
+      const flagCrampesMusculaires = q_d_crampes_alim === "souvent" || q_d_crampes_alim === "nocturnes_service";
+      const flagCarenceMineraux = q_d_crampes_alim === "nocturnes_service";
+      const flagDependanceEnergie = q_d_energie_boisson === "souvent_energisantes" || q_d_energie_boisson === "seul_moyen";
+      const flagPauseRepas = q_d_repas_service === "debout_travaillant" || q_d_repas_service === "saute_pause";
+
+      if (flagPetitDej) {
+        detected.push("Sans petit-déjeuner ou avec juste un café, tes muscles démarrent en déficit. Pour un travailleur debout, ça se traduit par une posture qui s'effondre dès 10h et une fatigue 2h plus tôt.");
+      }
+      if (flagCrampesMusculaires) {
+        detected.push(`Tes crampes musculaires fréquentes (${q_d_crampes_alim === "nocturnes_service" ? "nocturnes ET en service" : "souvent"}) indiquent presque toujours une combinaison déshydratation + carence magnésium/potassium + muscles surmenés.`);
+      }
+      if (flagDependanceEnergie) {
+        detected.push("Tu dépends des boissons énergisantes pour tenir. Ce cycle pic → crash épuise les surrénales et aggrave les douleurs musculaires à long terme.");
+      }
+      if (flagPauseRepas) {
+        detected.push(`Ta pause repas ${q_d_repas_service === "saute_pause" ? "est souvent sautée" : "est prise en travaillant"} — c'est le seul moment de la journée où ton corps peut vraiment récupérer. L'ignorer accumule une dette physique.`);
+      }
       if (q_d19 === "rarement" || q_d19 === "interdit") {
-        detected.push("Tu t'hydrates insuffisamment. Le travail debout augmente les pertes hydriques (transpiration debout) — une déshydratation de seulement 2% aggrave les jambes lourdes et la fatigue musculaire.");
+        detected.push("Tu t'hydrates insuffisamment. Une déshydratation de seulement 2% aggrave les jambes lourdes et la fatigue musculaire — bois avant d'avoir soif.");
       }
       if (q_d18 === "lourdes" || q_d18 === "tres_lourdes") {
-        detected.push("Ton travail est physiquement intense. Tes besoins caloriques sont 20-30% plus élevés qu'un travailleur assis — un sous-apport énergétique crée une fatigue chronique.");
+        detected.push("Ton travail physique intensif augmente tes besoins caloriques de 20-30% par rapport à un travailleur assis.");
       }
       if (q_d8 >= 2) {
-        detected.push("Si tu as de la fasciite plantaire, les anti-inflammatoires naturels (curcuma + pipérine, oméga-3) peuvent réduire significativement l'inflammation plantaire.");
+        detected.push("Les anti-inflammatoires naturels (curcuma + pipérine, oméga-3) peuvent réduire l'inflammation des pieds et des articulations.");
       }
       if (detected.length === 0) {
-        detected.push("Ton alimentation semble adaptée à ton activité. Continue à t'hydrater correctement — c'est le levier nutritionnel #1 du travail debout.");
+        detected.push("Ton alimentation est globalement adaptée. Continue à t'hydrater régulièrement — c'est le levier nutritionnel #1 du travail debout.");
       }
+
+      const nutTips: DeboutTip[] = [
+        { id: "dn1", icon: "💧", text: "Hydratation critique : 2 à 2.5L par jour répartis — pas tout d'un coup" },
+        { id: "dn2", icon: "🥩", text: "Apport protéique élevé : ton corps répare les muscles la nuit — 1.5g/kg de protéines minimum" },
+      ];
+      if (flagCrampesMusculaires) {
+        nutTips.push({ id: "dn5", icon: "🍌", text: "Une banane avant le service = potassium + énergie stable sans pic glycémique" });
+        nutTips.push({ id: "dn6", icon: "🍫", text: "Chocolat noir > 70% : magnésium + antioxydants anti-inflammatoires" });
+        if (flagCarenceMineraux) {
+          nutTips.push({ id: "dn7", icon: "🥥", text: "Eau de coco après le service : réhydratation et électrolytes naturels" });
+        }
+      }
+      if (flagDependanceEnergie) {
+        nutTips.push({ id: "dn8", icon: "💧", text: "Remplace les énergisantes par : eau + pincée de sel + citron — électrolytes sans sucre" });
+        nutTips.push({ id: "dn9", icon: "☕", text: "Si tu as besoin de caféine : café noir le matin uniquement — pas après 14h" });
+        nutTips.push({ id: "dn10", icon: "🥚", text: "En-cas protéiné toutes les 3h : œufs durs, fromage, noix — énergie sans crash" });
+      }
+      if (flagPetitDej) {
+        nutTips.push({ id: "dn11", icon: "🥛", text: "Minimum viable : yaourt grec + banane + café — 5 min, protéines + énergie stable" });
+        nutTips.push({ id: "dn12", icon: "🥤", text: "Si pas d'appétit : smoothie banane-avoine-lait (à faire la veille, à boire en chemin)" });
+      }
+      if (flagPauseRepas) {
+        nutTips.push({ id: "dn13", icon: "🪑", text: "Impose-toi 20 min assis pour ta pause repas — c'est ton droit légal de récupération" });
+        nutTips.push({ id: "dn14", icon: "🏢", text: "Éloigne-toi physiquement de ton poste — le changement d'environnement est une récupération mentale" });
+      }
+      nutTips.push({ id: "dn3", icon: "🌿", text: "Curcuma + pipérine quotidien si douleurs articulaires — anti-inflammatoire naturel validé" });
+
+      const nutProducts: DeboutProduct[] = [
+        mkProduct("gourde_n", "Gourde 1.5L graduée", "Rappel visuel — boire sans y penser tout au long du service", "https://amzn.to/3RAs14A", "haute", "~15€", "Hydratation #1"),
+      ];
+      if (flagCrampesMusculaires) {
+        nutProducts.push(mkProduct("mag_n", "Magnésium bisglycinate 300mg", "Réduit crampes, tensions musculaires et fatigue — carence très fréquente chez les travailleurs debout", "https://www.amazon.fr/s?k=magnésium+bisglycinate+300mg+complement&tag=postureatwork-21", "haute", "~20€/mois", "Crampes"));
+      }
+      nutProducts.push(mkProduct("omega3_n", "Oméga-3 (EPA/DHA concentré)", "Réduit l'inflammation articulaire et plantaire", "https://www.amazon.fr/s?k=omega+3+EPA+DHA+articulations+inflammation", "moyenne", "~20€"));
+
       return {
         detected,
-        consequences: "La nutrition et l'hydratation impactent directement la performance et la récupération d'un métier physique. Les carences (eau, magnésium, protéines) se traduisent en fatigue accélérée, crampes et récupération insuffisante.",
-        tips: [
-          { id: "dn1", icon: "💧", text: "Hydratation critique : 2 à 2.5L par jour (pas 1.5L) pour un métier debout physique" },
-          { id: "dn2", icon: "🥩", text: "Apport protéique élevé : ton corps répare les muscles la nuit — 1.5g/kg de protéines minimum" },
-          { id: "dn3", icon: "🌿", text: "Curcuma + pipérine quotidien si douleurs au pied ou articulaires — anti-inflammatoire naturel validé" },
-          { id: "dn4", icon: "🐟", text: "Oméga-3 (sardines, maquereaux ou capsules) : réduit l'inflammation et les douleurs articulaires" },
-        ],
+        consequences: "La nutrition et l'hydratation impactent directement la performance d'un métier physique. Petit-déjeuner insuffisant, crampes, dépendance aux énergisantes et pauses sautées forment un cercle vicieux qui aggrave fatigue et douleurs.",
+        tips: nutTips,
         immediateActions: [
           "Bois 500ml d'eau maintenant et prépare une bouteille pour les prochaines heures",
-          "Ce soir : repas avec protéines (viande, poisson, œufs, légumineuses) pour récupération musculaire",
-          "Prends du magnésium ce soir si crampes aux mollets",
+          flagCrampesMusculaires ? "Ce soir : prends du magnésium bisglycinate 300mg avec ton repas" : "Ce soir : repas avec protéines (viande, poisson, œufs, légumineuses)",
+          flagDependanceEnergie ? "Remplace ta prochaine boisson énergisante par eau + sel + citron" : "Prépare un en-cas protéiné pour demain matin",
         ],
         exerciseIds: ["coherence_cardiaque", "body_scan", "marching", "leg_elevation"],
         programId: "debout_recovery",
-        products: [
-          mkProduct("gourde_n", "Gourde 1.5L graduée", "Rappel visuel — boire sans y penser tout au long du service", "https://amzn.to/3RAs14A", "haute", "~15€", "Hydratation #1"),
-          mkProduct("omega3_n", "Oméga-3 (EPA/DHA concentré)", "Réduit l'inflammation articulaire et plantaire — particulièrement efficace si douleurs au talon ou aux articulations", "https://www.amazon.fr/s?k=omega+3+EPA+DHA+articulations+inflammation", "moyenne", "~20€"),
-          mkProduct("curcuma_n", "Curcuma + pipérine 95%", "Anti-inflammatoire naturel puissant — efficacité prouvée sur les douleurs articulaires", "https://www.amazon.fr/s?k=curcuma+pipérine+anti+inflammatoire+articulations", "moyenne", "~18€"),
+        products: nutProducts,
+      };
+    }
+
+    case "lifestyle": {
+      const detected: string[] = [];
+      const q_d_etir = String(a("q_d_etirements_routine") ?? "");
+      const q_d_act = (a("q_d_activite_type") as string[]) ?? [];
+      const q_d_consult = String(a("q_d_consultation") ?? "");
+      const q_d8_l = n("q_d8");
+      const q_d_crampes_l = String(a("q_d_crampes_alim") ?? "");
+
+      const flagPasEtir = q_d_etir === "rarement" || q_d_etir === "jamais";
+      const flagSedentaire = q_d_act.includes("aucune") || q_d_act.length === 0;
+      const flagSportImpact = q_d_act.includes("course");
+      const flagJamaisConsulte = q_d_consult === "jamais" || q_d_consult === "pas_eu_temps";
+      const flagCrampesL = q_d_crampes_l === "souvent" || q_d_crampes_l === "nocturnes_service";
+
+      if (flagPasEtir) {
+        detected.push("Tes muscles et tendons ne récupèrent pas correctement sans étirements post-service. Ces tensions se cristallisent la nuit et deviennent des douleurs chroniques en quelques mois.");
+      }
+      if (flagSedentaire) {
+        detected.push("Travail physique debout ≠ activité sportive récupératrice. Ton corps a besoin d'un mouvement différent pour récupérer : étirements, natation, yoga.");
+      } else if (flagSportImpact && q_d8_l >= 2) {
+        detected.push("Course à pied après une journée debout sur des pieds déjà fatigués = surcharge des mêmes structures. Adapter temporairement l'activité peut accélérer la récupération.");
+      }
+      if (flagJamaisConsulte) {
+        detected.push("Tu n'as jamais consulté de professionnel pour tes douleurs. Un kinésithérapeute peut identifier la cause exacte en une séance et t'éviter des années de douleurs.");
+      }
+      if (detected.length === 0) {
+        detected.push("Ton mode de vie actif compense bien les contraintes de ton travail debout. Continue à maintenir tes routines d'étirements et de récupération.");
+      }
+
+      const lifeTips: DeboutTip[] = [];
+      if (flagPasEtir) {
+        lifeTips.push({ id: "dl1", icon: "🤸", text: "5 minutes suffisent : mollets + ischio-jambiers + bas du dos — fais-le dès ce soir" });
+        lifeTips.push({ id: "dl2", icon: "🚗", text: "Le meilleur moment : juste après le service, avant de monter dans le transport" });
+        lifeTips.push({ id: "dl3", icon: "📱", text: "Programme PAW récupération debout : 15 min guidées avec timer" });
+      }
+      if (flagSedentaire) {
+        lifeTips.push({ id: "dl4", icon: "🏊", text: "Natation 1×/semaine : décharge totale des articulations sollicitées toute la semaine" });
+        lifeTips.push({ id: "dl5", icon: "🚶", text: "Marche de 20 min après le repas du soir : décharge veineuse + récupération active" });
+        lifeTips.push({ id: "dl6", icon: "🌙", text: "15 min de programme de récupération PAW chaque soir — le minimum pour récupérer" });
+      } else if (flagSportImpact && q_d8_l >= 2) {
+        lifeTips.push({ id: "dl7", icon: "🏊", text: "Phase aiguë : remplace la course par natation ou vélo pendant 4 semaines" });
+        lifeTips.push({ id: "dl8", icon: "👟", text: "Reprends la course avec de bonnes chaussures de running (différentes des chaussures de travail)" });
+        lifeTips.push({ id: "dl9", icon: "🔄", text: "Alterne : 1 jour course, 1 jour faible impact" });
+      } else {
+        if (q_d_act.includes("natation_velo_marche")) lifeTips.push({ id: "dl10", icon: "🏊", text: "Continue la natation/vélo/marche — idéal pour récupérer d'une journée debout" });
+        if (q_d_act.includes("yoga_pilates")) lifeTips.push({ id: "dl11", icon: "🧘", text: "Yoga et Pilates sont d'excellents compléments pour un travailleur debout — continue" });
+        lifeTips.push({ id: "dl12", icon: "🔄", text: "Alterne course et faible impact si douleurs aux pieds — pas d'arrêt total du sport" });
+      }
+      if (flagCrampesL) {
+        lifeTips.push({ id: "dl13", icon: "🍌", text: "Potassium + magnésium avant le sport : banane + eaux minérales riches" });
+      }
+
+      const lifeProducts: DeboutProduct[] = [];
+      if (flagPasEtir) {
+        lifeProducts.push(mkProduct("bands_life", "Bandes de résistance étirements", "Programme d'étirements mollets/ischio/dos efficace en 15 min à domicile", "https://www.amazon.fr/s?k=bandes+résistance+étirements+récupération&tag=postureatwork-21", "moyenne", "~15€"));
+      }
+      lifeProducts.push(mkProduct("coussin_life", "Coussin surélévation jambes", "Récupération veineuse quotidienne — 20 minutes après le service", "https://www.amazon.fr/s?k=coussin+surélévation+jambes+récupération&tag=postureatwork-21", "haute", "~25€", "Récupération"));
+
+      return {
+        detected,
+        consequences: "La récupération active est aussi importante que le travail lui-même pour un métier physique. Sans étirements et activité adaptée, les tensions s'accumulent semaine après semaine jusqu'à la blessure.",
+        tips: lifeTips,
+        immediateActions: [
+          flagPasEtir ? "Fais maintenant : 30 sec de montée sur pointes + 30 sec d'étirement mollet au mur" : "Aujourd'hui : planifie une session de récupération ce soir",
+          "Programme ta prochaine session de récupération dans ton agenda",
+          flagJamaisConsulte ? "Cette semaine : prends rendez-vous chez un kinésithérapeute si douleurs > 2 semaines" : "Continue ta routine de récupération — tu es sur la bonne voie",
         ],
+        exerciseIds: ["calf_stretch", "leg_elevation", "coherence_cardiaque", flagPasEtir ? "fascia_stretch_morning" : "short_foot", "body_scan"],
+        programId: "debout_recovery",
+        products: lifeProducts,
       };
     }
 

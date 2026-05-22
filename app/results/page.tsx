@@ -379,6 +379,19 @@ export default function ResultsPage() {
   const exercises = getExercises(scores, answers);
   const badge = scoreBadge(scores.global);
 
+  // ── Debout flags (computed from raw answers) ─────────────────────────────
+  const rawA = answers as unknown as Record<string, unknown>;
+  const deboutFlags = jobType === "debout" ? {
+    consultRecommandee: rawA["q_d_crampes"] === "toutes_les_nuits"
+      || rawA["q_d_jambes_nuit"] === "perturbe_sommeil"
+      || rawA["q_d_reveil_douleur"] === "douleurs_importantes"
+      || rawA["q_d_gonflement"] === "tres_gonfle"
+      || rawA["q_d_varices"] === "importantes",
+    crampes: rawA["q_d_crampes"] === "souvent" || rawA["q_d_crampes"] === "toutes_les_nuits",
+    dependanceEnergie: rawA["q_d_energie_boisson"] === "souvent_energisantes" || rawA["q_d_energie_boisson"] === "seul_moyen",
+    petitDejInsuffisant: rawA["q_d_petit_dej"] === "juste_cafe" || rawA["q_d_petit_dej"] === "saute",
+  } : null;
+
   return (
     <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingBottom: 80, position: "relative" }}>
       <BackgroundBlobs blobs={[
@@ -442,6 +455,26 @@ export default function ResultsPage() {
             );
           })()}
         </motion.div>
+
+        {/* ── FLAG ALERTS (debout) ── */}
+        {deboutFlags && (() => {
+          const cards: { bg: string; border: string; color: string; text: string }[] = [];
+          if (deboutFlags.consultRecommandee) cards.push({ bg: "rgba(226,75,74,0.10)", border: "rgba(226,75,74,0.30)", color: "#f09595", text: "⚕️ Certains de tes symptômes méritent un avis professionnel. Consulte un médecin ou kinésithérapeute." });
+          if (deboutFlags.crampes) cards.push({ bg: "rgba(244,162,97,0.10)", border: "rgba(244,162,97,0.28)", color: "#f4a261", text: "😴 Tes crampes nocturnes ont une solution simple — voir les conseils sommeil" });
+          if (deboutFlags.dependanceEnergie) cards.push({ bg: "rgba(244,162,97,0.10)", border: "rgba(244,162,97,0.28)", color: "#f4a261", text: "⚡ Tu dépends des boissons énergisantes pour tenir — il y a une meilleure solution" });
+          if (deboutFlags.petitDejInsuffisant) cards.push({ bg: "rgba(43,92,230,0.10)", border: "rgba(43,92,230,0.28)", color: "#7c9fff", text: "🍳 Un vrai petit-déjeuner changerait significativement ton niveau d'énergie et ta posture" });
+          if (!cards.length) return null;
+          return (
+            <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+              style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+              {cards.map((c, i) => (
+                <div key={i} style={{ padding: "12px 16px", borderRadius: 14, background: c.bg, border: `0.5px solid ${c.border}`, display: "flex", alignItems: "flex-start", gap: 10 }}>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: c.color, lineHeight: 1.6, margin: 0 }}>{c.text}</p>
+                </div>
+              ))}
+            </motion.div>
+          );
+        })()}
 
         {/* ── 6 SOUS-SCORES ── */}
         <motion.div

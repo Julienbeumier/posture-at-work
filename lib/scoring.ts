@@ -561,27 +561,60 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   // Gestes répétitifs toute la journée — surcharge tendineuse cumulée
   if (a["q_d_repetitif"] === "toute_la_journee") habits = clamp(habits - 10);
 
-  // ── sleep_energy (10%) — pénalité si > 8h debout ET < 6h sommeil ────────
+  // ── sleep_energy (12%) ───────────────────────────────────────────────────
   let sleep_energy = 70;
   const hDebout = a["q_d4"] as number ?? 7;
-  if (hDebout >= 8 && sleep_energy > 50) sleep_energy -= 20; // récupération insuffisante
+  if (hDebout >= 8) sleep_energy -= 20;
 
-  // ── lifestyle (10%) — récupération après travail ─────────────────────────
+  // Nouvelles questions sommeil
+  const crampesMap: Record<string, number> = { non: 10, parfois: 0, souvent: -20, toutes_les_nuits: -35 };
+  sleep_energy += crampesMap[a["q_d_crampes"] as string] ?? 0;
+  const jambesnuitMap: Record<string, number> = { non: 0, parfois: -5, souvent_agitees: -25, perturbe_sommeil: -35 };
+  sleep_energy += jambesnuitMap[a["q_d_jambes_nuit"] as string] ?? 0;
+  const reveilMap: Record<string, number> = { sans_douleur: 10, raideurs: 0, douleurs_jambes: -20, douleurs_importantes: -35 };
+  sleep_energy += reveilMap[a["q_d_reveil_douleur"] as string] ?? 0;
+  sleep_energy = clamp(sleep_energy);
+
+  // ── nutrition_debout (12%) ───────────────────────────────────────────────
+  const petitDejMap: Record<string, number> = { complet: 100, leger: 65, juste_cafe: 30, saute: 0 };
+  const crampesAlimMap: Record<string, number> = { non: 100, parfois: 70, souvent: 30, nocturnes_service: 0 };
+  const energieMap: Record<string, number> = { eau: 100, parfois_soda: 75, souvent_energisantes: 25, seul_moyen: 0 };
+  const repasMap: Record<string, number> = { repas_chaud: 100, sandwich_assis: 70, debout_travaillant: 30, saute_pause: 0 };
+  const nutrition = clamp(Math.round((
+    (petitDejMap[a["q_d_petit_dej"] as string] ?? 60) +
+    (crampesAlimMap[a["q_d_crampes_alim"] as string] ?? 70) +
+    (energieMap[a["q_d_energie_boisson"] as string] ?? 70) +
+    (repasMap[a["q_d_repas_service"] as string] ?? 60)
+  ) / 4));
+
+  // ── lifestyle_debout (8%) ────────────────────────────────────────────────
   const recup = a["q_d20"] as string[] ?? [];
-  let lifestyle = 30;
-  if (recup.includes("etirements")) lifestyle += 30;
-  if (recup.includes("natation")) lifestyle += 25;
-  if (recup.includes("surelever")) lifestyle += 20;
-  if (recup.includes("compression")) lifestyle += 15;
-  if (recup.includes("course")) lifestyle += 5;
-  if (recup.includes("repos")) lifestyle += 5;
-  lifestyle = clamp(lifestyle);
+  let lifestyleBase = 30;
+  if (recup.includes("etirements")) lifestyleBase += 20;
+  if (recup.includes("natation")) lifestyleBase += 20;
+  if (recup.includes("surelever")) lifestyleBase += 15;
+  if (recup.includes("compression")) lifestyleBase += 10;
 
-  // ── nutrition (poids réduit) ─────────────────────────────────────────────
-  const nutrition = clamp(hydraMap[a["q_d19"] as string] ?? 50);
+  const etirMap: Record<string, number> = { quotidienne: 100, parfois: 60, rarement: 20, jamais: 0 };
+  const consultMap: Record<string, number> = { suivi_regulier: 100, consulte_une_fois: 75, jamais: 40, pas_eu_temps: 30 };
+  const activite = a["q_d_activite_type"] as string[] ?? [];
+  let activiteScore = 30;
+  if (activite.includes("natation_velo_marche")) activiteScore = 100;
+  else if (activite.includes("yoga_pilates")) activiteScore = 90;
+  else if (activite.includes("sport_collectif")) activiteScore = 70;
+  else if (activite.includes("course")) activiteScore = 55;
+  else if (activite.includes("aucune")) activiteScore = 10;
 
+  const lifestyle = clamp(Math.round((
+    (etirMap[a["q_d_etirements_routine"] as string] ?? 30) +
+    activiteScore +
+    (consultMap[a["q_d_consultation"] as string] ?? 45) +
+    lifestyleBase
+  ) / 4));
+
+  // ── global (setup 20% · pain 30% · habits 18% · sleep 12% · nutrition 12% · lifestyle 8%) ──
   const global = clamp(Math.round(
-    setup * 0.25 + pain * 0.35 + habits * 0.20 + sleep_energy * 0.10 + lifestyle * 0.10
+    setup * 0.20 + pain * 0.30 + habits * 0.18 + sleep_energy * 0.12 + nutrition * 0.12 + lifestyle * 0.08
   ));
   return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition };
 }
