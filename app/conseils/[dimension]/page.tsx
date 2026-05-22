@@ -10,7 +10,7 @@ import { DIMENSION_META, type Product } from "@/lib/tips";
 import { EXERCISES, type Exercise } from "@/lib/exercises";
 import { createClient } from "@/lib/supabase";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
-import { getJobContent, getScoreInterpretation } from "@/lib/job-content";
+import { getJobContent, getScoreInterpretation, getJobDimensionContent, type JobDimensionContent } from "@/lib/job-content";
 
 const T = {
   h: "var(--font-nunito), sans-serif",
@@ -172,6 +172,7 @@ export default function DimensionPage() {
   const dimensionParam = typeof params.dimension === "string" ? params.dimension : "";
 
   const [advice, setAdvice] = useState<DimensionAdvice | null>(null);
+  const [jobDimContent, setJobDimContent] = useState<JobDimensionContent | null>(null);
   const [score, setScore] = useState<number>(0);
   const [ready, setReady] = useState(false);
   const [hasBilan, setHasBilan] = useState(true);
@@ -180,12 +181,12 @@ export default function DimensionPage() {
   const [jobType, setJobType] = useState<string>("bureau");
 
   useEffect(() => {
-    setJobType(localStorage.getItem("paw_job_type") ?? "bureau");
-  }, []);
-
-  useEffect(() => {
     async function load() {
       if (!isValidDimension(dimensionParam)) { setReady(true); return; }
+
+      // Read jobType directly here to avoid async state lag
+      const storedJobType = localStorage.getItem("paw_job_type") ?? "bureau";
+      setJobType(storedJobType);
 
       const answersRaw = sessionStorage.getItem("postureatwork_answers") || localStorage.getItem("paw_answers");
       const scoresRaw = sessionStorage.getItem("postureatwork_scores");
@@ -261,6 +262,18 @@ export default function DimensionPage() {
       const meta = DIMENSION_META[dimensionParam];
       const dimensionScore = (scores[meta.scoreKey as keyof Scores] as number) ?? 0;
       setScore(dimensionScore);
+
+      // Non-bureau profiles: use job-specific dimension content
+      if (storedJobType !== "bureau" && answersRaw) {
+        const genericAnswers = JSON.parse(answersRaw) as Record<string, unknown>;
+        const jdc = getJobDimensionContent(dimensionParam, storedJobType, genericAnswers);
+        if (jdc) {
+          setJobDimContent(jdc);
+          setReady(true);
+          return;
+        }
+      }
+
       setAdvice(getDimensionAdvice(dimensionParam, answers, scores));
       setReady(true);
     }
@@ -275,7 +288,7 @@ export default function DimensionPage() {
     );
   }
 
-  if (!isValidDimension(dimensionParam) || !advice) {
+  if (!isValidDimension(dimensionParam) || (!advice && !jobDimContent)) {
     return (
       <main style={{ minHeight: "100vh", background: "#0f0f1a", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
         <div style={{ textAlign: "center" }}>
@@ -285,6 +298,16 @@ export default function DimensionPage() {
       </main>
     );
   }
+
+  // Resolved display data — job-specific overrides bureau defaults
+  const displayDetected   = jobDimContent?.detected        ?? advice?.detected        ?? [];
+  const displayConsequences = jobDimContent?.consequences  ?? advice?.consequences    ?? "";
+  const displayTips       = jobDimContent?.tips            ?? advice?.tips            ?? [];
+  const displayImmediate  = jobDimContent?.immediateActions ?? IMMEDIATE_ACTIONS[dimensionParam] ?? [];
+  const displayExerciseIds = jobDimContent?.exerciseIds    ?? DIM_EXERCISE_IDS[dimensionParam]   ?? [];
+  const displayProgramId  = jobDimContent?.programId       ?? DIM_PROGRAM[dimensionParam]        ?? "bureau_pause";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const displayProducts   = (jobDimContent?.products as any[]) ?? advice?.products   ?? [];
 
   if (!hasBilan) {
     const m = DIMENSION_META[dimensionParam] ?? DIMENSION_META["setup"];
@@ -427,7 +450,7 @@ export default function DimensionPage() {
         >
           <SectionTitle>🔍 Ce qu'on a détecté</SectionTitle>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {advice.detected.map((item, i) => (
+            {displayDetected.map((item, i) => (
               <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                 <div style={{
                   flexShrink: 0, width: 6, height: 6, borderRadius: "50%",
@@ -453,7 +476,7 @@ export default function DimensionPage() {
         >
           <SectionTitle>⚡ Ce que ça provoque</SectionTitle>
           <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.75, margin: 0 }}>
-            {advice.consequences}
+            {displayConsequences}
           </p>
         </motion.div>
 
@@ -466,7 +489,7 @@ export default function DimensionPage() {
         >
           <SectionTitle>✅ Tes actions prioritaires</SectionTitle>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {advice.tips.map((tip, i) => (
+            {displayTips.map((tip, i) => (
               <motion.div
                 key={tip.id}
                 initial={{ opacity: 0, x: -12 }}
@@ -506,7 +529,7 @@ export default function DimensionPage() {
         >
           <SectionTitle>⚡ Actions immédiates</SectionTitle>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {(IMMEDIATE_ACTIONS[dimensionParam] ?? []).map((action, i) => {
+            {displayImmediate.map((action, i) => {
               const isChecked = checked[i];
               return (
                 <div
@@ -551,13 +574,13 @@ export default function DimensionPage() {
         >
           <SectionTitle>🧘 Ton programme d'exercices</SectionTitle>
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
-            {(DIM_EXERCISE_IDS[dimensionParam] ?? []).map(id => {
+            {displayExerciseIds.map(id => {
               const ex = EXERCISES[id];
               if (!ex) return null;
               return <ExercisePreview key={id} ex={ex} color={meta.color} />;
             })}
           </div>
-          <Link href={`/mobilite?program=${DIM_PROGRAM[dimensionParam] ?? "bureau_pause"}`} style={{ textDecoration: "none" }}>
+          <Link href={`/mobilite?program=${displayProgramId}`} style={{ textDecoration: "none" }}>
             <div style={{
               padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
               background: "#2b5ce6", boxShadow: "0 4px 20px rgba(43,92,230,0.35)",
@@ -569,7 +592,7 @@ export default function DimensionPage() {
         </motion.div>
 
         {/* ── BLOC C : PRODUITS ── */}
-        {advice.products.length > 0 && (
+        {displayProducts.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -578,7 +601,7 @@ export default function DimensionPage() {
           >
             <SectionTitle>🛒 Produits qui aident</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {advice.products.map((p, i) => (
+              {displayProducts.map((p, i: number) => (
                 <ProductCard key={i} p={p} />
               ))}
             </div>

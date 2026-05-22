@@ -88,6 +88,33 @@ function WellbeingScale({ value, onChange, cat }: {
   );
 }
 
+function MultiSelectGrid({ options, value, onChange, cat }: {
+  options: { value: string; label: string }[];
+  value: string[];
+  onChange: (v: string[]) => void;
+  cat: CategoryDef;
+}) {
+  function toggle(val: string) {
+    if (value.includes(val)) onChange(value.filter((v) => v !== val));
+    else onChange([...value, val]);
+  }
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {options.map((opt) => {
+        const sel = value.includes(opt.value);
+        return (
+          <motion.div key={opt.value} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} onClick={() => toggle(opt.value)}
+            style={{ padding: "12px 18px", borderRadius: 100, background: sel ? cat.selectedBg : "rgba(255,255,255,0.06)", border: sel ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.10)", color: sel ? cat.selectedColor : "rgba(220,220,245,0.75)", fontSize: 14, fontFamily: T.b, cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", transition: "all 0.15s ease" }}
+          >
+            <span>{opt.label}</span>
+            {sel && <span style={{ color: cat.color, fontWeight: 700, fontSize: 13 }}>✓</span>}
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
 function ChoiceGrid({ options, value, onChange, cat }: {
   options: { value: string; label: string }[]; value: string;
   onChange: (v: string) => void; cat: CategoryDef;
@@ -297,6 +324,9 @@ export default function ProfileQuestionnaire({
                       <QBlock key={q.id} number={String(qi + 1)} question={q.label} answered={answered} cat={cat}>
                         {q.type === "choice" && (
                           <ChoiceGrid cat={cat} value={ans as string ?? ""} onChange={(v) => update(q.id, v)} options={q.options ?? []} />
+                        )}
+                        {q.type === "multiselect" && (
+                          <MultiSelectGrid cat={cat} value={(ans as string[]) ?? []} onChange={(v) => update(q.id, v)} options={q.options ?? []} />
                         )}
                         {q.type === "painscale" && (
                           <PainScale cat={cat} value={ans as number | null} onChange={(v) => update(q.id, v)} />

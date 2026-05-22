@@ -553,6 +553,310 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
   },
 };
 
+// ─── Job dimension content (per-job conseils pages) ──────────────────────────
+
+export interface DeboutTip { id: string; icon: string; text: string; }
+export interface DeboutProduct {
+  id: string; name: string; reason: string; url: string;
+  priority: "haute" | "moyenne" | "premium";
+  price: string; badge: string | null;
+  dimension: string[]; triggers: string[];
+}
+
+export interface JobDimensionContent {
+  detected: string[];
+  consequences: string;
+  tips: DeboutTip[];
+  immediateActions: string[];
+  exerciseIds: string[];
+  programId: string;
+  products: DeboutProduct[];
+}
+
+function mkProduct(
+  id: string, name: string, reason: string, url: string,
+  priority: "haute" | "moyenne" | "premium", price: string, badge: string | null = null
+): DeboutProduct {
+  return { id, name, reason, url, priority, price, badge, dimension: [], triggers: [] };
+}
+
+function getDeboutDimensionContent(
+  dimension: string,
+  answers: Record<string, unknown>,
+): JobDimensionContent | null {
+
+  const a = (key: string) => answers[key];
+  const n = (key: string) => Number(answers[key] ?? 0);
+
+  switch (dimension) {
+
+    case "setup": {
+      const detected: string[] = [];
+      if (a("q_d1") === "dur") {
+        detected.push("Tu travailles sur sol dur (carrelage/béton). C'est la surface la plus génératrice de fasciite plantaire et de fatigue musculaire des membres inférieurs.");
+      }
+      if (a("q_d2") !== "oui_ergo") {
+        detected.push("Tu n'as pas de tapis anti-fatigue ergonomique. Après 4h debout sur sol dur sans amorti, la pression sur tes pieds équivaut à 20 kg supplémentaires.");
+      }
+      if (a("q_d3") === "ville" || a("q_d3") === "plates") {
+        detected.push("Tes chaussures ne sont pas adaptées au travail debout prolongé. C'est le facteur de risque #1 de la fasciite plantaire.");
+      }
+      if (a("q_d7") === "trop_bas") {
+        detected.push("Ton plan de travail est trop bas. Tu te courbes en permanence, ce qui surcharge le bas du dos et les épaules.");
+      }
+      if (a("q_d6") === "non") {
+        detected.push("Tu n'as pas accès à un siège. La variation posturale assis/debout est le meilleur rempart contre les TMS du travail debout.");
+      }
+      if (detected.length === 0) {
+        detected.push("Ton environnement debout est globalement bien adapté — continue à surveiller l'état de tes semelles et de ton tapis anti-fatigue.");
+      }
+      return {
+        detected,
+        consequences: "Le travail debout sur sol dur sans équipement adapté provoque une fatigue musculaire accélérée, des micro-traumatismes plantaires répétés et des compensations posturales (dos cambré, genoux bloqués) qui mènent aux TMS chroniques.",
+        tips: [
+          { id: "dt1", icon: "🪑", text: "Demande un tapis anti-fatigue à ton employeur — c'est son obligation légale de prévention" },
+          { id: "dt2", icon: "👟", text: "Change de chaussures si elles n'ont pas de semelles amortissantes — c'est ton investissement #1" },
+          { id: "dt3", icon: "🦶", text: "Alterne l'appui d'un pied sur une marche ou repose-pieds toutes les 20 minutes — soulage le bas du dos de 25%" },
+        ],
+        immediateActions: [
+          "Fais 20 montées sur pointes maintenant — relance la circulation veineuse immédiatement",
+          "Transfère ton poids d'un pied à l'autre lentement pendant 1 minute",
+          "Si tu as de la glace : applique-la sous le talon 10 minutes après le service",
+        ],
+        exerciseIds: ["short_foot", "calf_raise_excentric", "marching", "toe_spreading", "calf_stretch"],
+        programId: "debout_recovery",
+        products: [
+          mkProduct("tapis_af", "Tapis anti-fatigue ergonomique", "Réduit de 50% la fatigue musculaire en station debout — validé scientifiquement", "https://www.amazon.fr/s?k=tapis+anti+fatigue+bureau+debout+ergonomique", "haute", "~45€", "Priorité #1"),
+          mkProduct("semelles_o", "Semelles orthopédiques de travail", "Amorties et soutien de voûte plantaire — indispensables si tu travailles sur sol dur", "https://www.amazon.fr/s?k=semelles+orthopediques+travail+debout+amorti", "haute", "~25€"),
+          mkProduct("repose_pied", "Repose-pieds ergonomique", "Technique du pied surélevé — soulage le bas du dos de 25%", "https://amzn.to/4dIZvWb", "moyenne", "~30€"),
+        ],
+      };
+    }
+
+    case "douleurs": {
+      const detected: string[] = [];
+      const exerciseIds: string[] = [];
+      const products: DeboutProduct[] = [];
+
+      const q_d8 = n("q_d8");
+      const q_d9 = n("q_d9");
+      const q_d10 = n("q_d10");
+      const q_d11 = n("q_d11");
+      const q_d13 = String(a("q_d13") ?? "");
+      const q_d14 = String(a("q_d14") ?? "normales");
+
+      if (q_d8 >= 3 && q_d13 === "premier_pas") {
+        detected.push("⚠️ Douleur au talon au lever : signe classique de fasciite plantaire. Sans prise en charge : 6 à 12 mois. Avec les bons exercices : 6 à 12 semaines.");
+        exerciseIds.push("fascia_stretch_morning", "short_foot", "calf_raise_excentric", "plantar_massage");
+        products.push(mkProduct("semelles_f", "Semelles orthopédiques de travail", "Soutien de voûte plantaire — indispensables contre la fasciite", "https://www.amazon.fr/s?k=semelles+orthopediques+travail+debout+amorti", "haute", "~25€", "Urgence fasciite"));
+        products.push(mkProduct("balle_m", "Balle de massage lacrosse", "Auto-massage plantaire quotidien — en phase aiguë avec eau glacée", "https://www.amazon.fr/s?k=balle+massage+fasciite+plantaire+lacrosse", "moyenne", "~10€"));
+      } else if (q_d8 >= 1) {
+        detected.push("Tu as des douleurs aux pieds ou talons. Même légères, elles méritent attention — elles sont le premier signe d'une fasciite en formation.");
+        exerciseIds.push("short_foot", "calf_raise_excentric", "toe_spreading");
+      }
+
+      if (q_d9 >= 2) {
+        detected.push("Tes genoux subissent une compression continue. La gonarthrose est 3x plus fréquente chez les travailleurs debout.");
+        if (!exerciseIds.includes("calf_stretch")) exerciseIds.push("chair_squat", "calf_stretch");
+      }
+
+      if (q_d11 >= 2 && q_d14 !== "normales") {
+        detected.push("Tes jambes lourdes en fin de service indiquent une insuffisance veineuse professionnelle. Les chaussettes de compression portées LE MATIN (avant de se lever) sont 3x plus efficaces que portées après.");
+        if (!exerciseIds.includes("leg_elevation")) exerciseIds.push("marching", "leg_elevation");
+        products.push(mkProduct("chaussettes_c", "Chaussettes de compression graduée", "Prévient varices et insuffisance veineuse — à porter dès le matin avant de se lever", "https://www.amazon.fr/s?k=chaussettes+compression+graduee+travail+debout", "haute", "~20€"));
+        products.push(mkProduct("coussin_el", "Coussin surélévation jambes", "20 minutes le soir : draine les œdèmes et prévient les varices professionnelles", "https://www.amazon.fr/s?k=coussin+surélévation+jambes+récupération", "moyenne", "~30€"));
+      } else if (q_d11 >= 1) {
+        detected.push("Tu ressens une légère lourdeur des jambes. C'est le début du syndrome veineux professionnel — agis maintenant en prévention.");
+        if (!exerciseIds.includes("marching")) exerciseIds.push("marching", "calf_raise_excentric");
+      }
+
+      if (q_d10 >= 2) {
+        detected.push("Tes douleurs lombaires sont typiques du travail debout. L'hyperlordose compensatoire (creuser le bas du dos) est le mécanisme principal — corrigeable avec les bons exercices.");
+        if (!exerciseIds.includes("lumbar_extension")) exerciseIds.push("lumbar_extension", "cat_cow");
+        products.push(mkProduct("repose_pf", "Repose-pieds ergonomique", "Alterner l'appui d'un pied soulage le bas du dos de 25%", "https://amzn.to/4dIZvWb", "moyenne", "~30€"));
+      }
+
+      if (detected.length === 0) {
+        detected.push("Tu n'as pas de douleurs significatives. C'est le meilleur moment pour agir en prévention avec les exercices de renforcement du pied.");
+        exerciseIds.push("short_foot", "toe_spreading", "calf_raise_excentric");
+      }
+
+      const tips: DeboutTip[] = [];
+      if (q_d8 >= 3 && q_d13 === "premier_pas") {
+        tips.push({ id: "dp1", icon: "🦶", text: "Ne marche jamais pieds nus sur sol dur le matin — met tes chaussures avant le premier pas" });
+        tips.push({ id: "dp2", icon: "🧊", text: "Glace sous le talon 10-15 min après chaque journée — anti-inflammatoire gratuit et efficace" });
+        tips.push({ id: "dp3", icon: "🧘", text: "Étire le fascia avant le premier pas : attrape tes orteils, tire 10 sec × 10 reps au lit" });
+      } else if (q_d11 >= 2 && q_d14 !== "normales") {
+        tips.push({ id: "dp4", icon: "🧦", text: "Porte les chaussettes de compression LE MATIN avant de te lever — 3x plus efficaces qu'après" });
+        tips.push({ id: "dp5", icon: "🦵", text: "Surélève les jambes 20 min en rentrant — plus efficace qu'1h de massage" });
+        tips.push({ id: "dp6", icon: "🏊", text: "Natation ou vélo après le travail : circulation veineuse sans impact sur les pieds" });
+      } else if (q_d10 >= 2) {
+        tips.push({ id: "dp7", icon: "🦶", text: "Alterne l'appui d'un pied sur une marche toutes les 20 min — soulage le bas du dos de 25%" });
+        tips.push({ id: "dp8", icon: "🪑", text: "Demande un repose-pieds si tu n'en as pas — c'est l'équipement lombaire #1 pour les debout" });
+        tips.push({ id: "dp9", icon: "🧘", text: "Flexion lombaire 30 sec toutes les 2h : assis, bras entre les jambes, laisse le dos s'arrondir" });
+      } else {
+        tips.push({ id: "dp10", icon: "🦶", text: "Short foot 3x par jour : le meilleur exercice pour prévenir la fasciite plantaire" });
+        tips.push({ id: "dp11", icon: "⬆️", text: "20 montées sur pointes après chaque service : relance la pompe veineuse" });
+        tips.push({ id: "dp12", icon: "🧦", text: "Chaussettes de compression en prévention si tu travailles plus de 6h debout" });
+      }
+
+      return {
+        detected,
+        consequences: "Les douleurs des membres inférieurs chez les travailleurs debout s'installent progressivement et deviennent chroniques sans intervention. Fasciite, insuffisance veineuse et lombalgies par hyperlordose sont les trois pathologies les plus fréquentes — toutes évitables avec les bons gestes.",
+        tips,
+        immediateActions: [
+          q_d8 >= 2 ? "Fais l'étirement du fascia maintenant : attrape tes orteils, tire 10 secondes × 5 reps" : "Fais 20 montées sur pointes maintenant — relance la circulation immédiatement",
+          q_d11 >= 2 ? "Allonge-toi et mets les jambes contre le mur 5 minutes dès maintenant" : "Transfère ton poids d'un pied à l'autre lentement pendant 1 minute",
+          "Si tu as de la glace : applique-la sous le talon ou sur la zone douloureuse 10 minutes",
+        ],
+        exerciseIds: exerciseIds.slice(0, 5),
+        programId: q_d8 >= 3 ? "debout_recovery" : "debout_pause",
+        products: products.slice(0, 3),
+      };
+    }
+
+    case "habitudes": {
+      const detected: string[] = [];
+      const q_d16 = String(a("q_d16") ?? "");
+      const q_d17 = String(a("q_d17") ?? "");
+      const q_d18 = String(a("q_d18") ?? "");
+      const q_d19 = String(a("q_d19") ?? "");
+
+      if (q_d16 === "jamais" || q_d16 === "rarement") {
+        detected.push("Tu ne fais pas de pauses assises. Rester debout immobile sans variation est plus nocif que marcher — les muscles se contractent sans jamais se relâcher.");
+      }
+      if (q_d17 === "fixe") {
+        detected.push("Tu restes en poste fixe immobile. Le mouvement continu protège infiniment mieux que rester debout statique.");
+      }
+      if (q_d18 === "lourdes" || q_d18 === "tres_lourdes") {
+        detected.push("Tu portes des charges lourdes. La combinaison travail debout + port de charges est la plus génératrice de TMS lombaires.");
+      }
+      if (q_d19 === "rarement" || q_d19 === "interdit") {
+        detected.push("Tu t'hydrates insuffisamment. La déshydratation aggrave la fatigue musculaire, les jambes lourdes et les crampes nocturnes des mollets.");
+      }
+      if (detected.length === 0) {
+        detected.push("Tes habitudes au travail sont globalement bonnes. Continue à varier les positions et à t'hydrater régulièrement.");
+      }
+      return {
+        detected,
+        consequences: "Les mauvaises habitudes au poste debout accélèrent la fatigue et les TMS. La variation posturale est le facteur protecteur le plus puissant — plus même que l'équipement.",
+        tips: [
+          { id: "dh1", icon: "🔄", text: "Variation posturale toutes les 20 min : assis, debout, un pied surélevé — alterner c'est tout" },
+          { id: "dh2", icon: "🚶", text: "Micro-mouvements en service : weight shift, montées sur pointes, écartement d'orteils — faisables au poste" },
+          { id: "dh3", icon: "💧", text: "Hydratation critique : bois avant d'avoir soif — au travail debout on déshydrate plus vite" },
+          { id: "dh4", icon: "📦", text: "Port de charges : dos droit, charge proche du corps, jamais en flexion + rotation simultanées" },
+        ],
+        immediateActions: [
+          "Bois un grand verre d'eau maintenant",
+          "Mets une alarme toutes les 20 min pour changer de position",
+          "Fais 10 montées sur pointes et 10 transferts de poids — faisable au poste",
+        ],
+        exerciseIds: ["short_foot", "marching", "toe_spreading", "calf_raise_excentric", "lumbar_extension"],
+        programId: "debout_pause",
+        products: [
+          mkProduct("tapis_h", "Tapis anti-fatigue ergonomique", "Réduit de 50% la fatigue liée à l'immobilité — investissement #1 pour les habitudes debout", "https://www.amazon.fr/s?k=tapis+anti+fatigue+bureau+debout+ergonomique", "haute", "~45€", "Essentiel"),
+          mkProduct("gourde_h", "Gourde 1.5L graduée", "Rappel visuel de l'hydratation — boire sans y penser", "https://amzn.to/3RAs14A", "moyenne", "~15€"),
+        ],
+      };
+    }
+
+    case "sommeil": {
+      const detected: string[] = [];
+      const q_d11 = n("q_d11");
+      const q_d14 = String(a("q_d14") ?? "normales");
+      const q_d21 = n("q_d21");
+
+      if (q_d11 >= 2 && q_d14 !== "normales") {
+        detected.push("Tes jambes lourdes en fin de journée peuvent perturber ton sommeil. Le syndrome des jambes sans repos (agitation nocturne, crampes) est fréquent chez les travailleurs debout.");
+      }
+      if (q_d11 >= 3) {
+        detected.push("Douleurs aux mollets la nuit : souvent des crampes liées à la déshydratation et la déplétion en magnésium après une journée physique intense.");
+      }
+      if (q_d21 <= 2) {
+        detected.push("Ton énergie est basse en fin de journée — récupération insuffisante pour la charge physique de ton métier.");
+      }
+      if (detected.length === 0) {
+        detected.push("Tu récupères correctement après tes journées debout. Continue à prioriser le sommeil — c'est là que les muscles se réparent.");
+      }
+      return {
+        detected,
+        consequences: "Un métier debout physiquement exigeant nécessite une récupération de qualité. Sans sommeil suffisant, la fatigue musculaire s'accumule, la douleur s'intensifie et le risque de blessure augmente progressivement.",
+        tips: [
+          { id: "ds1", icon: "🦵", text: "Surélève les jambes 20 min avant de dormir — draine les œdèmes, améliore le sommeil" },
+          { id: "ds2", icon: "🧦", text: "Si crampes nocturnes aux mollets : magnésium le soir (300-400mg) + hydratation en soirée" },
+          { id: "ds3", icon: "🧊", text: "Bain de pieds froid (15°C) 10 min avant le lit — réduit les inflammations et facilite l'endormissement" },
+          { id: "ds4", icon: "🛏️", text: "Dors avec un oreiller sous les mollets si jambes lourdes — légère élévation toute la nuit" },
+        ],
+        immediateActions: [
+          "Ce soir : surélève les jambes 20 min contre le mur avant de dormir",
+          "Bois un grand verre d'eau avec une pincée de sel ou de magnésium",
+          "Masse les mollets avec les pouces vers le haut pendant 2 minutes",
+        ],
+        exerciseIds: ["leg_elevation", "plantar_massage", "body_scan", "coherence_cardiaque", "toe_spreading"],
+        programId: "debout_recovery",
+        products: [
+          mkProduct("coussin_s", "Coussin surélévation jambes", "20 minutes le soir : draine les œdèmes et améliore la qualité du sommeil", "https://www.amazon.fr/s?k=coussin+surélévation+jambes+récupération", "haute", "~30€", "Récupération"),
+          mkProduct("mag_s", "Magnésium marin (bisglycinate)", "Réduit les crampes nocturnes des mollets après journée physique", "https://www.amazon.fr/s?k=magnésium+bisglycinate+crampes+mollets", "moyenne", "~15€"),
+        ],
+      };
+    }
+
+    case "nutrition": {
+      const detected: string[] = [];
+      const q_d19 = String(a("q_d19") ?? "");
+      const q_d18 = String(a("q_d18") ?? "");
+      const q_d8 = n("q_d8");
+
+      if (q_d19 === "rarement" || q_d19 === "interdit") {
+        detected.push("Tu t'hydrates insuffisamment. Le travail debout augmente les pertes hydriques (transpiration debout) — une déshydratation de seulement 2% aggrave les jambes lourdes et la fatigue musculaire.");
+      }
+      if (q_d18 === "lourdes" || q_d18 === "tres_lourdes") {
+        detected.push("Ton travail est physiquement intense. Tes besoins caloriques sont 20-30% plus élevés qu'un travailleur assis — un sous-apport énergétique crée une fatigue chronique.");
+      }
+      if (q_d8 >= 2) {
+        detected.push("Si tu as de la fasciite plantaire, les anti-inflammatoires naturels (curcuma + pipérine, oméga-3) peuvent réduire significativement l'inflammation plantaire.");
+      }
+      if (detected.length === 0) {
+        detected.push("Ton alimentation semble adaptée à ton activité. Continue à t'hydrater correctement — c'est le levier nutritionnel #1 du travail debout.");
+      }
+      return {
+        detected,
+        consequences: "La nutrition et l'hydratation impactent directement la performance et la récupération d'un métier physique. Les carences (eau, magnésium, protéines) se traduisent en fatigue accélérée, crampes et récupération insuffisante.",
+        tips: [
+          { id: "dn1", icon: "💧", text: "Hydratation critique : 2 à 2.5L par jour (pas 1.5L) pour un métier debout physique" },
+          { id: "dn2", icon: "🥩", text: "Apport protéique élevé : ton corps répare les muscles la nuit — 1.5g/kg de protéines minimum" },
+          { id: "dn3", icon: "🌿", text: "Curcuma + pipérine quotidien si fasciite ou douleurs articulaires — anti-inflammatoire naturel validé" },
+          { id: "dn4", icon: "🐟", text: "Oméga-3 (sardines, maquereaux ou capsules) : réduit l'inflammation et les douleurs articulaires" },
+        ],
+        immediateActions: [
+          "Bois 500ml d'eau maintenant et prépare une bouteille pour les prochaines heures",
+          "Ce soir : repas avec protéines (viande, poisson, œufs, légumineuses) pour récupération musculaire",
+          "Prends du magnésium ce soir si crampes aux mollets",
+        ],
+        exerciseIds: ["coherence_cardiaque", "body_scan", "marching", "leg_elevation"],
+        programId: "debout_recovery",
+        products: [
+          mkProduct("gourde_n", "Gourde 1.5L graduée", "Rappel visuel — boire sans y penser tout au long du service", "https://amzn.to/3RAs14A", "haute", "~15€", "Hydratation #1"),
+          mkProduct("omega3_n", "Oméga-3 (EPA/DHA concentré)", "Réduit l'inflammation articulaire et plantaire — particulièrement efficace si fasciite", "https://www.amazon.fr/s?k=omega+3+EPA+DHA+articulations+inflammation", "moyenne", "~20€"),
+          mkProduct("curcuma_n", "Curcuma + pipérine 95%", "Anti-inflammatoire naturel puissant — efficacité prouvée sur les douleurs articulaires", "https://www.amazon.fr/s?k=curcuma+pipérine+anti+inflammatoire+articulations", "moyenne", "~18€"),
+        ],
+      };
+    }
+
+    default:
+      return null;
+  }
+}
+
+export function getJobDimensionContent(
+  dimension: string,
+  jobType: string,
+  answers: Record<string, unknown>,
+): JobDimensionContent | null {
+  if (jobType === "debout") return getDeboutDimensionContent(dimension, answers);
+  return null;
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 export function getJobContent(jobType?: string | null): JobData {
