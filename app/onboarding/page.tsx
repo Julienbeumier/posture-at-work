@@ -15,16 +15,14 @@ const AGE_OPTIONS = ["18-25", "26-35", "36-45", "46-55", "55+"];
 const JOB_OPTIONS = [
   {
     emoji: "💻",
-    label: "Travail assis",
     title: "Je travaille assis",
     description: "Bureau, télétravail, open space",
     value: "bureau",
   },
   {
     emoji: "🏭",
-    label: "Travail debout",
     title: "Je travaille debout",
-    description: "Commerce, restauration, usine, manutention, entrepôt, accueil",
+    description: "Commerce, restauration, usine, manutention, entrepôt",
     value: "debout",
   },
 ];
@@ -558,7 +556,7 @@ export default function OnboardingPage() {
                       marginBottom: 32,
                     }}
                   >
-                    {selectedJob?.emoji} {selectedJob?.label} — {hoursWeek}/semaine
+                    {selectedJob?.emoji} {selectedJob?.title} — {hoursWeek}/semaine
                   </div>
 
                   <div
