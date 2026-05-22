@@ -148,7 +148,7 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       ],
       did_you_know: [
         "Rester debout immobile est plus fatigant que marcher — les muscles se contractent sans relâche",
-        "La fasciite plantaire touche 10% de la population mais 40% des travailleurs debout",
+        "Les douleurs au talon / au pied touchent 10% de la population mais 40% des travailleurs debout",
         "Après 4h debout sur sol dur, la pression sur les pieds équivaut à 20kg supplémentaires",
         "Les chaussettes de compression portées AVANT de se lever sont 3x plus efficaces que portées après",
         "Un tapis anti-fatigue de qualité se rembourse en arrêts maladie évités en moins de 3 mois",
@@ -156,12 +156,12 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
     },
     score_interpretations: {
       setup: {
-        critical: "Ton environnement debout est très risqué. Sol dur + chaussures inadaptées + absence de tapis anti-fatigue = la combinaison la plus génératrice de fasciite plantaire et d'insuffisance veineuse. Ces facteurs s'accumulent chaque jour.",
+        critical: "Ton environnement debout est très risqué. Sol dur + chaussures inadaptées + absence de tapis anti-fatigue = la combinaison la plus génératrice de douleurs au talon/au pied et d'insuffisance veineuse. Ces facteurs s'accumulent chaque jour.",
         attention: "Ton setup debout a des failles importantes. Quelques investissements simples (tapis, semelles, chaussettes) peuvent réduire ta fatigue de fin de journée de 40%.",
         good: "Ton environnement debout est bien adapté. Continue à surveiller l'état de tes semelles et de ton tapis anti-fatigue — ils s'usent et perdent leurs propriétés.",
       },
       pain: {
-        critical: "Tes douleurs sont sévères. Ce niveau pour un travailleur debout indique souvent une pathologie installée (fasciite, insuffisance veineuse). Une consultation médicale ou kiné est urgente — ces douleurs ne disparaissent pas d'elles-mêmes.",
+        critical: "Tes douleurs sont sévères. Ce niveau pour un travailleur debout indique souvent une pathologie installée (douleurs chroniques aux pieds, insuffisance veineuse). Une consultation médicale ou kiné est urgente — ces douleurs ne disparaissent pas d'elles-mêmes.",
         attention: "Tes douleurs sont modérées mais typiques d'un travailleur debout. Elles sont encore réversibles — agis maintenant plutôt que d'attendre qu'elles s'installent chroniquement.",
         good: "Tu n'as pas de douleurs significatives. C'est le meilleur moment pour agir en prévention avec les exercices de renforcement du pied.",
       },
@@ -185,14 +185,14 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       always: [
         { title: "Vérifie la hauteur de ton plan de travail", why: "Un plan trop bas force une flexion permanente du dos et des épaules enroulées.", how: "Idéal : coudes légèrement fléchis quand les bras sont posés. Demande un réglage si possible.", impact: "Réduit les tensions d'épaules et de dos de 40%" },
         { title: "Demande un tapis anti-fatigue", why: "C'est l'investissement ergonomique le plus rentable pour le travail debout.", how: "Parle à ton employeur — c'est son obligation légale de prévention. Un tapis de 50€ vaut mieux qu'un arrêt maladie.", impact: "Réduit la fatigue musculaire des jambes de 50% après 4h" },
-        { title: "Short foot 3x par jour", why: "L'exercice le plus efficace pour renforcer la voûte plantaire et prévenir la fasciite.", how: "Raccourcis ton pied sans fléchir les orteils. Tiens 3 secondes. 10 répétitions. Faisable au poste debout.", impact: "Prévient et traite la fasciite plantaire" },
+        { title: "Short foot 3x par jour", why: "L'exercice le plus efficace pour renforcer la voûte plantaire et protéger les pieds.", how: "Raccourcis ton pied sans fléchir les orteils. Tiens 3 secondes. 10 répétitions. Faisable au poste debout.", impact: "Protège et renforce la voûte plantaire" },
       ],
       fasciite: [
         {
           title: "Fasciite plantaire — agis maintenant",
           why: "La douleur au talon au lever est le signe classique. Sans traitement, elle peut durer 12 mois. Avec les bons exercices, 6 à 12 semaines suffisent.",
           how: "1. Étire le fascia avant le premier pas (10 × 10 sec assis au lit). 2. Glace sous le talon 10-15 min après chaque journée. 3. Ne marche jamais pieds nus sur sol dur le matin.",
-          impact: "Réduit la durée de la fasciite de 12 mois à 6-8 semaines",
+          impact: "Réduit la durée des douleurs au talon de 12 mois à 6-8 semaines",
         },
       ],
       veines: [
@@ -221,24 +221,24 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       { id: "toe_spreading", name: "Écartement des orteils", target: "Pieds", duration: "10 répétitions", frequency: "Matin et soir", instruction: "Pieds nus, écarter au maximum. Alterner gros orteil seul vs autres.", when: "always" },
     ],
     tips: [
-      "La douleur au talon au premier pas du matin = fasciite plantaire — consulte un kiné",
+      "La douleur au talon au premier pas du matin est un signal important — consulte un professionnel si ça dure plus de 2 semaines",
       "Short foot 3x/jour : l'exercice le plus efficace pour protéger ta voûte plantaire",
       "Porte tes chaussettes de compression le matin AVANT de te lever — pas après",
       "Surélève les jambes 20 min en rentrant — plus efficace que 1h de massage",
       "Rester debout immobile est plus fatigant que marcher — micro-mouvements en continu",
       "Un tapis anti-fatigue de 5cm d'épaisseur réduit la fatigue musculaire de 50%",
-      "Le sol dur + chaussures plates = combinaison la plus risquée pour la fasciite",
+      "Le sol dur + chaussures plates = combinaison la plus risquée pour les douleurs au pied",
       "Si douleur au genou : ne bloque jamais le genou en hyperextension debout",
       "Alterner l'appui d'un pied sur une marche soulage le bas du dos de 25%",
       "La déshydratation aggrave les jambes lourdes — bois même si tu n'as pas soif",
-      "Si sport intensif après le travail et fasciite : passe au vélo ou natation",
+      "Si sport intensif après le travail et douleurs au talon : passe au vélo ou natation",
       "Glace sous le talon 10-15 min après le travail si douleur — anti-inflammatoire naturel",
     ],
     products: [
       { name: "Tapis anti-fatigue ergonomique", reason: "Réduit de 50% la fatigue musculaire en station debout — validé scientifiquement", priority: "haute", url: "https://www.amazon.fr/s?k=tapis+anti+fatigue+bureau+debout+ergonomique", trigger: "q_d2 !== oui_ergo" },
       { name: "Semelles orthopédiques de travail", reason: "Amorties et soutien de voûte plantaire — indispensables si tu travailles sur sol dur", priority: "haute", url: "https://www.amazon.fr/s?k=semelles+orthopediques+travail+debout+amorti", trigger: "q_d1 === dur || q_d8 >= 2" },
       { name: "Chaussettes de compression graduée", reason: "Prévient varices et insuffisance veineuse — à porter dès le matin avant de se lever", priority: "haute", url: "https://www.amazon.fr/s?k=chaussettes+compression+graduee+travail+debout", trigger: "q_d11 >= 2 || q_d14 !== normales" },
-      { name: "Balle de massage lacrosse", reason: "Auto-massage plantaire quotidien — en phase aiguë avec eau glacée", priority: "moyenne", url: "https://www.amazon.fr/s?k=balle+massage+fasciite+plantaire+lacrosse", trigger: "q_d8 >= 2 || q_d13 === premier_pas" },
+      { name: "Balle de massage lacrosse", reason: "Auto-massage sous le pied quotidien — en phase douloureuse avec eau glacée", priority: "moyenne", url: "https://www.amazon.fr/s?k=balle+massage+plantaire+lacrosse", trigger: "q_d8 >= 2 || q_d13 === premier_pas" },
       { name: "Repose-pieds ergonomique", reason: "Technique du pied surélevé — soulage le bas du dos de 25%", priority: "moyenne", url: "https://amzn.to/4dIZvWb", trigger: "q_d10 >= 2" },
       { name: "Coussin surélévation jambes", reason: "20 minutes le soir : draine les œdèmes et prévient les varices professionnelles", priority: "moyenne", url: "https://www.amazon.fr/s?k=coussin+surélévation+jambes+récupération", trigger: "q_d11 >= 2 || q_d14 !== normales" },
     ],
@@ -593,13 +593,13 @@ function getDeboutDimensionContent(
     case "setup": {
       const detected: string[] = [];
       if (a("q_d1") === "dur") {
-        detected.push("Tu travailles sur sol dur (carrelage/béton). C'est la surface la plus génératrice de fasciite plantaire et de fatigue musculaire des membres inférieurs.");
+        detected.push("Tu travailles sur sol dur (carrelage/béton). C'est la surface la plus génératrice de douleurs au talon et au pied et de fatigue musculaire des membres inférieurs.");
       }
       if (a("q_d2") !== "oui_ergo") {
         detected.push("Tu n'as pas de tapis anti-fatigue ergonomique. Après 4h debout sur sol dur sans amorti, la pression sur tes pieds équivaut à 20 kg supplémentaires.");
       }
       if (a("q_d3") === "ville" || a("q_d3") === "plates") {
-        detected.push("Tes chaussures ne sont pas adaptées au travail debout prolongé. C'est le facteur de risque #1 de la fasciite plantaire.");
+        detected.push("Tes chaussures ne sont pas adaptées au travail debout prolongé. C'est le facteur de risque #1 des douleurs au pied prolongées.");
       }
       if (a("q_d7") === "trop_bas") {
         detected.push("Ton plan de travail est trop bas. Tu te courbes en permanence, ce qui surcharge le bas du dos et les épaules.");
@@ -646,14 +646,24 @@ function getDeboutDimensionContent(
       const q_d14 = String(a("q_d14") ?? "normales");
       const q_d_charges = String(a("q_d_charges") ?? "");
       const q_d_repetitif = String(a("q_d_repetitif") ?? "");
+      const q_d_matin = String(a("q_d_matin") ?? "");
+      const q_d_gonflement = String(a("q_d_gonflement") ?? "");
+      const q_d_varices = String(a("q_d_varices") ?? "");
 
-      if (q_d8 >= 3 && q_d13 === "premier_pas") {
-        detected.push("⚠️ Douleur au talon au lever : signe classique de fasciite plantaire. Sans prise en charge : 6 à 12 mois. Avec les bons exercices : 6 à 12 semaines.");
+      // Flag: douleur_talon_matin
+      const flagTalon = q_d_matin === "douleur_premier_pas" || q_d_matin === "douleur_reveil" || (q_d8 >= 3 && q_d13 === "premier_pas");
+      // Flag: insuffisance_veineuse
+      const flagVeines = q_d_gonflement === "net" || q_d_gonflement === "tres_gonfle" || q_d_varices === "varices" || q_d_varices === "importantes" || (q_d11 >= 2 && q_d14 !== "normales");
+      // Flag: consultation_medicale
+      const flagConsult = q_d_gonflement === "tres_gonfle" || q_d_varices === "importantes";
+
+      if (flagTalon || (q_d8 >= 3 && q_d13 === "premier_pas")) {
+        detected.push("⚠️ Douleur au talon au lever : signal à ne pas ignorer. Avec les bons exercices, ces douleurs peuvent diminuer significativement en 6 à 12 semaines. Consulte un professionnel de santé si la douleur persiste plus de 2 semaines.");
         exerciseIds.push("fascia_stretch_morning", "short_foot", "calf_raise_excentric", "plantar_massage");
-        products.push(mkProduct("semelles_f", "Semelles orthopédiques de travail", "Soutien de voûte plantaire — indispensables contre la fasciite", "https://www.amazon.fr/s?k=semelles+orthopediques+travail+debout+amorti", "haute", "~25€", "Urgence fasciite"));
-        products.push(mkProduct("balle_m", "Balle de massage lacrosse", "Auto-massage plantaire quotidien — en phase aiguë avec eau glacée", "https://www.amazon.fr/s?k=balle+massage+fasciite+plantaire+lacrosse", "moyenne", "~10€"));
+        products.push(mkProduct("semelles_f", "Semelles orthopédiques de travail", "Soutien de voûte plantaire — indispensables si douleurs au talon ou à la voûte plantaire", "https://www.amazon.fr/s?k=semelles+orthopediques+travail+debout+amorti", "haute", "~25€", "Urgence fasciite"));
+        products.push(mkProduct("balle_m", "Balle de massage lacrosse", "Auto-massage sous le pied quotidien — en phase douloureuse avec eau glacée", "https://www.amazon.fr/s?k=balle+massage+plantaire+lacrosse", "moyenne", "~10€"));
       } else if (q_d8 >= 1) {
-        detected.push("Tu as des douleurs aux pieds ou talons. Même légères, elles méritent attention — elles sont le premier signe d'une fasciite en formation.");
+        detected.push("Tu as des douleurs aux pieds ou talons. Même légères, elles méritent attention — elles méritent attention avant de s'aggraver.");
         exerciseIds.push("short_foot", "calf_raise_excentric", "toe_spreading");
       }
 
@@ -691,6 +701,20 @@ function getDeboutDimensionContent(
         if (!exerciseIds.includes("wrist_rotation")) exerciseIds.push("wrist_rotation", "forearm_massage");
       }
 
+      // Flag insuffisance_veineuse (nouvelles questions)
+      if (flagVeines && !detected.some(d => d.includes("jambes lourdes") || d.includes("insuffisance veineuse"))) {
+        detected.push("⚠️ Tes jambes gonflées en fin de service indiquent une circulation veineuse insuffisante typique du travail debout prolongé. Chaussettes de compression + surélévation des jambes sont tes priorités.");
+        if (!exerciseIds.includes("leg_elevation")) exerciseIds.push("marching", "leg_elevation");
+        if (!products.find(p => p.id === "chaussettes_c")) {
+          products.push(mkProduct("chaussettes_c", "Chaussettes de compression graduée", "Prévient varices et insuffisance veineuse — à porter dès le matin avant de se lever", "https://www.amazon.fr/s?k=chaussettes+compression+graduee+travail+debout", "haute", "~20€"));
+        }
+      }
+
+      // Flag consultation_medicale
+      if (flagConsult) {
+        detected.push("🔴 Certains de tes symptômes (gonflements importants / varices douloureuses) nécessitent une consultation médicale. PAW ne remplace pas un avis médical — consulte ton médecin traitant.");
+      }
+
       if (detected.length === 0) {
         detected.push("Tu n'as pas de douleurs significatives. C'est le meilleur moment pour agir en prévention avec les exercices de renforcement du pied.");
         exerciseIds.push("short_foot", "toe_spreading", "calf_raise_excentric");
@@ -710,7 +734,7 @@ function getDeboutDimensionContent(
         tips.push({ id: "dp8", icon: "🪑", text: "Demande un repose-pieds si tu n'en as pas — c'est l'équipement lombaire #1 pour les debout" });
         tips.push({ id: "dp9", icon: "🧘", text: "Flexion lombaire 30 sec toutes les 2h : assis, bras entre les jambes, laisse le dos s'arrondir" });
       } else {
-        tips.push({ id: "dp10", icon: "🦶", text: "Short foot 3x par jour : le meilleur exercice pour prévenir la fasciite plantaire" });
+        tips.push({ id: "dp10", icon: "🦶", text: "Short foot 3x par jour : le meilleur exercice pour protéger la voûte plantaire" });
         tips.push({ id: "dp11", icon: "⬆️", text: "20 montées sur pointes après chaque service : relance la pompe veineuse" });
         tips.push({ id: "dp12", icon: "🧦", text: "Chaussettes de compression en prévention si tu travailles plus de 6h debout" });
       }
@@ -862,7 +886,7 @@ function getDeboutDimensionContent(
         tips: [
           { id: "dn1", icon: "💧", text: "Hydratation critique : 2 à 2.5L par jour (pas 1.5L) pour un métier debout physique" },
           { id: "dn2", icon: "🥩", text: "Apport protéique élevé : ton corps répare les muscles la nuit — 1.5g/kg de protéines minimum" },
-          { id: "dn3", icon: "🌿", text: "Curcuma + pipérine quotidien si fasciite ou douleurs articulaires — anti-inflammatoire naturel validé" },
+          { id: "dn3", icon: "🌿", text: "Curcuma + pipérine quotidien si douleurs au pied ou articulaires — anti-inflammatoire naturel validé" },
           { id: "dn4", icon: "🐟", text: "Oméga-3 (sardines, maquereaux ou capsules) : réduit l'inflammation et les douleurs articulaires" },
         ],
         immediateActions: [
@@ -874,7 +898,7 @@ function getDeboutDimensionContent(
         programId: "debout_recovery",
         products: [
           mkProduct("gourde_n", "Gourde 1.5L graduée", "Rappel visuel — boire sans y penser tout au long du service", "https://amzn.to/3RAs14A", "haute", "~15€", "Hydratation #1"),
-          mkProduct("omega3_n", "Oméga-3 (EPA/DHA concentré)", "Réduit l'inflammation articulaire et plantaire — particulièrement efficace si fasciite", "https://www.amazon.fr/s?k=omega+3+EPA+DHA+articulations+inflammation", "moyenne", "~20€"),
+          mkProduct("omega3_n", "Oméga-3 (EPA/DHA concentré)", "Réduit l'inflammation articulaire et plantaire — particulièrement efficace si douleurs au talon ou aux articulations", "https://www.amazon.fr/s?k=omega+3+EPA+DHA+articulations+inflammation", "moyenne", "~20€"),
           mkProduct("curcuma_n", "Curcuma + pipérine 95%", "Anti-inflammatoire naturel puissant — efficacité prouvée sur les douleurs articulaires", "https://www.amazon.fr/s?k=curcuma+pipérine+anti+inflammatoire+articulations", "moyenne", "~18€"),
         ],
       };

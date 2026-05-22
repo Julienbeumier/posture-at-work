@@ -6,6 +6,7 @@ export interface QuestionDef {
   id: string;
   type: QuestionType;
   label: string;
+  note?: string;
   options?: QuestionOption[];
   min?: number; max?: number; step?: number; unit?: string; reference?: string;
   alwaysAnswered?: boolean; // sliders
@@ -54,7 +55,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
     requiredQ: ["q_d1", "q_d2", "q_d3", "q_d5", "q_d6", "q_d7", "q_d_charges", "q_d_repetitif"],
     questions: [
-      { id: "q_d1", type: "choice", label: "Sur quel type de sol travailles-tu ?", options: [
+      { id: "q_d1", type: "choice", label: "Sur quel type de sol travailles-tu ?", note: "Le type de sol impacte directement la fatigue de tes pieds et de ton dos", options: [
         { value: "souple", label: "🟢 Tapis / caoutchouc (sol souple)" },
         { value: "semi_dur", label: "🟫 Parquet / lino (sol semi-dur)" },
         { value: "varie", label: "🔀 Ça varie selon les zones" },
@@ -66,9 +67,10 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "non", label: "❌ Non, sol dur direct" },
         { value: "inconnu", label: "🤷 Je sais pas ce que c'est" },
       ]},
-      { id: "q_d3", type: "choice", label: "Tes chaussures de travail sont ?", options: [
+      { id: "q_d3", type: "choice", label: "Tes chaussures de travail sont ?", note: "Les chaussures de sécurité lourdes sans amorti sont très génératrices de douleurs aux pieds", options: [
         { value: "semelles_pro", label: "👟 Semelles amortissantes professionnelles" },
         { value: "baskets", label: "👟 Baskets confortables" },
+        { value: "securite", label: "🩴 Chaussures de sécurité (embout acier)" },
         { value: "plates", label: "🥿 Chaussures plates sans amorti" },
         { value: "ville", label: "👞 Chaussures de ville / talons" },
       ]},
@@ -107,15 +109,15 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d2", title: "Tes douleurs spécifiques", subtitle: "Pieds, jambes, dos — les zones clés debout", emoji: "🩺",
     color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
     selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
-    requiredQ: ["q_d8", "q_d9", "q_d10", "q_d11", "q_d12", "q_d13", "q_d14", "q_d15"],
+    requiredQ: ["q_d8", "q_d9", "q_d10", "q_d11", "q_d12", "q_d13", "q_d14", "q_d15", "q_d_matin", "q_d_gonflement", "q_d_varices"],
     questions: [
-      { id: "q_d8", type: "painscale", label: "Douleurs pieds / talons" },
+      { id: "q_d8", type: "painscale", label: "Douleurs pieds / talons", note: "La douleur au talon au premier pas du matin est un signal important — note-le" },
       { id: "q_d9", type: "painscale", label: "Douleurs genoux" },
       { id: "q_d10", type: "painscale", label: "Douleurs bas du dos" },
       { id: "q_d11", type: "painscale", label: "Douleurs mollets / jambes lourdes" },
       { id: "q_d12", type: "painscale", label: "Douleurs épaules / nuque" },
       { id: "q_d13", type: "choice", label: "Tes pieds / talons sont douloureux surtout ?", options: [
-        { value: "premier_pas", label: "🌅 Au premier pas le matin (signe fasciite)" },
+        { value: "premier_pas", label: "🌅 Au premier pas le matin (signal important — note-le)" },
         { value: "cours_service", label: "☀️ En cours de service" },
         { value: "fin_journee", label: "🌆 En fin de journée uniquement" },
         { value: "tout_temps", label: "🔄 Tout le temps" },
@@ -133,6 +135,24 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "semaines", label: "📅 Quelques semaines" },
         { value: "mois", label: "📅 Plusieurs mois" },
         { value: "an", label: "⏳ Plus d'un an" },
+      ]},
+      { id: "q_d_matin", type: "choice", label: "Comment sont tes pieds / talons le matin avant de commencer le travail ?", options: [
+        { value: "aucune", label: "✅ Aucune douleur au lever" },
+        { value: "raideur", label: "😐 Légère raideur qui passe vite" },
+        { value: "douleur_premier_pas", label: "😟 Douleur au premier pas qui dure" },
+        { value: "douleur_reveil", label: "😫 Douleur présente dès le réveil" },
+      ]},
+      { id: "q_d_gonflement", type: "choice", label: "En fin de journée, tes chevilles / pieds ?", options: [
+        { value: "normaux", label: "✅ Normaux, pas de changement" },
+        { value: "leger", label: "🔸 Légèrement gonflés" },
+        { value: "net", label: "😫 Nettement gonflés (marque des chaussettes visible)" },
+        { value: "tres_gonfle", label: "🔴 Très gonflés et douloureux" },
+      ]},
+      { id: "q_d_varices", type: "choice", label: "As-tu des varices visibles sur les jambes ?", options: [
+        { value: "non", label: "✅ Non" },
+        { value: "veinules", label: "🔸 Quelques petites veinules" },
+        { value: "varices", label: "⚠️ Varices visibles" },
+        { value: "importantes", label: "🔴 Varices importantes et douloureuses" },
       ]},
     ],
   },

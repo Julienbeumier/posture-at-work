@@ -294,8 +294,8 @@ export const EXERCISES: Record<string, Exercise> = {
     reps: "10 répétitions × 3 sec", frequency: "3x par jour",
     location: ["debout", "bureau", "maison"],
     difficulty: "moyen", discreet: true, emoji: "🦶",
-    instruction: "Assis ou debout, essaie de raccourcir ton pied en rapprochant la tête des métatarses du talon, SANS fléchir les orteils. La voûte plantaire se soulève légèrement. Tiens 3 secondes. Relâche. L'exercice le plus efficace contre la fasciite plantaire.",
-    benefit: "Renforce les muscles intrinsèques et prévient la fasciite plantaire",
+    instruction: "Assis ou debout, essaie de raccourcir ton pied en rapprochant la tête des métatarses du talon, SANS fléchir les orteils. La voûte plantaire se soulève légèrement. Tiens 3 secondes. Relâche. L'exercice le plus efficace pour protéger la voûte plantaire.",
+    benefit: "Renforce les muscles intrinsèques et protège la voûte plantaire",
     jobTypes: ["debout", "artisan", "transport"],
   },
   calf_raise_excentric: {
@@ -305,7 +305,7 @@ export const EXERCISES: Record<string, Exercise> = {
     location: ["debout", "maison"],
     difficulty: "moyen", discreet: false, emoji: "🦵",
     instruction: "Debout sur une marche (avant-pied). Monte sur les deux pieds (2 sec). En haut, soulève le pied sain — redescends lentement sur le pied travaillé uniquement (4 sec). La phase de descente est la plus importante. Renforce mollet ET fascia plantaire.",
-    benefit: "Protocole validé contre fasciite plantaire et tendinopathie achilléenne",
+    benefit: "Protocole validé contre les douleurs au talon et tendinopathie achilléenne",
     jobTypes: ["debout"],
   },
   fascia_stretch_morning: {
@@ -315,7 +315,7 @@ export const EXERCISES: Record<string, Exercise> = {
     location: ["maison"],
     difficulty: "facile", discreet: true, emoji: "🛏️",
     instruction: "Assis au bord du lit, croise le pied douloureux sur le genou. Attrape les orteils et tire-les vers toi. Tu dois sentir l'étirement sous le pied. Tiens 10 secondes. Répète 10 fois AVANT de poser le pied au sol. Réduit la douleur du premier pas de 75%.",
-    benefit: "Réduit la douleur matinale de la fasciite plantaire de 75%",
+    benefit: "Réduit les douleurs au talon le matin de 75%",
     jobTypes: ["debout"],
   },
   leg_elevation: {
@@ -335,7 +335,7 @@ export const EXERCISES: Record<string, Exercise> = {
     location: ["maison", "bureau"],
     difficulty: "facile", discreet: false, emoji: "🦶",
     instruction: "Assis, pieds nus. Essaie d'écarter les orteils le plus possible. Tiens 3 secondes. Puis soulève uniquement le gros orteil en gardant les autres au sol. Puis l'inverse. Réveille les muscles intrinsèques du pied atrophiés par les chaussures.",
-    benefit: "Réactive les muscles du pied et prévient la fasciite plantaire",
+    benefit: "Réactive les muscles du pied et protège la voûte plantaire",
     jobTypes: ["debout"],
   },
   plantar_massage: {

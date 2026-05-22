@@ -159,8 +159,8 @@ function SliderInput({ id, value, min, max, step, unit, reference, onChange, cat
   );
 }
 
-function QBlock({ number, question, children, answered, cat }: {
-  number: string; question: string; children: React.ReactNode; answered: boolean; cat: CategoryDef;
+function QBlock({ number, question, note, children, answered, cat }: {
+  number: string; question: string; note?: string; children: React.ReactNode; answered: boolean; cat: CategoryDef;
 }) {
   return (
     <div style={{ padding: "20px", borderRadius: 18, background: answered ? cat.colorBg : "rgba(255,255,255,0.02)", border: answered ? `0.5px solid ${cat.colorBorder}` : "0.5px solid rgba(255,255,255,0.06)", transition: "all 0.3s ease", display: "flex", flexDirection: "column", gap: 14 }}>
@@ -168,7 +168,10 @@ function QBlock({ number, question, children, answered, cat }: {
         <div style={{ width: 24, height: 24, borderRadius: "50%", background: answered ? cat.colorBg : "rgba(255,255,255,0.05)", border: answered ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.10)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, fontFamily: T.h, fontWeight: 700, color: answered ? cat.color : "rgba(220,220,245,0.35)" }}>
           {answered ? "✓" : number}
         </div>
-        <p style={{ color: "#f0f0fa", fontSize: 14, fontFamily: T.b, lineHeight: 1.5, margin: 0 }}>{question}</p>
+        <div>
+          <p style={{ color: "#f0f0fa", fontSize: 14, fontFamily: T.b, lineHeight: 1.5, margin: 0 }}>{question}</p>
+          {note && <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 11, fontFamily: T.b, lineHeight: 1.5, margin: "4px 0 0" }}>ℹ️ {note}</p>}
+        </div>
       </div>
       {children}
     </div>
@@ -321,7 +324,7 @@ export default function ProfileQuestionnaire({
                     const ans = answers[q.id];
                     const answered = isAnswered(q.id, answers, q.type);
                     return (
-                      <QBlock key={q.id} number={String(qi + 1)} question={q.label} answered={answered} cat={cat}>
+                      <QBlock key={q.id} number={String(qi + 1)} question={q.label} note={q.note} answered={answered} cat={cat}>
                         {q.type === "choice" && (
                           <ChoiceGrid cat={cat} value={ans as string ?? ""} onChange={(v) => update(q.id, v)} options={q.options ?? []} />
                         )}

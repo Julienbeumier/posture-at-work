@@ -529,6 +529,21 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   // Manutention lourde (>30kg) — surcharge lombaire et articulaire
   if (a["q_d_charges"] === "tres_lourdes") rawPain -= 15;
 
+  // q_d_matin — douleur matinale au talon
+  const matinMap: Record<string, number> = { aucune: 20, raideur: 0, douleur_premier_pas: -20, douleur_reveil: -35 };
+  rawPain += matinMap[a["q_d_matin"] as string] ?? 0;
+
+  // q_d_gonflement — œdèmes en fin de journée
+  const gonflMap: Record<string, number> = { normaux: 10, leger: -5, net: -20, tres_gonfle: -35 };
+  rawPain += gonflMap[a["q_d_gonflement"] as string] ?? 0;
+
+  // q_d_varices — insuffisance veineuse visible
+  const varicesMap: Record<string, number> = { non: 0, veinules: -5, varices: -15, importantes: -30 };
+  rawPain += varicesMap[a["q_d_varices"] as string] ?? 0;
+
+  // Chaussures de sécurité — amorti souvent insuffisant
+  if (a["q_d3"] === "securite") rawPain -= 8;
+
   const pain = clamp(rawPain);
 
   // ── habits_debout (20%) ──────────────────────────────────────────────────

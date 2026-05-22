@@ -96,13 +96,22 @@ const DIM_INLINE_PRODUCTS: Record<string, { name: string; url: string; reason: s
   "/conseils/nutrition": { name: "Gourde graduée avec horaires 1.5L",   url: "https://amzn.to/3RAs14A", reason: "Rappel d'hydratation tout au long de la journée",          price: "~15€" },
 };
 
+const DIM_INLINE_PRODUCTS_DEBOUT: Record<string, { name: string; url: string; reason: string; price: string }> = {
+  "/conseils/setup":     { name: "Tapis anti-fatigue ergonomique",  url: "https://www.amazon.fr/s?k=tapis+anti+fatigue+ergonomique&tag=postureatwork-21",          reason: "Sol dur sans amorti = fatigue musculaire x3 en fin de journée",               price: "~45€" },
+  "/conseils/douleurs":  { name: "Semelles orthopédiques de travail", url: "https://www.amazon.fr/s?k=semelles+orthopediques+travail+debout&tag=postureatwork-21", reason: "Amorties et soutien de voûte plantaire pour journées debout",                 price: "~35€" },
+  "/conseils/sommeil":   { name: "Chaussettes de compression graduée", url: "https://www.amazon.fr/s?k=chaussettes+compression+graduee+travail&tag=postureatwork-21", reason: "À porter le matin avant de se lever — prévient jambes lourdes et varices", price: "~20€" },
+  "/conseils/lifestyle": { name: "Balle de massage plantaire",       url: "https://www.amazon.fr/s?k=balle+massage+plantaire+lacrosse&tag=postureatwork-21",        reason: "Auto-massage sous le pied après le service — soulage les tensions en 5 min", price: "~15€" },
+  "/conseils/habitudes": { name: "Repose-pieds ergonomique",         url: "https://amzn.to/4dIZvWb",                                                                 reason: "Permet d'alterner l'appui et soulage le bas du dos de 25%",                   price: "~35€" },
+  "/conseils/nutrition": { name: "Gourde 1.5L graduée",              url: "https://amzn.to/3RAs14A",                                                                 reason: "Hydratation critique pour les métiers debout — boire sans y penser",          price: "~15€" },
+};
+
 // ─── Sub-score bar ────────────────────────────────────────────────────────────
 
 function SubScoreBar({
-  label, emoji, score, interpretation, dimensionPath, dimensionColor, delay = 0,
+  label, emoji, score, interpretation, dimensionPath, dimensionColor, delay = 0, jobType = "bureau",
 }: {
   label: string; emoji: string; score: number; interpretation: string;
-  dimensionPath: string; dimensionColor: string; delay?: number;
+  dimensionPath: string; dimensionColor: string; delay?: number; jobType?: string;
 }) {
   const color = scoreBarColor(score);
   const [expanded, setExpanded] = useState(false);
@@ -176,8 +185,10 @@ function SubScoreBar({
           Voir mon plan détaillé →
         </span>
       </Link>
-      {score < 70 && DIM_INLINE_PRODUCTS[dimensionPath] && (() => {
-        const p = DIM_INLINE_PRODUCTS[dimensionPath];
+      {score < 70 && (() => {
+        const map = jobType === "debout" ? DIM_INLINE_PRODUCTS_DEBOUT : DIM_INLINE_PRODUCTS;
+        const p = map[dimensionPath];
+        if (!p) return null;
         return (
           <div style={{
             marginTop: 10, padding: "10px 14px", borderRadius: 12,
@@ -351,7 +362,17 @@ export default function ResultsPage() {
     );
   }
 
-  const recs = getRecommendations(scores, answers);
+  const bureauRecs = getRecommendations(scores, answers);
+  const deboutRecs: { title: string; description: string; priority: "urgent" | "important" | "good" }[] = [];
+  if (jobType === "debout") {
+    if (scores.setup < 50) deboutRecs.push({ title: "Ton environnement debout est risqué", description: "Sol dur, chaussures inadaptées ou absence de tapis anti-fatigue s'accumulent chaque jour et génèrent tensions et douleurs aux pieds, jambes et dos.", priority: "urgent" });
+    if (scores.pain < 50) deboutRecs.push({ title: "Tes douleurs méritent attention", description: "Les douleurs aux pieds, aux jambes ou au dos liées au travail debout sont évitables avec les bons ajustements.", priority: scores.pain < 30 ? "urgent" : "important" });
+    if (scores.habits < 50) deboutRecs.push({ title: "Tu bouges trop peu pendant le service", description: "Même debout, l'immobilité est l'ennemi. Micro-mouvements toutes les 30 minutes relancent la circulation et réduisent la fatigue.", priority: "important" });
+    if (scores.lifestyle < 50) deboutRecs.push({ title: "Ton corps a besoin de récupération active", description: "Après une journée debout, surélève les jambes 20 minutes et fais des étirements ciblés — c'est aussi important que le sommeil.", priority: "important" });
+    if (scores.sleep_energy < 50) deboutRecs.push({ title: "Ton sommeil ne compense pas la fatigue physique", description: "Un métier debout exige une récupération de qualité. Sans sommeil suffisant, douleurs et fatigue s'accumulent semaine après semaine.", priority: "important" });
+    if (deboutRecs.length === 0) deboutRecs.push({ title: "Bonne posture debout !", description: "Tes indicateurs sont corrects. Continue les exercices préventifs (short foot, montées sur pointes) pour rester en forme.", priority: "good" });
+  }
+  const recs = jobType === "debout" ? deboutRecs : bureauRecs;
   const exercises = getExercises(scores, answers);
   const badge = scoreBadge(scores.global);
 
@@ -445,6 +466,7 @@ export default function ResultsPage() {
                 dimensionPath={dimensionPath}
                 dimensionColor={dimensionColor}
                 delay={i * 0.15}
+                jobType={jobType}
               />
             ))}
           </div>

@@ -156,11 +156,22 @@ export default function MobilitePage() {
       maison_reveil:    { id: "maison_reveil",     tab: "maison" },
       maison_recup:     { id: "maison_recup",      tab: "maison" },
     };
+    // Debout profile: add debout programs to paramMap
+    paramMap["debout_pause"]    = { id: "debout_pause",    tab: "bureau" };
+    paramMap["debout_recovery"] = { id: "debout_recovery", tab: "maison" };
+
     const qParam = new URLSearchParams(window.location.search).get("program");
     if (qParam && paramMap[qParam]) {
       const { id, tab: newTab } = paramMap[qParam];
       const found = [...PROGRAMS, ...TARGETED_PROGRAMS].find(p => p.id === id);
       if (found) { setActiveProgram(found); setTab(newTab); }
+    } else {
+      // Default program based on job type
+      const storedJobType = localStorage.getItem("paw_job_type") ?? "bureau";
+      if (storedJobType === "debout") {
+        const deboutDefault = PROGRAMS.find(p => p.id === "debout_recovery");
+        if (deboutDefault) { setActiveProgram(deboutDefault); setTab("maison"); }
+      }
     }
 
     // Streak from Supabase
