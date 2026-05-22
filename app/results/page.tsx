@@ -278,7 +278,9 @@ export default function ResultsPage() {
 
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
-    setJobType(localStorage.getItem("paw_job_type") ?? "bureau");
+    // Force bureau in example mode regardless of paw_job_type
+    const isExample = sessionStorage.getItem("paw_example_mode") === "true";
+    setJobType(isExample ? "bureau" : (localStorage.getItem("paw_job_type") ?? "bureau"));
   }, []);
 
   useEffect(() => {

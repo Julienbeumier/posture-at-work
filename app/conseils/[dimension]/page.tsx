@@ -184,8 +184,9 @@ export default function DimensionPage() {
     async function load() {
       if (!isValidDimension(dimensionParam)) { setReady(true); return; }
 
-      // Read jobType directly here to avoid async state lag
-      const storedJobType = localStorage.getItem("paw_job_type") ?? "bureau";
+      // Read jobType — force bureau if in example mode
+      const isExample = sessionStorage.getItem("paw_example_mode") === "true";
+      const storedJobType = isExample ? "bureau" : (localStorage.getItem("paw_job_type") ?? "bureau");
       setJobType(storedJobType);
 
       const answersRaw = sessionStorage.getItem("postureatwork_answers") || localStorage.getItem("paw_answers");
