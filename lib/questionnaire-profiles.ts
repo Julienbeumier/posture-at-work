@@ -52,7 +52,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d1", title: "Ton poste debout", subtitle: "Sol, chaussures et ergonomie", emoji: "🦶",
     color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
     selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
-    requiredQ: ["q_d1", "q_d2", "q_d3", "q_d5", "q_d6", "q_d7"],
+    requiredQ: ["q_d1", "q_d2", "q_d3", "q_d5", "q_d6", "q_d7", "q_d_charges", "q_d_repetitif"],
     questions: [
       { id: "q_d1", type: "choice", label: "Sur quel type de sol travailles-tu ?", options: [
         { value: "souple", label: "🟢 Tapis / caoutchouc (sol souple)" },
@@ -88,6 +88,18 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "trop_bas", label: "⬇️ Trop basse (je me courbe)" },
         { value: "trop_haut", label: "⬆️ Trop haute (épaules soulevées)" },
         { value: "pas_plan", label: "🤷 Je n'ai pas de plan de travail fixe" },
+      ]},
+      { id: "q_d_charges", type: "choice", label: "Portes-tu des charges dans ton travail ?", options: [
+        { value: "legeres", label: "✅ Non ou très légères (< 5 kg)" },
+        { value: "moyennes", label: "🔸 Parfois (5-15 kg)" },
+        { value: "lourdes", label: "⚠️ Souvent (15-30 kg)" },
+        { value: "tres_lourdes", label: "🚨 Régulièrement (> 30 kg)" },
+      ]},
+      { id: "q_d_repetitif", type: "choice", label: "Fais-tu des gestes répétitifs ?", options: [
+        { value: "non", label: "✅ Non, gestes variés" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "toute_la_journee", label: "🔄 Oui, quasi toute la journée" },
       ]},
     ],
   },

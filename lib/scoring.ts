@@ -526,6 +526,9 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const jambeSoirMap: Record<string, number> = { normales: 0, lourdes: -20, tres_lourdes: -40, varices: -60 };
   rawPain += jambeSoirMap[a["q_d14"] as string] ?? 0;
 
+  // Manutention lourde (>30kg) — surcharge lombaire et articulaire
+  if (a["q_d_charges"] === "tres_lourdes") rawPain -= 15;
+
   const pain = clamp(rawPain);
 
   // ── habits_debout (20%) ──────────────────────────────────────────────────
@@ -533,12 +536,15 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const mvtMap: Record<string, number> = { beaucoup: 100, parfois: 60, fixe: 10 };
   const chargeMap: Record<string, number> = { legeres: 100, moyennes: 70, lourdes: 30, tres_lourdes: 0 };
   const hydraMap: Record<string, number> = { reguliere: 100, parfois: 60, rarement: 20, interdit: 10 };
-  const habits = clamp(Math.round((
+  let habits = clamp(Math.round((
     (pauseMap[a["q_d16"] as string] ?? 50) +
     (mvtMap[a["q_d17"] as string] ?? 50) +
     (chargeMap[a["q_d18"] as string] ?? 70) +
     (hydraMap[a["q_d19"] as string] ?? 50)
   ) / 4));
+
+  // Gestes répétitifs toute la journée — surcharge tendineuse cumulée
+  if (a["q_d_repetitif"] === "toute_la_journee") habits = clamp(habits - 10);
 
   // ── sleep_energy (10%) — pénalité si > 8h debout ET < 6h sommeil ────────
   let sleep_energy = 70;

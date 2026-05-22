@@ -13,12 +13,20 @@ const T = {
 const AGE_OPTIONS = ["18-25", "26-35", "36-45", "46-55", "55+"];
 
 const JOB_OPTIONS = [
-  { emoji: "💻", label: "Bureau", value: "bureau" },
-  { emoji: "🏪", label: "Debout", value: "debout" },
-  { emoji: "🔧", label: "Artisan", value: "artisan" },
-  { emoji: "🚗", label: "Transport", value: "transport" },
-  { emoji: "🏥", label: "Médical", value: "medical" },
-  { emoji: "🎓", label: "Enseignement", value: "enseignement" },
+  {
+    emoji: "💻",
+    label: "Travail assis",
+    title: "Je travaille assis",
+    description: "Bureau, télétravail, open space",
+    value: "bureau",
+  },
+  {
+    emoji: "🏭",
+    label: "Travail debout",
+    title: "Je travaille debout",
+    description: "Commerce, restauration, usine, manutention, entrepôt, accueil",
+    value: "debout",
+  },
 ];
 
 const HOURS_OPTIONS = ["< 20h", "20-35h", "35-40h", "> 40h"];
@@ -363,42 +371,55 @@ export default function OnboardingPage() {
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr 1fr",
-                    gap: 10,
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 14,
                   }}
                 >
-                  {JOB_OPTIONS.map((job) => (
-                    <div
-                      key={job.value}
-                      onClick={() => handleJobSelect(job.value)}
-                      style={{
-                        padding: "18px 10px",
-                        borderRadius: 16,
-                        background:
-                          jobType === job.value
-                            ? "rgba(43,92,230,0.20)"
-                            : "rgba(255,255,255,0.06)",
-                        border: `0.5px solid ${
-                          jobType === job.value ? "#7c9fff" : "rgba(255,255,255,0.15)"
-                        }`,
-                        color: jobType === job.value ? "#7c9fff" : "rgba(220,220,245,0.75)",
-                        textAlign: "center",
-                        cursor: "pointer",
-                        transition: "all 0.15s ease",
-                      }}
-                    >
-                      <div style={{ fontSize: 26, marginBottom: 6 }}>{job.emoji}</div>
+                  {JOB_OPTIONS.map((job) => {
+                    const sel = jobType === job.value;
+                    return (
                       <div
+                        key={job.value}
+                        onClick={() => handleJobSelect(job.value)}
                         style={{
-                          fontSize: 12,
-                          fontWeight: 600,
-                          fontFamily: T.b,
+                          padding: "28px 16px 24px",
+                          borderRadius: 22,
+                          background: sel ? "rgba(43,92,230,0.18)" : "rgba(255,255,255,0.05)",
+                          border: `1px solid ${sel ? "#7c9fff" : "rgba(255,255,255,0.12)"}`,
+                          boxShadow: sel ? "0 0 24px rgba(43,92,230,0.25)" : "none",
+                          textAlign: "center",
+                          cursor: "pointer",
+                          transition: "all 0.18s ease",
                         }}
                       >
-                        {job.label}
+                        <div style={{ fontSize: 40, marginBottom: 12, lineHeight: 1 }}>
+                          {job.emoji}
+                        </div>
+                        <div
+                          style={{
+                            fontFamily: T.h,
+                            fontWeight: 800,
+                            fontSize: 15,
+                            color: sel ? "#7c9fff" : "#f0f0fa",
+                            marginBottom: 8,
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          {job.title}
+                        </div>
+                        <div
+                          style={{
+                            fontFamily: T.b,
+                            fontSize: 11,
+                            color: sel ? "rgba(124,159,255,0.75)" : "rgba(220,220,245,0.40)",
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          {job.description}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </motion.div>
             )}

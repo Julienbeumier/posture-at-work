@@ -644,6 +644,8 @@ function getDeboutDimensionContent(
       const q_d11 = n("q_d11");
       const q_d13 = String(a("q_d13") ?? "");
       const q_d14 = String(a("q_d14") ?? "normales");
+      const q_d_charges = String(a("q_d_charges") ?? "");
+      const q_d_repetitif = String(a("q_d_repetitif") ?? "");
 
       if (q_d8 >= 3 && q_d13 === "premier_pas") {
         detected.push("⚠️ Douleur au talon au lever : signe classique de fasciite plantaire. Sans prise en charge : 6 à 12 mois. Avec les bons exercices : 6 à 12 semaines.");
@@ -676,6 +678,19 @@ function getDeboutDimensionContent(
         products.push(mkProduct("repose_pf", "Repose-pieds ergonomique", "Alterner l'appui d'un pied soulage le bas du dos de 25%", "https://amzn.to/4dIZvWb", "moyenne", "~30€"));
       }
 
+      // Manutention lourde (≥15kg)
+      if (q_d_charges === "lourdes" || q_d_charges === "tres_lourdes") {
+        detected.push("⚠️ Port de charges lourdes régulier — la règle absolue : jamais fléchi ET en rotation simultanément. C'est la cause #1 des hernies discales chez les manutentionnaires.");
+        if (!exerciseIds.includes("lumbar_flexion")) exerciseIds.push("lumbar_flexion");
+        products.push(mkProduct("ceinture_m", "Ceinture lombaire de travail", "Protection lombaire pour les charges ponctuelles importantes — non un substitut à la bonne technique", "https://www.amazon.fr/s?k=ceinture+lombaire+travail+manutention", "haute", "~30€", "Manutention"));
+      }
+
+      // Gestes répétitifs
+      if (q_d_repetitif === "toute_la_journee") {
+        detected.push("⚠️ Gestes répétitifs toute la journée — risque élevé de tendinopathies et de syndrome du canal carpien. Les micro-pauses gestuelles sont indispensables.");
+        if (!exerciseIds.includes("wrist_rotation")) exerciseIds.push("wrist_rotation", "forearm_massage");
+      }
+
       if (detected.length === 0) {
         detected.push("Tu n'as pas de douleurs significatives. C'est le meilleur moment pour agir en prévention avec les exercices de renforcement du pied.");
         exerciseIds.push("short_foot", "toe_spreading", "calf_raise_excentric");
@@ -700,6 +715,16 @@ function getDeboutDimensionContent(
         tips.push({ id: "dp12", icon: "🧦", text: "Chaussettes de compression en prévention si tu travailles plus de 6h debout" });
       }
 
+      // Ajouts contextuels selon manutention / répétitifs
+      if (q_d_charges === "lourdes" || q_d_charges === "tres_lourdes") {
+        tips.push({ id: "dm1", icon: "📦", text: "Jamais fléchi ET en rotation simultanément — c'est la règle absolue pour soulever une charge" });
+        tips.push({ id: "dm2", icon: "🦵", text: "Plie les genoux, garde le dos droit, retourne-toi avec les pieds — pas avec le dos" });
+      }
+      if (q_d_repetitif === "toute_la_journee") {
+        tips.push({ id: "drep1", icon: "🔄", text: "Varie la main ou le bras utilisé si possible — réduit la charge répétitive de 50%" });
+        tips.push({ id: "drep2", icon: "✋", text: "Micro-pause gestuelle 30 sec toutes les heures : secoue les mains, étire les poignets" });
+      }
+
       return {
         detected,
         consequences: "Les douleurs des membres inférieurs chez les travailleurs debout s'installent progressivement et deviennent chroniques sans intervention. Fasciite, insuffisance veineuse et lombalgies par hyperlordose sont les trois pathologies les plus fréquentes — toutes évitables avec les bons gestes.",
@@ -721,6 +746,8 @@ function getDeboutDimensionContent(
       const q_d17 = String(a("q_d17") ?? "");
       const q_d18 = String(a("q_d18") ?? "");
       const q_d19 = String(a("q_d19") ?? "");
+      const q_d_charges_h = String(a("q_d_charges") ?? "");
+      const q_d_repetitif_h = String(a("q_d_repetitif") ?? "");
 
       if (q_d16 === "jamais" || q_d16 === "rarement") {
         detected.push("Tu ne fais pas de pauses assises. Rester debout immobile sans variation est plus nocif que marcher — les muscles se contractent sans jamais se relâcher.");
@@ -728,8 +755,11 @@ function getDeboutDimensionContent(
       if (q_d17 === "fixe") {
         detected.push("Tu restes en poste fixe immobile. Le mouvement continu protège infiniment mieux que rester debout statique.");
       }
-      if (q_d18 === "lourdes" || q_d18 === "tres_lourdes") {
-        detected.push("Tu portes des charges lourdes. La combinaison travail debout + port de charges est la plus génératrice de TMS lombaires.");
+      if (q_d18 === "lourdes" || q_d18 === "tres_lourdes" || q_d_charges_h === "lourdes" || q_d_charges_h === "tres_lourdes") {
+        detected.push("Tu portes des charges lourdes. La combinaison travail debout + port de charges est la plus génératrice de TMS lombaires — technique irréprochable obligatoire.");
+      }
+      if (q_d_repetitif_h === "toute_la_journee") {
+        detected.push("Tes gestes répétitifs toute la journée surcharge progressivement tendons et nerfs. Sans micro-pauses gestuelles, les tendinopathies s'installent en quelques mois.");
       }
       if (q_d19 === "rarement" || q_d19 === "interdit") {
         detected.push("Tu t'hydrates insuffisamment. La déshydratation aggrave la fatigue musculaire, les jambes lourdes et les crampes nocturnes des mollets.");
@@ -737,15 +767,22 @@ function getDeboutDimensionContent(
       if (detected.length === 0) {
         detected.push("Tes habitudes au travail sont globalement bonnes. Continue à varier les positions et à t'hydrater régulièrement.");
       }
+
+      const habitudesTips: DeboutTip[] = [
+        { id: "dh1", icon: "🔄", text: "Variation posturale toutes les 20 min : assis, debout, un pied surélevé — alterner c'est tout" },
+        { id: "dh2", icon: "🚶", text: "Micro-mouvements en service : weight shift, montées sur pointes, écartement d'orteils — faisables au poste" },
+        { id: "dh3", icon: "💧", text: "Hydratation critique : bois avant d'avoir soif — au travail debout on déshydrate plus vite" },
+        { id: "dh4", icon: "📦", text: "Port de charges : dos droit, charge proche du corps, jamais en flexion + rotation simultanées" },
+      ];
+      if (q_d_repetitif_h === "toute_la_journee") {
+        habitudesTips.push({ id: "dh5", icon: "🔄", text: "Varie la main ou le bras utilisé si possible — réduit la charge répétitive de 50%" });
+        habitudesTips.push({ id: "dh6", icon: "✋", text: "Micro-pause gestuelle 30 sec toutes les heures : secoue les mains, étire les poignets" });
+      }
+
       return {
         detected,
         consequences: "Les mauvaises habitudes au poste debout accélèrent la fatigue et les TMS. La variation posturale est le facteur protecteur le plus puissant — plus même que l'équipement.",
-        tips: [
-          { id: "dh1", icon: "🔄", text: "Variation posturale toutes les 20 min : assis, debout, un pied surélevé — alterner c'est tout" },
-          { id: "dh2", icon: "🚶", text: "Micro-mouvements en service : weight shift, montées sur pointes, écartement d'orteils — faisables au poste" },
-          { id: "dh3", icon: "💧", text: "Hydratation critique : bois avant d'avoir soif — au travail debout on déshydrate plus vite" },
-          { id: "dh4", icon: "📦", text: "Port de charges : dos droit, charge proche du corps, jamais en flexion + rotation simultanées" },
-        ],
+        tips: habitudesTips,
         immediateActions: [
           "Bois un grand verre d'eau maintenant",
           "Mets une alarme toutes les 20 min pour changer de position",
