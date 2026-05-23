@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { DEFAULT_ANSWERS, type QuestionnaireAnswers } from "@/lib/scoring";
+import { calculateScores, DEFAULT_ANSWERS, type QuestionnaireAnswers } from "@/lib/scoring";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 
 const T = {
@@ -526,6 +526,13 @@ function BureauQuestionnaire() {
   }
 
   function handleSubmit() {
+    const scores = calculateScores(answers);
+    // Clear any stale debout session data
+    sessionStorage.removeItem("postureatwork_answers_debout");
+    // Save bureau data to sessionStorage (authoritative source for all pages)
+    sessionStorage.setItem("postureatwork_answers", JSON.stringify(answers));
+    sessionStorage.setItem("postureatwork_scores", JSON.stringify(scores));
+    // Also persist to localStorage for cross-session fallback
     localStorage.setItem("paw_answers", JSON.stringify(answers));
     router.push("/results");
   }

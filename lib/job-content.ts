@@ -768,7 +768,6 @@ function getDeboutDimensionContent(
       const detected: string[] = [];
       const q_d16 = String(a("q_d16") ?? "");
       const q_d17 = String(a("q_d17") ?? "");
-      const q_d18 = String(a("q_d18") ?? "");
       const q_d19 = String(a("q_d19") ?? "");
       const q_d_charges_h = String(a("q_d_charges") ?? "");
       const q_d_repetitif_h = String(a("q_d_repetitif") ?? "");
@@ -779,7 +778,7 @@ function getDeboutDimensionContent(
       if (q_d17 === "fixe") {
         detected.push("Tu restes en poste fixe immobile. Le mouvement continu protège infiniment mieux que rester debout statique.");
       }
-      if (q_d18 === "lourdes" || q_d18 === "tres_lourdes" || q_d_charges_h === "lourdes" || q_d_charges_h === "tres_lourdes") {
+      if (q_d_charges_h === "lourdes" || q_d_charges_h === "tres_lourdes") {
         detected.push("Tu portes des charges lourdes. La combinaison travail debout + port de charges est la plus génératrice de TMS lombaires — technique irréprochable obligatoire.");
       }
       if (q_d_repetitif_h === "toute_la_journee") {
@@ -900,7 +899,7 @@ function getDeboutDimensionContent(
     case "nutrition": {
       const detected: string[] = [];
       const q_d19 = String(a("q_d19") ?? "");
-      const q_d18 = String(a("q_d18") ?? "");
+      const q_d_charges_n = String(a("q_d_charges") ?? "");
       const q_d8 = n("q_d8");
       const q_d_petit_dej = String(a("q_d_petit_dej") ?? "");
       const q_d_crampes_alim = String(a("q_d_crampes_alim") ?? "");
@@ -928,7 +927,7 @@ function getDeboutDimensionContent(
       if (q_d19 === "rarement" || q_d19 === "interdit") {
         detected.push("Tu t'hydrates insuffisamment. Une déshydratation de seulement 2% aggrave les jambes lourdes et la fatigue musculaire — bois avant d'avoir soif.");
       }
-      if (q_d18 === "lourdes" || q_d18 === "tres_lourdes") {
+      if (q_d_charges_n === "lourdes" || q_d_charges_n === "tres_lourdes") {
         detected.push("Ton travail physique intensif augmente tes besoins caloriques de 20-30% par rapport à un travailleur assis.");
       }
       if (q_d8 >= 2) {
@@ -1072,6 +1071,55 @@ export function getJobDimensionContent(
 ): JobDimensionContent | null {
   if (jobType === "debout") return getDeboutDimensionContent(dimension, answers);
   return null;
+}
+
+// ─── Individual content getters — used by /conseils pages ─────────────────────
+// Each function is a thin dispatcher: debout → getDeboutDimensionContent,
+// bureau → falls back to existing getDimensionAdvice system.
+
+export function getDetectedIssues(
+  dimension: string,
+  jobType: string,
+  answers: Record<string, unknown>,
+): string[] {
+  if (jobType === "debout") return getDeboutDimensionContent(dimension, answers)?.detected ?? [];
+  return []; // bureau: caller uses getDimensionAdvice directly
+}
+
+export function getPriorityTips(
+  dimension: string,
+  jobType: string,
+  answers: Record<string, unknown>,
+): DeboutTip[] {
+  if (jobType === "debout") return getDeboutDimensionContent(dimension, answers)?.tips ?? [];
+  return [];
+}
+
+export function getImmediateActionsForDimension(
+  dimension: string,
+  jobType: string,
+  answers: Record<string, unknown>,
+): string[] {
+  if (jobType === "debout") return getDeboutDimensionContent(dimension, answers)?.immediateActions ?? [];
+  return [];
+}
+
+export function getExerciseIdsForDimension(
+  dimension: string,
+  jobType: string,
+  answers: Record<string, unknown>,
+): string[] {
+  if (jobType === "debout") return getDeboutDimensionContent(dimension, answers)?.exerciseIds ?? [];
+  return [];
+}
+
+export function getProductsForDimension(
+  dimension: string,
+  jobType: string,
+  answers: Record<string, unknown>,
+): DeboutProduct[] {
+  if (jobType === "debout") return getDeboutDimensionContent(dimension, answers)?.products ?? [];
+  return [];
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

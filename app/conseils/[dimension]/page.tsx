@@ -184,31 +184,34 @@ export default function DimensionPage() {
     async function load() {
       if (!isValidDimension(dimensionParam)) { setReady(true); return; }
 
-      // Force bureau si mode exemple — vérifie les deux storages
+      // ── 1. Example mode ──────────────────────────────────────────────────
       const isExample = sessionStorage.getItem("paw_example_mode") === "true"
                      || localStorage.getItem("paw_example_mode") === "true";
-      const storedJobType = isExample ? "bureau" : (localStorage.getItem("paw_job_type") ?? "bureau");
-      setJobType(storedJobType);
+      if (isExample) setIsExampleMode(true);
 
-      // Use the correct answers key for each job type
-      const answersKey = isExample ? "postureatwork_answers"
-        : storedJobType === "debout" ? "postureatwork_answers_debout"
-        : "postureatwork_answers";
-      const answersRaw = sessionStorage.getItem(answersKey) || (!isExample && storedJobType !== "debout" ? localStorage.getItem("paw_answers") : null);
+      // ── 2. Source of truth: scores from sessionStorage (set by questionnaire submit) ──
       const scoresRaw = sessionStorage.getItem("postureatwork_scores");
+      const parsedScores: Scores | null = scoresRaw ? JSON.parse(scoresRaw) : null;
 
-      // If no local data, check Supabase before deciding if there's a bilan
-      if (sessionStorage.getItem("paw_example_mode") === "true") {
-        setIsExampleMode(true);
-      }
+      // ── 3. Effective job type — scores.job_type is most reliable ─────────
+      const effectiveJobType = isExample
+        ? "bureau"
+        : (parsedScores?.job_type || localStorage.getItem("paw_job_type") || "bureau");
+      setJobType(effectiveJobType);
 
-      if (!answersRaw && !scoresRaw) {
-        // Still skip Supabase check in example mode
-        if (sessionStorage.getItem("paw_example_mode") === "true") {
-          setHasBilan(true);
-          setReady(true);
-          return;
-        }
+      // ── 4. Read answers from the correct key ─────────────────────────────
+      const answersKey = (effectiveJobType === "debout" && !isExample)
+        ? "postureatwork_answers_debout"
+        : "postureatwork_answers";
+      const answersRaw = sessionStorage.getItem(answersKey)
+        || (!isExample && effectiveJobType !== "debout" ? localStorage.getItem("paw_answers") : null);
+
+      // Debug — remove once confirmed working
+      console.log("[PAW conseils]", { effectiveJobType, answersKey, hasAnswers: !!answersRaw, hasScores: !!scoresRaw });
+
+      // ── 5. No session data at all → Supabase or no-bilan ─────────────────
+      if (!scoresRaw && !answersRaw) {
+        if (isExample) { setHasBilan(true); setReady(true); return; }
         try {
           const supabase = createClient();
           const { data: { user } } = await supabase.auth.getUser();
@@ -218,63 +221,29 @@ export default function DimensionPage() {
             .eq("user_id", user.id).order("created_at", { ascending: false })
             .limit(1).maybeSingle();
           if (!data?.scores) { setHasBilan(false); setReady(true); return; }
-          // Use Supabase data
-          const sa: QuestionnaireAnswers = data.answers
-            ? { ...DEFAULT_ANSWERS, ...(data.answers as Partial<QuestionnaireAnswers>) }
-            : DEFAULT_ANSWERS;
+          const sa = { ...DEFAULT_ANSWERS, ...(data.answers ?? {}) } as QuestionnaireAnswers;
           const ss = data.scores as Scores;
-          const meta = DIMENSION_META[dimensionParam];
-          setScore((ss[meta.scoreKey as keyof Scores] as number) ?? 0);
+          setScore((ss[DIMENSION_META[dimensionParam].scoreKey as keyof Scores] as number) ?? 0);
           setAdvice(getDimensionAdvice(dimensionParam, sa, ss));
           setReady(true);
           return;
         } catch {
-          setHasBilan(false);
-          setReady(true);
-          return;
+          setHasBilan(false); setReady(true); return;
         }
       }
 
-      const answers: QuestionnaireAnswers = answersRaw
-        ? { ...DEFAULT_ANSWERS, ...JSON.parse(answersRaw) }
-        : DEFAULT_ANSWERS;
-
-      let scores: Scores;
-
-      if (scoresRaw) {
-        scores = JSON.parse(scoresRaw);
-      } else {
-        // Fallback: fetch latest assessment from Supabase
-        try {
-          const supabase = createClient();
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            const { data } = await supabase
-              .from("assessments")
-              .select("scores")
-              .eq("user_id", user.id)
-              .order("created_at", { ascending: false })
-              .limit(1)
-              .maybeSingle();
-            scores = data?.scores ?? { global: 0, setup: 0, pain: 0, habits: 0, sleep_energy: 0, lifestyle: 0, nutrition: 0 };
-          } else {
-            scores = { global: 0, setup: 0, pain: 0, habits: 0, sleep_energy: 0, lifestyle: 0, nutrition: 0 };
-          }
-        } catch {
-          scores = { global: 0, setup: 0, pain: 0, habits: 0, sleep_energy: 0, lifestyle: 0, nutrition: 0 };
-        }
-      }
-
+      // ── 6. Use session scores ─────────────────────────────────────────────
+      const scores: Scores = parsedScores ?? {
+        global: 0, setup: 0, pain: 0, habits: 0, sleep_energy: 0, lifestyle: 0, nutrition: 0,
+      };
       const meta = DIMENSION_META[dimensionParam];
-      const dimensionScore = (scores[meta.scoreKey as keyof Scores] as number) ?? 0;
-      setScore(dimensionScore);
+      setScore((scores[meta.scoreKey as keyof Scores] as number) ?? 0);
 
-      // Trust scores.job_type for accurate detection (avoids leftover localStorage mismatches)
-      const effectiveJobType = scores.job_type ?? storedJobType;
-
-      // Non-bureau profiles: use job-specific dimension content
-      if (effectiveJobType !== "bureau" && answersRaw) {
-        const genericAnswers = JSON.parse(answersRaw) as Record<string, unknown>;
+      // ── 7. Debout profile: always try job-specific content ────────────────
+      //    answersRaw may be empty for fresh cross-session navigation;
+      //    getDeboutDimensionContent handles {} gracefully (shows default messages).
+      if (effectiveJobType !== "bureau") {
+        const genericAnswers: Record<string, unknown> = answersRaw ? JSON.parse(answersRaw) : {};
         const jdc = getJobDimensionContent(dimensionParam, effectiveJobType, genericAnswers);
         if (jdc) {
           setJobDimContent(jdc);
@@ -283,7 +252,11 @@ export default function DimensionPage() {
         }
       }
 
-      setAdvice(getDimensionAdvice(dimensionParam, answers, scores));
+      // ── 8. Bureau fallback ────────────────────────────────────────────────
+      const bureauAnswers: QuestionnaireAnswers = answersRaw
+        ? { ...DEFAULT_ANSWERS, ...JSON.parse(answersRaw) }
+        : DEFAULT_ANSWERS;
+      setAdvice(getDimensionAdvice(dimensionParam, bureauAnswers, scores));
       setReady(true);
     }
     load();
