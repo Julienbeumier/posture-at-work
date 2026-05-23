@@ -223,8 +223,15 @@ export default function ProfileQuestionnaire({
   function handleSubmit() {
     const scores = calculateJobScores(jobType, answers);
     sessionStorage.setItem("postureatwork_scores", JSON.stringify(scores));
-    sessionStorage.setItem("postureatwork_answers", JSON.stringify(answers));
     sessionStorage.setItem("paw_job_type_active", jobType);
+    if (jobType === "debout") {
+      // Isolate debout answers — clear any leftover bureau answers
+      sessionStorage.removeItem("postureatwork_answers");
+      sessionStorage.setItem("postureatwork_answers_debout", JSON.stringify(answers));
+    } else {
+      sessionStorage.setItem("postureatwork_answers", JSON.stringify(answers));
+      sessionStorage.removeItem("postureatwork_answers_debout");
+    }
     localStorage.setItem("paw_job_answers", JSON.stringify(answers));
     router.push("/results");
   }
@@ -272,7 +279,7 @@ export default function ProfileQuestionnaire({
             <motion.div style={{ height: "100%", borderRadius: 100, background: "#2b5ce6" }} animate={{ width: `${(done / categories.length) * 100}%` }} transition={{ duration: 0.4 }} />
           </div>
           <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 2 }}>
-            {categories.map((cat, i) => {
+            {categories.map((cat) => {
               const isDone = isCatDone(cat, answers);
               return (
                 <button key={cat.id} onClick={() => document.getElementById(cat.id)?.scrollIntoView({ behavior: "smooth", block: "start" })}

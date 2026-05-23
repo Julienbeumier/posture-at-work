@@ -214,7 +214,7 @@ function SubScoreBar({
 
 // ─── Score interpretation ─────────────────────────────────────────────────────
 
-function scoreInterpretation(key: keyof Scores, score: number, answers: QuestionnaireAnswers): string {
+function scoreInterpretation(key: keyof Omit<Scores, "global" | "job_type">, score: number, answers: QuestionnaireAnswers): string {
   switch (key) {
     case "setup":
       if (score >= 70) return "Ton poste de travail est bien configuré. Maintiens ces bonnes habitudes.";
@@ -247,7 +247,7 @@ function scoreInterpretation(key: keyof Scores, score: number, answers: Question
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
-const SUB_SCORES: { key: keyof Omit<Scores, "global">; label: string; emoji: string; dimensionPath: string; dimensionColor: string }[] = [
+const SUB_SCORES: { key: keyof Omit<Scores, "global" | "job_type">; label: string; emoji: string; dimensionPath: string; dimensionColor: string }[] = [
   { key: "setup",       label: "Setup & ergonomie",    emoji: "💻", dimensionPath: "/conseils/setup",     dimensionColor: "#7c9fff" },
   { key: "pain",        label: "Douleurs",              emoji: "🩺", dimensionPath: "/conseils/douleurs",  dimensionColor: "#f09595" },
   { key: "habits",      label: "Habitudes de travail",  emoji: "⏱️", dimensionPath: "/conseils/habitudes", dimensionColor: "#f4a261" },
@@ -288,9 +288,15 @@ export default function ResultsPage() {
     async function load() {
       // 1. sessionStorage (fastest — set immediately after questionnaire)
       const ssScores = sessionStorage.getItem("postureatwork_scores");
-      const ssAnswers = sessionStorage.getItem("postureatwork_answers");
+      const ssAnswers = sessionStorage.getItem("postureatwork_answers")
+                     || sessionStorage.getItem("postureatwork_answers_debout");
       if (ssScores && ssAnswers) {
-        setScores(JSON.parse(ssScores));
+        const parsedScores = JSON.parse(ssScores) as Scores;
+        setScores(parsedScores);
+        // Trust scores.job_type over localStorage (debout debout may have leftover bureau key)
+        const isExampleNow = sessionStorage.getItem("paw_example_mode") === "true"
+                          || localStorage.getItem("paw_example_mode") === "true";
+        if (!isExampleNow && parsedScores.job_type) setJobType(parsedScores.job_type);
         setAnswers({ ...DEFAULT_ANSWERS, ...JSON.parse(ssAnswers) });
         return;
       }
@@ -637,7 +643,7 @@ export default function ResultsPage() {
             Tes prochaines étapes
           </p>
           {(() => {
-            const lowestDim = SUB_SCORES.reduce((a, b) => scores[a.key] <= scores[b.key] ? a : b);
+            const lowestDim = SUB_SCORES.reduce((a, b) => (scores[a.key] ?? 100) <= (scores[b.key] ?? 100) ? a : b);
             return (
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>

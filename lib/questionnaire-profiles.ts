@@ -160,7 +160,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d3", title: "Tes habitudes au travail", subtitle: "Pauses, mouvement et contraintes", emoji: "⏱️",
     color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
     selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
-    requiredQ: ["q_d16", "q_d17", "q_d18", "q_d19"],
+    requiredQ: ["q_d16", "q_d17", "q_d19"],
     questions: [
       { id: "q_d16", type: "choice", label: "Fais-tu des pauses assises dans la journée ?", options: [
         { value: "regulier", label: "✅ Oui régulièrement (toutes les 2h)" },
@@ -172,12 +172,6 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "beaucoup", label: "✅ Oui, je circule beaucoup" },
         { value: "parfois", label: "🔸 Parfois mais souvent immobile" },
         { value: "fixe", label: "❌ Non, poste fixe immobile" },
-      ]},
-      { id: "q_d18", type: "choice", label: "Portes-tu des charges dans ton travail ?", options: [
-        { value: "legeres", label: "✅ Non ou très légères (<5 kg)" },
-        { value: "moyennes", label: "🔸 Parfois (5-15 kg)" },
-        { value: "lourdes", label: "⚠️ Souvent (>15 kg)" },
-        { value: "tres_lourdes", label: "🚨 Très souvent et lourd (>25 kg)" },
       ]},
       { id: "q_d19", type: "choice", label: "Hydratation pendant le service ?", options: [
         { value: "reguliere", label: "✅ Je bois régulièrement (>1.5L)" },

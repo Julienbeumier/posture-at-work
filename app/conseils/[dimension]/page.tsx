@@ -190,7 +190,11 @@ export default function DimensionPage() {
       const storedJobType = isExample ? "bureau" : (localStorage.getItem("paw_job_type") ?? "bureau");
       setJobType(storedJobType);
 
-      const answersRaw = sessionStorage.getItem("postureatwork_answers") || localStorage.getItem("paw_answers");
+      // Use the correct answers key for each job type
+      const answersKey = isExample ? "postureatwork_answers"
+        : storedJobType === "debout" ? "postureatwork_answers_debout"
+        : "postureatwork_answers";
+      const answersRaw = sessionStorage.getItem(answersKey) || (!isExample && storedJobType !== "debout" ? localStorage.getItem("paw_answers") : null);
       const scoresRaw = sessionStorage.getItem("postureatwork_scores");
 
       // If no local data, check Supabase before deciding if there's a bilan
@@ -265,10 +269,13 @@ export default function DimensionPage() {
       const dimensionScore = (scores[meta.scoreKey as keyof Scores] as number) ?? 0;
       setScore(dimensionScore);
 
+      // Trust scores.job_type for accurate detection (avoids leftover localStorage mismatches)
+      const effectiveJobType = scores.job_type ?? storedJobType;
+
       // Non-bureau profiles: use job-specific dimension content
-      if (storedJobType !== "bureau" && answersRaw) {
+      if (effectiveJobType !== "bureau" && answersRaw) {
         const genericAnswers = JSON.parse(answersRaw) as Record<string, unknown>;
-        const jdc = getJobDimensionContent(dimensionParam, storedJobType, genericAnswers);
+        const jdc = getJobDimensionContent(dimensionParam, effectiveJobType, genericAnswers);
         if (jdc) {
           setJobDimContent(jdc);
           setReady(true);

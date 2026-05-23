@@ -71,6 +71,7 @@ export interface Scores {
   sleep_energy: number;
   lifestyle: number;
   nutrition: number;
+  job_type?: string;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -186,7 +187,7 @@ export function calculateScores(a: QuestionnaireAnswers): Scores {
   const global = clamp(
     setup * 0.2 + pain * 0.3 + habits * 0.2 + sleep_energy * 0.1 + lifestyle * 0.1 + nutrition * 0.1
   );
-  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition };
+  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition, job_type: "bureau" };
 }
 
 // ─── Display helpers ──────────────────────────────────────────────────────────
@@ -554,7 +555,7 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   let habits = clamp(Math.round((
     (pauseMap[a["q_d16"] as string] ?? 50) +
     (mvtMap[a["q_d17"] as string] ?? 50) +
-    (chargeMap[a["q_d18"] as string] ?? 70) +
+    (chargeMap[a["q_d_charges"] as string] ?? 70) +
     (hydraMap[a["q_d19"] as string] ?? 50)
   ) / 4));
 
@@ -616,7 +617,7 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const global = clamp(Math.round(
     setup * 0.20 + pain * 0.30 + habits * 0.18 + sleep_energy * 0.12 + nutrition * 0.12 + lifestyle * 0.08
   ));
-  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition };
+  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition, job_type: "debout" };
 }
 
 function calcArtisanScores(a: GenericAnswers): Scores {
