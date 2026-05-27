@@ -236,8 +236,13 @@ export default function Navbar() {
                   color: "#f0f0fa",
                   fontSize: 24,
                   cursor: "pointer",
-                  padding: "4px 8px",
+                  padding: "10px 10px",
                   lineHeight: 1,
+                  minHeight: 44,
+                  minWidth: 44,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
                 aria-label="Menu"
               >
@@ -265,7 +270,7 @@ export default function Navbar() {
               <Link href="/questionnaire" style={{ textDecoration: "none" }}>
                 <div
                   style={{
-                    padding: "8px 18px",
+                    padding: "11px 18px",
                     borderRadius: 100,
                     background: "rgba(43,92,230,0.18)",
                     color: "#7c9fff",
@@ -274,6 +279,9 @@ export default function Navbar() {
                     fontWeight: 700,
                     cursor: "pointer",
                     fontFamily: "var(--font-nunito), sans-serif",
+                    minHeight: 44,
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
                   Mon bilan
@@ -290,8 +298,13 @@ export default function Navbar() {
                   color: "#f0f0fa",
                   fontSize: 24,
                   cursor: "pointer",
-                  padding: "4px 8px",
+                  padding: "10px 10px",
                   lineHeight: 1,
+                  minHeight: 44,
+                  minWidth: 44,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
                 aria-label="Menu"
               >

@@ -41,13 +41,13 @@ export default function CookieBanner() {
         <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
           <button
             onClick={refuse}
-            style={{ padding: "9px 18px", borderRadius: 100, background: "transparent", border: "1px solid rgba(255,255,255,0.20)", color: "rgba(220,220,245,0.60)", fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer" }}
+            style={{ padding: "12px 18px", borderRadius: 100, background: "transparent", border: "1px solid rgba(255,255,255,0.20)", color: "rgba(220,220,245,0.60)", fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer", minHeight: 44 }}
           >
             Refuser
           </button>
           <button
             onClick={accept}
-            style={{ padding: "9px 18px", borderRadius: 100, background: "#2b5ce6", border: "none", color: "#fff", fontFamily: T.b, fontWeight: 700, fontSize: 13, cursor: "pointer", boxShadow: "0 2px 12px rgba(43,92,230,0.35)" }}
+            style={{ padding: "12px 18px", borderRadius: 100, background: "#2b5ce6", border: "none", color: "#fff", fontFamily: T.b, fontWeight: 700, fontSize: 13, cursor: "pointer", boxShadow: "0 2px 12px rgba(43,92,230,0.35)", minHeight: 44 }}
           >
             Accepter
           </button>

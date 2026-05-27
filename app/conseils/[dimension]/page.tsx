@@ -206,8 +206,6 @@ export default function DimensionPage() {
       const answersRaw = sessionStorage.getItem(answersKey)
         || (!isExample && effectiveJobType !== "debout" ? localStorage.getItem("paw_answers") : null);
 
-      // Debug — remove once confirmed working
-      console.log("[PAW conseils]", { effectiveJobType, answersKey, hasAnswers: !!answersRaw, hasScores: !!scoresRaw });
 
       // ── 5. No session data at all → Supabase or no-bilan ─────────────────
       if (!scoresRaw && !answersRaw) {
