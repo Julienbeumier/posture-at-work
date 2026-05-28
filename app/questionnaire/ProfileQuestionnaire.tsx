@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import {
@@ -265,8 +266,13 @@ export default function ProfileQuestionnaire({
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "12px 20px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa" }}>PAW</span>
-              <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#7c9fff" }}>.</span>
+              <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "rgba(220,220,245,0.40)", fontSize: 13, fontFamily: T.b, cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                ← Retour
+              </button>
+              <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa" }}>PAW</span>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#7c9fff" }}>.</span>
+              </Link>
               <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(43,92,230,0.15)", fontFamily: T.b, fontSize: 11, color: "#7c9fff" }}>
                 {meta.emoji} {meta.label}
               </span>

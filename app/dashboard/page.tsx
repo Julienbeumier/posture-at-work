@@ -270,10 +270,11 @@ export default function DashboardPage() {
     const authName = (u.user_metadata?.full_name as string | undefined) || u.email?.split("@")[0] || localStorage.getItem("paw_firstname") || "";
     setFirstname(authName);
 
-    const { data: aData } = await supabase
+    const { data: aData, error: aErr } = await supabase
       .from("assessments").select("*").eq("user_id", u.id)
       .order("created_at", { ascending: false }).limit(20);
-    if (aData) setAssessments(aData);
+    console.log("[PAW dashboard] Assessments trouvés:", aData?.length, aErr?.message ?? "");
+    if (aData) { console.log("[PAW dashboard] Premier:", aData[0]); setAssessments(aData); }
 
     const today = new Date().toISOString().slice(0, 10);
     const { data: cData } = await supabase

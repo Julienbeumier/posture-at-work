@@ -278,13 +278,42 @@ export default function ResultsPage() {
 
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
-    // Force bureau si mode exemple — vérifie les deux storages
     const isExample = sessionStorage.getItem("paw_example_mode") === "true"
                    || localStorage.getItem("paw_example_mode") === "true";
+    if (!isExample) {
+      // Page de vrais résultats — effacer le mode exemple pour que /conseils sache où revenir
+      sessionStorage.removeItem("paw_example_mode");
+      localStorage.removeItem("paw_example_mode");
+    }
     setJobType(isExample ? "bureau" : (localStorage.getItem("paw_job_type") ?? "bureau"));
   }, []);
 
   useEffect(() => {
+    async function saveToSupabase(s: Scores, a: QuestionnaireAnswers | Record<string, unknown>) {
+      const isExample = sessionStorage.getItem("paw_example_mode") === "true"
+                     || localStorage.getItem("paw_example_mode") === "true";
+      if (isExample) { console.log("[PAW] Mode exemple — pas de sauvegarde"); return; }
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        console.log("[PAW] Tentative sauvegarde Supabase — user:", !!user);
+        if (!user) { console.log("[PAW] Pas connecté — pas de sauvegarde"); return; }
+        console.log("[PAW] Scores à sauvegarder:", s);
+        const { error } = await supabase.from("assessments").insert({
+          user_id: user.id,
+          scores: s,
+          answers: a,
+          global_score: s.global,
+          job_type: s.job_type ?? "bureau",
+          created_at: new Date().toISOString(),
+        });
+        if (error) console.error("[PAW] Erreur sauvegarde:", error);
+        else console.log("[PAW] Bilan sauvegardé ✅");
+      } catch (e) {
+        console.error("[PAW] Exception sauvegarde:", e);
+      }
+    }
+
     async function load() {
       // 1. sessionStorage (fastest — set immediately after questionnaire)
       const ssScores = sessionStorage.getItem("postureatwork_scores");
@@ -292,12 +321,13 @@ export default function ResultsPage() {
                      || sessionStorage.getItem("postureatwork_answers_debout");
       if (ssScores && ssAnswers) {
         const parsedScores = JSON.parse(ssScores) as Scores;
+        const parsedAnswers = JSON.parse(ssAnswers) as QuestionnaireAnswers;
         setScores(parsedScores);
-        // Trust scores.job_type over localStorage (debout debout may have leftover bureau key)
         const isExampleNow = sessionStorage.getItem("paw_example_mode") === "true"
                           || localStorage.getItem("paw_example_mode") === "true";
         if (!isExampleNow && parsedScores.job_type) setJobType(parsedScores.job_type);
-        setAnswers({ ...DEFAULT_ANSWERS, ...JSON.parse(ssAnswers) });
+        setAnswers({ ...DEFAULT_ANSWERS, ...parsedAnswers });
+        saveToSupabase(parsedScores, parsedAnswers);
         return;
       }
 
@@ -310,11 +340,13 @@ export default function ResultsPage() {
         setScores(s);
         sessionStorage.setItem("postureatwork_scores", JSON.stringify(s));
         sessionStorage.setItem("postureatwork_answers", JSON.stringify(parsed));
+        saveToSupabase(s, parsed);
         return;
       }
 
       // 3. Supabase latest assessment
       const { data: { user } } = await createClient().auth.getUser();
+      console.log("[PAW] Assessments — recherche user:", user?.id);
       if (user) {
         const { data } = await createClient()
           .from("assessments")
@@ -323,6 +355,7 @@ export default function ResultsPage() {
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle();
+        console.log("[PAW] Assessment trouvé:", !!data?.scores);
         if (data?.scores) {
           const parsedAnswers: QuestionnaireAnswers = data.answers
             ? { ...DEFAULT_ANSWERS, ...(data.answers as Partial<QuestionnaireAnswers>) }

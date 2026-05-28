@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
@@ -39,6 +39,13 @@ export default function OnboardingPage() {
   const [jobType, setJobType] = useState("");
   const [hoursWeek, setHoursWeek] = useState("");
   const [direction, setDirection] = useState(1);
+
+  useEffect(() => {
+    // Reset complet du mode exemple avant un vrai bilan
+    localStorage.removeItem("paw_example_firstname");
+    localStorage.removeItem("paw_example_mode");
+    sessionStorage.removeItem("paw_example_mode");
+  }, []);
 
   function goForward(next: Step) {
     setDirection(1);

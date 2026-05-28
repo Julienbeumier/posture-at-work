@@ -289,10 +289,10 @@ export default function ExempleRapportPage() {
   const [activeTab, setActiveTab] = useState<"recs" | "exercises">("recs");
 
   useEffect(() => {
-    // Forcer TOUTES les données Thomas — ne jamais lire le sessionStorage existant
+    // Forcer TOUTES les données Thomas — ne jamais écraser paw_firstname (prénom réel)
     localStorage.setItem("paw_job_type", "bureau");
     localStorage.setItem("paw_example_mode", "true");   // persistance inter-tab
-    localStorage.setItem("paw_firstname", "Thomas");
+    localStorage.setItem("paw_example_firstname", "Thomas");  // clé séparée — jamais paw_firstname
     localStorage.setItem("paw_age", "26-35");
     localStorage.setItem("paw_hours_week", "35-40h");
 

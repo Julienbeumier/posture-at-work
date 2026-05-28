@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { calculateScores, DEFAULT_ANSWERS, type QuestionnaireAnswers } from "@/lib/scoring";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
@@ -560,9 +561,14 @@ function BureauQuestionnaire() {
       >
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "12px 20px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa" }}>PAW</span>
-              <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#7c9fff" }}>.</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "rgba(220,220,245,0.40)", fontSize: 13, fontFamily: T.b, cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                ← Retour
+              </button>
+              <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa" }}>PAW</span>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#7c9fff" }}>.</span>
+              </Link>
             </div>
             <span style={{ color: "rgba(220,220,245,0.40)", fontSize: 13, fontFamily: T.b }}>
               {done} / {CATEGORIES.length} catégories
