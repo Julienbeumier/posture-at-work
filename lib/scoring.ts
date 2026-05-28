@@ -503,6 +503,7 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const siegeScore: Record<string, number> = { oui_utilise: 100, oui_nose_pas: 40, non: 0 };
   const planScore: Record<string, number> = { adapte: 100, trop_bas: 20, trop_haut: 30, pas_plan: 60 };
 
+  const enduranceScore: Record<string, number> = { plus_4h: 100, deux_4h: 70, un_2h: 40, moins_1h: 10 };
   const setupComponents = [
     solScoreVal,
     tapisScore[a["q_d2"] as string] ?? 30,
@@ -510,6 +511,7 @@ function calcDeboutScores(a: GenericAnswers): Scores {
     variationScore[a["q_d5"] as string] ?? 50,
     siegeScore[a["q_d6"] as string] ?? 50,
     planScore[a["q_d7"] as string] ?? 60,
+    enduranceScore[a["q_d_endurance_debout"] as string] ?? 60,
   ];
   const setup = clamp(Math.round(setupComponents.reduce((s, v) => s + v, 0) / setupComponents.length));
 
@@ -535,9 +537,9 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   // Manutention lourde (>30kg) — surcharge lombaire et articulaire
   if (a["q_d_charges"] === "tres_lourdes") rawPain -= 15;
 
-  // q_d_gonflement — œdèmes en fin de journée
-  const gonflMap: Record<string, number> = { normaux: 10, leger: -5, net: -20, tres_gonfle: -35 };
-  rawPain += gonflMap[a["q_d_gonflement"] as string] ?? 0;
+  // q_d_irradiation — douleurs irradiantes (compression nerveuse)
+  const irradMap: Record<string, number> = { non: 0, fesse_cuisse: -10, jusqu_genou: -20, jusqu_pied: -30 };
+  rawPain += irradMap[a["q_d_irradiation"] as string] ?? 0;
 
   // q_d_varices — insuffisance veineuse visible
   const varicesMap: Record<string, number> = { non: 0, veinules: -5, varices: -15, importantes: -30 };
@@ -562,6 +564,13 @@ function calcDeboutScores(a: GenericAnswers): Scores {
 
   // Gestes répétitifs toute la journée — surcharge tendineuse cumulée
   if (a["q_d_repetitif"] === "toute_la_journee") habits = clamp(habits - 10);
+
+  // q_d_protection — EPI et accessoires
+  const protection = Array.isArray(a["q_d_protection"]) ? (a["q_d_protection"] as string[]) : [];
+  if (protection.includes("ceinture")) habits = clamp(habits + 10);
+  if (protection.includes("genouilleres")) habits = clamp(habits + 10);
+  if (protection.includes("chaussures_securite")) habits = clamp(habits + 5);
+  if (protection.includes("aucun")) habits = clamp(habits - 10);
 
   // ── sleep_energy (12%) ───────────────────────────────────────────────────
   let sleep_energy = 70;

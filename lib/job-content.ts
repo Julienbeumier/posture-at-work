@@ -648,17 +648,20 @@ function getDeboutDimensionContent(
       const q_d14 = String(a("q_d14") ?? "normales");
       const q_d_charges = String(a("q_d_charges") ?? "");
       const q_d_repetitif = String(a("q_d_repetitif") ?? "");
-      const q_d_gonflement = String(a("q_d_gonflement") ?? "");
       const q_d_varices = String(a("q_d_varices") ?? "");
+      const q_d_irradiation = String(a("q_d_irradiation") ?? "");
+      const q_d_protection = Array.isArray(a("q_d_protection")) ? (a("q_d_protection") as string[]) : [];
 
       // Flag: douleur_talon_matin (fused q_d13 now includes premier_pas + douleur_reveil options)
       const flagTalon = q_d13 === "premier_pas" || q_d13 === "douleur_reveil" || (q_d8 >= 3 && (q_d13 === "premier_pas" || q_d13 === "cours_service"));
       // Flag: tendinopathie membre supérieur
       const flagTendinopathieSup = q_d_coude >= 3 || q_d_poignet >= 3;
-      // Flag: insuffisance_veineuse
-      const flagVeines = q_d_gonflement === "net" || q_d_gonflement === "tres_gonfle" || q_d_varices === "varices" || q_d_varices === "importantes" || (q_d11 >= 2 && q_d14 !== "normales");
+      // Flag: insuffisance_veineuse (relies on q_d14 and q_d_varices now that gonflement removed)
+      const flagVeines = q_d_varices === "varices" || q_d_varices === "importantes" || (q_d11 >= 2 && q_d14 !== "normales") || q_d14 === "tres_lourdes" || q_d14 === "varices";
       // Flag: consultation_medicale
-      const flagConsult = q_d_gonflement === "tres_gonfle" || q_d_varices === "importantes";
+      const flagConsult = q_d_varices === "importantes" || q_d14 === "varices";
+      // Flag: douleur irradiante (sciatique, cruralgie)
+      const flagDouleurIrradiante = q_d_irradiation === "fesse_cuisse" || q_d_irradiation === "jusqu_genou" || q_d_irradiation === "jusqu_pied";
 
       if (flagTalon || (q_d8 >= 3 && q_d13 === "premier_pas")) {
         detected.push("⚠️ Douleur au talon au lever : signal à ne pas ignorer. Avec les bons exercices, ces douleurs peuvent diminuer significativement en 6 à 12 semaines. Consulte un professionnel de santé si la douleur persiste plus de 2 semaines.");
@@ -710,6 +713,28 @@ function getDeboutDimensionContent(
         if (!exerciseIds.includes("wrist_rotation")) exerciseIds.push("wrist_rotation", "forearm_massage");
       }
 
+      // Douleur irradiante — compression nerveuse possible
+      if (flagDouleurIrradiante) {
+        const severity = q_d_irradiation === "jusqu_pied" ? "🔴" : q_d_irradiation === "jusqu_genou" ? "⚠️" : "🔸";
+        detected.push(`${severity} Douleur irradiante dans ${q_d_irradiation === "jusqu_pied" ? "la jambe jusqu'au pied" : q_d_irradiation === "jusqu_genou" ? "la jambe jusqu'au genou" : "la fesse ou la cuisse"} : cela peut signaler une compression nerveuse (sciatique ou cruralgie). ${q_d_irradiation === "jusqu_pied" ? "Une consultation médicale est recommandée rapidement." : "Évite de rester debout immobile — la marche et les étirements du piriforme soulagent souvent."}`);
+        exerciseIds.push("piriformis_stretch", "lumbar_flexion");
+        if (q_d_irradiation === "jusqu_pied") {
+          detected.push("🔴 Sciatique possible : une douleur descendant jusqu'au pied mérite un bilan médical (imagerie lombaire) — ne pas ignorer.");
+        }
+      }
+
+      // Ceinture lombaire portée + douleurs lombaires importantes
+      if (q_d_protection.includes("ceinture") && q_d10 >= 3) {
+        detected.push("⚠️ Tu portes une ceinture lombaire avec des douleurs lombaires importantes. La ceinture est une aide ponctuelle, pas une solution à long terme — elle peut affaiblir les muscles lombaires si portée en continu. Renforcement du gainage indispensable.");
+        if (!exerciseIds.includes("cat_cow")) exerciseIds.push("cat_cow", "lumbar_extension");
+      }
+
+      // Chaussures de sécurité sans amorti optimal
+      if (q_d_protection.includes("chaussures_securite") && (q_d8 >= 2 || q_d9 >= 2)) {
+        detected.push("👟 Tes chaussures de sécurité peuvent manquer d'amorti. Des semelles orthopédiques de travail glissées dedans réduisent significativement les douleurs aux pieds et aux genoux.");
+        products.push(mkProduct("semelles_secu", "Semelles orthopédiques pour chaussures de sécurité", "Semelles conçues pour s'adapter aux chaussures de sécurité embout acier — amorti renforcé plantaire et talon", "https://www.amazon.fr/s?k=semelles+orthopediques+chaussures+securite+embout+acier&tag=postureatwork-21", "haute", "~25€", "Chaussures sécu"));
+      }
+
       // Flag insuffisance_veineuse (nouvelles questions)
       if (flagVeines && !detected.some(d => d.includes("jambes lourdes") || d.includes("insuffisance veineuse"))) {
         detected.push("⚠️ Tes jambes gonflées en fin de service indiquent une circulation veineuse insuffisante typique du travail debout prolongé. Chaussettes de compression + surélévation des jambes sont tes priorités.");
@@ -721,7 +746,7 @@ function getDeboutDimensionContent(
 
       // Flag consultation_medicale
       if (flagConsult) {
-        detected.push("🔴 Certains de tes symptômes (gonflements importants / varices douloureuses) nécessitent une consultation médicale. PAW ne remplace pas un avis médical — consulte ton médecin traitant.");
+        detected.push("🔴 Certains de tes symptômes (varices douloureuses / jambes très lourdes avec varices visibles) nécessitent une consultation médicale. PAW ne remplace pas un avis médical — consulte ton médecin traitant.");
       }
 
       if (detected.length === 0) {

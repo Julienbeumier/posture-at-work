@@ -53,7 +53,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d1", title: "Ton poste debout", subtitle: "Sol, chaussures et ergonomie", emoji: "🦶",
     color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
     selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
-    requiredQ: ["q_d1", "q_d2", "q_d3", "q_d5", "q_d6", "q_d7", "q_d_charges", "q_d_repetitif"],
+    requiredQ: ["q_d1", "q_d2", "q_d3", "q_d5", "q_d6", "q_d7", "q_d_charges", "q_d_repetitif", "q_d_endurance_debout"],
     questions: [
       { id: "q_d1", type: "multiselect", label: "Sur quel(s) type(s) de sol travailles-tu ?", note: "Le type de sol impacte directement la fatigue de tes pieds et de ton dos — sélectionne tout ce qui s'applique", options: [
         { value: "souple", label: "🟢 Tapis / caoutchouc (sol souple)" },
@@ -77,6 +77,12 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "ville", label: "👞 Chaussures de ville / talons" },
       ]},
       { id: "q_d4", type: "slider", label: "Combien d'heures restes-tu debout par jour ?", min: 4, max: 12, step: 0.5, unit: "h", reference: "⚠️ Au-delà de 6h debout sans pause = risque élevé", alwaysAnswered: true },
+      { id: "q_d_endurance_debout", type: "choice", label: "Au bout de combien de temps debout ressens-tu une gêne ou fatigue importante ?", note: "Indique ta limite avant d'avoir besoin de t'asseoir ou de changer de position", options: [
+        { value: "moins_1h", label: "🚨 Moins d'1 heure" },
+        { value: "un_2h", label: "😟 Entre 1h et 2h" },
+        { value: "deux_4h", label: "🔸 Entre 2h et 4h" },
+        { value: "plus_4h", label: "✅ Plus de 4h sans problème" },
+      ]},
       { id: "q_d5", type: "choice", label: "Peux-tu varier ta position dans la journée ?", options: [
         { value: "oui", label: "✅ Oui librement (assis/debout)" },
         { value: "un_peu", label: "🔸 Un peu, rarement" },
@@ -111,7 +117,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d2", title: "Tes douleurs spécifiques", subtitle: "Pieds, jambes, dos — les zones clés debout", emoji: "🩺",
     color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
     selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
-    requiredQ: ["q_d8", "q_d9", "q_d10", "q_d11", "q_d12", "q_d_coude", "q_d_poignet", "q_d13", "q_d14", "q_d15", "q_d_gonflement", "q_d_varices", "q_d_crampes", "q_d_jambes_nuit"],
+    requiredQ: ["q_d8", "q_d9", "q_d10", "q_d11", "q_d12", "q_d_coude", "q_d_poignet", "q_d13", "q_d14", "q_d_irradiation", "q_d15", "q_d_varices", "q_d_crampes", "q_d_jambes_nuit"],
     questions: [
       { id: "q_d8", type: "painscale", label: "Douleurs pieds / talons", note: "La douleur au talon au premier pas du matin est un signal important — note-le" },
       { id: "q_d9", type: "painscale", label: "Douleurs genoux" },
@@ -134,11 +140,11 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "tres_lourdes", label: "😫 Très lourdes, gonflées" },
         { value: "varices", label: "🔴 Douloureuses avec varices visibles" },
       ]},
-      { id: "q_d_gonflement", type: "choice", label: "En fin de journée, tes chevilles / pieds ?", options: [
-        { value: "normaux", label: "✅ Normaux, pas de changement" },
-        { value: "leger", label: "🔸 Légèrement gonflés" },
-        { value: "net", label: "😫 Nettement gonflés (marque des chaussettes visible)" },
-        { value: "tres_gonfle", label: "🔴 Très gonflés et douloureux" },
+      { id: "q_d_irradiation", type: "choice", label: "As-tu des douleurs qui irradient dans le bas du dos ou les jambes ?", note: "Une douleur qui descend dans la fesse, la cuisse ou jusqu'au pied peut signaler une compression nerveuse (sciatique, cruralgie)", options: [
+        { value: "non", label: "✅ Non, douleurs localisées uniquement" },
+        { value: "fesse_cuisse", label: "🔸 Oui, dans la fesse ou la cuisse" },
+        { value: "jusqu_genou", label: "😟 Oui, jusqu'au genou" },
+        { value: "jusqu_pied", label: "🚨 Oui, jusqu'au pied / aux orteils" },
       ]},
       { id: "q_d_varices", type: "choice", label: "As-tu des varices visibles sur les jambes ?", options: [
         { value: "non", label: "✅ Non" },
@@ -171,7 +177,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d3", title: "Tes habitudes au travail", subtitle: "Pauses, mouvement et contraintes", emoji: "⏱️",
     color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
     selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
-    requiredQ: ["q_d16", "q_d17", "q_d19"],
+    requiredQ: ["q_d16", "q_d17", "q_d19", "q_d_protection"],
     questions: [
       { id: "q_d16", type: "choice", label: "Fais-tu des pauses assises dans la journée ?", options: [
         { value: "regulier", label: "✅ Oui régulièrement (toutes les 2h)" },
@@ -189,6 +195,12 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "parfois", label: "🔸 Parfois, pas assez" },
         { value: "rarement", label: "❌ Rarement, pas le temps" },
         { value: "interdit", label: "🚫 Je ne peux pas boire au poste" },
+      ]},
+      { id: "q_d_protection", type: "multiselect", label: "Utilises-tu des équipements ou protections au travail ?", note: "Certains EPI ou accessoires peuvent significativement réduire la fatigue et les douleurs", options: [
+        { value: "ceinture", label: "🩹 Ceinture lombaire" },
+        { value: "genouilleres", label: "🦵 Genouillères" },
+        { value: "chaussures_securite", label: "👟 Chaussures de sécurité avec amorti" },
+        { value: "aucun", label: "❌ Aucun équipement" },
       ]},
     ],
   },
