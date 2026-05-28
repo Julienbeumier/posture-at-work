@@ -642,16 +642,19 @@ function getDeboutDimensionContent(
       const q_d9 = n("q_d9");
       const q_d10 = n("q_d10");
       const q_d11 = n("q_d11");
+      const q_d_coude = n("q_d_coude");
+      const q_d_poignet = n("q_d_poignet");
       const q_d13 = String(a("q_d13") ?? "");
       const q_d14 = String(a("q_d14") ?? "normales");
       const q_d_charges = String(a("q_d_charges") ?? "");
       const q_d_repetitif = String(a("q_d_repetitif") ?? "");
-      const q_d_matin = String(a("q_d_matin") ?? "");
       const q_d_gonflement = String(a("q_d_gonflement") ?? "");
       const q_d_varices = String(a("q_d_varices") ?? "");
 
-      // Flag: douleur_talon_matin
-      const flagTalon = q_d_matin === "douleur_premier_pas" || q_d_matin === "douleur_reveil" || (q_d8 >= 3 && q_d13 === "premier_pas");
+      // Flag: douleur_talon_matin (fused q_d13 now includes premier_pas + douleur_reveil options)
+      const flagTalon = q_d13 === "premier_pas" || q_d13 === "douleur_reveil" || (q_d8 >= 3 && (q_d13 === "premier_pas" || q_d13 === "cours_service"));
+      // Flag: tendinopathie membre supérieur
+      const flagTendinopathieSup = q_d_coude >= 3 || q_d_poignet >= 3;
       // Flag: insuffisance_veineuse
       const flagVeines = q_d_gonflement === "net" || q_d_gonflement === "tres_gonfle" || q_d_varices === "varices" || q_d_varices === "importantes" || (q_d11 >= 2 && q_d14 !== "normales");
       // Flag: consultation_medicale
@@ -698,6 +701,12 @@ function getDeboutDimensionContent(
       // Gestes répétitifs
       if (q_d_repetitif === "toute_la_journee") {
         detected.push("⚠️ Gestes répétitifs toute la journée — risque élevé de tendinopathies et de syndrome du canal carpien. Les micro-pauses gestuelles sont indispensables.");
+        if (!exerciseIds.includes("wrist_rotation")) exerciseIds.push("wrist_rotation", "forearm_massage");
+      }
+
+      // Tendinopathie membre supérieur (coude/poignet)
+      if (flagTendinopathieSup) {
+        detected.push("⚠️ Douleurs au coude ou au poignet : les gestes répétitifs debout sollicitent les tendons du membre supérieur. L'épicondylite et la ténosynovite sont fréquentes dans les métiers avec manipulation d'objets — ne pas attendre pour agir.");
         if (!exerciseIds.includes("wrist_rotation")) exerciseIds.push("wrist_rotation", "forearm_massage");
       }
 

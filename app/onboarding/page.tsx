@@ -22,7 +22,7 @@ const JOB_OPTIONS = [
   {
     emoji: "🏭",
     title: "Je travaille debout",
-    description: "Commerce, restauration, usine, manutention, entrepôt",
+    description: "Commerce, restauration, usine, manutention, soins, enseignement, accueil...",
     value: "debout",
   },
 ];
@@ -419,6 +419,9 @@ export default function OnboardingPage() {
                     );
                   })}
                 </div>
+                <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.30)", textAlign: "center", margin: "16px 0 0", lineHeight: 1.5 }}>
+                  Cette catégorie couvre tout travail principalement debout ou en mobilité
+                </p>
               </motion.div>
             )}
 

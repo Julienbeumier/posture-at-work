@@ -263,11 +263,12 @@ export default function DashboardPage() {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const loadData = useCallback(async () => {
-    setFirstname(localStorage.getItem("paw_firstname") ?? "");
     const supabase = createClient();
     const { data: { user: u } } = await supabase.auth.getUser();
     if (!u) { router.replace("/auth"); return; }
     setUser(u);
+    const authName = (u.user_metadata?.full_name as string | undefined) || u.email?.split("@")[0] || localStorage.getItem("paw_firstname") || "";
+    setFirstname(authName);
 
     const { data: aData } = await supabase
       .from("assessments").select("*").eq("user_id", u.id)

@@ -55,11 +55,13 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
     requiredQ: ["q_d1", "q_d2", "q_d3", "q_d5", "q_d6", "q_d7", "q_d_charges", "q_d_repetitif"],
     questions: [
-      { id: "q_d1", type: "choice", label: "Sur quel type de sol travailles-tu ?", note: "Le type de sol impacte directement la fatigue de tes pieds et de ton dos", options: [
+      { id: "q_d1", type: "multiselect", label: "Sur quel(s) type(s) de sol travailles-tu ?", note: "Le type de sol impacte directement la fatigue de tes pieds et de ton dos — sélectionne tout ce qui s'applique", options: [
         { value: "souple", label: "🟢 Tapis / caoutchouc (sol souple)" },
         { value: "semi_dur", label: "🟫 Parquet / lino (sol semi-dur)" },
-        { value: "varie", label: "🔀 Ça varie selon les zones" },
         { value: "dur", label: "🪨 Carrelage / béton (sol dur)" },
+        { value: "caillebotis", label: "🔲 Caillebotis / grilles métalliques" },
+        { value: "exterieur", label: "🌿 Extérieur (pavés, asphalte)" },
+        { value: "varie", label: "🔀 Ça varie beaucoup" },
       ]},
       { id: "q_d2", type: "choice", label: "As-tu un tapis anti-fatigue à ton poste ?", options: [
         { value: "oui_ergo", label: "✅ Oui, tapis ergonomique" },
@@ -109,38 +111,28 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d2", title: "Tes douleurs spécifiques", subtitle: "Pieds, jambes, dos — les zones clés debout", emoji: "🩺",
     color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
     selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
-    requiredQ: ["q_d8", "q_d9", "q_d10", "q_d11", "q_d12", "q_d13", "q_d14", "q_d15", "q_d_matin", "q_d_gonflement", "q_d_varices"],
+    requiredQ: ["q_d8", "q_d9", "q_d10", "q_d11", "q_d12", "q_d_coude", "q_d_poignet", "q_d13", "q_d14", "q_d15", "q_d_gonflement", "q_d_varices", "q_d_crampes", "q_d_jambes_nuit"],
     questions: [
       { id: "q_d8", type: "painscale", label: "Douleurs pieds / talons", note: "La douleur au talon au premier pas du matin est un signal important — note-le" },
       { id: "q_d9", type: "painscale", label: "Douleurs genoux" },
       { id: "q_d10", type: "painscale", label: "Douleurs bas du dos" },
       { id: "q_d11", type: "painscale", label: "Douleurs mollets / jambes lourdes" },
       { id: "q_d12", type: "painscale", label: "Douleurs épaules / nuque" },
-      { id: "q_d13", type: "choice", label: "Tes pieds / talons sont douloureux surtout ?", options: [
-        { value: "premier_pas", label: "🌅 Au premier pas le matin (signal important — note-le)" },
-        { value: "cours_service", label: "☀️ En cours de service" },
-        { value: "fin_journee", label: "🌆 En fin de journée uniquement" },
-        { value: "tout_temps", label: "🔄 Tout le temps" },
+      { id: "q_d_coude", type: "painscale", label: "Douleurs coude(s)" },
+      { id: "q_d_poignet", type: "painscale", label: "Douleurs poignet(s) / mains" },
+      { id: "q_d13", type: "choice", label: "Tes douleurs aux pieds/talons se manifestent surtout ?", options: [
         { value: "pas", label: "✨ Pas de douleurs aux pieds" },
+        { value: "fin_journee", label: "🌆 En fin de journée uniquement" },
+        { value: "cours_service", label: "☀️ En cours de service" },
+        { value: "premier_pas", label: "🌅 Au premier pas du matin (signal fasciite plantaire)" },
+        { value: "douleur_reveil", label: "😫 Dès le réveil, avant même de se lever" },
+        { value: "tout_temps", label: "🔄 Tout le temps" },
       ]},
       { id: "q_d14", type: "choice", label: "Le soir après le travail, tes jambes sont ?", options: [
         { value: "normales", label: "✅ Normales, pas de problème" },
         { value: "lourdes", label: "😐 Un peu lourdes / fatiguées" },
         { value: "tres_lourdes", label: "😫 Très lourdes, gonflées" },
         { value: "varices", label: "🔴 Douloureuses avec varices visibles" },
-      ]},
-      { id: "q_d15", type: "choice", label: "Depuis combien de temps as-tu ces douleurs ?", options: [
-        { value: "pas", label: "✨ Pas de douleurs" },
-        { value: "jours", label: "📅 Quelques jours" },
-        { value: "semaines", label: "📅 Quelques semaines" },
-        { value: "mois", label: "📅 Plusieurs mois" },
-        { value: "an", label: "⏳ Plus d'un an" },
-      ]},
-      { id: "q_d_matin", type: "choice", label: "Comment sont tes pieds / talons le matin avant de commencer le travail ?", options: [
-        { value: "aucune", label: "✅ Aucune douleur au lever" },
-        { value: "raideur", label: "😐 Légère raideur qui passe vite" },
-        { value: "douleur_premier_pas", label: "😟 Douleur au premier pas qui dure" },
-        { value: "douleur_reveil", label: "😫 Douleur présente dès le réveil" },
       ]},
       { id: "q_d_gonflement", type: "choice", label: "En fin de journée, tes chevilles / pieds ?", options: [
         { value: "normaux", label: "✅ Normaux, pas de changement" },
@@ -153,6 +145,25 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "veinules", label: "🔸 Quelques petites veinules" },
         { value: "varices", label: "⚠️ Varices visibles" },
         { value: "importantes", label: "🔴 Varices importantes et douloureuses" },
+      ]},
+      { id: "q_d_crampes", type: "choice", label: "As-tu des crampes dans les jambes la nuit ?", note: "Les crampes nocturnes chez les travailleurs debout sont souvent liées à la déshydratation et aux carences en magnésium", options: [
+        { value: "non", label: "✅ Non, jamais" },
+        { value: "parfois", label: "🔸 Parfois (1-2×/mois)" },
+        { value: "souvent", label: "😟 Souvent (plusieurs fois/semaine)" },
+        { value: "toutes_les_nuits", label: "😫 Presque toutes les nuits" },
+      ]},
+      { id: "q_d_jambes_nuit", type: "choice", label: "La nuit, tes jambes sont-elles agitées ou inconfortables ?", options: [
+        { value: "non", label: "✅ Non, aucun problème" },
+        { value: "parfois", label: "🔸 Parfois une sensation d'inconfort" },
+        { value: "souvent_agitees", label: "😟 Souvent agitées, difficile de rester immobile" },
+        { value: "perturbe_sommeil", label: "😫 Oui, ça perturbe mon sommeil régulièrement" },
+      ]},
+      { id: "q_d15", type: "choice", label: "Depuis combien de temps as-tu ces douleurs ?", options: [
+        { value: "pas", label: "✨ Pas de douleurs" },
+        { value: "jours", label: "📅 Quelques jours" },
+        { value: "semaines", label: "📅 Quelques semaines" },
+        { value: "mois", label: "📅 Plusieurs mois" },
+        { value: "an", label: "⏳ Plus d'un an" },
       ]},
     ],
   },
@@ -199,22 +210,23 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     ],
   },
   {
-    id: "cat-d5", title: "Sommeil & récupération", subtitle: "Crampes nocturnes, agitation, douleurs au réveil", emoji: "🌙",
+    id: "cat-d5", title: "Sommeil & récupération", subtitle: "Qualité du sommeil, heures et récupération nocturne", emoji: "🌙",
     color: "#7dd3fc", colorBg: "rgba(14,165,233,0.08)", colorBorder: "rgba(14,165,233,0.18)",
     selectedBg: "rgba(14,165,233,0.18)", selectedColor: "#7dd3fc",
-    requiredQ: ["q_d_crampes", "q_d_jambes_nuit", "q_d_reveil_douleur"],
+    requiredQ: ["q_d_sommeil_heures", "q_d_sommeil_qualite", "q_d_sommeil_recuperation", "q_d_reveil_douleur"],
     questions: [
-      { id: "q_d_crampes", type: "choice", label: "As-tu des crampes dans les jambes la nuit ?", note: "Les crampes nocturnes chez les travailleurs debout sont souvent liées à la déshydratation et aux carences en magnésium", options: [
-        { value: "non", label: "✅ Non, jamais" },
-        { value: "parfois", label: "🔸 Parfois (1-2×/mois)" },
-        { value: "souvent", label: "😟 Souvent (plusieurs fois/semaine)" },
-        { value: "toutes_les_nuits", label: "😫 Presque toutes les nuits" },
+      { id: "q_d_sommeil_heures", type: "slider", label: "Combien d'heures dors-tu par nuit en moyenne ?", min: 5, max: 10, step: 0.5, unit: "h", reference: "⚠️ Moins de 7h = récupération musculaire incomplète pour un métier debout", alwaysAnswered: true },
+      { id: "q_d_sommeil_qualite", type: "choice", label: "Quelle est la qualité de ton sommeil ?", options: [
+        { value: "profond", label: "😊 Profond et réparateur" },
+        { value: "correct", label: "🔸 Correct, sans problème majeur" },
+        { value: "leger", label: "😐 Léger / fragmenté / réveils fréquents" },
+        { value: "tres_mauvais", label: "😫 Très mauvais" },
       ]},
-      { id: "q_d_jambes_nuit", type: "choice", label: "La nuit, tes jambes sont-elles agitées ou inconfortables ?", options: [
-        { value: "non", label: "✅ Non, aucun problème" },
-        { value: "parfois", label: "🔸 Parfois une sensation d'inconfort" },
-        { value: "souvent_agitees", label: "😟 Souvent agitées, difficile de rester immobile" },
-        { value: "perturbe_sommeil", label: "😫 Oui, ça perturbe mon sommeil régulièrement" },
+      { id: "q_d_sommeil_recuperation", type: "choice", label: "Te réveilles-tu reposé ?", options: [
+        { value: "bien", label: "✅ Oui, je me sens récupéré" },
+        { value: "partiellement", label: "🔸 Partiellement" },
+        { value: "non", label: "😐 Non, je suis toujours fatigué" },
+        { value: "pire", label: "😫 Je me réveille plus fatigué qu'avant de dormir" },
       ]},
       { id: "q_d_reveil_douleur", type: "choice", label: "Te réveilles-tu avec des douleurs physiques ?", options: [
         { value: "sans_douleur", label: "✅ Non, je me réveille sans douleur" },
@@ -270,9 +282,10 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
       ]},
       { id: "q_d_activite_type", type: "multiselect", label: "Quelle activité physique pratiques-tu en dehors du travail ?", options: [
         { value: "natation_velo_marche", label: "🏊 Natation / vélo / marche (faible impact)" },
-        { value: "course", label: "🏃 Course à pied / sport intensif" },
         { value: "yoga_pilates", label: "🧘 Yoga / Pilates / étirements" },
+        { value: "musculation", label: "🏋️ Musculation / renforcement" },
         { value: "sport_collectif", label: "⚽ Sport collectif" },
+        { value: "course", label: "🏃 Course à pied / sport intensif" },
         { value: "aucune", label: "❌ Aucune activité en dehors du travail" },
       ]},
       { id: "q_d_consultation", type: "choice", label: "As-tu déjà consulté un professionnel de santé pour tes douleurs liées au travail ?", options: [

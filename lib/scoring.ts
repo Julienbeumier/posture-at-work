@@ -493,7 +493,10 @@ function sleepFromAnswers(answers: GenericAnswers, sleepKey: string, wakeKey: st
 
 function calcDeboutScores(a: GenericAnswers): Scores {
   // ── setup_debout (25%) ───────────────────────────────────────────────────
-  const solScore: Record<string, number> = { souple: 100, semi_dur: 70, varie: 60, dur: 20 };
+  const solScoreMap: Record<string, number> = { souple: 100, semi_dur: 70, varie: 60, dur: 20, caillebotis: 15, exterieur: 40 };
+  const solValues = Array.isArray(a["q_d1"]) ? (a["q_d1"] as string[]) : (a["q_d1"] ? [a["q_d1"] as string] : []);
+  const solScoreVal = solValues.length > 0 ? Math.min(...solValues.map(v => solScoreMap[v] ?? 50)) : 50;
+
   const tapisScore: Record<string, number> = { oui_ergo: 100, oui_fin: 50, non: 0, inconnu: 30 };
   const chaussuresScore: Record<string, number> = { semelles_pro: 100, baskets: 75, plates: 20, ville: 10 };
   const variationScore: Record<string, number> = { oui: 100, un_peu: 50, non: 0 };
@@ -501,7 +504,7 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const planScore: Record<string, number> = { adapte: 100, trop_bas: 20, trop_haut: 30, pas_plan: 60 };
 
   const setupComponents = [
-    solScore[a["q_d1"] as string] ?? 50,
+    solScoreVal,
     tapisScore[a["q_d2"] as string] ?? 30,
     chaussuresScore[a["q_d3"] as string] ?? 50,
     variationScore[a["q_d5"] as string] ?? 50,
@@ -516,11 +519,13 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const dos = (a["q_d10"] as number ?? 0) * 1.0;
   const jambes = (a["q_d11"] as number ?? 0) * 1.1;
   const nuque = (a["q_d12"] as number ?? 0) * 0.8;
-  const totalWeight = 1.3 + 1.2 + 1.0 + 1.1 + 0.8;
-  let rawPain = 100 - Math.round(((pieds + genoux + dos + jambes + nuque) / totalWeight) * 20);
+  const coude = (a["q_d_coude"] as number ?? 0) * 1.0;
+  const poignet = (a["q_d_poignet"] as number ?? 0) * 1.0;
+  const totalWeight = 1.3 + 1.2 + 1.0 + 1.1 + 0.8 + 1.0 + 1.0;
+  let rawPain = 100 - Math.round(((pieds + genoux + dos + jambes + nuque + coude + poignet) / totalWeight) * 20);
 
-  // Timing pieds bonus/malus
-  const timingMap: Record<string, number> = { premier_pas: -30, cours_service: -15, fin_journee: -5, tout_temps: -25, pas: 20 };
+  // Timing pieds — fused q_d13 (combines old timing + matin)
+  const timingMap: Record<string, number> = { pas: 20, fin_journee: -5, cours_service: -15, tout_temps: -25, premier_pas: -35, douleur_reveil: -45 };
   rawPain += timingMap[a["q_d13"] as string] ?? 0;
 
   // Jambes soir
@@ -529,10 +534,6 @@ function calcDeboutScores(a: GenericAnswers): Scores {
 
   // Manutention lourde (>30kg) — surcharge lombaire et articulaire
   if (a["q_d_charges"] === "tres_lourdes") rawPain -= 15;
-
-  // q_d_matin — douleur matinale au talon
-  const matinMap: Record<string, number> = { aucune: 20, raideur: 0, douleur_premier_pas: -20, douleur_reveil: -35 };
-  rawPain += matinMap[a["q_d_matin"] as string] ?? 0;
 
   // q_d_gonflement — œdèmes en fin de journée
   const gonflMap: Record<string, number> = { normaux: 10, leger: -5, net: -20, tres_gonfle: -35 };
@@ -567,13 +568,23 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const hDebout = a["q_d4"] as number ?? 7;
   if (hDebout >= 8) sleep_energy -= 20;
 
-  // Nouvelles questions sommeil
+  // Crampes et agitation nocturnes (questions now in cat-d2, answers still available)
   const crampesMap: Record<string, number> = { non: 10, parfois: 0, souvent: -20, toutes_les_nuits: -35 };
   sleep_energy += crampesMap[a["q_d_crampes"] as string] ?? 0;
   const jambesnuitMap: Record<string, number> = { non: 0, parfois: -5, souvent_agitees: -25, perturbe_sommeil: -35 };
   sleep_energy += jambesnuitMap[a["q_d_jambes_nuit"] as string] ?? 0;
   const reveilMap: Record<string, number> = { sans_douleur: 10, raideurs: 0, douleurs_jambes: -20, douleurs_importantes: -35 };
   sleep_energy += reveilMap[a["q_d_reveil_douleur"] as string] ?? 0;
+
+  // Nouvelles questions qualité sommeil
+  const heuresSommeil = a["q_d_sommeil_heures"] as number ?? 7;
+  if (heuresSommeil < 6) sleep_energy -= 20;
+  else if (heuresSommeil >= 8) sleep_energy += 5;
+  const qualiteMap: Record<string, number> = { profond: 15, correct: 5, leger: -15, tres_mauvais: -30 };
+  sleep_energy += qualiteMap[a["q_d_sommeil_qualite"] as string] ?? 0;
+  const recuperationMap: Record<string, number> = { bien: 10, partiellement: 0, non: -20, pire: -35 };
+  sleep_energy += recuperationMap[a["q_d_sommeil_recuperation"] as string] ?? 0;
+
   sleep_energy = clamp(sleep_energy);
 
   // ── nutrition_debout (12%) ───────────────────────────────────────────────
@@ -603,6 +614,7 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   if (activite.includes("natation_velo_marche")) activiteScore = 100;
   else if (activite.includes("yoga_pilates")) activiteScore = 90;
   else if (activite.includes("sport_collectif")) activiteScore = 70;
+  else if (activite.includes("musculation")) activiteScore = 70;
   else if (activite.includes("course")) activiteScore = 55;
   else if (activite.includes("aucune")) activiteScore = 10;
 
