@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { EXERCISES, PROGRAMS, TARGETED_PROGRAMS, WEEKLY_CHALLENGES, type Exercise, type Program } from "@/lib/exercises";
+import { getVoiceGuide } from "@/lib/voice";
 import { createClient } from "@/lib/supabase";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 
@@ -124,6 +125,9 @@ export default function MobilitePage() {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [discreetMode, setDiscreetMode] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isSpeechSupported, setIsSpeechSupported] = useState(false);
   const [completedIds, setCompletedIds] = useState<string[]>([]);
   const [endMessage] = useState(() => END_MESSAGES[Math.floor(Math.random() * END_MESSAGES.length)]);
   const [streak, setStreak] = useState(0);
@@ -133,10 +137,21 @@ export default function MobilitePage() {
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
+  const voiceCleanupRef = useRef<(() => void) | null>(null);
 
   // ── Load profile & compute personalized program ───────────────────────────
 
   useEffect(() => {
+    // Speech support detection
+    setIsSpeechSupported("speechSynthesis" in window);
+
+    // Load voice preference
+    const savedVoice = localStorage.getItem("paw_voice_enabled");
+    if (savedVoice === "true") {
+      setVoiceEnabled(true);
+      getVoiceGuide()?.setEnabled(true);
+    }
+
     // Deep linking via ?program= param
     const paramMap: Record<string, { id: string; tab: Tab }> = {
       setup:            { id: "bureau_pause",      tab: "bureau" },
@@ -234,6 +249,9 @@ export default function MobilitePage() {
 
   const stopTimer = useCallback(() => {
     if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+    voiceCleanupRef.current?.();
+    voiceCleanupRef.current = null;
+    setIsSpeaking(false);
   }, []);
 
   const startTimer = useCallback((duration: number, onDone: () => void) => {
@@ -244,6 +262,8 @@ export default function MobilitePage() {
     intervalRef.current = setInterval(() => {
       const e = (Date.now() - startTimeRef.current) / 1000;
       setElapsed(e);
+      const speaking = "speechSynthesis" in window && speechSynthesis.speaking;
+      setIsSpeaking(prev => prev === speaking ? prev : speaking);
       if (e >= duration) {
         stopTimer();
         playBeep(880, 0.1);
@@ -255,14 +275,49 @@ export default function MobilitePage() {
 
   useEffect(() => () => stopTimer(), [stopTimer]);
 
+  function toggleVoice() {
+    const newState = !voiceEnabled;
+    setVoiceEnabled(newState);
+    localStorage.setItem("paw_voice_enabled", String(newState));
+    const guide = getVoiceGuide();
+    guide?.setEnabled(newState);
+    if (newState) {
+      guide?.speak("Guide vocal activé. Je t'accompagne pendant tes exercices !");
+    }
+  }
+
   function startExercise(idx: number) {
+    voiceCleanupRef.current?.();
+    voiceCleanupRef.current = null;
     setCurrentIdx(idx);
     setPhase("running");
     const ex = currentExercises[idx];
     if (!ex) return;
+
+    const guide = getVoiceGuide();
+    if (guide?.isEnabled()) {
+      guide.announceExercise(ex);
+      const announcementDelay = setTimeout(() => {
+        const cleanup = guide.countdown(Math.max(5, ex.duration - 3));
+        voiceCleanupRef.current = cleanup ?? null;
+      }, 3000);
+      voiceCleanupRef.current = () => clearTimeout(announcementDelay);
+    }
+
     startTimer(ex.duration, () => {
+      voiceCleanupRef.current?.();
+      voiceCleanupRef.current = null;
       setCompletedIds(prev => [...prev, ex.id]);
-      setTimeout(() => goNext(idx), 3000);
+      if (guide?.isEnabled()) {
+        guide.encourageEnd(idx, currentExercises.length);
+        const restDelay = setTimeout(() => {
+          guide.announceRest(5);
+          setTimeout(() => goNext(idx), 7000);
+        }, 2000);
+        voiceCleanupRef.current = () => clearTimeout(restDelay);
+      } else {
+        setTimeout(() => goNext(idx), 3000);
+      }
     });
   }
 
@@ -277,7 +332,13 @@ export default function MobilitePage() {
 
   function startSession() {
     setCompletedIds([]);
-    startExercise(0);
+    const guide = getVoiceGuide();
+    if (guide?.isEnabled()) {
+      guide.announceSessionStart(activeProgram.label, currentExercises.length);
+      setTimeout(() => startExercise(0), 3000);
+    } else {
+      startExercise(0);
+    }
   }
 
   async function saveSession() {
@@ -333,19 +394,35 @@ export default function MobilitePage() {
                 </p>
               )}
             </div>
-            {/* Discreet mode toggle */}
-            <button
-              onClick={() => setDiscreetMode(v => !v)}
-              style={{
-                padding: "8px 14px", borderRadius: 100, cursor: "pointer",
-                background: discreetMode ? "rgba(116,198,157,0.20)" : "rgba(255,255,255,0.06)",
-                fontFamily: T.b, fontWeight: 700, fontSize: 12,
-                color: discreetMode ? "#74c69d" : "rgba(220,220,245,0.5)",
-                border: discreetMode ? "0.5px solid rgba(116,198,157,0.4)" : "0.5px solid rgba(255,255,255,0.10)",
-              }}
-            >
-              🤫 {discreetMode ? "Mode discret ON" : "Mode discret"}
-            </button>
+            {/* Toggles */}
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              {isSpeechSupported && (
+                <button
+                  onClick={toggleVoice}
+                  style={{
+                    padding: "8px 14px", borderRadius: 100, cursor: "pointer",
+                    background: voiceEnabled ? "rgba(43,92,230,0.20)" : "rgba(255,255,255,0.06)",
+                    fontFamily: T.b, fontWeight: 700, fontSize: 12,
+                    color: voiceEnabled ? "#7c9fff" : "rgba(220,220,245,0.5)",
+                    border: voiceEnabled ? "0.5px solid rgba(43,92,230,0.4)" : "0.5px solid rgba(255,255,255,0.10)",
+                  }}
+                >
+                  {voiceEnabled ? "🔊 Guide vocal ON" : "🔇 Guide vocal"}
+                </button>
+              )}
+              <button
+                onClick={() => setDiscreetMode(v => !v)}
+                style={{
+                  padding: "8px 14px", borderRadius: 100, cursor: "pointer",
+                  background: discreetMode ? "rgba(116,198,157,0.20)" : "rgba(255,255,255,0.06)",
+                  fontFamily: T.b, fontWeight: 700, fontSize: 12,
+                  color: discreetMode ? "#74c69d" : "rgba(220,220,245,0.5)",
+                  border: discreetMode ? "0.5px solid rgba(116,198,157,0.4)" : "0.5px solid rgba(255,255,255,0.10)",
+                }}
+              >
+                🤫 {discreetMode ? "Mode discret ON" : "Mode discret"}
+              </button>
+            </div>
           </div>
           {discreetMode && (
             <div style={{ marginTop: 10, padding: "8px 14px", borderRadius: 10, background: "rgba(116,198,157,0.10)", border: "0.5px solid rgba(116,198,157,0.25)" }}>
@@ -442,7 +519,7 @@ export default function MobilitePage() {
               {/* Exercise list */}
               {currentExercises.map((ex, i) => (
                 <ExerciseCard key={ex.id} ex={ex} index={i} isDiscreetMode={false}
-                  onStart={() => { setCurrentIdx(i); setPhase("running"); startTimer(ex.duration, () => { setCompletedIds(prev => [...prev, ex.id]); setTimeout(() => goNext(i), 3000); }); }}
+                  onStart={() => startExercise(i)}
                 />
               ))}
 
@@ -487,7 +564,18 @@ export default function MobilitePage() {
               </div>
 
               {/* Timer */}
-              <TimerCircle elapsed={elapsed} total={currentEx.duration} color={currentEx.zoneColor} />
+              <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                <TimerCircle elapsed={elapsed} total={currentEx.duration} color={currentEx.zoneColor} />
+                {voiceEnabled && isSpeaking && (
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.6, 1, 0.6] }}
+                    transition={{ repeat: Infinity, duration: 1.4 }}
+                    style={{ fontSize: 18, color: "#7c9fff" }}
+                  >
+                    🔊
+                  </motion.div>
+                )}
+              </div>
 
               {/* Instructions */}
               <div style={{ width: "100%", padding: "16px 18px", borderRadius: 16, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)" }}>
