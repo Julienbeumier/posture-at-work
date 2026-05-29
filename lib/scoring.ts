@@ -515,40 +515,67 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   ];
   const setup = clamp(Math.round(setupComponents.reduce((s, v) => s + v, 0) / setupComponents.length));
 
-  // ── pain_debout (35%) — pondération renforcée ────────────────────────────
-  const pieds = (a["q_d8"] as number ?? 0) * 1.3;
-  const genoux = (a["q_d9"] as number ?? 0) * 1.2;
-  const dos = (a["q_d10"] as number ?? 0) * 1.0;
-  const jambes = (a["q_d11"] as number ?? 0) * 1.1;
-  const nuque = (a["q_d12"] as number ?? 0) * 0.8;
-  const coude = (a["q_d_coude"] as number ?? 0) * 1.0;
-  const poignet = (a["q_d_poignet"] as number ?? 0) * 1.0;
-  const totalWeight = 1.3 + 1.2 + 1.0 + 1.1 + 0.8 + 1.0 + 1.0;
-  let rawPain = 100 - Math.round(((pieds + genoux + dos + jambes + nuque + coude + poignet) / totalWeight) * 20);
+  // ── pain_debout (35%) ────────────────────────────────────────────────────
+  const painZones = [
+    (a["q_d8"] as number) ?? 0,      // pieds/talons
+    (a["q_d9"] as number) ?? 0,      // genoux
+    (a["q_d10"] as number) ?? 0,     // bas du dos
+    (a["q_d11"] as number) ?? 0,     // mollets/jambes
+    (a["q_d12"] as number) ?? 0,     // épaules/nuque
+    (a["q_d_coude"] as number) ?? 0,   // coude
+    (a["q_d_poignet"] as number) ?? 0, // poignet
+  ];
 
-  // Timing pieds — fused q_d13 (combines old timing + matin)
-  const timingMap: Record<string, number> = { pas: 20, fin_journee: -5, cours_service: -15, tout_temps: -25, premier_pas: -35, douleur_reveil: -45 };
+  console.log('q_d8:', a["q_d8"]);
+  console.log('q_d9:', a["q_d9"]);
+  console.log('q_d10:', a["q_d10"]);
+  console.log('q_d11:', a["q_d11"]);
+  console.log('q_d12:', a["q_d12"]);
+  console.log('q_d_coude:', a["q_d_coude"]);
+  console.log('q_d_poignet:', a["q_d_poignet"]);
+  console.log('q_d13:', a["q_d13"]);
+  console.log('q_d14:', a["q_d14"]);
+  console.log('q_d_varices:', a["q_d_varices"]);
+
+  // Pénalité de base proportionnelle — max 60 pts pour les zones douloureuses
+  const totalPain = painZones.reduce((sum, v) => sum + (typeof v === "number" ? v : 0), 0);
+  const maxPain = 5 * painZones.length; // 35
+  let rawPain = 100 - Math.round((totalPain / maxPain) * 60);
+
+  // Timing pieds (q_d13) — pénalités calibrées sur base réduite
+  const timingMap: Record<string, number> = { pas: 0, fin_journee: -5, cours_service: -10, premier_pas: -10, douleur_reveil: -15, tout_temps: -15 };
   rawPain += timingMap[a["q_d13"] as string] ?? 0;
 
-  // Jambes soir
-  const jambeSoirMap: Record<string, number> = { normales: 0, lourdes: -20, tres_lourdes: -40, varices: -60 };
-  rawPain += jambeSoirMap[a["q_d14"] as string] ?? 0;
+  // Jambes soir (q_d14) — valeurs: normales / lourdes / tres_lourdes / varices
+  if (a["q_d14"] === "tres_lourdes") rawPain -= 8;
+  else if (a["q_d14"] === "varices") rawPain -= 15;
 
-  // Manutention lourde (>30kg) — surcharge lombaire et articulaire
-  if (a["q_d_charges"] === "tres_lourdes") rawPain -= 15;
+  // Varices (q_d_varices) — valeurs: non / veinules / varices / importantes
+  if (a["q_d_varices"] === "varices") rawPain -= 10;
+  else if (a["q_d_varices"] === "importantes") rawPain -= 20;
 
-  // q_d_irradiation — douleurs irradiantes (compression nerveuse)
-  const irradMap: Record<string, number> = { non: 0, fesse_cuisse: -10, jusqu_genou: -20, jusqu_pied: -30 };
-  rawPain += irradMap[a["q_d_irradiation"] as string] ?? 0;
+  // Irradiation (q_d_irradiation) — valeurs: non / fesse_cuisse / jusqu_genou / jusqu_pied
+  if (a["q_d_irradiation"] === "fesse_cuisse") rawPain -= 5;
+  else if (a["q_d_irradiation"] === "jusqu_genou") rawPain -= 10;
+  else if (a["q_d_irradiation"] === "jusqu_pied") rawPain -= 20;
 
-  // q_d_varices — insuffisance veineuse visible
-  const varicesMap: Record<string, number> = { non: 0, veinules: -5, varices: -15, importantes: -30 };
-  rawPain += varicesMap[a["q_d_varices"] as string] ?? 0;
+  // Crampes nocturnes (q_d_crampes) — valeurs: non / parfois / souvent / toutes_les_nuits
+  if (a["q_d_crampes"] === "souvent") rawPain -= 8;
+  else if (a["q_d_crampes"] === "toutes_les_nuits") rawPain -= 15;
+
+  // Jambes agitées nuit (q_d_jambes_nuit) — valeurs: non / parfois / souvent_agitees / perturbe_sommeil
+  if (a["q_d_jambes_nuit"] === "souvent_agitees") rawPain -= 8;
+  else if (a["q_d_jambes_nuit"] === "perturbe_sommeil") rawPain -= 12;
+
+  // Manutention lourde (>30kg)
+  if (a["q_d_charges"] === "tres_lourdes") rawPain -= 10;
 
   // Chaussures de sécurité — amorti souvent insuffisant
-  if (a["q_d3"] === "securite") rawPain -= 8;
+  if (a["q_d3"] === "securite") rawPain -= 5;
 
+  console.log('pain_debout avant normalisation:', rawPain);
   const pain = clamp(rawPain);
+  console.log('pain_debout final:', pain);
 
   // ── habits_debout (20%) ──────────────────────────────────────────────────
   const pauseMap: Record<string, number> = { regulier: 100, parfois: 60, rarement: 20, jamais: 0 };
