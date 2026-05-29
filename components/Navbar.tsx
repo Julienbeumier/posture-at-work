@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 
+const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 const HIDDEN_ON = ["/questionnaire", "/video-capture"];
 
 export default function Navbar() {
@@ -14,7 +15,7 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,6 +33,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
+  // Avatar dropdown — close on outside click
   useEffect(() => {
     function handler(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -42,6 +44,15 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  // Hamburger menu — close on any click outside
+  useEffect(() => {
+    const handleClickOutside = () => setIsMenuOpen(false);
+    if (isMenuOpen) {
+      document.addEventListener("click", handleClickOutside);
+    }
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [isMenuOpen]);
+
   if (HIDDEN_ON.some((p) => pathname.startsWith(p))) return null;
 
   async function signOut() {
@@ -50,10 +61,22 @@ export default function Navbar() {
     setUser(null);
     router.push("/");
     setMenuOpen(false);
-    setMobileMenuOpen(false);
+    setIsMenuOpen(false);
   }
 
   const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : "??";
+
+  const menuItemStyle: React.CSSProperties = {
+    display: "block",
+    padding: "12px 20px",
+    color: "rgba(220,220,245,0.85)",
+    fontSize: 14,
+    fontWeight: 600,
+    fontFamily: T.h,
+    textDecoration: "none",
+    cursor: "pointer",
+    borderBottom: "0.5px solid rgba(255,255,255,0.06)",
+  };
 
   return (
     <nav
@@ -83,347 +106,134 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" style={{ textDecoration: "none" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <span
-              style={{
-                fontFamily: "var(--font-nunito), sans-serif",
-                fontWeight: 900,
-                fontSize: 22,
-                color: "#f0f0fa",
-                letterSpacing: "-0.5px",
-              }}
-            >
+            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", letterSpacing: "-0.5px" }}>
               PAW
             </span>
-            <span
-              style={{
-                fontFamily: "var(--font-nunito), sans-serif",
-                fontWeight: 900,
-                fontSize: 22,
-                color: "#7c9fff",
-              }}
-            >
-              .
-            </span>
+            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#7c9fff" }}>.</span>
           </div>
         </Link>
 
-        {/* Right */}
+        {/* Right side */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {user ? (
-            <>
-              {/* Desktop: Mobilité + Dashboard links */}
-              <span className="hidden md:flex items-center" style={{ gap: 8 }}>
+
+          {/* Desktop nav links (hidden on mobile) */}
+          <span className="hidden md:flex items-center" style={{ gap: 8 }}>
+            {user ? (
+              <>
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>
-                  <div
-                    style={{
-                      padding: "7px 16px",
-                      borderRadius: 100,
-                      background: "rgba(43,92,230,0.18)",
-                      color: "#7c9fff",
-                      border: "0.5px solid rgba(43,92,230,0.30)",
-                      fontSize: 13,
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
-                  >
+                  <div style={{ padding: "7px 16px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#7c9fff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                     Mobilité
                   </div>
                 </Link>
                 <Link href="/dashboard" style={{ textDecoration: "none" }}>
-                  <div
-                    style={{
-                      padding: "7px 16px",
-                      borderRadius: 100,
-                      background: "rgba(43,92,230,0.18)",
-                      color: "#7c9fff",
-                      border: "0.5px solid rgba(43,92,230,0.30)",
-                      fontSize: 13,
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
-                  >
+                  <div style={{ padding: "7px 16px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#7c9fff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                     Dashboard
                   </div>
                 </Link>
-              </span>
-
-              {/* Avatar dropdown (desktop) */}
-              <div style={{ position: "relative" }} ref={menuRef}>
-                <div
-                  onClick={() => setMenuOpen((v) => !v)}
-                  style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: "50%",
-                    background: "linear-gradient(135deg, #2b5ce6, #7c9fff)",
-                    color: "#fff",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 12,
-                    fontWeight: 800,
-                    cursor: "pointer",
-                    fontFamily: "var(--font-nunito), sans-serif",
-                  }}
-                >
-                  {initials}
-                </div>
-                {menuOpen && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      right: 0,
-                      top: 42,
-                      width: 180,
-                      borderRadius: 16,
-                      background: "rgba(18,18,30,0.98)",
-                      border: "0.5px solid rgba(255,255,255,0.1)",
-                      boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        padding: "12px 16px",
-                        borderBottom: "0.5px solid rgba(255,255,255,0.07)",
-                      }}
-                    >
-                      <p
-                        style={{
-                          color: "rgba(220,220,245,0.55)",
-                          fontSize: 11,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {user.email}
-                      </p>
-                    </div>
-                    <div
-                      onClick={() => { router.push("/dashboard"); setMenuOpen(false); }}
-                      style={{
-                        padding: "10px 16px",
-                        color: "rgba(220,220,245,0.75)",
-                        fontSize: 13,
-                        cursor: "pointer",
-                      }}
-                    >
-                      📊 Mon compte
-                    </div>
-                    <div
-                      onClick={signOut}
-                      style={{
-                        padding: "10px 16px",
-                        color: "#f09595",
-                        fontSize: 13,
-                        cursor: "pointer",
-                      }}
-                    >
-                      → Déconnexion
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Hamburger button (mobile only) */}
-              <button
-                className="md:hidden"
-                onClick={() => setMobileMenuOpen((v) => !v)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#f0f0fa",
-                  fontSize: 24,
-                  cursor: "pointer",
-                  padding: "10px 10px",
-                  lineHeight: 1,
-                  minHeight: 44,
-                  minWidth: 44,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                aria-label="Menu"
-              >
-                ≡
-              </button>
-            </>
-          ) : (
-            <>
-              {/* Se connecter — desktop only */}
-              <span className="hidden md:flex">
-                <Link href="/auth" style={{ textDecoration: "none" }}>
-                  <div
-                    style={{
-                      color: "rgba(220,220,245,0.55)",
-                      fontSize: 14,
-                      cursor: "pointer",
-                    }}
-                  >
-                    Se connecter
-                  </div>
-                </Link>
-              </span>
-
-              {/* Mon bilan — always visible */}
-              <Link href="/questionnaire" style={{ textDecoration: "none" }}>
-                <div
-                  style={{
-                    padding: "11px 18px",
-                    borderRadius: 100,
-                    background: "rgba(43,92,230,0.18)",
-                    color: "#7c9fff",
-                    border: "0.5px solid rgba(43,92,230,0.30)",
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    fontFamily: "var(--font-nunito), sans-serif",
-                    minHeight: 44,
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  Mon bilan
+              </>
+            ) : (
+              <Link href="/auth" style={{ textDecoration: "none" }}>
+                <div style={{ color: "rgba(220,220,245,0.55)", fontSize: 14, cursor: "pointer" }}>
+                  Se connecter
                 </div>
               </Link>
+            )}
+          </span>
 
-              {/* Hamburger button (mobile only, non-connected) */}
-              <button
-                className="md:hidden"
-                onClick={() => setMobileMenuOpen((v) => !v)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#f0f0fa",
-                  fontSize: 24,
-                  cursor: "pointer",
-                  padding: "10px 10px",
-                  lineHeight: 1,
-                  minHeight: 44,
-                  minWidth: 44,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                aria-label="Menu"
+          {/* Avatar dropdown (desktop, connected) */}
+          {user && (
+            <div className="hidden md:block" style={{ position: "relative" }} ref={menuRef}>
+              <div
+                onClick={() => setMenuOpen((v) => !v)}
+                style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg, #2b5ce6, #7c9fff)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: T.h }}
               >
-                ≡
-              </button>
-            </>
+                {initials}
+              </div>
+              {menuOpen && (
+                <div style={{ position: "absolute", right: 0, top: 42, width: 180, borderRadius: 16, background: "rgba(18,18,30,0.98)", border: "0.5px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.5)", overflow: "hidden" }}>
+                  <div style={{ padding: "12px 16px", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
+                    <p style={{ color: "rgba(220,220,245,0.55)", fontSize: 11, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</p>
+                  </div>
+                  <div onClick={() => { router.push("/dashboard"); setMenuOpen(false); }} style={{ padding: "10px 16px", color: "rgba(220,220,245,0.75)", fontSize: 13, cursor: "pointer" }}>
+                    📊 Mon compte
+                  </div>
+                  <div onClick={signOut} style={{ padding: "10px 16px", color: "#f09595", fontSize: 13, cursor: "pointer" }}>
+                    → Déconnexion
+                  </div>
+                </div>
+              )}
+            </div>
           )}
+
+          {/* Mon bilan button (non-connected, always visible) */}
+          {!user && (
+            <Link href="/questionnaire" style={{ textDecoration: "none" }}>
+              <div style={{ padding: "11px 18px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#7c9fff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.h, minHeight: 44, display: "flex", alignItems: "center" }}>
+                Mon bilan
+              </div>
+            </Link>
+          )}
+
+          {/* Hamburger button (mobile only) */}
+          <button
+            className="md:hidden"
+            onClick={(e) => { e.stopPropagation(); setIsMenuOpen((v) => !v); }}
+            style={{ background: "none", border: "none", color: "#f0f0fa", fontSize: 26, cursor: "pointer", padding: "4px 8px", lineHeight: 1, minHeight: 44, minWidth: 44, display: "flex", alignItems: "center", justifyContent: "center" }}
+            aria-label="Menu"
+          >
+            {isMenuOpen ? "✕" : "≡"}
+          </button>
         </div>
       </div>
 
-      {/* Mobile dropdown panel */}
-      {mobileMenuOpen && (
+      {/* Mobile dropdown */}
+      {isMenuOpen && (
         <div
-          className="md:hidden"
+          onClick={(e) => e.stopPropagation()}
           style={{
             position: "fixed",
             top: 64,
-            left: 0,
-            right: 0,
-            zIndex: 49,
-            background: "rgba(15,15,26,0.97)",
-            backdropFilter: "blur(20px)",
-            borderBottom: "0.5px solid rgba(255,255,255,0.08)",
-            padding: "12px 24px 20px",
+            right: 16,
+            background: "#1b1b2e",
+            border: "1px solid rgba(255,255,255,0.10)",
+            borderRadius: 16,
+            padding: "8px 0",
+            zIndex: 100,
+            minWidth: 200,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
           }}
         >
-          {user ? (
-            <>
-              <div
-                style={{
-                  paddingBottom: 12,
-                  marginBottom: 8,
-                  borderBottom: "0.5px solid rgba(255,255,255,0.07)",
-                }}
-              >
-                <p
-                  style={{
-                    color: "rgba(220,220,245,0.40)",
-                    fontSize: 11,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    fontFamily: "var(--font-jakarta), sans-serif",
-                  }}
-                >
-                  {user.email}
-                </p>
-              </div>
-              <Link
-                href="/mobilite"
-                style={{ textDecoration: "none" }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <div
-                  style={{
-                    padding: "13px 0",
-                    color: "#7c9fff",
-                    fontSize: 15,
-                    fontWeight: 600,
-                    fontFamily: "var(--font-nunito), sans-serif",
-                    borderBottom: "0.5px solid rgba(255,255,255,0.06)",
-                    cursor: "pointer",
-                  }}
-                >
-                  Mobilité
-                </div>
-              </Link>
-              <Link
-                href="/dashboard"
-                style={{ textDecoration: "none" }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <div
-                  style={{
-                    padding: "13px 0",
-                    color: "#7c9fff",
-                    fontSize: 15,
-                    fontWeight: 600,
-                    fontFamily: "var(--font-nunito), sans-serif",
-                    borderBottom: "0.5px solid rgba(255,255,255,0.06)",
-                    cursor: "pointer",
-                  }}
-                >
-                  Dashboard
-                </div>
-              </Link>
-              <div
-                onClick={signOut}
-                style={{
-                  padding: "13px 0",
-                  color: "#f09595",
-                  fontSize: 15,
-                  fontWeight: 600,
-                  fontFamily: "var(--font-nunito), sans-serif",
-                  cursor: "pointer",
-                }}
-              >
-                → Déconnexion
-              </div>
-            </>
-          ) : (
-            <Link
-              href="/auth"
-              style={{ textDecoration: "none" }}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <div
-                style={{
-                  padding: "13px 0",
-                  color: "rgba(220,220,245,0.65)",
-                  fontSize: 15,
-                  fontWeight: 500,
-                  fontFamily: "var(--font-jakarta), sans-serif",
-                  cursor: "pointer",
-                }}
-              >
-                Se connecter
-              </div>
+          {user && (
+            <div style={{ padding: "10px 20px 12px", borderBottom: "0.5px solid rgba(255,255,255,0.08)", marginBottom: 4 }}>
+              <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", margin: 0 }}>
+                {user.email}
+              </p>
+            </div>
+          )}
+          <Link href="/onboarding" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+            🎯 Nouveau bilan
+          </Link>
+          <Link href="/mobilite" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+            🧘 Mobilité
+          </Link>
+          <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+            📊 Dashboard
+          </Link>
+          <Link href="/exemple-rapport" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+            👁️ Voir un exemple
+          </Link>
+          {!user && (
+            <Link href="/auth" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+              🔑 Se connecter
             </Link>
+          )}
+          {user && (
+            <button
+              onClick={() => { signOut(); setIsMenuOpen(false); }}
+              style={{ ...menuItemStyle, background: "none", border: "none", width: "100%", textAlign: "left", color: "#f09595", borderBottom: "none" }}
+            >
+              → Se déconnecter
+            </button>
           )}
         </div>
       )}
