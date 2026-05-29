@@ -504,6 +504,8 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const planScore: Record<string, number> = { adapte: 100, trop_bas: 20, trop_haut: 30, pas_plan: 60 };
 
   const enduranceScore: Record<string, number> = { plus_4h: 100, deux_4h: 70, un_2h: 40, moins_1h: 10 };
+  // q_d3b: old security shoes penalise setup
+  const chaussSecu3b: Record<string, number> = { amorti: 0, basique: -5, vieilles_usees: -15 };
   const setupComponents = [
     solScoreVal,
     tapisScore[a["q_d2"] as string] ?? 30,
@@ -511,9 +513,13 @@ function calcDeboutScores(a: GenericAnswers): Scores {
     variationScore[a["q_d5"] as string] ?? 50,
     siegeScore[a["q_d6"] as string] ?? 50,
     planScore[a["q_d7"] as string] ?? 60,
-    enduranceScore[a["q_d_endurance_debout"] as string] ?? 60,
+    enduranceScore[a["q_d_endurance"] as string] ?? 60,
   ];
-  const setup = clamp(Math.round(setupComponents.reduce((s, v) => s + v, 0) / setupComponents.length));
+  // Temperature penalty applied after average
+  const tempPenalty: Record<string, number> = { normale: 0, chaud: -5, froid: -8, variable: -3 };
+  const tempAdj = tempPenalty[a["q_d_temperature"] as string] ?? 0;
+  const secu3bAdj = a["q_d3"] === "securite" ? (chaussSecu3b[a["q_d3b"] as string] ?? 0) : 0;
+  const setup = clamp(Math.round(setupComponents.reduce((s, v) => s + v, 0) / setupComponents.length) + tempAdj + secu3bAdj);
 
   // ── pain_debout (35%) ────────────────────────────────────────────────────
   const painZones = [
@@ -526,29 +532,18 @@ function calcDeboutScores(a: GenericAnswers): Scores {
     (a["q_d_poignet"] as number) ?? 0, // poignet
   ];
 
-  console.log('q_d8:', a["q_d8"]);
-  console.log('q_d9:', a["q_d9"]);
-  console.log('q_d10:', a["q_d10"]);
-  console.log('q_d11:', a["q_d11"]);
-  console.log('q_d12:', a["q_d12"]);
-  console.log('q_d_coude:', a["q_d_coude"]);
-  console.log('q_d_poignet:', a["q_d_poignet"]);
-  console.log('q_d13:', a["q_d13"]);
-  console.log('q_d14:', a["q_d14"]);
-  console.log('q_d_varices:', a["q_d_varices"]);
-
   // Pénalité de base proportionnelle — max 60 pts pour les zones douloureuses
   const totalPain = painZones.reduce((sum, v) => sum + (typeof v === "number" ? v : 0), 0);
   const maxPain = 5 * painZones.length; // 35
   let rawPain = 100 - Math.round((totalPain / maxPain) * 60);
 
   // Timing pieds (q_d13) — pénalités calibrées sur base réduite
-  const timingMap: Record<string, number> = { pas: 0, fin_journee: -5, cours_service: -10, premier_pas: -10, douleur_reveil: -15, tout_temps: -15 };
+  const timingMap: Record<string, number> = { pas: 0, fin_journee: -5, cours_service: -10, premier_pas: -10, lever_et_service: -15, tout_temps: -15 };
   rawPain += timingMap[a["q_d13"] as string] ?? 0;
 
-  // Jambes soir (q_d14) — valeurs: normales / lourdes / tres_lourdes / varices
-  if (a["q_d14"] === "tres_lourdes") rawPain -= 8;
-  else if (a["q_d14"] === "varices") rawPain -= 15;
+  // Jambes soir (q_d_jambes_soir) — valeurs: bien / lourdes / lourdes_gonflees / douloureuses
+  if (a["q_d_jambes_soir"] === "lourdes_gonflees") rawPain -= 8;
+  else if (a["q_d_jambes_soir"] === "douloureuses") rawPain -= 15;
 
   // Varices (q_d_varices) — valeurs: non / veinules / varices / importantes
   if (a["q_d_varices"] === "varices") rawPain -= 10;
@@ -573,9 +568,7 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   // Chaussures de sécurité — amorti souvent insuffisant
   if (a["q_d3"] === "securite") rawPain -= 5;
 
-  console.log('pain_debout avant normalisation:', rawPain);
   const pain = clamp(rawPain);
-  console.log('pain_debout final:', pain);
 
   // ── habits_debout (20%) ──────────────────────────────────────────────────
   const pauseMap: Record<string, number> = { regulier: 100, parfois: 60, rarement: 20, jamais: 0 };
@@ -604,22 +597,21 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const hDebout = a["q_d4"] as number ?? 7;
   if (hDebout >= 8) sleep_energy -= 20;
 
-  // Crampes et agitation nocturnes (questions now in cat-d2, answers still available)
-  const crampesMap: Record<string, number> = { non: 10, parfois: 0, souvent: -20, toutes_les_nuits: -35 };
-  sleep_energy += crampesMap[a["q_d_crampes"] as string] ?? 0;
-  const jambesnuitMap: Record<string, number> = { non: 0, parfois: -5, souvent_agitees: -25, perturbe_sommeil: -35 };
-  sleep_energy += jambesnuitMap[a["q_d_jambes_nuit"] as string] ?? 0;
-  const reveilMap: Record<string, number> = { sans_douleur: 10, raideurs: 0, douleurs_jambes: -20, douleurs_importantes: -35 };
-  sleep_energy += reveilMap[a["q_d_reveil_douleur"] as string] ?? 0;
-
-  // Nouvelles questions qualité sommeil
   const heuresSommeil = a["q_d_sommeil_heures"] as number ?? 7;
   if (heuresSommeil < 6) sleep_energy -= 20;
   else if (heuresSommeil >= 8) sleep_energy += 5;
+
   const qualiteMap: Record<string, number> = { profond: 15, correct: 5, leger: -15, tres_mauvais: -30 };
   sleep_energy += qualiteMap[a["q_d_sommeil_qualite"] as string] ?? 0;
-  const recuperationMap: Record<string, number> = { bien: 10, partiellement: 0, non: -20, pire: -35 };
-  sleep_energy += recuperationMap[a["q_d_sommeil_recuperation"] as string] ?? 0;
+
+  const crampesMap: Record<string, number> = { non: 10, parfois: 0, souvent: -20, toutes_les_nuits: -35 };
+  sleep_energy += crampesMap[a["q_d_crampes"] as string] ?? 0;
+
+  const jambesnuitMap: Record<string, number> = { non: 0, parfois: -5, souvent_agitees: -25, perturbe_sommeil: -35 };
+  sleep_energy += jambesnuitMap[a["q_d_jambes_nuit"] as string] ?? 0;
+
+  const recuperationMap: Record<string, number> = { bien: 10, partiellement: 0, mal: -15, pas_du_tout: -30 };
+  sleep_energy += recuperationMap[a["q_d_recuperation"] as string] ?? 0;
 
   sleep_energy = clamp(sleep_energy);
 
@@ -636,7 +628,7 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   ) / 4));
 
   // ── lifestyle_debout (8%) ────────────────────────────────────────────────
-  const recup = a["q_d20"] as string[] ?? [];
+  const recup = Array.isArray(a["q_d20"]) ? (a["q_d20"] as string[]) : [];
   let lifestyleBase = 30;
   if (recup.includes("etirements")) lifestyleBase += 20;
   if (recup.includes("natation")) lifestyleBase += 20;
@@ -645,7 +637,7 @@ function calcDeboutScores(a: GenericAnswers): Scores {
 
   const etirMap: Record<string, number> = { quotidienne: 100, parfois: 60, rarement: 20, jamais: 0 };
   const consultMap: Record<string, number> = { suivi_regulier: 100, consulte_une_fois: 75, jamais: 40, pas_eu_temps: 30 };
-  const activite = a["q_d_activite_type"] as string[] ?? [];
+  const activite = Array.isArray(a["q_d_activite"]) ? (a["q_d_activite"] as string[]) : [];
   let activiteScore = 30;
   if (activite.includes("natation_velo_marche")) activiteScore = 100;
   else if (activite.includes("yoga_pilates")) activiteScore = 90;
@@ -654,12 +646,21 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   else if (activite.includes("course")) activiteScore = 55;
   else if (activite.includes("aucune")) activiteScore = 10;
 
+  // Intensity bonus: intense activity = +10 on activiteScore
+  const intensiteMap: Record<string, number> = { legere: -5, moderee: 0, intense: 10 };
+  activiteScore = Math.min(100, activiteScore + (intensiteMap[a["q_d_activite_intensite"] as string] ?? 0));
+
+  // Auto-évaluation (wellbeing 1-5) contributes to lifestyle
+  const autoEval = a["q_d_autoevaluation"] as number | null;
+  const autoEvalScore = autoEval !== null ? Math.round(((autoEval - 1) / 4) * 100) : 50;
+
   const lifestyle = clamp(Math.round((
-    (etirMap[a["q_d_etirements_routine"] as string] ?? 30) +
+    (etirMap[a["q_d_etirements"] as string] ?? 30) +
     activiteScore +
     (consultMap[a["q_d_consultation"] as string] ?? 45) +
-    lifestyleBase
-  ) / 4));
+    lifestyleBase +
+    autoEvalScore
+  ) / 5));
 
   // ── global (setup 20% · pain 30% · habits 18% · sleep 12% · nutrition 12% · lifestyle 8%) ──
   const global = clamp(Math.round(

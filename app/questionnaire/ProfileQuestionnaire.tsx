@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import {
   type CategoryDef, type GenericAnswers, type JobType,
-  defaultAnswers, JOB_META,
+  defaultAnswers, JOB_META, shouldShow,
 } from "@/lib/questionnaire-profiles";
 import { calculateJobScores } from "@/lib/scoring";
 
@@ -34,7 +34,9 @@ function isAnswered(id: string, answers: GenericAnswers, type: string): boolean 
 function isCatDone(cat: CategoryDef, answers: GenericAnswers): boolean {
   return cat.requiredQ.every((id) => {
     const q = cat.questions.find((q) => q.id === id);
-    return q ? isAnswered(id, answers, q.type) : true;
+    if (!q) return true;
+    if (q.conditional && !shouldShow(id, answers)) return true;
+    return isAnswered(id, answers, q.type);
   });
 }
 
@@ -90,14 +92,22 @@ function WellbeingScale({ value, onChange, cat }: {
 }
 
 function MultiSelectGrid({ options, value, onChange, cat }: {
-  options: { value: string; label: string }[];
+  options: { value: string; label: string; exclusive?: boolean }[];
   value: string[];
   onChange: (v: string[]) => void;
   cat: CategoryDef;
 }) {
   function toggle(val: string) {
-    if (value.includes(val)) onChange(value.filter((v) => v !== val));
-    else onChange([...value, val]);
+    const opt = options.find((o) => o.value === val);
+    if (value.includes(val)) {
+      onChange(value.filter((v) => v !== val));
+    } else if (opt?.exclusive) {
+      onChange([val]);
+    } else {
+      // Remove any currently-selected exclusive option before adding
+      const exclusiveVals = options.filter((o) => o.exclusive).map((o) => o.value);
+      onChange([...value.filter((v) => !exclusiveVals.includes(v)), val]);
+    }
   }
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -333,29 +343,41 @@ export default function ProfileQuestionnaire({
                 </div>
                 {/* Body */}
                 <div style={{ padding: "16px", background: "rgba(255,255,255,0.015)", border: `0.5px solid ${cat.colorBorder}`, borderTop: "none", borderRadius: "0 0 22px 22px", display: "flex", flexDirection: "column", gap: 10 }}>
-                  {cat.questions.map((q, qi) => {
-                    const ans = answers[q.id];
-                    const answered = isAnswered(q.id, answers, q.type);
-                    return (
-                      <QBlock key={q.id} number={String(qi + 1)} question={q.label} note={q.note} answered={answered} cat={cat}>
-                        {q.type === "choice" && (
-                          <ChoiceGrid cat={cat} value={ans as string ?? ""} onChange={(v) => update(q.id, v)} options={q.options ?? []} />
-                        )}
-                        {q.type === "multiselect" && (
-                          <MultiSelectGrid cat={cat} value={(ans as string[]) ?? []} onChange={(v) => update(q.id, v)} options={q.options ?? []} />
-                        )}
-                        {q.type === "painscale" && (
-                          <PainScale cat={cat} value={ans as number | null} onChange={(v) => update(q.id, v)} />
-                        )}
-                        {q.type === "wellbeing" && (
-                          <WellbeingScale cat={cat} value={ans as number | null} onChange={(v) => update(q.id, v)} />
-                        )}
-                        {q.type === "slider" && (
-                          <SliderInput id={q.id} cat={cat} value={ans as number ?? q.min ?? 5} min={q.min ?? 0} max={q.max ?? 10} step={q.step ?? 1} unit={q.unit ?? ""} reference={q.reference} onChange={(v) => update(q.id, v)} />
-                        )}
-                      </QBlock>
-                    );
-                  })}
+                  {cat.questions
+                    .filter((q) => !q.conditional || shouldShow(q.id, answers))
+                    .map((q, qi) => {
+                      const ans = answers[q.id];
+                      const answered = isAnswered(q.id, answers, q.type);
+                      return (
+                        <div key={q.id}>
+                          <QBlock number={String(qi + 1)} question={q.label} note={q.note} answered={answered} cat={cat}>
+                            {q.type === "choice" && (
+                              <ChoiceGrid cat={cat} value={ans as string ?? ""} onChange={(v) => update(q.id, v)} options={q.options ?? []} />
+                            )}
+                            {q.type === "multiselect" && (
+                              <MultiSelectGrid cat={cat} value={(ans as string[]) ?? []} onChange={(v) => update(q.id, v)} options={q.options ?? []} />
+                            )}
+                            {q.type === "painscale" && (
+                              <PainScale cat={cat} value={ans as number | null} onChange={(v) => update(q.id, v)} />
+                            )}
+                            {q.type === "wellbeing" && (
+                              <WellbeingScale cat={cat} value={ans as number | null} onChange={(v) => update(q.id, v)} />
+                            )}
+                            {q.type === "slider" && (
+                              <SliderInput id={q.id} cat={cat} value={ans as number ?? q.min ?? 5} min={q.min ?? 0} max={q.max ?? 10} step={q.step ?? 1} unit={q.unit ?? ""} reference={q.reference} onChange={(v) => update(q.id, v)} />
+                            )}
+                          </QBlock>
+                          {q.id === "q_d_varices" && ans === "importantes" && (
+                            <div style={{ marginTop: 6, padding: "10px 14px", borderRadius: 12, background: "rgba(226,75,74,0.12)", border: "0.5px solid rgba(226,75,74,0.35)", display: "flex", alignItems: "flex-start", gap: 8 }}>
+                              <span style={{ fontSize: 16, flexShrink: 0 }}>⚕️</span>
+                              <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "#f09595", lineHeight: 1.6, margin: 0 }}>
+                                Des varices importantes et douloureuses méritent un avis médical — consulte ton médecin traitant ou un angiologue.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             </section>

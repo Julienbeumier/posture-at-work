@@ -423,12 +423,12 @@ export default function ResultsPage() {
   const deboutFlags = jobType === "debout" ? {
     consultRecommandee: rawA["q_d_crampes"] === "toutes_les_nuits"
       || rawA["q_d_jambes_nuit"] === "perturbe_sommeil"
-      || rawA["q_d_reveil_douleur"] === "douleurs_importantes"
-      || rawA["q_d_gonflement"] === "tres_gonfle"
-      || rawA["q_d_varices"] === "importantes",
+      || rawA["q_d_varices"] === "importantes"
+      || rawA["q_d_jambes_soir"] === "douloureuses",
     crampes: rawA["q_d_crampes"] === "souvent" || rawA["q_d_crampes"] === "toutes_les_nuits",
     dependanceEnergie: rawA["q_d_energie_boisson"] === "souvent_energisantes" || rawA["q_d_energie_boisson"] === "seul_moyen",
     petitDejInsuffisant: rawA["q_d_petit_dej"] === "juste_cafe" || rawA["q_d_petit_dej"] === "saute",
+    autoEval: rawA["q_d_autoevaluation"] as number | null ?? null,
   } : null;
 
   return (
@@ -511,6 +511,36 @@ export default function ResultsPage() {
                   <p style={{ fontFamily: T.b, fontSize: 13, color: c.color, lineHeight: 1.6, margin: 0 }}>{c.text}</p>
                 </div>
               ))}
+            </motion.div>
+          );
+        })()}
+
+        {/* ── AUTO-EVAL CARD (debout only) ── */}
+        {deboutFlags?.autoEval !== null && deboutFlags?.autoEval !== undefined && (() => {
+          const ae = deboutFlags.autoEval as number;
+          const selfPct = Math.round(((ae - 1) / 4) * 100);
+          const diff = selfPct - scores.global;
+          let msg = "";
+          let msgColor = "rgba(220,220,245,0.55)";
+          if (diff > 20) { msg = "Tu t'estimes mieux que ton score — tes douleurs sont peut-être devenues normales pour toi. C'est un signal à ne pas ignorer."; msgColor = "#f4a261"; }
+          else if (diff < -20) { msg = "Tu es plus solide que tu ne le crois ! Ton score est meilleur que ton ressenti."; msgColor = "#74c69d"; }
+          else { msg = "Ton ressenti correspond bien à ta situation réelle — bonne conscience corporelle."; msgColor = "#7c9fff"; }
+          return (
+            <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
+              style={{ borderRadius: 18, padding: "16px 20px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", marginBottom: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "rgba(220,220,245,0.55)", margin: 0 }}>🪞 Ton ressenti vs ton score réel</p>
+              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                <div style={{ flex: 1, textAlign: "center", padding: "10px 0", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.07)" }}>
+                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#a8c0ff", margin: 0 }}>{selfPct}</p>
+                  <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)", margin: 0 }}>Ton ressenti</p>
+                </div>
+                <span style={{ color: "rgba(220,220,245,0.25)", fontSize: 18 }}>vs</span>
+                <div style={{ flex: 1, textAlign: "center", padding: "10px 0", borderRadius: 12, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)" }}>
+                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#7c9fff", margin: 0 }}>{scores.global}</p>
+                  <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)", margin: 0 }}>Score PAW</p>
+                </div>
+              </div>
+              <p style={{ fontFamily: T.b, fontSize: 12, color: msgColor, lineHeight: 1.6, margin: 0 }}>{msg}</p>
             </motion.div>
           );
         })()}

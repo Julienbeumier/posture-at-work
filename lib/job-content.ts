@@ -645,21 +645,21 @@ function getDeboutDimensionContent(
       const q_d_coude = n("q_d_coude");
       const q_d_poignet = n("q_d_poignet");
       const q_d13 = String(a("q_d13") ?? "");
-      const q_d14 = String(a("q_d14") ?? "normales");
+      const q_d_jambes_soir = String(a("q_d_jambes_soir") ?? "bien");
       const q_d_charges = String(a("q_d_charges") ?? "");
       const q_d_repetitif = String(a("q_d_repetitif") ?? "");
       const q_d_varices = String(a("q_d_varices") ?? "");
       const q_d_irradiation = String(a("q_d_irradiation") ?? "");
       const q_d_protection = Array.isArray(a("q_d_protection")) ? (a("q_d_protection") as string[]) : [];
 
-      // Flag: douleur_talon_matin (fused q_d13 now includes premier_pas + douleur_reveil options)
-      const flagTalon = q_d13 === "premier_pas" || q_d13 === "douleur_reveil" || (q_d8 >= 3 && (q_d13 === "premier_pas" || q_d13 === "cours_service"));
+      // Flag: douleur_talon_matin
+      const flagTalon = q_d13 === "premier_pas" || q_d13 === "lever_et_service" || (q_d8 >= 3 && (q_d13 === "premier_pas" || q_d13 === "cours_service"));
       // Flag: tendinopathie membre supérieur
       const flagTendinopathieSup = q_d_coude >= 3 || q_d_poignet >= 3;
-      // Flag: insuffisance_veineuse (relies on q_d14 and q_d_varices now that gonflement removed)
-      const flagVeines = q_d_varices === "varices" || q_d_varices === "importantes" || (q_d11 >= 2 && q_d14 !== "normales") || q_d14 === "tres_lourdes" || q_d14 === "varices";
+      // Flag: insuffisance_veineuse
+      const flagVeines = q_d_varices === "varices" || q_d_varices === "importantes" || (q_d11 >= 2 && q_d_jambes_soir !== "bien") || q_d_jambes_soir === "lourdes_gonflees" || q_d_jambes_soir === "douloureuses";
       // Flag: consultation_medicale
-      const flagConsult = q_d_varices === "importantes" || q_d14 === "varices";
+      const flagConsult = q_d_varices === "importantes" || q_d_jambes_soir === "douloureuses";
       // Flag: douleur irradiante (sciatique, cruralgie)
       const flagDouleurIrradiante = q_d_irradiation === "fesse_cuisse" || q_d_irradiation === "jusqu_genou" || q_d_irradiation === "jusqu_pied";
 
@@ -678,7 +678,7 @@ function getDeboutDimensionContent(
         if (!exerciseIds.includes("calf_stretch")) exerciseIds.push("chair_squat", "calf_stretch");
       }
 
-      if (q_d11 >= 2 && q_d14 !== "normales") {
+      if (q_d11 >= 2 && q_d_jambes_soir !== "bien") {
         detected.push("Tes jambes lourdes en fin de service indiquent une insuffisance veineuse professionnelle. Les chaussettes de compression portées LE MATIN (avant de se lever) sont 3x plus efficaces que portées après.");
         if (!exerciseIds.includes("leg_elevation")) exerciseIds.push("marching", "leg_elevation");
         products.push(mkProduct("chaussettes_c", "Chaussettes de compression graduée", "Prévient varices et insuffisance veineuse — à porter dès le matin avant de se lever", "https://www.amazon.fr/s?k=chaussettes+compression+graduee+travail+debout&tag=postureatwork-21", "haute", "~20€"));
@@ -755,12 +755,12 @@ function getDeboutDimensionContent(
       }
 
       const tips: DeboutTip[] = [];
-      if (q_d8 >= 3 && q_d13 === "premier_pas") {
+      if (q_d8 >= 3 && (q_d13 === "premier_pas" || q_d13 === "lever_et_service")) {
         tips.push({ id: "dp1", icon: "🦶", text: "Ne marche jamais pieds nus sur sol dur le matin — met tes chaussures avant le premier pas" });
         tips.push({ id: "dp2", icon: "🧊", text: "Glace sous le talon 10-15 min après chaque journée — anti-inflammatoire gratuit et efficace" });
         tips.push({ id: "dp3", icon: "🧘", text: "Étire le fascia avant le premier pas : attrape tes orteils, tire 10 sec × 10 reps au lit" });
         tips.push({ id: "dp3b", icon: "🦵", text: "Mollet excentrique 2×/jour : montée sur 2 pieds, descente lente sur 1 — renforce le fascia en 4 semaines" });
-      } else if (q_d11 >= 2 && q_d14 !== "normales") {
+      } else if (q_d11 >= 2 && q_d_jambes_soir !== "bien") {
         tips.push({ id: "dp4", icon: "🧦", text: "Porte les chaussettes de compression LE MATIN avant de te lever — 3x plus efficaces qu'après" });
         tips.push({ id: "dp5", icon: "🦵", text: "Surélève les jambes 20 min en rentrant — draine les mollets et les pieds plus efficacement qu'1h de massage" });
         tips.push({ id: "dp6", icon: "🏊", text: "Natation ou vélo après le travail : circulation veineuse sans impact sur les pieds" });
@@ -858,16 +858,15 @@ function getDeboutDimensionContent(
     case "sommeil": {
       const detected: string[] = [];
       const q_d11 = n("q_d11");
-      const q_d14 = String(a("q_d14") ?? "normales");
-      const q_d21 = n("q_d21");
+      const q_d_jambes_soir_s = String(a("q_d_jambes_soir") ?? "bien");
       const q_d_crampes = String(a("q_d_crampes") ?? "");
       const q_d_jambes_nuit = String(a("q_d_jambes_nuit") ?? "");
-      const q_d_reveil_douleur = String(a("q_d_reveil_douleur") ?? "");
+      const q_d_recuperation_s = String(a("q_d_recuperation") ?? "");
 
       const flagCrampes = q_d_crampes === "souvent" || q_d_crampes === "toutes_les_nuits";
       const flagJambesSansRepos = q_d_jambes_nuit === "souvent_agitees" || q_d_jambes_nuit === "perturbe_sommeil";
-      const flagDouleurReveil = q_d_reveil_douleur === "douleurs_jambes" || q_d_reveil_douleur === "douleurs_importantes";
-      const flagConsultSommeil = q_d_crampes === "toutes_les_nuits" || q_d_jambes_nuit === "perturbe_sommeil" || q_d_reveil_douleur === "douleurs_importantes";
+      const flagMauvaiseRecup = q_d_recuperation_s === "mal" || q_d_recuperation_s === "pas_du_tout";
+      const flagConsultSommeil = q_d_crampes === "toutes_les_nuits" || q_d_jambes_nuit === "perturbe_sommeil" || q_d_recuperation_s === "pas_du_tout";
 
       if (flagCrampes) {
         detected.push("Tes crampes nocturnes de mollets ont une cause identifiable : déshydratation + carence en magnésium + muscles épuisés non étirés après le service. Ces 3 facteurs se corrigent facilement.");
@@ -875,14 +874,11 @@ function getDeboutDimensionContent(
       if (flagJambesSansRepos) {
         detected.push("Tes jambes agitées la nuit indiquent une circulation veineuse insuffisante après une journée debout. Ce n'est pas du stress — c'est physique et traitable.");
       }
-      if (flagDouleurReveil) {
-        detected.push("Te réveiller avec des douleurs aux jambes ou aux pieds est le signal d'une récupération incomplète. Ton corps n'a pas le temps de réparer pendant la nuit.");
+      if (flagMauvaiseRecup) {
+        detected.push("Ta récupération physique est insuffisante — ton corps ne répare pas complètement pendant la nuit. Ce signal s'aggrave semaine après semaine sans intervention.");
       }
-      if (q_d11 >= 2 && q_d14 !== "normales" && !flagJambesSansRepos) {
+      if (q_d11 >= 2 && q_d_jambes_soir_s !== "bien" && !flagJambesSansRepos) {
         detected.push("Tes jambes lourdes en fin de journée perturbent potentiellement ton sommeil. La surélévation des jambes le soir est la solution la plus efficace.");
-      }
-      if (q_d21 <= 2 && detected.length === 0) {
-        detected.push("Ton énergie est basse en fin de journée — récupération insuffisante pour la charge physique de ton métier.");
       }
       if (detected.length === 0) {
         detected.push("Tu récupères correctement après tes journées debout. Continue à prioriser le sommeil — c'est là que les muscles se réparent.");
@@ -1026,8 +1022,8 @@ function getDeboutDimensionContent(
 
     case "lifestyle": {
       const detected: string[] = [];
-      const q_d_etir = String(a("q_d_etirements_routine") ?? "");
-      const q_d_act = (a("q_d_activite_type") as string[]) ?? [];
+      const q_d_etir = String(a("q_d_etirements") ?? "");
+      const q_d_act = Array.isArray(a("q_d_activite")) ? (a("q_d_activite") as string[]) : [];
       const q_d_consult = String(a("q_d_consultation") ?? "");
       const q_d8_l = n("q_d8");
       const q_d_crampes_l = String(a("q_d_crampes_alim") ?? "");

@@ -1,6 +1,6 @@
 export type QuestionType = "choice" | "multiselect" | "slider" | "painscale" | "wellbeing";
 
-export interface QuestionOption { value: string; label: string; }
+export interface QuestionOption { value: string; label: string; exclusive?: boolean; }
 
 export interface QuestionDef {
   id: string;
@@ -9,7 +9,8 @@ export interface QuestionDef {
   note?: string;
   options?: QuestionOption[];
   min?: number; max?: number; step?: number; unit?: string; reference?: string;
-  alwaysAnswered?: boolean; // sliders
+  alwaysAnswered?: boolean;
+  conditional?: boolean;
 }
 
 export interface CategoryDef {
@@ -46,15 +47,45 @@ export function defaultAnswers(categories: CategoryDef[]): GenericAnswers {
   return out;
 }
 
+// ─── Conditional visibility ──────────────────────────────────────────────
+
+export function shouldShow(questionId: string, answers: GenericAnswers): boolean {
+  switch (questionId) {
+    case "q_d3b":
+      return answers["q_d3"] === "securite";
+    case "q_d13":
+      return ((answers["q_d8"] as number) ?? 0) >= 1;
+    case "q_d_repetitif_zone":
+    case "q_d_coude":
+    case "q_d_poignet":
+      return ["souvent", "toute_la_journee"].includes(answers["q_d_repetitif"] as string);
+    case "q_d_charges_freq":
+    case "q_d_protection":
+      return ["lourdes", "tres_lourdes"].includes(answers["q_d_charges"] as string);
+    case "q_d_activite_intensite": {
+      const act = answers["q_d_activite"];
+      return Array.isArray(act) && act.length > 0 && !(act as string[]).includes("aucune");
+    }
+    default:
+      return true;
+  }
+}
+
 // ─── DEBOUT profile ───────────────────────────────────────────────────────
 
 export const DEBOUT_CATEGORIES: CategoryDef[] = [
   {
-    id: "cat-d1", title: "Ton poste debout", subtitle: "Sol, chaussures et ergonomie", emoji: "🦶",
+    id: "cat-d1", title: "Ton poste debout", subtitle: "Sol, chaussures, ergonomie et ancienneté", emoji: "🏭",
     color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
     selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
-    requiredQ: ["q_d1", "q_d2", "q_d3", "q_d5", "q_d6", "q_d7", "q_d_charges", "q_d_repetitif", "q_d_endurance_debout"],
+    requiredQ: ["q_d_anciennete", "q_d1", "q_d2", "q_d3", "q_d_endurance", "q_d5", "q_d6", "q_d7"],
     questions: [
+      { id: "q_d_anciennete", type: "choice", label: "Depuis combien de temps travailles-tu dans ce métier debout ?", options: [
+        { value: "moins_1an", label: "🌱 Moins d'1 an" },
+        { value: "un_5ans", label: "📅 1 à 5 ans" },
+        { value: "cinq_10ans", label: "⏳ 5 à 10 ans" },
+        { value: "plus_10ans", label: "🏆 Plus de 10 ans" },
+      ]},
       { id: "q_d1", type: "multiselect", label: "Sur quel(s) type(s) de sol travailles-tu ?", note: "Le type de sol impacte directement la fatigue de tes pieds et de ton dos — sélectionne tout ce qui s'applique", options: [
         { value: "souple", label: "🟢 Tapis / caoutchouc (sol souple)" },
         { value: "semi_dur", label: "🟫 Parquet / lino (sol semi-dur)" },
@@ -62,6 +93,12 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "caillebotis", label: "🔲 Caillebotis / grilles métalliques" },
         { value: "exterieur", label: "🌿 Extérieur (pavés, asphalte)" },
         { value: "varie", label: "🔀 Ça varie beaucoup" },
+      ]},
+      { id: "q_d_temperature", type: "choice", label: "Quelle est la température à ton poste de travail ?", note: "Les extrêmes thermiques augmentent la fatigue musculaire et les risques de crampes", options: [
+        { value: "normale", label: "✅ Normale et confortable (18-22°C)" },
+        { value: "chaud", label: "🔥 Chaud (cuisine, boulangerie, forge…)" },
+        { value: "froid", label: "❄️ Froid (chambre froide, extérieur hivernal)" },
+        { value: "variable", label: "🔀 Variable selon les zones" },
       ]},
       { id: "q_d2", type: "choice", label: "As-tu un tapis anti-fatigue à ton poste ?", options: [
         { value: "oui_ergo", label: "✅ Oui, tapis ergonomique" },
@@ -72,12 +109,17 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
       { id: "q_d3", type: "choice", label: "Tes chaussures de travail sont ?", note: "Les chaussures de sécurité lourdes sans amorti sont très génératrices de douleurs aux pieds", options: [
         { value: "semelles_pro", label: "👟 Semelles amortissantes professionnelles" },
         { value: "baskets", label: "👟 Baskets confortables" },
-        { value: "securite", label: "🩴 Chaussures de sécurité (embout acier)" },
+        { value: "securite", label: "🦺 Chaussures de sécurité (embout acier)" },
         { value: "plates", label: "🥿 Chaussures plates sans amorti" },
         { value: "ville", label: "👞 Chaussures de ville / talons" },
       ]},
+      { id: "q_d3b", type: "choice", label: "Tes chaussures de sécurité ont-elles un bon amorti ?", note: "Visible à l'intérieur : une semelle épaisse = bon amorti", conditional: true, options: [
+        { value: "amorti", label: "✅ Oui, bonne semelle amortissante" },
+        { value: "basique", label: "🔸 Amorti basique (semelle fine)" },
+        { value: "vieilles_usees", label: "⚠️ Usées / vieilles (plus de 12 mois)" },
+      ]},
       { id: "q_d4", type: "slider", label: "Combien d'heures restes-tu debout par jour ?", min: 4, max: 12, step: 0.5, unit: "h", reference: "⚠️ Au-delà de 6h debout sans pause = risque élevé", alwaysAnswered: true },
-      { id: "q_d_endurance_debout", type: "choice", label: "Au bout de combien de temps debout ressens-tu une gêne ou fatigue importante ?", note: "Indique ta limite avant d'avoir besoin de t'asseoir ou de changer de position", options: [
+      { id: "q_d_endurance", type: "choice", label: "Au bout de combien de temps debout ressens-tu une gêne ou fatigue importante ?", note: "Indique ta limite avant d'avoir besoin de t'asseoir ou de changer de position", options: [
         { value: "moins_1h", label: "🚨 Moins d'1 heure" },
         { value: "un_2h", label: "😟 Entre 1h et 2h" },
         { value: "deux_4h", label: "🔸 Entre 2h et 4h" },
@@ -99,52 +141,38 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "trop_haut", label: "⬆️ Trop haute (épaules soulevées)" },
         { value: "pas_plan", label: "🤷 Je n'ai pas de plan de travail fixe" },
       ]},
-      { id: "q_d_charges", type: "choice", label: "Portes-tu des charges dans ton travail ?", options: [
-        { value: "legeres", label: "✅ Non ou très légères (< 5 kg)" },
-        { value: "moyennes", label: "🔸 Parfois (5-15 kg)" },
-        { value: "lourdes", label: "⚠️ Souvent (15-30 kg)" },
-        { value: "tres_lourdes", label: "🚨 Régulièrement (> 30 kg)" },
-      ]},
-      { id: "q_d_repetitif", type: "choice", label: "Fais-tu des gestes répétitifs ?", options: [
-        { value: "non", label: "✅ Non, gestes variés" },
-        { value: "parfois", label: "🔸 Parfois" },
-        { value: "souvent", label: "⚠️ Souvent" },
-        { value: "toute_la_journee", label: "🔄 Oui, quasi toute la journée" },
-      ]},
     ],
   },
   {
     id: "cat-d2", title: "Tes douleurs spécifiques", subtitle: "Pieds, jambes, dos — les zones clés debout", emoji: "🩺",
     color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
     selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
-    requiredQ: ["q_d8", "q_d9", "q_d10", "q_d11", "q_d12", "q_d_coude", "q_d_poignet", "q_d13", "q_d14", "q_d_irradiation", "q_d15", "q_d_varices", "q_d_crampes", "q_d_jambes_nuit"],
+    requiredQ: ["q_d8", "q_d9", "q_d10", "q_d11", "q_d12", "q_d_irradiation", "q_d_jambes_soir", "q_d_varices"],
     questions: [
       { id: "q_d8", type: "painscale", label: "Douleurs pieds / talons", note: "La douleur au talon au premier pas du matin est un signal important — note-le" },
-      { id: "q_d9", type: "painscale", label: "Douleurs genoux" },
-      { id: "q_d10", type: "painscale", label: "Douleurs bas du dos" },
-      { id: "q_d11", type: "painscale", label: "Douleurs mollets / jambes lourdes" },
-      { id: "q_d12", type: "painscale", label: "Douleurs épaules / nuque" },
-      { id: "q_d_coude", type: "painscale", label: "Douleurs coude(s)" },
-      { id: "q_d_poignet", type: "painscale", label: "Douleurs poignet(s) / mains" },
-      { id: "q_d13", type: "choice", label: "Tes douleurs aux pieds/talons se manifestent surtout ?", options: [
+      { id: "q_d13", type: "choice", label: "Tes douleurs aux pieds/talons se manifestent surtout ?", conditional: true, options: [
         { value: "pas", label: "✨ Pas de douleurs aux pieds" },
         { value: "fin_journee", label: "🌆 En fin de journée uniquement" },
         { value: "cours_service", label: "☀️ En cours de service" },
         { value: "premier_pas", label: "🌅 Au premier pas du matin (signal fasciite plantaire)" },
-        { value: "douleur_reveil", label: "😫 Dès le réveil, avant même de se lever" },
+        { value: "lever_et_service", label: "😫 Au lever ET en cours de service" },
         { value: "tout_temps", label: "🔄 Tout le temps" },
       ]},
-      { id: "q_d14", type: "choice", label: "Le soir après le travail, tes jambes sont ?", options: [
-        { value: "normales", label: "✅ Normales, pas de problème" },
-        { value: "lourdes", label: "😐 Un peu lourdes / fatiguées" },
-        { value: "tres_lourdes", label: "😫 Très lourdes, gonflées" },
-        { value: "varices", label: "🔴 Douloureuses avec varices visibles" },
-      ]},
+      { id: "q_d9", type: "painscale", label: "Douleurs genoux" },
+      { id: "q_d10", type: "painscale", label: "Douleurs bas du dos" },
+      { id: "q_d11", type: "painscale", label: "Douleurs mollets / jambes lourdes" },
+      { id: "q_d12", type: "painscale", label: "Douleurs épaules / nuque" },
       { id: "q_d_irradiation", type: "choice", label: "As-tu des douleurs qui irradient dans le bas du dos ou les jambes ?", note: "Une douleur qui descend dans la fesse, la cuisse ou jusqu'au pied peut signaler une compression nerveuse (sciatique, cruralgie)", options: [
         { value: "non", label: "✅ Non, douleurs localisées uniquement" },
         { value: "fesse_cuisse", label: "🔸 Oui, dans la fesse ou la cuisse" },
         { value: "jusqu_genou", label: "😟 Oui, jusqu'au genou" },
         { value: "jusqu_pied", label: "🚨 Oui, jusqu'au pied / aux orteils" },
+      ]},
+      { id: "q_d_jambes_soir", type: "choice", label: "Le soir après le travail, tes jambes sont ?", options: [
+        { value: "bien", label: "✅ Bien, pas de problème" },
+        { value: "lourdes", label: "😐 Un peu lourdes / fatiguées" },
+        { value: "lourdes_gonflees", label: "😫 Lourdes et gonflées" },
+        { value: "douloureuses", label: "🔴 Douloureuses avec varices visibles" },
       ]},
       { id: "q_d_varices", type: "choice", label: "As-tu des varices visibles sur les jambes ?", options: [
         { value: "non", label: "✅ Non" },
@@ -152,33 +180,44 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "varices", label: "⚠️ Varices visibles" },
         { value: "importantes", label: "🔴 Varices importantes et douloureuses" },
       ]},
-      { id: "q_d_crampes", type: "choice", label: "As-tu des crampes dans les jambes la nuit ?", note: "Les crampes nocturnes chez les travailleurs debout sont souvent liées à la déshydratation et aux carences en magnésium", options: [
-        { value: "non", label: "✅ Non, jamais" },
-        { value: "parfois", label: "🔸 Parfois (1-2×/mois)" },
-        { value: "souvent", label: "😟 Souvent (plusieurs fois/semaine)" },
-        { value: "toutes_les_nuits", label: "😫 Presque toutes les nuits" },
-      ]},
-      { id: "q_d_jambes_nuit", type: "choice", label: "La nuit, tes jambes sont-elles agitées ou inconfortables ?", options: [
-        { value: "non", label: "✅ Non, aucun problème" },
-        { value: "parfois", label: "🔸 Parfois une sensation d'inconfort" },
-        { value: "souvent_agitees", label: "😟 Souvent agitées, difficile de rester immobile" },
-        { value: "perturbe_sommeil", label: "😫 Oui, ça perturbe mon sommeil régulièrement" },
-      ]},
-      { id: "q_d15", type: "choice", label: "Depuis combien de temps as-tu ces douleurs ?", options: [
-        { value: "pas", label: "✨ Pas de douleurs" },
-        { value: "jours", label: "📅 Quelques jours" },
-        { value: "semaines", label: "📅 Quelques semaines" },
-        { value: "mois", label: "📅 Plusieurs mois" },
-        { value: "an", label: "⏳ Plus d'un an" },
-      ]},
     ],
   },
   {
-    id: "cat-d3", title: "Tes habitudes au travail", subtitle: "Pauses, mouvement et contraintes", emoji: "⏱️",
+    id: "cat-d3", title: "Habitudes & contraintes", subtitle: "Pauses, charges, gestes répétitifs", emoji: "⏱️",
     color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
     selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
-    requiredQ: ["q_d16", "q_d17", "q_d19", "q_d_protection"],
+    requiredQ: ["q_d_repetitif", "q_d_charges", "q_d16", "q_d17", "q_d19"],
     questions: [
+      { id: "q_d_repetitif", type: "choice", label: "Fais-tu des gestes répétitifs dans ton travail ?", options: [
+        { value: "non", label: "✅ Non, gestes variés" },
+        { value: "parfois", label: "🔸 Parfois" },
+        { value: "souvent", label: "⚠️ Souvent" },
+        { value: "toute_la_journee", label: "🔄 Oui, quasi toute la journée" },
+      ]},
+      { id: "q_d_repetitif_zone", type: "multiselect", label: "Quelles zones sont sollicitées en répétitif ?", conditional: true, options: [
+        { value: "bras_mains", label: "✋ Bras / mains / poignets" },
+        { value: "tronc_dos", label: "🔄 Tronc / dos (torsions)" },
+        { value: "tete_nuque", label: "🔝 Tête / nuque (regard en bas)" },
+      ]},
+      { id: "q_d_coude", type: "painscale", label: "Douleurs coude(s)", conditional: true },
+      { id: "q_d_poignet", type: "painscale", label: "Douleurs poignet(s) / mains", conditional: true },
+      { id: "q_d_charges", type: "choice", label: "Portes-tu des charges dans ton travail ?", options: [
+        { value: "legeres", label: "✅ Non ou très légères (< 5 kg)" },
+        { value: "moyennes", label: "🔸 Parfois (5-15 kg)" },
+        { value: "lourdes", label: "⚠️ Souvent (15-30 kg)" },
+        { value: "tres_lourdes", label: "🚨 Régulièrement (> 30 kg)" },
+      ]},
+      { id: "q_d_charges_freq", type: "choice", label: "À quelle fréquence portes-tu ces charges lourdes ?", conditional: true, options: [
+        { value: "quelques_fois", label: "🔸 Quelques fois par semaine" },
+        { value: "quotidien", label: "⚠️ Tous les jours" },
+        { value: "plusieurs_par_jour", label: "🚨 Plusieurs fois par jour" },
+      ]},
+      { id: "q_d_protection", type: "multiselect", label: "Utilises-tu des équipements de protection ?", conditional: true, note: "Certains EPI ou accessoires peuvent réduire la fatigue et les douleurs", options: [
+        { value: "ceinture", label: "🩹 Ceinture lombaire" },
+        { value: "genouilleres", label: "🦵 Genouillères" },
+        { value: "chaussures_securite", label: "👟 Chaussures de sécurité avec amorti" },
+        { value: "aucun", label: "❌ Aucun équipement", exclusive: true },
+      ]},
       { id: "q_d16", type: "choice", label: "Fais-tu des pauses assises dans la journée ?", options: [
         { value: "regulier", label: "✅ Oui régulièrement (toutes les 2h)" },
         { value: "parfois", label: "🔸 Oui parfois" },
@@ -196,19 +235,13 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "rarement", label: "❌ Rarement, pas le temps" },
         { value: "interdit", label: "🚫 Je ne peux pas boire au poste" },
       ]},
-      { id: "q_d_protection", type: "multiselect", label: "Utilises-tu des équipements ou protections au travail ?", note: "Certains EPI ou accessoires peuvent significativement réduire la fatigue et les douleurs", options: [
-        { value: "ceinture", label: "🩹 Ceinture lombaire" },
-        { value: "genouilleres", label: "🦵 Genouillères" },
-        { value: "chaussures_securite", label: "👟 Chaussures de sécurité avec amorti" },
-        { value: "aucun", label: "❌ Aucun équipement" },
-      ]},
     ],
   },
   {
-    id: "cat-d4", title: "Après le travail", subtitle: "Récupération et ressenti global", emoji: "🌙",
+    id: "cat-d4", title: "Après le travail", subtitle: "Récupération et ressenti physique", emoji: "🌙",
     color: "#a78bfa", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
     selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
-    requiredQ: ["q_d21"],
+    requiredQ: ["q_d_recuperation"],
     questions: [
       { id: "q_d20", type: "multiselect", label: "Que fais-tu après le travail pour récupérer ?", options: [
         { value: "etirements", label: "🧘 Étirements / yoga" },
@@ -218,14 +251,19 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "surelever", label: "🦵 Je surélève les jambes" },
         { value: "compression", label: "🧦 Je porte des chaussettes de compression" },
       ]},
-      { id: "q_d21", type: "wellbeing", label: "Ressenti global en fin de journée ?" },
+      { id: "q_d_recuperation", type: "choice", label: "Comment récupères-tu physiquement après ta journée ?", options: [
+        { value: "bien", label: "✅ Bien — récupéré le lendemain matin" },
+        { value: "partiellement", label: "🔸 Partiellement — encore fatigué le lendemain" },
+        { value: "mal", label: "😐 Mal — la fatigue s'accumule en semaine" },
+        { value: "pas_du_tout", label: "😫 Pas du tout — épuisé en permanence" },
+      ]},
     ],
   },
   {
-    id: "cat-d5", title: "Sommeil & récupération", subtitle: "Qualité du sommeil, heures et récupération nocturne", emoji: "🌙",
+    id: "cat-d5", title: "Sommeil & nuits", subtitle: "Qualité du sommeil et récupération nocturne", emoji: "😴",
     color: "#7dd3fc", colorBg: "rgba(14,165,233,0.08)", colorBorder: "rgba(14,165,233,0.18)",
     selectedBg: "rgba(14,165,233,0.18)", selectedColor: "#7dd3fc",
-    requiredQ: ["q_d_sommeil_heures", "q_d_sommeil_qualite", "q_d_sommeil_recuperation", "q_d_reveil_douleur"],
+    requiredQ: ["q_d_sommeil_qualite", "q_d_crampes", "q_d_jambes_nuit"],
     questions: [
       { id: "q_d_sommeil_heures", type: "slider", label: "Combien d'heures dors-tu par nuit en moyenne ?", min: 5, max: 10, step: 0.5, unit: "h", reference: "⚠️ Moins de 7h = récupération musculaire incomplète pour un métier debout", alwaysAnswered: true },
       { id: "q_d_sommeil_qualite", type: "choice", label: "Quelle est la qualité de ton sommeil ?", options: [
@@ -234,17 +272,17 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "leger", label: "😐 Léger / fragmenté / réveils fréquents" },
         { value: "tres_mauvais", label: "😫 Très mauvais" },
       ]},
-      { id: "q_d_sommeil_recuperation", type: "choice", label: "Te réveilles-tu reposé ?", options: [
-        { value: "bien", label: "✅ Oui, je me sens récupéré" },
-        { value: "partiellement", label: "🔸 Partiellement" },
-        { value: "non", label: "😐 Non, je suis toujours fatigué" },
-        { value: "pire", label: "😫 Je me réveille plus fatigué qu'avant de dormir" },
+      { id: "q_d_crampes", type: "choice", label: "As-tu des crampes dans les jambes la nuit ?", note: "Les crampes nocturnes chez les travailleurs debout sont souvent liées à la déshydratation et aux carences en magnésium", options: [
+        { value: "non", label: "✅ Non, jamais" },
+        { value: "parfois", label: "🔸 Parfois (1-2×/mois)" },
+        { value: "souvent", label: "😟 Souvent (plusieurs fois/semaine)" },
+        { value: "toutes_les_nuits", label: "😫 Presque toutes les nuits" },
       ]},
-      { id: "q_d_reveil_douleur", type: "choice", label: "Te réveilles-tu avec des douleurs physiques ?", options: [
-        { value: "sans_douleur", label: "✅ Non, je me réveille sans douleur" },
-        { value: "raideurs", label: "🔸 Légères raideurs qui passent vite" },
-        { value: "douleurs_jambes", label: "😟 Douleurs aux jambes ou aux pieds au réveil" },
-        { value: "douleurs_importantes", label: "😫 Douleurs importantes qui persistent le matin" },
+      { id: "q_d_jambes_nuit", type: "choice", label: "La nuit, tes jambes sont-elles agitées ou inconfortables ?", options: [
+        { value: "non", label: "✅ Non, aucun problème" },
+        { value: "parfois", label: "🔸 Parfois une sensation d'inconfort" },
+        { value: "souvent_agitees", label: "😟 Souvent agitées, difficile de rester immobile" },
+        { value: "perturbe_sommeil", label: "😫 Oui, ça perturbe mon sommeil régulièrement" },
       ]},
     ],
   },
@@ -281,25 +319,31 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     ],
   },
   {
-    id: "cat-d7", title: "Ton mode de vie", subtitle: "Étirements, activité sportive, suivi médical", emoji: "🏃",
+    id: "cat-d7", title: "Mode de vie actif", subtitle: "Étirements, sport, auto-évaluation et suivi médical", emoji: "🏃",
     color: "#5dcaa5", colorBg: "rgba(93,202,165,0.08)", colorBorder: "rgba(93,202,165,0.18)",
     selectedBg: "rgba(93,202,165,0.18)", selectedColor: "#5dcaa5",
-    requiredQ: ["q_d_etirements_routine", "q_d_consultation"],
+    requiredQ: ["q_d_etirements", "q_d_activite", "q_d_autoevaluation", "q_d_consultation"],
     questions: [
-      { id: "q_d_etirements_routine", type: "choice", label: "Fais-tu des étirements avant ou après le travail ?", options: [
+      { id: "q_d_etirements", type: "choice", label: "Fais-tu des étirements avant ou après le travail ?", options: [
         { value: "quotidienne", label: "✅ Oui, routine quotidienne (> 10 min)" },
         { value: "parfois", label: "🔸 Parfois, quelques étirements" },
         { value: "rarement", label: "❌ Rarement" },
         { value: "jamais", label: "🚫 Jamais — je ne sais pas quoi faire" },
       ]},
-      { id: "q_d_activite_type", type: "multiselect", label: "Quelle activité physique pratiques-tu en dehors du travail ?", options: [
+      { id: "q_d_activite", type: "multiselect", label: "Quelle activité physique pratiques-tu en dehors du travail ?", options: [
         { value: "natation_velo_marche", label: "🏊 Natation / vélo / marche (faible impact)" },
         { value: "yoga_pilates", label: "🧘 Yoga / Pilates / étirements" },
         { value: "musculation", label: "🏋️ Musculation / renforcement" },
         { value: "sport_collectif", label: "⚽ Sport collectif" },
         { value: "course", label: "🏃 Course à pied / sport intensif" },
-        { value: "aucune", label: "❌ Aucune activité en dehors du travail" },
+        { value: "aucune", label: "❌ Aucune activité en dehors du travail", exclusive: true },
       ]},
+      { id: "q_d_activite_intensite", type: "choice", label: "Quelle est l'intensité de ton activité physique hors travail ?", conditional: true, options: [
+        { value: "legere", label: "🚶 Légère (marche, vélo tranquille)" },
+        { value: "moderee", label: "🏃 Modérée (cardio régulier, natation)" },
+        { value: "intense", label: "💪 Intense (sport de compétition, musculation lourde)" },
+      ]},
+      { id: "q_d_autoevaluation", type: "wellbeing", label: "Comment évalues-tu ta santé physique globalement ?", note: "1 = très mauvais état physique · 5 = excellent" },
       { id: "q_d_consultation", type: "choice", label: "As-tu déjà consulté un professionnel de santé pour tes douleurs liées au travail ?", options: [
         { value: "suivi_regulier", label: "✅ Oui, je suis suivi régulièrement" },
         { value: "consulte_une_fois", label: "🔸 Oui, j'ai consulté une fois" },
