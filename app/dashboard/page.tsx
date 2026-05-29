@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -259,57 +259,93 @@ export default function DashboardPage() {
   const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
   const [loading, setLoading] = useState(true);
   const [firstname, setFirstname] = useState("");
+  const [hasBilan, setHasBilan] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const loadData = useCallback(async () => {
-    const supabase = createClient();
-    const { data: { user: u } } = await supabase.auth.getUser();
-    if (!u) { router.replace("/auth"); return; }
-    setUser(u);
-    const authName = (u.user_metadata?.full_name as string | undefined) || u.email?.split("@")[0] || localStorage.getItem("paw_firstname") || "";
-    setFirstname(authName);
+  useEffect(() => {
+    const loadDashboard = async () => {
+      const supabase = createClient();
 
-    const { data: aData, error: aErr } = await supabase
-      .from("assessments").select("*").eq("user_id", u.id)
-      .order("created_at", { ascending: false }).limit(20);
-    console.log("[PAW dashboard] Assessments trouvés:", aData?.length, aErr?.message ?? "");
-    if (aData) { console.log("[PAW dashboard] Premier:", aData[0]); setAssessments(aData); }
+      const { data: { user: u } } = await supabase.auth.getUser();
+      console.log('Dashboard - User:', u?.id, u?.email);
 
-    const today = new Date().toISOString().slice(0, 10);
-    const { data: cData } = await supabase
-      .from("daily_checkins").select("*").eq("user_id", u.id).eq("date", today).maybeSingle();
-    if (cData) {
-      setCheckin(cData);
-      setWaterGlasses(cData.water_goal_met ? 6 : 0);
-      setCheckinSaved(!!cData.id);
-    }
-
-    const weekStart = getWeekStart();
-    const { data: wData } = await supabase
-      .from("daily_checkins").select("*").eq("user_id", u.id)
-      .gte("date", weekStart).lte("date", today).order("date", { ascending: true });
-    if (wData) setWeeklyCheckins(wData);
-
-    const { data: allC } = await supabase
-      .from("daily_checkins").select("date").eq("user_id", u.id)
-      .order("date", { ascending: false }).limit(30);
-    if (allC) {
-      let s = 0;
-      const now = new Date();
-      for (let i = 0; i < allC.length; i++) {
-        const exp = new Date(now);
-        exp.setDate(now.getDate() - i);
-        if (allC[i].date === exp.toISOString().slice(0, 10)) s++;
-        else break;
+      if (!u) {
+        console.log('Dashboard - Pas connecté');
+        router.replace("/auth");
+        setLoading(false);
+        return;
       }
-      setStreak(s);
-    }
 
-    setLoading(false);
-  }, [router]);
+      setUser(u);
+      const firstName =
+        (u.user_metadata?.full_name as string | undefined)?.split(' ')[0] ||
+        (u.user_metadata?.name as string | undefined)?.split(' ')[0] ||
+        localStorage.getItem('paw_firstname') ||
+        u.email?.split('@')[0] ||
+        '';
+      setFirstname(firstName);
 
-  useEffect(() => { loadData(); }, [loadData]);
+      const { data: assessmentsData, error } = await supabase
+        .from('assessments')
+        .select('*')
+        .eq('user_id', u.id)
+        .order('created_at', { ascending: false });
+
+      console.log('Dashboard - Assessments:', assessmentsData);
+      console.log('Dashboard - Erreur:', error);
+
+      if (error) {
+        console.error('Erreur lecture assessments:', error);
+        setLoading(false);
+        return;
+      }
+
+      if (assessmentsData && assessmentsData.length > 0) {
+        console.log('Dashboard - Dernier bilan:', assessmentsData[0]);
+        setAssessments(assessmentsData);
+        setHasBilan(true);
+      } else {
+        console.log('Dashboard - Aucun bilan trouvé');
+        setHasBilan(false);
+      }
+
+      const today = new Date().toISOString().slice(0, 10);
+      const { data: cData } = await supabase
+        .from("daily_checkins").select("*").eq("user_id", u.id).eq("date", today).maybeSingle();
+      if (cData) {
+        setCheckin(cData);
+        setWaterGlasses(cData.water_goal_met ? 6 : 0);
+        setCheckinSaved(!!cData.id);
+      }
+
+      const weekStart = getWeekStart();
+      const { data: wData } = await supabase
+        .from("daily_checkins").select("*").eq("user_id", u.id)
+        .gte("date", weekStart).lte("date", today).order("date", { ascending: true });
+      if (wData) setWeeklyCheckins(wData);
+
+      const { data: allC } = await supabase
+        .from("daily_checkins").select("date").eq("user_id", u.id)
+        .order("date", { ascending: false }).limit(30);
+      if (allC) {
+        let s = 0;
+        const now = new Date();
+        for (let i = 0; i < allC.length; i++) {
+          const exp = new Date(now);
+          exp.setDate(now.getDate() - i);
+          if (allC[i].date === exp.toISOString().slice(0, 10)) s++;
+          else break;
+        }
+        setStreak(s);
+      }
+
+      setLoading(false);
+    };
+
+    loadDashboard();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function deleteAccount() {
     if (!user) return;
@@ -447,7 +483,7 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* No assessment state */}
-        {!latest && (
+        {!hasBilan && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{
             borderRadius: 22, padding: "28px 24px", textAlign: "center",
             background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)",
