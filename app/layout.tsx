@@ -3,6 +3,7 @@ import { Nunito, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import CookieBanner from "@/components/CookieBanner";
+import { Analytics } from "@vercel/analytics/react";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -40,6 +41,7 @@ export default function RootLayout({
         <Navbar />
         {children}
         <CookieBanner />
+        <Analytics />
       </body>
     </html>
   );
