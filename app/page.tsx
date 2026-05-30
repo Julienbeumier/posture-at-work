@@ -72,6 +72,36 @@ const pillars = [
   },
 ];
 
+const TESTIMONIALS = [
+  {
+    initials: "MA",
+    color: "#2b5ce6",
+    nom: "Marie A.",
+    role: "UX Designer · Paris",
+    emoji: "💻",
+    texte: "En 3 semaines j'ai arrêté d'avoir mal au cou. Juste en suivant les reco PAW — sans rien acheter de plus.",
+    score: "38 → 71 pts",
+  },
+  {
+    initials: "SL",
+    color: "#d4622a",
+    nom: "Sophie L.",
+    role: "Caissière · Lyon",
+    emoji: "🏪",
+    texte: "Je travaille en caisse depuis 8 ans. PAW m'a fait réaliser que mes douleurs aux pieds venaient de mes chaussures. Changement de semelles + tapis = fini les douleurs.",
+    score: "29 → 58 pts",
+  },
+  {
+    initials: "RD",
+    color: "#2d6a4f",
+    nom: "Romain D.",
+    role: "Responsable RH · Bordeaux",
+    emoji: "🏢",
+    texte: "J'ai fait faire le bilan PAW à toute mon équipe. En un mois, les plaintes de dos ont diminué de moitié.",
+    score: "Équipe de 12",
+  },
+];
+
 const stats = [
   { value: "5min", label: "pour ton bilan complet" },
   { value: "360°", label: "analyse corps & environnement" },
@@ -478,70 +508,81 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* ── TESTIMONIAL ── */}
-      <section style={{ position: "relative", zIndex: 1, maxWidth: 700, margin: "0 auto 80px", padding: "0 24px" }}>
-        <motion.div
-          {...fadeUp(0)}
-          style={{
-            padding: "36px 32px",
-            borderRadius: 22,
-            background: "rgba(255,255,255,0.03)",
-            border: "0.5px solid rgba(255,255,255,0.07)",
-          }}
-        >
-          <div
-            style={{
-              fontFamily: "Georgia, serif",
-              fontSize: 40,
-              color: "#2b5ce6",
-              lineHeight: 1,
-              marginBottom: 16,
-            }}
-          >
-            "
-          </div>
-          <p
-            style={{
-              fontFamily: T.b,
-              fontSize: 16,
-              lineHeight: 1.7,
-              color: "rgba(220,220,245,0.88)",
-              marginBottom: 20,
-              fontStyle: "italic",
-            }}
-          >
-            En 5 minutes j'ai compris pourquoi j'avais mal au dos depuis 6 mois.
-            Mon écran était trop bas et je travaillais depuis mon canapé le soir.
-            Deux ajustements simples, la douleur a disparu en 2 semaines.
+      {/* ── TESTIMONIALS ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto 80px", padding: "0 24px" }}>
+        <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 40 }}>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "#f0f0fa", letterSpacing: "-0.5px", marginBottom: 10 }}>
+            Ils ont changé leurs habitudes
+          </h2>
+          <p style={{ color: "rgba(220,220,245,0.50)", fontFamily: T.b, fontSize: 14 }}>
+            Des résultats concrets, en quelques semaines.
           </p>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div
+        </motion.div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
+          {TESTIMONIALS.map((t, i) => (
+            <motion.div
+              key={i}
+              {...fadeUp(i * 0.1)}
               style={{
-                width: 38,
-                height: 38,
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #2b5ce6, #7c9fff)",
+                padding: "24px",
+                borderRadius: 18,
+                background: "rgba(255,255,255,0.03)",
+                border: "0.5px solid rgba(255,255,255,0.07)",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                fontFamily: T.h,
-                fontWeight: 800,
-                fontSize: 13,
+                flexDirection: "column",
+                gap: 16,
               }}
             >
-              MA
-            </div>
-            <div>
-              <p style={{ color: "#f0f0fa", fontFamily: T.h, fontWeight: 700, fontSize: 14 }}>
-                Marie A.
-              </p>
-              <p style={{ color: "rgba(220,220,245,0.40)", fontFamily: T.b, fontSize: 12 }}>
-                UX Designer · Paris
-              </p>
-            </div>
-          </div>
-        </motion.div>
+              {/* Quote + text */}
+              <div style={{ position: "relative" }}>
+                <span style={{ fontFamily: "Georgia, serif", fontSize: 48, color: t.color, lineHeight: 1, opacity: 0.7, display: "block", marginBottom: 4 }}>
+                  &ldquo;
+                </span>
+                <p style={{ fontFamily: T.b, fontSize: 14, lineHeight: 1.7, color: "rgba(220,220,245,0.82)", fontStyle: "italic" }}>
+                  {t.texte}
+                </p>
+              </div>
+
+              {/* Author */}
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{
+                  width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
+                  background: `${t.color}22`, border: `1.5px solid ${t.color}55`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: t.color, fontFamily: T.h, fontWeight: 800, fontSize: 12,
+                }}>
+                  {t.initials}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ color: "#f0f0fa", fontFamily: T.h, fontWeight: 700, fontSize: 13 }}>
+                    {t.nom} <span style={{ fontSize: 14 }}>{t.emoji}</span>
+                  </p>
+                  <p style={{ color: "rgba(220,220,245,0.38)", fontFamily: T.b, fontSize: 11 }}>
+                    {t.role}
+                  </p>
+                </div>
+              </div>
+
+              {/* Score badge */}
+              <div>
+                <span style={{
+                  display: "inline-block",
+                  padding: "4px 12px",
+                  borderRadius: 100,
+                  background: `${t.color}18`,
+                  border: `1px solid ${t.color}35`,
+                  color: t.color,
+                  fontFamily: T.h,
+                  fontWeight: 700,
+                  fontSize: 11,
+                }}>
+                  Score : {t.score}
+                </span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </section>
 
       {/* ── BOTTOM CTA ── */}
