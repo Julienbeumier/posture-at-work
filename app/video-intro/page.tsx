@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const BUREAU_PHASES = [
   {
@@ -38,29 +39,52 @@ const BUREAU_PHASES = [
 const DEBOUT_STEPS = [
   {
     icon: "📱",
-    title: "Pose ton téléphone sur le côté",
-    desc: "Appuie-le contre un support pour qu'on te voie de la tête aux genoux",
+    title: "Place ton téléphone à 2-3m de toi, à hauteur de taille",
+    desc: "Appuie-le contre un support stable pour cadrer ton corps en entier",
   },
   {
-    icon: "🎧",
-    title: "Mets tes écouteurs",
-    desc: "Tu vas recevoir des instructions vocales en direct pendant la capture",
+    icon: "🧍",
+    title: "Prends ta vraie position de travail debout",
+    desc: "Installe-toi comme tu le ferais naturellement devant ton poste",
   },
   {
-    icon: "🎯",
-    title: "Suis les instructions vocales",
-    desc: "L'IA t'guide étape par étape — reste naturel, c'est volontaire",
+    icon: "🎥",
+    title: "On filme 40 secondes — reste naturel",
+    desc: "Tu recevras des instructions vocales en direct, pas besoin de bouger",
   },
 ];
 
+const DEBOUT_ANALYSES = [
+  "Alignement colonne en station debout",
+  "Appui symétrique sur les deux jambes",
+  "Position épaules et nuque",
+  "Posture globale et compensations",
+  "Position pieds et hanches",
+];
+
 export default function VideoIntroPage() {
+  const router = useRouter();
   const [jobType, setJobType] = useState<string>("bureau");
 
   useEffect(() => {
-    setJobType(localStorage.getItem("paw_job_type") ?? "bureau");
+    const lsType = localStorage.getItem("paw_job_type");
+    let scoresType: string | null = null;
+    try {
+      const scores = JSON.parse(sessionStorage.getItem("postureatwork_scores") || "{}");
+      if (scores.job_type) scoresType = scores.job_type;
+    } catch {}
+    console.log("video-intro job_type:", lsType);
+    console.log("scores job_type:", scoresType);
+    const effective = scoresType ?? lsType ?? "bureau";
+    setJobType(effective);
   }, []);
 
   const isBureau = jobType === "bureau";
+
+  function goToCapture() {
+    sessionStorage.setItem("paw_video_job_type", jobType);
+    router.push("/video-capture");
+  }
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] flex flex-col">
@@ -127,14 +151,14 @@ export default function VideoIntroPage() {
           ) : (
             <>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-3">
-                Ton score est bon —{" "}
+                Analyse posturale IA —{" "}
                 <span style={{ background: "linear-gradient(135deg, #a78bfa, #60a5fa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                  mais ton corps raconte autre chose.
+                  Profil debout
                 </span>
               </h1>
               <p className="text-slate-400 text-base leading-relaxed max-w-md mx-auto">
-                Notre IA va analyser ta posture réelle en{" "}
-                <strong className="text-white">60 secondes</strong> et générer un rapport personnalisé.
+                Notre IA va analyser ta posture en{" "}
+                <strong className="text-white">40 secondes</strong> et générer un rapport personnalisé.
               </p>
             </>
           )}
@@ -199,13 +223,14 @@ export default function VideoIntroPage() {
             </motion.div>
           </motion.div>
         ) : (
-          /* Debout/other: simple steps */
+          /* Debout: steps + analyses */
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
             className="w-full space-y-3 mb-10"
           >
+            <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-4">Comment ça marche</p>
             {DEBOUT_STEPS.map((step, i) => (
               <motion.div
                 key={i}
@@ -213,7 +238,7 @@ export default function VideoIntroPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 + i * 0.1 }}
                 className="flex items-start gap-4 rounded-2xl px-5 py-4"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
+                style={{ background: "rgba(167,139,250,0.08)", border: "1px solid rgba(167,139,250,0.2)" }}
               >
                 <span className="text-2xl flex-shrink-0 mt-0.5">{step.icon}</span>
                 <div>
@@ -222,6 +247,23 @@ export default function VideoIntroPage() {
                 </div>
               </motion.div>
             ))}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55 }}
+              className="rounded-2xl px-5 py-4"
+              style={{ background: "rgba(167,139,250,0.06)", border: "1px solid rgba(167,139,250,0.15)" }}
+            >
+              <p className="text-xs font-semibold mb-2" style={{ color: "rgba(167,139,250,0.8)" }}>Ce qu&apos;on analyse :</p>
+              <div className="flex flex-wrap gap-1.5">
+                {DEBOUT_ANALYSES.map(a => (
+                  <span key={a} className="text-xs px-2.5 py-1 rounded-full"
+                    style={{ background: "rgba(167,139,250,0.12)", color: "rgba(220,220,245,0.7)", border: "1px solid rgba(167,139,250,0.2)" }}>
+                    {a}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
           </motion.div>
         )}
 
@@ -232,18 +274,17 @@ export default function VideoIntroPage() {
           transition={{ delay: 0.55 }}
           className="w-full"
         >
-          <Link href="/video-capture">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
-              className="w-full py-4 rounded-2xl font-bold text-white text-base"
-              style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)", boxShadow: "0 0 40px rgba(124,58,237,0.4)" }}
-            >
-              Commencer l&apos;analyse →
-            </motion.button>
-          </Link>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={goToCapture}
+            className="w-full py-4 rounded-2xl font-bold text-white text-base"
+            style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)", boxShadow: "0 0 40px rgba(124,58,237,0.4)" }}
+          >
+            Commencer l&apos;analyse →
+          </motion.button>
           <p className="text-center text-slate-600 text-xs mt-3">
-            {isBureau ? "Phase 1 sur 2 — Analyse posture" : "Caméra requise · 60 secondes · Résultats immédiats"}
+            {isBureau ? "Phase 1 sur 2 — Analyse posture" : "Caméra requise · 40 secondes · Résultats immédiats"}
           </p>
         </motion.div>
 

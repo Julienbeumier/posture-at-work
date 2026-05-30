@@ -121,7 +121,9 @@ export default function VideoCapturePage() {
   const [isBureau, setIsBureau] = useState(false);
 
   useEffect(() => {
-    const jt = localStorage.getItem("paw_job_type") ?? "bureau";
+    const jt = sessionStorage.getItem("paw_video_job_type")
+      ?? localStorage.getItem("paw_job_type")
+      ?? "bureau";
     jobTypeRef.current = jt;
     setIsBureau(jt === "bureau");
   }, []);
