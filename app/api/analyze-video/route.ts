@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import type { AnalysisReport } from "@/lib/analysis-types";
+import type { AnalysisReport, PersonneAnalysis, PosteAnalysis } from "@/lib/analysis-types";
 
 // ─── System prompt ────────────────────────────────────────────────────────────
 
@@ -267,6 +267,197 @@ function buildFallbackReport(): AnalysisReport {
   };
 }
 
+// ─── New dual-analysis prompts ────────────────────────────────────────────────
+
+const PERSONNE_PROMPT = `Tu es un expert en ergonomie et kinésithérapie.
+Tu analyses la posture d'un travailleur de bureau assis.
+
+Analyse dans cet ordre :
+
+1. POSTURE TÊTE ET COU
+   - Position de la tête (neutre, antépulsion, inclinaison)
+   - Tension visible dans le cou et les trapèzes
+   - Angle de vision par rapport à l'écran estimé
+
+2. ÉPAULES ET HAUT DU DOS
+   - Alignement des épaules (niveau, enroulées, surélevées)
+   - Cyphose thoracique (dos rond visible)
+   - Position des omoplates
+
+3. BAS DU DOS ET BASSIN
+   - Lordose lombaire (creusée, effacée, normale)
+   - Bascule du bassin (antéversion, rétroversion)
+   - Contact avec le dossier de la chaise
+
+4. MEMBRES SUPÉRIEURS
+   - Position des coudes (angle, hauteur par rapport au bureau)
+   - Position des poignets (flexion, extension, déviation)
+   - Tension visible dans les avant-bras
+
+5. MEMBRES INFÉRIEURS
+   - Position des genoux (angle approximatif)
+   - Position des pieds (à plat, croisés, en l'air)
+   - Contact avec le sol
+
+6. RISQUES TMS IDENTIFIÉS
+   Lister chaque risque avec zone + sévérité + conséquence
+
+7. RECOMMANDATIONS POSTURE
+   3 corrections posturales prioritaires
+
+Réponds en JSON :
+{
+  "analysisType": "personne",
+  "globalPostureScore": number (0-100),
+  "segments": {
+    "tete_cou": { "score": number, "issues": [string], "note": string },
+    "epaules_dos_haut": { "score": number, "issues": [string], "note": string },
+    "bas_dos_bassin": { "score": number, "issues": [string], "note": string },
+    "membres_superieurs": { "score": number, "issues": [string], "note": string },
+    "membres_inferieurs": { "score": number, "issues": [string], "note": string }
+  },
+  "mainIssues": [
+    {
+      "zone": string,
+      "issue": string,
+      "severity": "faible" | "modéré" | "élevé",
+      "consequence": string
+    }
+  ],
+  "positivePoints": [string],
+  "recommendations": [
+    {
+      "priority": number,
+      "action": string,
+      "why": string,
+      "immediat": boolean
+    }
+  ],
+  "overallAssessment": string
+}
+Retourne UNIQUEMENT le JSON valide, sans texte avant ou après, sans markdown.`;
+
+const POSTE_PROMPT = `Tu es un expert en ergonomie du poste de travail bureau.
+Tu analyses un setup de bureau depuis une photo/vidéo.
+
+Analyse dans cet ordre :
+
+1. ÉCRAN
+   - Hauteur estimée (trop bas, correct, trop haut)
+   - Distance estimée (trop proche, correcte, trop loin)
+   - Inclinaison visible
+   - Présence de reflets/contre-jour
+   - Laptop seul ou écran externe
+
+2. CLAVIER ET SOURIS
+   - Distance du bord du bureau
+   - Alignement avec les épaules
+   - Présence d'un repose-poignets
+   - Type de souris (standard, verticale, trackpad)
+
+3. CHAISE
+   - Hauteur estimée par rapport au bureau
+   - Présence et utilisation du dossier
+   - Présence d'accoudoirs
+   - Type de chaise (ergonomique, standard, autre)
+
+4. ORGANISATION DU BUREAU
+   - Encombrement (espace suffisant / trop chargé)
+   - Position du téléphone / documents
+   - Éclairage ambiant
+   - Présence d'un repose-pieds visible
+
+5. DISTANCES ET ANGLES CRITIQUES
+   - Écran à hauteur des yeux : oui/non/estimé
+   - Coudes à 90° possible : oui/non
+   - Pieds au sol possible : oui/non
+
+Réponds en JSON :
+{
+  "analysisType": "poste",
+  "globalSetupScore": number (0-100),
+  "elements": {
+    "ecran": {
+      "score": number,
+      "hauteur": "trop_bas" | "correct" | "trop_haut",
+      "distance": "trop_proche" | "correcte" | "trop_loin",
+      "type": "laptop_seul" | "ecran_externe" | "double_ecran",
+      "issues": [string]
+    },
+    "clavier_souris": { "score": number, "issues": [string], "repose_poignets": boolean | null },
+    "chaise": { "score": number, "type": string, "issues": [string], "accoudoirs": boolean | null },
+    "organisation": { "score": number, "issues": [string], "eclairage": "bon" | "moyen" | "mauvais" }
+  },
+  "mainIssues": [
+    {
+      "element": string,
+      "issue": string,
+      "severity": "faible" | "modéré" | "élevé",
+      "fix": string
+    }
+  ],
+  "positivePoints": [string],
+  "recommendations": [
+    {
+      "priority": number,
+      "action": string,
+      "why": string,
+      "cost": "gratuit" | "< 30€" | "30-100€" | "> 100€"
+    }
+  ],
+  "overallAssessment": string
+}
+Retourne UNIQUEMENT le JSON valide, sans texte avant ou après, sans markdown.`;
+
+// ─── Fallbacks for dual-analysis ─────────────────────────────────────────────
+
+function buildFallbackPersonne(): PersonneAnalysis {
+  return {
+    analysisType: "personne",
+    globalPostureScore: 55,
+    segments: {
+      tete_cou: { score: 50, issues: ["Légère antépulsion de la tête"], note: "Position avancée typique du travail sur écran." },
+      epaules_dos_haut: { score: 55, issues: ["Épaules légèrement enroulées vers l'avant"], note: "Tendance à la cyphose thoracique." },
+      bas_dos_bassin: { score: 60, issues: ["Lordose lombaire partiellement effacée"], note: "Bassin en légère rétroversion." },
+      membres_superieurs: { score: 65, issues: ["Coudes légèrement élevés par rapport au bureau"], note: "Hauteur de chaise à ajuster." },
+      membres_inferieurs: { score: 70, issues: [], note: "Position des membres inférieurs correcte." },
+    },
+    mainIssues: [
+      { zone: "Tête & cou", issue: "Antépulsion cervicale", severity: "modéré", consequence: "Tension nuque et céphalées de tension" },
+    ],
+    positivePoints: ["Appui dorsal présent", "Position des pieds correcte"],
+    recommendations: [
+      { priority: 1, action: "Corriger la position de la tête", why: "Réduire la tension cervicale chronique", immediat: true },
+      { priority: 2, action: "Ajuster la hauteur de l'écran", why: "Supprimer la flexion du cou", immediat: false },
+      { priority: 3, action: "Renforcer les muscles du dos", why: "Lutter contre l'affaissement progressif", immediat: false },
+    ],
+    overallAssessment: "Posture typique d'un travailleur de bureau avec quelques compensations à corriger pour prévenir les douleurs chroniques.",
+  };
+}
+
+function buildFallbackPoste(): PosteAnalysis {
+  return {
+    analysisType: "poste",
+    globalSetupScore: 58,
+    elements: {
+      ecran: { score: 50, hauteur: "trop_bas", distance: "correcte", type: "laptop_seul", issues: ["Écran trop bas — force la flexion cervicale"] },
+      clavier_souris: { score: 65, issues: ["Absence de repose-poignets visible"], repose_poignets: false },
+      chaise: { score: 60, type: "standard", issues: ["Dossier peu ajustable"], accoudoirs: null },
+      organisation: { score: 60, issues: ["Bureau légèrement encombré"], eclairage: "moyen" },
+    },
+    mainIssues: [
+      { element: "Écran", issue: "Hauteur insuffisante", severity: "élevé", fix: "Rehausser l'écran avec un support" },
+    ],
+    positivePoints: ["Espace de travail disponible", "Éclairage naturel présent"],
+    recommendations: [
+      { priority: 1, action: "Rehausser l'écran", why: "Prévenir les douleurs cervicales", cost: "< 30€" },
+      { priority: 2, action: "Ajouter un repose-poignets", why: "Prévenir le syndrome du canal carpien", cost: "< 30€" },
+      { priority: 3, action: "Régler la hauteur de la chaise", why: "Aligner coudes et plan de travail", cost: "gratuit" },
+    ],
+    overallAssessment: "Setup avec plusieurs améliorations simples à apporter pour une ergonomie optimale.",
+  };
+}
+
 // ─── Job-type specific prompts ────────────────────────────────────────────────
 
 const JOB_SYSTEM_PROMPTS: Record<string, string> = {
@@ -318,99 +509,119 @@ Retourne le même JSON que demandé.`,
 
 // ─── Route handler ────────────────────────────────────────────────────────────
 
+function toImageBlock(dataUrl: string): Anthropic.ImageBlockParam {
+  const data = dataUrl.includes(",") ? dataUrl.split(",")[1] : dataUrl;
+  return { type: "image", source: { type: "base64", media_type: "image/jpeg", data } };
+}
+
+function parseJSON(text: string) {
+  let raw = text.trim();
+  if (raw.startsWith("```")) {
+    raw = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
+  }
+  return JSON.parse(raw);
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const {
+      frames,
       frames_posture,
       frames_bureau,
       questionnaire_scores,
       questionnaire_answers,
     } = body as {
-      frames_posture: string[];
-      frames_bureau: string[];
+      frames?: string[];
+      frames_posture?: string[];
+      frames_bureau?: string[];
       questionnaire_scores: Record<string, number> | null;
       questionnaire_answers: Record<string, unknown>;
-      job_type?: string;
     };
 
+    const analysisType = (body as { analysisType?: string }).analysisType;
     const jobType = (body as { job_type?: string }).job_type ?? "bureau";
-    const activePrompt = JOB_SYSTEM_PROMPTS[jobType] ?? SYSTEM_PROMPT;
 
-    // Validate frames
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const contextText = `Contexte questionnaire :\nScores : ${JSON.stringify(questionnaire_scores ?? {})}\nRéponses : ${JSON.stringify(questionnaire_answers ?? {})}`;
+
+    // ── New dual-analysis mode ──────────────────────────────────────────────
+    if (analysisType === "personne") {
+      const frameList = frames ?? frames_posture ?? [];
+      if (!frameList.length) return NextResponse.json(buildFallbackPersonne());
+      if (!apiKey) return NextResponse.json(buildFallbackPersonne());
+
+      const client = new Anthropic({ apiKey });
+      const msg = await client.messages.create({
+        model: "claude-sonnet-4-5",
+        max_tokens: 3000,
+        system: PERSONNE_PROMPT,
+        messages: [{
+          role: "user",
+          content: [
+            ...frameList.slice(0, 4).map(toImageBlock),
+            { type: "text", text: `${contextText}\n\nAnalyse les ${frameList.length} photos de posture assise.` },
+          ],
+        }],
+      });
+      const textBlock = msg.content.find(b => b.type === "text");
+      if (!textBlock || textBlock.type !== "text") return NextResponse.json(buildFallbackPersonne());
+      const result: PersonneAnalysis = parseJSON(textBlock.text);
+      return NextResponse.json(result);
+    }
+
+    if (analysisType === "poste") {
+      const frameList = frames ?? frames_bureau ?? [];
+      if (!frameList.length) return NextResponse.json(buildFallbackPoste());
+      if (!apiKey) return NextResponse.json(buildFallbackPoste());
+
+      const client = new Anthropic({ apiKey });
+      const msg = await client.messages.create({
+        model: "claude-sonnet-4-5",
+        max_tokens: 3000,
+        system: POSTE_PROMPT,
+        messages: [{
+          role: "user",
+          content: [
+            ...frameList.slice(0, 4).map(toImageBlock),
+            { type: "text", text: `${contextText}\n\nAnalyse le setup de bureau visible sur ces images.` },
+          ],
+        }],
+      });
+      const textBlock = msg.content.find(b => b.type === "text");
+      if (!textBlock || textBlock.type !== "text") return NextResponse.json(buildFallbackPoste());
+      const result: PosteAnalysis = parseJSON(textBlock.text);
+      return NextResponse.json(result);
+    }
+
+    // ── Legacy single-analysis mode ─────────────────────────────────────────
     if (!frames_posture?.length || !frames_bureau?.length) {
       return NextResponse.json({ error: "Frames manquantes" }, { status: 400 });
     }
+    if (!apiKey) return NextResponse.json(buildFallbackReport());
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      // Return fallback if API key not configured
-      return NextResponse.json(buildFallbackReport());
-    }
-
+    const activePrompt = JOB_SYSTEM_PROMPTS[jobType] ?? SYSTEM_PROMPT;
     const client = new Anthropic({ apiKey });
-
-    // Build image content blocks (strip data URL prefix)
-    function toImageBlock(
-      dataUrl: string
-    ): Anthropic.ImageBlockParam {
-      const data = dataUrl.includes(",") ? dataUrl.split(",")[1] : dataUrl;
-      return {
-        type: "image",
-        source: {
-          type: "base64",
-          media_type: "image/jpeg",
-          data,
-        },
-      };
-    }
-
     const imageBlocks: Anthropic.ImageBlockParam[] = [
       ...frames_posture.slice(0, 4).map(toImageBlock),
       ...frames_bureau.slice(0, 2).map(toImageBlock),
     ];
-
-    const userText = `
-Contexte questionnaire :
-Scores : ${JSON.stringify(questionnaire_scores ?? {})}
-Réponses : ${JSON.stringify(questionnaire_answers ?? {})}
-
-Analyse les ${frames_posture.length} photos de profil et les ${frames_bureau.length} photos de bureau.
-Génère le rapport JSON complet comme demandé.
-    `.trim();
+    const userText = `${contextText}\n\nAnalyse les ${frames_posture.length} photos de profil et les ${frames_bureau.length} photos de bureau.\nGénère le rapport JSON complet comme demandé.`;
 
     const message = await client.messages.create({
       model: "claude-sonnet-4-5",
       max_tokens: 4096,
       system: activePrompt,
-      messages: [
-        {
-          role: "user",
-          content: [
-            ...imageBlocks,
-            { type: "text", text: userText },
-          ],
-        },
-      ],
+      messages: [{ role: "user", content: [...imageBlocks, { type: "text", text: userText }] }],
     });
 
-    // Extract text content
-    const textBlock = message.content.find((b) => b.type === "text");
-    if (!textBlock || textBlock.type !== "text") {
-      return NextResponse.json(buildFallbackReport());
-    }
+    const textBlock = message.content.find(b => b.type === "text");
+    if (!textBlock || textBlock.type !== "text") return NextResponse.json(buildFallbackReport());
 
-    // Parse JSON — Claude may wrap in ```json ... ```
-    let raw = textBlock.text.trim();
-    if (raw.startsWith("```")) {
-      raw = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
-    }
-
-    const report: AnalysisReport = JSON.parse(raw);
+    const report: AnalysisReport = parseJSON(textBlock.text);
     return NextResponse.json(report);
   } catch (err) {
     console.error("[analyze-video] error:", err);
-    // Return graceful fallback instead of hard error
     return NextResponse.json(buildFallbackReport());
   }
 }
