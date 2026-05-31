@@ -871,6 +871,20 @@ export default function ResultsPage() {
           </Link>
         </motion.div>
 
+        {/* ── PDF DOWNLOAD ── */}
+        <div
+          onClick={() => router.push("/rapport-pdf")}
+          style={{
+            padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
+            background: "linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.15))",
+            border: "1px solid rgba(99,102,241,0.3)",
+            fontFamily: T.b, fontWeight: 700, fontSize: 14, color: "#a5b4fc",
+            marginBottom: 10,
+          }}
+        >
+          📄 Télécharger mon rapport PDF
+        </div>
+
         {/* ── BOTTOM ACTIONS ── */}
         <div style={{ display: "flex", gap: 10 }}>
           <Link href="/questionnaire" style={{ textDecoration: "none", flex: 1 }}>
