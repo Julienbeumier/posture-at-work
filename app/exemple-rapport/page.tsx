@@ -311,7 +311,7 @@ export default function ExempleRapportPage() {
 
       {/* ── BANDEAU EXEMPLE ── */}
       <div style={{
-        position: "sticky", top: 0, zIndex: 100,
+        position: "sticky", top: 0, zIndex: 40,
         padding: "10px 24px",
         background: "rgba(43,92,230,0.15)",
         borderBottom: "0.5px solid rgba(43,92,230,0.25)",

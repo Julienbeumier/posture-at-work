@@ -593,25 +593,24 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   if (protection.includes("aucun")) habits = clamp(habits - 10);
 
   // ── sleep_energy (12%) ───────────────────────────────────────────────────
-  let sleep_energy = 70;
-  const hDebout = a["q_d4"] as number ?? 7;
-  if (hDebout >= 8) sleep_energy -= 20;
+  let sleep_energy = 100;
 
-  const heuresSommeil = a["q_d_sommeil_heures"] as number ?? 7;
-  if (heuresSommeil < 6) sleep_energy -= 20;
-  else if (heuresSommeil >= 8) sleep_energy += 5;
+  const heuresSommeil = (a["q_d_sommeil_heures"] as number) || 7;
+  if (heuresSommeil < 6) sleep_energy -= 35;
+  else if (heuresSommeil < 7) sleep_energy -= 20;
+  else if (heuresSommeil >= 9) sleep_energy -= 5;
 
-  const qualiteMap: Record<string, number> = { profond: 15, correct: 5, leger: -15, tres_mauvais: -30 };
-  sleep_energy += qualiteMap[a["q_d_sommeil_qualite"] as string] ?? 0;
+  const qualite = a["q_d_sommeil_qualite"] as string;
+  if (qualite === "epuise" || qualite === "courbature") sleep_energy -= 30;
+  else if (qualite === "fatigue") sleep_energy -= 15;
 
-  const crampesMap: Record<string, number> = { non: 10, parfois: 0, souvent: -20, toutes_les_nuits: -35 };
-  sleep_energy += crampesMap[a["q_d_crampes"] as string] ?? 0;
+  const crampes = a["q_d_crampes"] as string;
+  if (crampes === "souvent") sleep_energy -= 20;
+  else if (crampes === "parfois") sleep_energy -= 8;
 
-  const jambesnuitMap: Record<string, number> = { non: 0, parfois: -5, souvent_agitees: -25, perturbe_sommeil: -35 };
-  sleep_energy += jambesnuitMap[a["q_d_jambes_nuit"] as string] ?? 0;
-
-  const recuperationMap: Record<string, number> = { bien: 10, partiellement: 0, mal: -15, pas_du_tout: -30 };
-  sleep_energy += recuperationMap[a["q_d_recuperation"] as string] ?? 0;
+  const jambesnuit = a["q_d_jambes_nuit"] as string;
+  if (jambesnuit === "souvent") sleep_energy -= 15;
+  else if (jambesnuit === "parfois") sleep_energy -= 5;
 
   sleep_energy = clamp(sleep_energy);
 

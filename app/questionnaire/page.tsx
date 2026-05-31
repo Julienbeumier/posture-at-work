@@ -960,6 +960,8 @@ export default function QuestionnairePage() {
   const [firstname, setFirstname] = useState<string>("");
 
   useEffect(() => {
+    localStorage.removeItem("paw_example_mode");
+    sessionStorage.removeItem("paw_example_mode");
     setJobType(localStorage.getItem("paw_job_type") ?? "bureau");
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
   }, []);
