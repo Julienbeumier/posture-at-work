@@ -323,7 +323,7 @@ export const PRODUCTS: Record<string, Product> = {
     id: "balle_massage",
     name: "Balle de massage BLACKROLL",
     reason: "Libère les points de tension dans les épaules et la nuque en quelques minutes — à garder sur son bureau",
-    url: "https://amzn.to/4fiSsWh",
+    url: "https://amzn.to/3Rk6nS1",
     priority: "moyenne",
     dimension: ["douleurs"],
     triggers: ["q6 >= 2", "q7 >= 2"],

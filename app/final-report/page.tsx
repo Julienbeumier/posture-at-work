@@ -484,7 +484,7 @@ export default function FinalReportPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {products.map((product, i) => {
                   const pCfg = PRIORITY_COLOR[product.priority] ?? PRIORITY_COLOR.optionnel;
-                  const amazonUrl = `https://www.amazon.com.be/s?k=${encodeURIComponent(product.amazon_search)}`;
+                  const amazonUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(product.amazon_search)}&tag=postureatwork-21`;
                   return (
                     <motion.div key={i} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.07 }}
                       style={{ borderRadius: 18, padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
@@ -731,7 +731,7 @@ export default function FinalReportPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {report!.products.map((product, i) => {
               const pCfg = PRIORITY_COLOR[product.priority] ?? PRIORITY_COLOR.optionnel;
-              const amazonUrl = `https://www.amazon.com.be/s?k=${encodeURIComponent(product.amazon_search)}`;
+              const amazonUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(product.amazon_search)}&tag=postureatwork-21`;
               return (
                 <motion.div key={i} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.07 }}
                   style={{ borderRadius: 20, padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
