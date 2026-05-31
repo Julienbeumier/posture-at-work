@@ -60,12 +60,12 @@ const DIM_META: Record<string, { label: string; emoji: string; color: string; ic
 };
 
 const DIM_PRODUCTS: Record<string, { name: string; url: string; price: string }> = {
-  setup:        { name: "Rehausseur écran GRIFEMA",           url: "https://amzn.to/4uGNQ0y", price: "~28€" },
-  pain:         { name: "Coussin lombaire FORTEM",             url: "https://amzn.to/4uK2owE", price: "~30€" },
-  habits:       { name: "Bureau assis-debout SONGMICS",        url: "https://amzn.to/4fcmzPe", price: "~200€" },
-  sleep_energy: { name: "Lunettes anti-lumière bleue Horus X", url: "https://amzn.to/4tws0fk", price: "~30€" },
+  setup:        { name: "Rehausseur écran GRIFEMA",           url: "https://amzn.to/3RF8Hn1", price: "~28€" },
+  pain:         { name: "Coussin lombaire FORTEM",             url: "https://amzn.to/4dIapg4", price: "~30€" },
+  habits:       { name: "Bureau assis-debout SONGMICS",        url: "https://amzn.to/4dGGncw", price: "~200€" },
+  sleep_energy: { name: "Lunettes anti-lumière bleue Horus X", url: "https://amzn.to/4veEs4B", price: "~30€" },
   lifestyle:    { name: "Coussin d'équilibre BODYMATE",        url: "https://amzn.to/3Rh9avh", price: "~30€" },
-  nutrition:    { name: "Gourde graduée avec horaires 1.5L",   url: "https://amzn.to/3RAs14A", price: "~15€" },
+  nutrition:    { name: "Gourde graduée avec horaires 1.5L",   url: "https://amzn.to/4dVZNJl", price: "~15€" },
 };
 
 const SHORTCUTS = [
