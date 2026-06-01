@@ -2,12 +2,6 @@ import { NextResponse } from "next/server";
 import webpush from "web-push";
 import { createClient } from "@/lib/supabase";
 
-webpush.setVapidDetails(
-  "mailto:contact@posture-at-work.com",
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "",
-  process.env.VAPID_PRIVATE_KEY ?? ""
-);
-
 const MESSAGES = [
   { title: "💆 Pause posture", body: "Redresse-toi, recule ton écran et fais 3 respirations profondes." },
   { title: "💧 Hydratation", body: "Tu as bu suffisamment d'eau aujourd'hui ? Objectif : 1,5L avant 17h." },
@@ -19,6 +13,11 @@ const MESSAGES = [
 ];
 
 export async function GET() {
+  webpush.setVapidDetails(
+    process.env.VAPID_SUBJECT ?? "mailto:contact@posture-at-work.com",
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+    process.env.VAPID_PRIVATE_KEY!
+  );
   try {
     const supabase = createClient();
     const { data: subs, error } = await supabase
