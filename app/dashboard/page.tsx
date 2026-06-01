@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-import { checkPremiumFromDB } from "@/lib/premium";
+import { usePremium } from "@/hooks/usePremium";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -201,6 +201,7 @@ function Skeleton() {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { premium: isPremiumUser } = usePremium();
   const [user, setUser] = useState<User | null>(null);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [weeklyCheckins, setWeeklyCheckins] = useState<DailyCheckin[]>([]);
@@ -302,9 +303,6 @@ export default function DashboardPage() {
       }
 
       setLoading(false);
-
-      // Check premium status from DB
-      await checkPremiumFromDB(supabase, u.id);
 
       // Show premium activation toast if redirected from /premium
       if (typeof window !== "undefined" && window.location.search.includes("premium=activated")) {
@@ -497,9 +495,16 @@ export default function DashboardPage() {
               </div>
             )}
             <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "#f0f0fa", margin: 0, marginBottom: 4 }}>
-                Bonjour {displayName} 👋
-              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 4 }}>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "#f0f0fa", margin: 0 }}>
+                  Bonjour {displayName} 👋
+                </p>
+                {isPremiumUser && (
+                  <span style={{ padding: "3px 10px", borderRadius: 100, background: "linear-gradient(135deg, #f59e0b, #d4622a)", fontFamily: T.h, fontWeight: 800, fontSize: 11, color: "#fff", letterSpacing: "0.5px" }}>
+                    ✨ PREMIUM
+                  </span>
+                )}
+              </div>
               {latestBadge && (
                 <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                   <span style={{
@@ -606,12 +611,13 @@ export default function DashboardPage() {
               const hasVideoAnalysis = latest?.video_analysis != null;
               // Cards linking to /conseils or /results without a bilan → redirect to /onboarding
               const isLocked = noAssessment && (s.href.startsWith("/conseils") || s.href === "/results");
-              const href = isLocked ? "/onboarding" : isVideoCard && !hasVideoAnalysis ? "/premium" : s.href;
+              const videoHref = isPremiumUser ? "/video-intro" : "/premium";
+              const href = isLocked ? "/onboarding" : isVideoCard ? videoHref : s.href;
               const desc = score != null
                 ? `${score}/100 · ${statusLabel(score)}`
                 : isLocked
                 ? "🔒 Après ton bilan"
-                : isVideoCard && !hasVideoAnalysis
+                : isVideoCard && !isPremiumUser && !hasVideoAnalysis
                 ? "Normalement 9.99€"
                 : (s.desc ?? "");
               return (
@@ -621,16 +627,16 @@ export default function DashboardPage() {
                     background: s.bg, border: `0.5px solid ${s.border}`, cursor: "pointer",
                   }}>
                     <div style={{ position: "absolute", top: -20, right: -20, width: 80, height: 80, borderRadius: "50%", background: s.blob, filter: "blur(24px)", opacity: 0.7 }} />
-                    {isVideoCard && !hasVideoAnalysis && (
-                      <div style={{ position: "absolute", top: 8, right: 8, padding: "2px 7px", borderRadius: 100, background: "rgba(245,158,11,0.15)", border: "0.5px solid rgba(245,158,11,0.35)", fontFamily: T.b, fontWeight: 700, fontSize: 9, color: "#fbbf24" }}>
-                        🎁 Gratuit en beta
+                    {isVideoCard && (
+                      <div style={{ position: "absolute", top: 8, right: 8, padding: "2px 7px", borderRadius: 100, background: "rgba(245,158,11,0.15)", border: "0.5px solid rgba(245,158,11,0.35)", fontFamily: T.b, fontWeight: 700, fontSize: 9, color: "#f59e0b" }}>
+                        {isPremiumUser ? "👑 Offert en beta" : "🎁 Gratuit en beta"}
                       </div>
                     )}
                     <div style={{ width: 36, height: 36, borderRadius: 10, background: s.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, marginBottom: 10, position: "relative" }}>
                       {s.icon}
                     </div>
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: s.color, margin: 0, marginBottom: 3, position: "relative" }}>
-                      {isVideoCard && !hasVideoAnalysis ? "Lancer maintenant →" : s.title}
+                      {isVideoCard ? (isPremiumUser ? "Lancer mon analyse →" : "Lancer maintenant →") : s.title}
                     </p>
                     <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.45)", margin: 0, position: "relative" }}>
                       {desc}

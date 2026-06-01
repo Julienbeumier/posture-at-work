@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
+import { usePremium } from "@/hooks/usePremium";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
@@ -114,6 +115,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 export default function PremiumPage() {
   const router = useRouter();
+  const { premium: alreadyPremium, loading: premiumLoading } = usePremium();
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -152,7 +154,28 @@ export default function PremiumPage() {
 
       <div style={{ position: "relative", zIndex: 10, maxWidth: 680, margin: "0 auto", padding: "0 20px" }}>
 
+        {/* ── ALREADY PREMIUM STATE ── */}
+        {!premiumLoading && alreadyPremium && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: "center", paddingTop: 40 }}>
+            <div style={{ borderRadius: 28, padding: "40px 32px", background: "rgba(45,106,79,0.12)", border: "0.5px solid rgba(116,198,157,0.30)", marginBottom: 24 }}>
+              <div style={{ fontSize: 56, marginBottom: 16 }}>✨</div>
+              <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#74c69d", marginBottom: 12 }}>
+                Tu as déjà le premium activé !
+              </h1>
+              <p style={{ fontFamily: T.b, fontSize: 15, color: "rgba(220,220,245,0.65)", lineHeight: 1.7, marginBottom: 28 }}>
+                Tous les accès sont débloqués.<br />Conseils détaillés, analyse vidéo IA, dashboard, rapport PDF — tout est à toi.
+              </p>
+              <Link href="/dashboard" style={{ textDecoration: "none" }}>
+                <div style={{ display: "inline-block", padding: "14px 28px", borderRadius: 100, background: "#74c69d", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#0f0f1a", cursor: "pointer" }}>
+                  ← Retour au dashboard
+                </div>
+              </Link>
+            </div>
+          </motion.div>
+        )}
+
         {/* ── SECTION 1 : HERO ── */}
+        {(premiumLoading || !alreadyPremium) && (<>
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: "center", paddingBottom: 56 }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20, padding: "6px 16px", borderRadius: 100, background: "rgba(212,162,42,0.12)", border: "0.5px solid rgba(212,162,42,0.35)" }}>
             <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#d4a22a" }}>🎁 Accès premium offert en beta</span>
@@ -305,6 +328,8 @@ export default function PremiumPage() {
           </div>
           <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.3)" }}>Accès à vie offert pendant la beta</p>
         </div>
+
+        </>)}
 
       </div>
     </main>

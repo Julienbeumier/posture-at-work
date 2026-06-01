@@ -8,6 +8,7 @@ import { EXERCISES, PROGRAMS, TARGETED_PROGRAMS, WEEKLY_CHALLENGES, type Exercis
 import { getVoiceGuide } from "@/lib/voice";
 import { createClient } from "@/lib/supabase";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
+import { usePremium } from "@/hooks/usePremium";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
@@ -119,6 +120,7 @@ function ExerciseCard({ ex, index, onStart, isDiscreetMode }: {
 
 export default function MobilitePage() {
   const router = useRouter();
+  const { premium } = usePremium();
   const [tab, setTab] = useState<Tab>("bureau");
   const [activeProgram, setActiveProgram] = useState<Program>(PROGRAMS[0]);
   const [phase, setPhase] = useState<Phase>("select");
@@ -432,9 +434,12 @@ export default function MobilitePage() {
         </div>
 
         {/* Beta banner */}
-        <div style={{ marginBottom: 16, padding: "10px 16px", borderRadius: 12, background: "rgba(245,158,11,0.08)", border: "0.5px solid rgba(245,158,11,0.20)", textAlign: "center" }}>
-          <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(245,158,11,0.85)", margin: 0 }}>
-            🎁 Tous les exercices sont offerts en beta · Normalement réservés au premium
+        <div style={{ marginBottom: 16, padding: "10px 16px", borderRadius: 12, background: "rgba(245,158,11,0.08)", border: "0.5px solid rgba(245,158,11,0.20)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.30)", fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#f59e0b" }}>
+            {premium ? "👑 Offert en beta" : "🎁 Offert en beta"}
+          </span>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(245,158,11,0.75)", margin: 0 }}>
+            {premium ? "Tous les exercices sont débloqués" : "Tous les exercices sont offerts · Normalement premium"}
           </p>
         </div>
 

@@ -15,6 +15,7 @@ import {
 } from "@/lib/scoring";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { getJobContent } from "@/lib/job-content";
+import { usePremium } from "@/hooks/usePremium";
 
 const T = {
   h: "var(--font-nunito), sans-serif",
@@ -266,6 +267,7 @@ const PRIORITY_STYLE = {
 
 export default function ResultsPage() {
   const router = useRouter();
+  const { premium } = usePremium();
   const [answers, setAnswers] = useState<QuestionnaireAnswers | null>(null);
   const [scores, setScores] = useState<Scores | null>(null);
   const [activeTab, setActiveTab] = useState<"recs" | "exercises">("recs");
@@ -772,47 +774,58 @@ export default function ResultsPage() {
           );
         })()}
 
-        {/* ── PREMIUM UPSELL ── */}
+        {/* ── PREMIUM UPSELL / STATUS ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           style={{
             borderRadius: 24, padding: "24px 26px",
-            background: "rgba(43,92,230,0.08)",
-            border: "0.5px solid rgba(43,92,230,0.25)",
+            background: premium ? "rgba(45,106,79,0.10)" : "rgba(43,92,230,0.08)",
+            border: `0.5px solid ${premium ? "rgba(116,198,157,0.25)" : "rgba(43,92,230,0.25)"}`,
             marginBottom: 16,
           }}
         >
-          <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#f0f0fa", margin: "0 0 6px" }}>
-            🚀 Tu n&apos;as accès qu&apos;à une partie de PAW
-          </p>
-          <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.50)", margin: "0 0 16px" }}>
-            Le premium est offert en beta — profites-en
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
-            {[
-              "Conseils détaillés bloqués",
-              "Analyse vidéo IA bloquée",
-              "Dashboard bloqué",
-              "Rapport PDF bloqué",
-            ].map((item) => (
-              <div key={item} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 12, color: "#f09595" }}>✕</span>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", margin: 0 }}>{item}</p>
+          {premium ? (
+            <>
+              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#74c69d", margin: "0 0 6px" }}>
+                👑 Offert en beta — accès complet activé
+              </p>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.50)", margin: "0 0 16px" }}>
+                Tous les outils PAW sont débloqués pour toi.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {["Conseils détaillés accessibles", "Analyse vidéo IA accessible", "Dashboard & historique accessible", "Rapport PDF accessible"].map((item) => (
+                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 12, color: "#74c69d" }}>✓</span>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", margin: 0 }}>{item}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <Link href="/premium" style={{ textDecoration: "none" }}>
-            <div style={{
-              padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-              background: "linear-gradient(135deg, #2b5ce6, #7c9fff)",
-              boxShadow: "0 0 24px rgba(43,92,230,0.35)",
-              fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
-            }}>
-              Débloquer gratuitement →
-            </div>
-          </Link>
+            </>
+          ) : (
+            <>
+              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#f0f0fa", margin: "0 0 6px" }}>
+                🚀 Tu n&apos;as accès qu&apos;à une partie de PAW
+              </p>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.50)", margin: "0 0 16px" }}>
+                Le premium est offert en beta — profites-en
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+                {["Conseils détaillés bloqués", "Analyse vidéo IA bloquée", "Dashboard bloqué", "Rapport PDF bloqué"].map((item) => (
+                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 12, color: "#f09595" }}>✕</span>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", margin: 0 }}>{item}</p>
+                  </div>
+                ))}
+              </div>
+              <Link href="/premium" style={{ textDecoration: "none" }}>
+                <div style={{ padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "linear-gradient(135deg, #2b5ce6, #7c9fff)", boxShadow: "0 0 24px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
+                  Débloquer gratuitement →
+                </div>
+              </Link>
+            </>
+          )}
         </motion.div>
 
         {/* ── SAVE CTA ── */}

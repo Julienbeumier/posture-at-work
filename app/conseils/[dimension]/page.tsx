@@ -11,6 +11,7 @@ import { EXERCISES, type Exercise } from "@/lib/exercises";
 import { createClient } from "@/lib/supabase";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { getJobContent, getScoreInterpretation, getJobDimensionContent, type JobDimensionContent } from "@/lib/job-content";
+import { usePremium } from "@/hooks/usePremium";
 
 const T = {
   h: "var(--font-nunito), sans-serif",
@@ -169,6 +170,7 @@ function ProductCard({ p }: { p: Product }) {
 
 export default function DimensionPage() {
   const params = useParams();
+  const { premium } = usePremium();
   const dimensionParam = typeof params.dimension === "string" ? params.dimension : "";
 
   const [advice, setAdvice] = useState<DimensionAdvice | null>(null);
@@ -348,13 +350,15 @@ export default function DimensionPage() {
         </div>
 
         {/* Premium bandeau */}
-        <div style={{ marginBottom: 20, padding: "10px 16px", borderRadius: 12, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.20)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", margin: 0, lineHeight: 1.5 }}>
-            💎 Conseils détaillés disponibles avec le premium — offert en beta
+        <div style={{ marginBottom: 20, padding: "10px 16px", borderRadius: 12, background: premium ? "rgba(245,158,11,0.08)" : "rgba(43,92,230,0.08)", border: `0.5px solid ${premium ? "rgba(245,158,11,0.25)" : "rgba(43,92,230,0.20)"}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: premium ? "rgba(245,158,11,0.85)" : "rgba(220,220,245,0.55)", margin: 0, lineHeight: 1.5 }}>
+            {premium ? "👑 Offert en beta — tous les conseils détaillés sont débloqués" : "💎 Conseils détaillés disponibles avec le premium — offert en beta"}
           </p>
-          <Link href="/premium" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#7c9fff" }}>Activer →</span>
-          </Link>
+          {!premium && (
+            <Link href="/premium" style={{ textDecoration: "none", flexShrink: 0 }}>
+              <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#7c9fff" }}>Activer →</span>
+            </Link>
+          )}
         </div>
 
         {/* Bandeau exemple */}

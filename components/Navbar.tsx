@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
+import { usePremium } from "@/hooks/usePremium";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 const HIDDEN_ON = ["/questionnaire", "/video-capture"];
@@ -12,6 +13,7 @@ const HIDDEN_ON = ["/questionnaire", "/video-capture"];
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { premium } = usePremium();
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -143,11 +145,14 @@ export default function Navbar() {
           {/* Avatar dropdown (desktop, connected) */}
           {user && (
             <div className="hidden md:block" style={{ position: "relative" }} ref={menuRef}>
-              <div
-                onClick={() => setMenuOpen((v) => !v)}
-                style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg, #2b5ce6, #7c9fff)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: T.h }}
-              >
-                {initials}
+              <div style={{ position: "relative", display: "inline-block" }}>
+                <div
+                  onClick={() => setMenuOpen((v) => !v)}
+                  style={{ width: 34, height: 34, borderRadius: "50%", background: premium ? "linear-gradient(135deg, #f59e0b, #d4622a)" : "linear-gradient(135deg, #2b5ce6, #7c9fff)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: T.h }}
+                >
+                  {initials}
+                </div>
+                {premium && <span style={{ position: "absolute", top: -6, right: -6, fontSize: 12, lineHeight: 1 }}>👑</span>}
               </div>
               {menuOpen && (
                 <div style={{ position: "absolute", right: 0, top: 42, width: 180, borderRadius: 16, background: "rgba(18,18,30,0.98)", border: "0.5px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.5)", overflow: "hidden" }}>
