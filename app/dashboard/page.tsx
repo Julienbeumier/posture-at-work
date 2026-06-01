@@ -262,6 +262,7 @@ export default function DashboardPage() {
   const [hasBilan, setHasBilan] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showIosBanner, setShowIosBanner] = useState(false);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -341,6 +342,17 @@ export default function DashboardPage() {
       }
 
       setLoading(false);
+
+      // Service worker + push notifications
+      if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
+        const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) && !(window.navigator as unknown as Record<string, unknown>)["standalone"];
+        if (isIos && !("Notification" in window)) {
+          setTimeout(() => setShowIosBanner(true), 3000);
+        } else if ("Notification" in window && Notification.permission === "default") {
+          setTimeout(() => requestNotificationPermission(), 3000);
+        }
+      }
     };
 
     loadDashboard();
@@ -355,6 +367,26 @@ export default function DashboardPage() {
     await supabase.from("daily_checkins").delete().eq("user_id", user.id);
     await supabase.auth.signOut();
     router.replace("/");
+  }
+
+  async function requestNotificationPermission() {
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") return;
+      const reg = await navigator.serviceWorker.ready;
+      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+      if (!vapidKey) return;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: vapidKey,
+      });
+      await fetch("/api/send-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscription: sub, action: "save" }),
+      });
+    } catch { /* user denied or browser unsupported */ }
   }
 
   async function saveCheckin() {
@@ -456,13 +488,31 @@ export default function DashboardPage() {
                 Bonjour {displayName} 👋
               </p>
               {latestBadge && (
-                <span style={{
-                  display: "inline-block", padding: "3px 12px", borderRadius: 100,
-                  background: latestBadge.bg, border: `0.5px solid ${latestBadge.border}`,
-                  fontFamily: T.b, fontWeight: 600, fontSize: 11, color: latestBadge.color,
-                }}>
-                  {latestBadge.label}
-                </span>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                  <span style={{
+                    display: "inline-block", padding: "3px 12px", borderRadius: 100,
+                    background: latestBadge.bg, border: `0.5px solid ${latestBadge.border}`,
+                    fontFamily: T.b, fontWeight: 600, fontSize: 11, color: latestBadge.color,
+                  }}>
+                    {latestBadge.label}
+                  </span>
+                  {previous && (() => {
+                    const delta = latest.global_score - previous.global_score;
+                    if (delta === 0) return null;
+                    return (
+                      <span style={{
+                        display: "inline-flex", alignItems: "center", gap: 3,
+                        padding: "3px 10px", borderRadius: 100,
+                        background: delta > 0 ? "rgba(116,198,157,0.12)" : "rgba(240,149,149,0.12)",
+                        border: `0.5px solid ${delta > 0 ? "rgba(116,198,157,0.3)" : "rgba(240,149,149,0.3)"}`,
+                        fontFamily: T.h, fontWeight: 700, fontSize: 11,
+                        color: delta > 0 ? "#74c69d" : "#f09595",
+                      }}>
+                        {delta > 0 ? "↑" : "↓"} {delta > 0 ? `+${delta}` : delta} pts
+                      </span>
+                    );
+                  })()}
+                </div>
               )}
               {latest && (
                 <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.4)", margin: "4px 0 0" }}>
@@ -481,6 +531,22 @@ export default function DashboardPage() {
             </div>
           </Link>
         </motion.div>
+
+        {/* ── iOS NOTIFICATION BANNER ── */}
+        {showIosBanner && (
+          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+            style={{ borderRadius: 16, padding: "14px 18px", background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)", display: "flex", alignItems: "flex-start", gap: 12 }}>
+            <span style={{ fontSize: 18, flexShrink: 0 }}>📱</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#f0f0fa", margin: "0 0 4px" }}>Active les rappels</p>
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", margin: 0, lineHeight: 1.5 }}>
+                Sur iOS, ajoute l&apos;app à ton écran d&apos;accueil pour recevoir des rappels posture.
+              </p>
+            </div>
+            <button onClick={() => setShowIosBanner(false)}
+              style={{ background: "none", border: "none", color: "rgba(220,220,245,0.3)", fontSize: 16, cursor: "pointer", flexShrink: 0, padding: 0 }}>✕</button>
+          </motion.div>
+        )}
 
         {/* No assessment state */}
         {!hasBilan && (

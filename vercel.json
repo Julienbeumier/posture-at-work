@@ -1,0 +1,6 @@
+{
+  "crons": [
+    { "path": "/api/emails/trigger-sequence", "schedule": "0 9 * * *" },
+    { "path": "/api/send-notification/daily", "schedule": "0 10 * * *" }
+  ]
+}

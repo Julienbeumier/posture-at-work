@@ -495,6 +495,22 @@ export default function ResultsPage() {
           })()}
         </motion.div>
 
+        {/* ── SHARE BUTTON ── */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+          style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
+          <div
+            onClick={() => router.push("/partage")}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              padding: "12px 28px", borderRadius: 100, cursor: "pointer",
+              background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.35)",
+              fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#7c9fff",
+            }}
+          >
+            📱 Partager mon score
+          </div>
+        </motion.div>
+
         {/* ── FLAG ALERTS (debout) ── */}
         {deboutFlags && (() => {
           const cards: { bg: string; border: string; color: string; text: string }[] = [];
