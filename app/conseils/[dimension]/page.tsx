@@ -185,13 +185,22 @@ export default function DimensionPage() {
       if (!isValidDimension(dimensionParam)) { setReady(true); return; }
 
       // ── 1. Example mode ──────────────────────────────────────────────────
-      const isExample = sessionStorage.getItem("paw_example_mode") === "true"
-                     || localStorage.getItem("paw_example_mode") === "true";
-      if (isExample) setIsExampleMode(true);
+      let isExample = sessionStorage.getItem("paw_example_mode") === "true"
+                   || localStorage.getItem("paw_example_mode") === "true";
 
       // ── 2. Source of truth: scores from sessionStorage (set by questionnaire submit) ──
       const scoresRaw = sessionStorage.getItem("postureatwork_scores");
       const parsedScores: Scores | null = scoresRaw ? JSON.parse(scoresRaw) : null;
+
+      // If real scores exist and clearly don't belong to the example user → clear example mode
+      if (isExample && parsedScores && parsedScores.global !== 45) {
+        sessionStorage.removeItem("paw_example_mode");
+        localStorage.removeItem("paw_example_mode");
+        isExample = false;
+        setIsExampleMode(false);
+      } else if (isExample) {
+        setIsExampleMode(true);
+      }
 
       // ── 3. Effective job type — scores.job_type is most reliable ─────────
       const effectiveJobType = isExample

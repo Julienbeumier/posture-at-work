@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase";
+import type { User } from "@supabase/supabase-js";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
@@ -112,9 +114,31 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 export default function PremiumPage() {
   const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+  }, []);
 
   const hasBilan = typeof window !== "undefined" && !!sessionStorage.getItem("postureatwork_scores");
-  const ctaHref = hasBilan ? "/dashboard" : "/onboarding";
+
+  const activatePremium = async () => {
+    localStorage.setItem("paw_premium", "true");
+    localStorage.setItem("paw_premium_activated_at", new Date().toISOString());
+
+    if (user) {
+      const supabase = createClient();
+      await supabase.from("profiles").upsert({
+        user_id: user.id,
+        is_premium: true,
+        premium_activated_at: new Date().toISOString(),
+      }, { onConflict: "user_id" });
+      router.push("/dashboard?premium=activated");
+    } else {
+      router.push(hasBilan ? "/auth?next=/dashboard?premium=activated" : "/onboarding");
+    }
+  };
 
   return (
     <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingTop: 80, paddingBottom: 80, position: "relative", overflow: "hidden" }}>
@@ -145,7 +169,7 @@ export default function PremiumPage() {
             Conseils détaillés, exercices guidés, analyse vidéo IA, suivi dans le temps — tout ce dont ton corps a besoin pour aller mieux au travail.
           </p>
 
-          <div onClick={() => router.push(ctaHref)}
+          <div onClick={activatePremium}
             style={{ display: "inline-block", padding: "16px 32px", borderRadius: 100, cursor: "pointer", background: "#2b5ce6", boxShadow: "0 0 40px rgba(43,92,230,0.5), 0 4px 20px rgba(43,92,230,0.4)", fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#fff", marginBottom: 12 }}>
             🚀 Activer mon accès premium gratuit →
           </div>
@@ -224,7 +248,7 @@ export default function PremiumPage() {
             <motion.div
               animate={{ boxShadow: ["0 0 30px rgba(43,92,230,0.4)", "0 0 60px rgba(43,92,230,0.6)", "0 0 30px rgba(43,92,230,0.4)"] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              onClick={() => router.push(ctaHref)}
+              onClick={activatePremium}
               style={{ display: "inline-block", padding: "18px 36px", borderRadius: 100, cursor: "pointer", background: "#2b5ce6", fontFamily: T.h, fontWeight: 800, fontSize: 17, color: "#fff", marginBottom: 16 }}>
               🚀 Activer mon accès premium gratuit →
             </motion.div>
@@ -275,7 +299,7 @@ export default function PremiumPage() {
 
         {/* ── FINAL CTA ── */}
         <div style={{ textAlign: "center" }}>
-          <div onClick={() => router.push(ctaHref)}
+          <div onClick={activatePremium}
             style={{ display: "inline-block", padding: "16px 32px", borderRadius: 100, cursor: "pointer", background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.4)", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 12 }}>
             🚀 Activer maintenant — c&apos;est gratuit
           </div>

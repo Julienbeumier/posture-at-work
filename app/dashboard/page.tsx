@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
+import { checkPremiumFromDB } from "@/lib/premium";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -221,6 +222,7 @@ export default function DashboardPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [showIosBanner, setShowIosBanner] = useState(false);
+  const [premiumToast, setPremiumToast] = useState(false);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -300,6 +302,16 @@ export default function DashboardPage() {
       }
 
       setLoading(false);
+
+      // Check premium status from DB
+      await checkPremiumFromDB(supabase, u.id);
+
+      // Show premium activation toast if redirected from /premium
+      if (typeof window !== "undefined" && window.location.search.includes("premium=activated")) {
+        setPremiumToast(true);
+        setTimeout(() => setPremiumToast(false), 5000);
+        window.history.replaceState({}, "", "/dashboard");
+      }
 
       // Service worker + push notifications
       if (typeof window !== "undefined" && "serviceWorker" in navigator) {
@@ -448,6 +460,28 @@ export default function DashboardPage() {
       ]} />
 
       <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "20px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
+
+        {/* ── PREMIUM TOAST ── */}
+        <AnimatePresence>
+          {premiumToast && (
+            <motion.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              style={{
+                borderRadius: 16, padding: "14px 20px",
+                background: "rgba(45,106,79,0.20)", border: "0.5px solid rgba(116,198,157,0.35)",
+                display: "flex", alignItems: "center", gap: 12,
+              }}
+            >
+              <span style={{ fontSize: 20 }}>🎉</span>
+              <div>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#74c69d", margin: 0 }}>Accès premium activé !</p>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(116,198,157,0.75)", margin: 0 }}>Tu as maintenant accès à tout PostureAtWork.</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ── S1 : HERO SCORE ── */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} style={{
