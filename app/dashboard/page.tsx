@@ -568,13 +568,17 @@ export default function DashboardPage() {
             {SHORTCUTS.map((s) => {
               const score = s.scoreKey && latest ? (latest.scores[s.scoreKey as keyof typeof latest.scores] ?? null) : null;
               const noAssessment = !latest;
+              const isVideoCard = s.title === "Analyse vidéo";
+              const hasVideoAnalysis = latest?.video_analysis != null;
               // Cards linking to /conseils or /results without a bilan → redirect to /onboarding
               const isLocked = noAssessment && (s.href.startsWith("/conseils") || s.href === "/results");
-              const href = isLocked ? "/onboarding" : s.href;
+              const href = isLocked ? "/onboarding" : isVideoCard && !hasVideoAnalysis ? "/premium" : s.href;
               const desc = score != null
                 ? `${score}/100 · ${statusLabel(score)}`
                 : isLocked
                 ? "🔒 Après ton bilan"
+                : isVideoCard && !hasVideoAnalysis
+                ? "Normalement 9.99€"
                 : (s.desc ?? "");
               return (
                 <Link key={s.title} href={href} style={{ textDecoration: "none" }}>
@@ -583,11 +587,16 @@ export default function DashboardPage() {
                     background: s.bg, border: `0.5px solid ${s.border}`, cursor: "pointer",
                   }}>
                     <div style={{ position: "absolute", top: -20, right: -20, width: 80, height: 80, borderRadius: "50%", background: s.blob, filter: "blur(24px)", opacity: 0.7 }} />
+                    {isVideoCard && !hasVideoAnalysis && (
+                      <div style={{ position: "absolute", top: 8, right: 8, padding: "2px 7px", borderRadius: 100, background: "rgba(245,158,11,0.15)", border: "0.5px solid rgba(245,158,11,0.35)", fontFamily: T.b, fontWeight: 700, fontSize: 9, color: "#fbbf24" }}>
+                        🎁 Gratuit en beta
+                      </div>
+                    )}
                     <div style={{ width: 36, height: 36, borderRadius: 10, background: s.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, marginBottom: 10, position: "relative" }}>
                       {s.icon}
                     </div>
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: s.color, margin: 0, marginBottom: 3, position: "relative" }}>
-                      {s.title}
+                      {isVideoCard && !hasVideoAnalysis ? "Lancer maintenant →" : s.title}
                     </p>
                     <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.45)", margin: 0, position: "relative" }}>
                       {desc}

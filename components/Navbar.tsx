@@ -210,6 +210,9 @@ export default function Navbar() {
               </p>
             </div>
           )}
+          <Link href="/premium" onClick={() => setIsMenuOpen(false)} style={{ ...menuItemStyle, color: "#fbbf24", background: "rgba(245,158,11,0.06)" }}>
+            🎁 Premium gratuit en beta
+          </Link>
           <Link href="/onboarding" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
             🎯 Nouveau bilan
           </Link>

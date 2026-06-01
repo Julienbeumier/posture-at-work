@@ -772,44 +772,47 @@ export default function ResultsPage() {
           );
         })()}
 
-        {/* ── VIDEO IA CTA ── */}
+        {/* ── PREMIUM UPSELL ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           style={{
-            borderRadius: 24, padding: "24px 26px", position: "relative", overflow: "hidden",
-            background: "linear-gradient(135deg, rgba(124,58,237,0.10), rgba(79,70,229,0.10))",
-            border: "0.5px solid rgba(124,58,237,0.25)",
+            borderRadius: 24, padding: "24px 26px",
+            background: "rgba(43,92,230,0.08)",
+            border: "0.5px solid rgba(43,92,230,0.25)",
             marginBottom: 16,
           }}
         >
-          <div style={{
-            position: "absolute", top: -40, right: -40, width: 150, height: 150,
-            borderRadius: "50%", background: "rgba(124,58,237,0.15)", filter: "blur(40px)", pointerEvents: "none",
-          }} />
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-              <span style={{ fontSize: 24 }}>🎬</span>
-              <div>
-                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0 }}>Analyse vidéo IA — niveau kiné</p>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: 0 }}>60 secondes · Rapport visuel complet</p>
+          <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#f0f0fa", margin: "0 0 6px" }}>
+            🚀 Tu n&apos;as accès qu&apos;à une partie de PAW
+          </p>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.50)", margin: "0 0 16px" }}>
+            Le premium est offert en beta — profites-en
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+            {[
+              "Conseils détaillés bloqués",
+              "Analyse vidéo IA bloquée",
+              "Dashboard bloqué",
+              "Rapport PDF bloqué",
+            ].map((item) => (
+              <div key={item} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 12, color: "#f09595" }}>✕</span>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", margin: 0 }}>{item}</p>
               </div>
-            </div>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 16 }}>
-              Ton score questionnaire donne une vision partielle. L&apos;IA analyse ta <strong style={{ color: "#f0f0fa", fontWeight: 600 }}>posture réelle en vidéo</strong> pour détecter ce que les mots ne disent pas.
-            </p>
-            <Link href="/video-intro" style={{ textDecoration: "none" }}>
-              <div style={{
-                padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-                background: "linear-gradient(135deg, #7c3aed, #4f46e5)",
-                boxShadow: "0 0 28px rgba(124,58,237,0.3)",
-                fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
-              }}>
-                Affiner mon analyse →
-              </div>
-            </Link>
+            ))}
           </div>
+          <Link href="/premium" style={{ textDecoration: "none" }}>
+            <div style={{
+              padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
+              background: "linear-gradient(135deg, #2b5ce6, #7c9fff)",
+              boxShadow: "0 0 24px rgba(43,92,230,0.35)",
+              fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
+            }}>
+              Débloquer gratuitement →
+            </div>
+          </Link>
         </motion.div>
 
         {/* ── SAVE CTA ── */}

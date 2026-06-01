@@ -431,6 +431,13 @@ export default function MobilitePage() {
           )}
         </div>
 
+        {/* Beta banner */}
+        <div style={{ marginBottom: 16, padding: "10px 16px", borderRadius: 12, background: "rgba(245,158,11,0.08)", border: "0.5px solid rgba(245,158,11,0.20)", textAlign: "center" }}>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(245,158,11,0.85)", margin: 0 }}>
+            🎁 Tous les exercices sont offerts en beta · Normalement réservés au premium
+          </p>
+        </div>
+
         {/* Notification banner */}
         <AnimatePresence>
           {notifBanner && (
