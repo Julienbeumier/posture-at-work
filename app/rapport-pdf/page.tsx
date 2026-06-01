@@ -213,6 +213,27 @@ function ScoreCircle({ score, size = 100 }: { score: number; size?: number }) {
 export default function RapportPDF() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
+
+  // Inject CSS to hide navbar on this page (screen + print)
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.id = "rapport-pdf-nav-hide";
+    style.innerHTML = `
+      @media screen {
+        nav, [class*="Navbar"], [class*="navbar"], header { display: none !important; }
+        body, html { padding-top: 0 !important; margin-top: 0 !important; background: #e2e8f0 !important; }
+        #__next > *:not(.rapport-print-container) > nav { display: none !important; }
+      }
+      @media print {
+        nav, [class*="Navbar"], [class*="navbar"], header,
+        .no-print, [data-print="hide"] { display: none !important; }
+        body, html, #__next { background: white !important; }
+        body::before, body::after, [class*="blob"], [class*="Background"], [class*="background"] { display: none !important; }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => { document.getElementById("rapport-pdf-nav-hide")?.remove(); };
+  }, []);
   const [scores, setScores] = useState<Scores | null>(null);
   const [answers, setAnswers] = useState<Answers>({});
   const [firstname, setFirstname] = useState("Vous");
@@ -368,18 +389,29 @@ export default function RapportPDF() {
 
         @media print {
           @page { size: A4; margin: 0; }
-          body { background: #fff; margin: 0; padding: 0; }
+          body, html, #__next { background: white !important; margin: 0; padding: 0; }
+          nav, [class*="Navbar"], [class*="navbar"], header,
+          .no-print, [data-print="hide"],
+          body::before, body::after,
+          [class*="blob"], [class*="Background"], [class*="background"] {
+            display: none !important;
+          }
           .page {
             margin: 0;
             padding: 12mm 14mm 22mm;
             page-break-after: always;
+            break-after: always;
             page-break-inside: avoid;
             box-shadow: none;
             min-height: 297mm;
             width: 210mm;
           }
-          .page:last-of-type { page-break-after: avoid; }
-          .no-print { display: none !important; }
+          .page:last-child,
+          .page:last-of-type {
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+          }
+          .rapport-print-container { display: block !important; }
           * {
             -webkit-print-color-adjust: exact !important;
             color-adjust: exact !important;
@@ -393,22 +425,23 @@ export default function RapportPDF() {
       `}</style>
 
       {/* ── FLOATING BUTTONS (no-print) ── */}
-      <div className="no-print" style={{ position: "fixed", top: 16, left: 16, zIndex: 9999 }}>
-        <button
-          onClick={() => router.back()}
-          style={{ padding: "9px 18px", borderRadius: 100, background: "rgba(15,23,42,0.85)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(220,230,255,0.8)", fontFamily: "Inter, sans-serif", fontSize: 13, cursor: "pointer" }}
-        >
-          ← Retour
-        </button>
-      </div>
-      <div className="no-print" style={{ position: "fixed", bottom: 24, right: 24, zIndex: 9999 }}>
-        <button
-          onClick={() => window.print()}
-          style={{ padding: "13px 28px", borderRadius: 100, background: "#2b5ce6", border: "none", color: "#fff", fontFamily: "Inter, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 20px rgba(43,92,230,0.45)" }}
-        >
-          📄 Télécharger mon rapport PDF
-        </button>
-      </div>
+      <button
+        className="no-print"
+        onClick={() => router.back()}
+        style={{ position: "fixed", top: 16, left: 16, zIndex: 9999, padding: "9px 18px", borderRadius: 100, background: "#2b5ce6", border: "none", color: "#fff", fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+      >
+        ← Retour
+      </button>
+      <button
+        className="no-print"
+        onClick={() => window.print()}
+        style={{ position: "fixed", bottom: 24, right: 24, zIndex: 9999, padding: "13px 28px", borderRadius: 100, background: "#2b5ce6", border: "none", color: "#fff", fontFamily: "Inter, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 20px rgba(43,92,230,0.45)" }}
+      >
+        📄 Télécharger mon rapport PDF
+      </button>
+
+      {/* ── RAPPORT (seul élément imprimé) ── */}
+      <div className="rapport-print-container" style={{ background: "white", paddingBottom: 32 }}>
 
       {/* ════════════════════════════════════════════
           PAGE 1 — COVER + SYNTHÈSE
@@ -804,6 +837,8 @@ export default function RapportPDF() {
           <PageFooter n={4} />
         </div>
       )}
+
+      </div>{/* end rapport-print-container */}
     </>
   );
 }
