@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Scores } from "@/lib/scoring";
-import type { PersonneAnalysis, PosteAnalysis, AnalysisReport } from "@/lib/analysis-types";
+import type { PersonneAnalysis, PosteAnalysis, AnalysisReport, DeboutAnalysis } from "@/lib/analysis-types";
 import {
   getJobContent,
   getScoreInterpretation,
@@ -189,6 +189,38 @@ function initials(name: string) {
   return name.trim().slice(0, 2).toUpperCase();
 }
 
+// ─── Translation helper ───────────────────────────────────────────────────────
+
+function traduire(key: string): string {
+  const map: Record<string, string> = {
+    head_position: "Position de la tête",
+    neck_position: "Position du cou",
+    shoulders: "Épaules",
+    trunk: "Tronc & dos",
+    members: "Membres",
+    bon: "Bon",
+    attention: "Attention",
+    critique: "Critique",
+    faible: "Faible",
+    modere: "Modéré",
+    eleve: "Élevé",
+    screen_height: "Hauteur de l'écran",
+    screen_distance: "Distance à l'écran",
+    keyboard_mouse: "Clavier & souris",
+    chair_setup: "Configuration du siège",
+    epaules: "Épaules",
+    colonne: "Colonne vertébrale",
+    tete_cou: "Tête & cou",
+    appui_jambes: "Appui & équilibre",
+    membres_superieurs: "Membres supérieurs",
+    adapte: "Adapté",
+    trop_bas: "Trop bas",
+    trop_haut: "Trop haut",
+    non_visible: "Non visible",
+  };
+  return map[key] ?? key;
+}
+
 // ─── SVG Score Circle ─────────────────────────────────────────────────────────
 
 function ScoreCircle({ score, size = 100 }: { score: number; size?: number }) {
@@ -244,6 +276,7 @@ export default function RapportPDF() {
   const [legacyReport, setLegacyReport] = useState<AnalysisReport | null>(null);
   const [personneAnalysis, setPersonneAnalysis] = useState<PersonneAnalysis | null>(null);
   const [posteAnalysis, setPosteAnalysis] = useState<PosteAnalysis | null>(null);
+  const [deboutAnalysis, setDeboutAnalysis] = useState<DeboutAnalysis | null>(null);
 
   useEffect(() => {
     try {
@@ -264,7 +297,14 @@ export default function RapportPDF() {
     if (hw) setHoursWeek(Number(hw));
 
     try { const r = sessionStorage.getItem("postureatwork_report"); if (r) setLegacyReport(JSON.parse(r)); } catch { /**/ }
-    try { const r = sessionStorage.getItem("paw_analysis_personne"); if (r) setPersonneAnalysis(JSON.parse(r)); } catch { /**/ }
+    try {
+      const r = sessionStorage.getItem("paw_analysis_personne");
+      if (r) {
+        const parsed = JSON.parse(r);
+        if (parsed.analysisType === "debout") setDeboutAnalysis(parsed);
+        else setPersonneAnalysis(parsed);
+      }
+    } catch { /**/ }
     try { const r = sessionStorage.getItem("paw_analysis_poste"); if (r) setPosteAnalysis(JSON.parse(r)); } catch { /**/ }
 
     setReady(true);
@@ -279,7 +319,7 @@ export default function RapportPDF() {
   }
 
   const jobData = getJobContent(jobType);
-  const hasVideo = !!(legacyReport || (personneAnalysis && posteAnalysis));
+  const hasVideo = !!(legacyReport || (personneAnalysis && posteAnalysis) || deboutAnalysis);
   const totalPages = hasVideo ? 4 : 3;
 
   const sortedByScore = [...DIMS].sort((a, b) => ((scores[a.key as keyof Scores] as number) ?? 50) - ((scores[b.key as keyof Scores] as number) ?? 50));
@@ -374,6 +414,9 @@ export default function RapportPDF() {
           page-break-inside: avoid;
           break-inside: avoid;
         }
+
+        .rapport-section { page-break-inside: avoid; break-inside: avoid; }
+        .section-video { page-break-before: auto; }
 
         .bar-bg { height: 7px; background: #e5e7eb; border-radius: 4px; overflow: hidden; margin: 5px 0 2px; }
         .bar-green  { height: 100%; border-radius: 4px; background: #16a34a !important; }
@@ -710,6 +753,68 @@ export default function RapportPDF() {
             <div style={{ fontSize: "16pt", fontWeight: 800, color: "#0f172a" }}>🎥 Analyse posturale IA</div>
           </div>
 
+          {/* DeboutAnalysis */}
+          {deboutAnalysis && (
+            <>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                <div style={{ fontWeight: 700, fontSize: "9pt", textTransform: "uppercase", letterSpacing: "0.08em", color: "#374151" }}>Ta posture — Poste debout</div>
+                <span className="pill" style={{ background: sb(deboutAnalysis.globalPostureScore), color: sc(deboutAnalysis.globalPostureScore), fontSize: "8.5pt" }}>
+                  {deboutAnalysis.globalPostureScore}/100 · {sl(deboutAnalysis.globalPostureScore)}
+                </span>
+              </div>
+              {deboutAnalysis.jobTypeDetected && (
+                <div style={{ fontSize: "8pt", color: "#64748b", marginBottom: 7 }}>
+                  Poste détecté : <strong>{deboutAnalysis.jobTypeDetected}</strong>
+                </div>
+              )}
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8.5pt", marginBottom: 9 }}>
+                <thead>
+                  <tr style={{ background: "#f1f5f9" }}>
+                    <th style={{ padding: "6px 8px", textAlign: "left", fontWeight: 700, color: "#374151", width: "24%" }}>Zone</th>
+                    <th style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700, color: "#374151", width: "11%" }}>Score</th>
+                    <th style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700, color: "#374151", width: "13%" }}>Statut</th>
+                    <th style={{ padding: "6px 8px", textAlign: "left", fontWeight: 700, color: "#374151" }}>Observation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(Object.entries(deboutAnalysis.posture) as [string, { score: number; status: string; observation: string }][]).map(([key, seg]) => (
+                    <tr key={key} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                      <td style={{ padding: "6px 8px", fontWeight: 600, color: "#1e293b" }}>{traduire(key)}</td>
+                      <td style={{ padding: "6px 8px", textAlign: "center" }}>
+                        <span className="pill" style={{ background: sb(seg.score), color: sc(seg.score), fontSize: "7.5pt" }}>{seg.score}</span>
+                      </td>
+                      <td style={{ padding: "6px 8px", textAlign: "center" }}>
+                        <span className="pill" style={{ background: sb(seg.score), color: sc(seg.score), fontSize: "7.5pt" }}>{traduire(seg.status)}</span>
+                      </td>
+                      <td style={{ padding: "6px 8px", color: "#374151", lineHeight: 1.4 }}>{seg.observation}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {deboutAnalysis.overallAssessment && (
+                <div style={{ background: "#f0f9ff", border: "1px solid #bae6fd", borderRadius: 7, padding: "8px 12px", marginBottom: 10, fontSize: "8.5pt", color: "#0c4a6e", lineHeight: 1.6, fontStyle: "italic" }}>
+                  {deboutAnalysis.overallAssessment}
+                </div>
+              )}
+              {deboutAnalysis.recommendations.length > 0 && (
+                <>
+                  <div style={{ fontSize: "8pt", fontWeight: 700, color: "#374151", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 5 }}>
+                    Recommandations prioritaires
+                  </div>
+                  {deboutAnalysis.recommendations.slice(0, 3).map((rec, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, padding: "5px 0", borderBottom: "1px solid #f1f5f9", fontSize: "8.5pt" }}>
+                      <span style={{ fontWeight: 800, color: "#2b5ce6", flexShrink: 0, minWidth: 14 }}>{i + 1}.</span>
+                      <div>
+                        <span style={{ fontWeight: 600, color: "#1e293b" }}>{rec.action}</span>
+                        {rec.why && <span style={{ color: "#64748b" }}> — {rec.why}</span>}
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            </>
+          )}
+
           {/* PersonneAnalysis */}
           {personneAnalysis && (
             <>
@@ -812,8 +917,8 @@ export default function RapportPDF() {
                 const statusScore = item.status === "bon" ? 80 : item.status === "attention" ? 55 : 30;
                 return (
                   <div key={key} style={{ display: "flex", gap: 10, padding: "6px 0", borderBottom: "1px solid #f1f5f9", fontSize: "8.5pt" }}>
-                    <span style={{ fontWeight: 600, color: "#374151", minWidth: 95 }}>{key.replace(/_/g, " ")}</span>
-                    <span className="pill" style={{ background: sb(statusScore), color: sc(statusScore), fontSize: "7.5pt" }}>{item.status}</span>
+                    <span style={{ fontWeight: 600, color: "#374151", minWidth: 95 }}>{traduire(key)}</span>
+                    <span className="pill" style={{ background: sb(statusScore), color: sc(statusScore), fontSize: "7.5pt" }}>{traduire(item.status)}</span>
                     <span style={{ color: "#374151", flex: 1 }}>{item.observation}</span>
                   </div>
                 );

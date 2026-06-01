@@ -35,6 +35,17 @@ const PRIORITY_COLOR: Record<string, { color: string; label: string }> = {
   optionnel: { color: "rgba(220,220,245,0.35)", label: "Optionnel" },
 };
 
+function traduire(key: string): string {
+  const map: Record<string, string> = {
+    faible: "Faible", modere: "Modéré", eleve: "Élevé",
+    bon: "Bon", attention: "Attention", critique: "Critique",
+    adapte: "Adapté", trop_bas: "Trop bas", trop_haut: "Trop haut", non_visible: "Non visible",
+    head_position: "Position de la tête", neck_position: "Position du cou",
+    shoulders: "Épaules", trunk: "Tronc & dos",
+  };
+  return map[key] ?? key;
+}
+
 // ─── Shared components ────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: StatusLevel }) {
@@ -382,7 +393,7 @@ export default function FinalReportPage() {
                       <div key={i} style={{ borderRadius: 12, padding: "10px 14px", background: `${sevColor}10`, border: `0.5px solid ${sevColor}35` }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
                           <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 12, color: sevColor }}>{issue.zone}</span>
-                          <span style={{ fontFamily: T.b, fontSize: 11, color: `${sevColor}99` }}>· {issue.severity}</span>
+                          <span style={{ fontFamily: T.b, fontSize: 11, color: `${sevColor}99` }}>· {traduire(issue.severity)}</span>
                         </div>
                         <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.6)", margin: 0 }}>{issue.issue}</p>
                         <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", margin: "3px 0 0" }}>→ {issue.consequence}</p>
@@ -414,7 +425,7 @@ export default function FinalReportPage() {
                     <StatusBadge status={da.environnement.plan_travail.hauteur === "adapte" ? "bon" : "attention"} />
                   </div>
                   <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", margin: 0 }}>
-                    Hauteur : {da.environnement.plan_travail.hauteur.replace(/_/g, " ")}
+                    Hauteur : {traduire(da.environnement.plan_travail.hauteur)}
                   </p>
                   {da.environnement.plan_travail.observation && (
                     <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: "3px 0 0", lineHeight: 1.5 }}>{da.environnement.plan_travail.observation}</p>
@@ -648,7 +659,7 @@ export default function FinalReportPage() {
                       <div key={i} style={{ borderRadius: 12, padding: "10px 14px", background: `${sevColor}10`, border: `0.5px solid ${sevColor}35` }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
                           <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 12, color: sevColor }}>{issue.zone}</span>
-                          <span style={{ fontFamily: T.b, fontSize: 11, color: `${sevColor}99` }}>· {issue.severity}</span>
+                          <span style={{ fontFamily: T.b, fontSize: 11, color: `${sevColor}99` }}>· {traduire(issue.severity)}</span>
                         </div>
                         <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.6)", margin: 0 }}>{issue.issue}</p>
                         <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", margin: "3px 0 0" }}>→ {issue.consequence}</p>
