@@ -283,8 +283,30 @@ export default function FinalReportPage() {
     const answersRaw = sessionStorage.getItem("postureatwork_answers");
     const scores = scoresRaw ? JSON.parse(scoresRaw) : {};
     const answers = answersRaw ? JSON.parse(answersRaw) : {};
+
+    const saveVideoAnalysis = async () => {
+      const analysisPersonne = JSON.parse(sessionStorage.getItem("paw_analysis_personne") || "null");
+      const analysisPoste = JSON.parse(sessionStorage.getItem("paw_analysis_poste") || "null");
+      if (!analysisPersonne && !analysisPoste) return;
+      const supabase = createClient();
+      const { data: latest } = await supabase
+        .from("assessments").select("id").eq("user_id", user.id)
+        .order("created_at", { ascending: false }).limit(1);
+      if (!latest?.length) return;
+      await supabase.from("assessments").update({
+        video_analysis: {
+          personne: analysisPersonne,
+          poste: analysisPoste,
+          analyzed_at: new Date().toISOString(),
+        },
+      }).eq("id", latest[0].id);
+    };
+
     saveAssessmentForUser(user.id, scores, answers, target as unknown as Record<string, unknown>)
-      .then(() => setSaveStatus("saved"))
+      .then(async () => {
+        await saveVideoAnalysis();
+        setSaveStatus("saved");
+      })
       .catch(() => setSaveStatus("error"));
   }, [user, report, personneAnalysis, deboutAnalysis]);
 

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
@@ -26,7 +27,12 @@ interface Assessment {
     global: number;
   };
   answers: Record<string, unknown>;
-  video_analysis: Record<string, unknown> | null;
+  job_type?: string;
+  video_analysis: {
+    personne?: Record<string, unknown>;
+    poste?: Record<string, unknown>;
+    analyzed_at?: string;
+  } | null;
 }
 
 interface DailyCheckin {
@@ -185,54 +191,6 @@ function GoalCircle({ done, total, color }: { done: number; total: number; color
   );
 }
 
-function AssessmentModal({ assessment, onClose }: { assessment: Assessment; onClose: () => void }) {
-  const d = new Date(assessment.created_at);
-  const color = sc(assessment.global_score);
-  return (
-    <div
-      style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(8px)" }}
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.92, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.92, opacity: 0 }}
-        onClick={(e) => e.stopPropagation()}
-        style={{ borderRadius: 24, padding: 24, width: "100%", maxWidth: 360, background: "#141422", border: "0.5px solid rgba(255,255,255,0.10)" }}
-      >
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-          <div>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0 }}>
-              Bilan du {d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
-            </p>
-            <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.4)", margin: 0 }}>
-              {d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
-            </p>
-          </div>
-          <div style={{ padding: "5px 14px", borderRadius: 100, background: `${color}22`, border: `1px solid ${color}44`, fontFamily: T.h, fontWeight: 800, fontSize: 15, color }}>
-            {assessment.global_score}
-          </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          {Object.keys(DIM_META).map((k) => {
-            const s = assessment.scores[k as keyof typeof assessment.scores] ?? 0;
-            return <ScoreBarRow key={k} dimKey={k} score={s} />;
-          })}
-        </div>
-        {assessment.video_analysis && (
-          <Link href="/final-report" style={{ textDecoration: "none" }}>
-            <div style={{ marginTop: 16, padding: "10px 0", borderRadius: 12, textAlign: "center", background: "rgba(167,139,250,0.12)", border: "1px solid rgba(167,139,250,0.25)", fontFamily: T.b, fontWeight: 600, fontSize: 12, color: "#a78bfa" }}>
-              🎬 Voir le rapport vidéo
-            </div>
-          </Link>
-        )}
-        <div onClick={onClose} style={{ marginTop: 12, padding: "10px 0", textAlign: "center", fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.35)", cursor: "pointer" }}>
-          Fermer
-        </div>
-      </motion.div>
-    </div>
-  );
-}
 
 function Skeleton() {
   return <div style={{ height: 80, borderRadius: 18, background: "rgba(255,255,255,0.04)", animation: "pulse 1.5s ease-in-out infinite" }} />;
@@ -256,7 +214,7 @@ export default function DashboardPage() {
   const [checkinSaved, setCheckinSaved] = useState(false);
   const [checkinLoading, setCheckinLoading] = useState(false);
   const [streak, setStreak] = useState(0);
-  const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
+  const [expandedBilan, setExpandedBilan] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [firstname, setFirstname] = useState("");
   const [hasBilan, setHasBilan] = useState(false);
@@ -447,6 +405,27 @@ export default function DashboardPage() {
 
   const displayName = firstname || user?.user_metadata?.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "toi";
   const latestBadge = latest ? badge(latest.global_score) : null;
+
+  const chartData = assessments.length >= 2
+    ? assessments.slice().reverse().map(a => ({
+        date: new Date(a.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
+        score: a.global_score,
+      }))
+    : null;
+
+  const loadHistoricBilan = (assessment: Assessment, goToVideo = false) => {
+    sessionStorage.removeItem("paw_example_mode");
+    localStorage.removeItem("paw_example_mode");
+    sessionStorage.setItem("postureatwork_scores", JSON.stringify(assessment.scores));
+    const jobType = (assessment.scores as Record<string, unknown>)?.job_type ?? assessment.job_type ?? "bureau";
+    const answersKey = jobType === "debout" ? "postureatwork_answers_debout" : "postureatwork_answers";
+    if (assessment.answers) sessionStorage.setItem(answersKey, JSON.stringify(assessment.answers));
+    if (assessment.video_analysis) {
+      if (assessment.video_analysis.personne) sessionStorage.setItem("paw_analysis_personne", JSON.stringify(assessment.video_analysis.personne));
+      if (assessment.video_analysis.poste) sessionStorage.setItem("paw_analysis_poste", JSON.stringify(assessment.video_analysis.poste));
+    }
+    router.push(goToVideo ? "/final-report" : "/results");
+  };
 
   // ─── Loading state ───────────────────────────────────────────────────────────
 
@@ -914,41 +893,113 @@ export default function DashboardPage() {
           </motion.div>
         )}
 
+        {/* ── S_CHART : ÉVOLUTION ── */}
+        {chartData && (
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.21 }} style={{
+            borderRadius: 22, padding: "20px 20px",
+            background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)",
+          }}>
+            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0, marginBottom: 4 }}>📈 Ton évolution</p>
+            <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)", marginBottom: 16 }}>
+              Score global sur tes {assessments.length} derniers bilans
+            </p>
+            <ResponsiveContainer width="100%" height={180}>
+              <LineChart data={chartData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
+                <XAxis dataKey="date" stroke="rgba(240,240,250,0.15)" tick={{ fontSize: 10, fill: "rgba(220,220,245,0.35)" }} />
+                <YAxis domain={[0, 100]} stroke="rgba(240,240,250,0.15)" tick={{ fontSize: 10, fill: "rgba(220,220,245,0.35)" }} width={32} />
+                <Tooltip
+                  contentStyle={{ background: "#1b1b2e", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 12, fontSize: 12, color: "#f0f0fa" }}
+                  labelStyle={{ color: "rgba(220,220,245,0.5)", marginBottom: 4 }}
+                />
+                <Line type="monotone" dataKey="score" stroke="#2b5ce6" strokeWidth={2.5}
+                  dot={{ fill: "#2b5ce6", r: 4, strokeWidth: 0 }}
+                  activeDot={{ r: 6, fill: "#7c9fff" }}
+                  name="Score global"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </motion.div>
+        )}
+
         {/* ── S11 : HISTORIQUE ── */}
         {assessments.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }} style={{
             borderRadius: 22, padding: "20px 20px",
             background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)",
           }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0, marginBottom: 12 }}>📋 Historique des bilans</p>
+            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0, marginBottom: 12 }}>📋 Mes bilans</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {assessments.map((a, i) => {
+                const prev = assessments[i + 1];
+                const delta = prev ? a.global_score - prev.global_score : null;
                 const color = sc(a.global_score);
+                const b = badge(a.global_score);
+                const isExpanded = expandedBilan === a.id;
+                const jobType = (a.scores as Record<string, unknown>)?.job_type ?? a.job_type ?? "bureau";
                 return (
-                  <motion.div
-                    key={a.id}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.24 + i * 0.04 }}
-                    onClick={() => setSelectedAssessment(a)}
-                    style={{
-                      display: "flex", alignItems: "center", gap: 14, padding: "12px 14px",
-                      borderRadius: 14, cursor: "pointer",
-                      background: "rgba(255,255,255,0.02)", border: "0.5px solid rgba(255,255,255,0.05)",
-                    }}
-                  >
-                    <div style={{ width: 40, height: 40, borderRadius: 12, background: `${color}18`, border: `0.5px solid ${color}33`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: T.h, fontWeight: 900, fontSize: 13, color, flexShrink: 0 }}>
-                      {a.global_score}
+                  <motion.div key={a.id} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.24 + i * 0.04 }}
+                    style={{ borderRadius: 16, background: "rgba(255,255,255,0.02)", border: `0.5px solid ${isExpanded ? "rgba(43,92,230,0.3)" : "rgba(255,255,255,0.05)"}`, overflow: "hidden" }}>
+                    {/* ── Header ── */}
+                    <div onClick={() => setExpandedBilan(isExpanded ? null : a.id)}
+                      style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", cursor: "pointer" }}>
+                      <div style={{ width: 42, height: 42, borderRadius: 12, background: `${color}18`, border: `0.5px solid ${color}33`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: T.h, fontWeight: 900, fontSize: 14, color, flexShrink: 0 }}>
+                        {a.global_score}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa", margin: "0 0 4px" }}>
+                          {new Date(a.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                        </p>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                          <span style={{ padding: "2px 8px", borderRadius: 100, background: b.bg, border: `0.5px solid ${b.border}`, fontFamily: T.b, fontSize: 10, color: b.color }}>{b.label}</span>
+                          <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(255,255,255,0.05)", fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.4)" }}>
+                            {jobType === "debout" ? "🏭 Debout" : "💻 Bureau"}
+                          </span>
+                          {a.video_analysis && (
+                            <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(167,139,250,0.12)", fontFamily: T.b, fontSize: 10, color: "#a78bfa" }}>🎥 Vidéo</span>
+                          )}
+                          {delta !== null && delta !== 0 && (
+                            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 10, color: delta > 0 ? "#74c69d" : "#f09595" }}>
+                              {delta > 0 ? `↑ +${delta}` : `↓ ${delta}`}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <span style={{ fontSize: 10, color: "rgba(220,220,245,0.25)", flexShrink: 0 }}>{isExpanded ? "▲" : "▼"}</span>
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <p style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa", margin: 0 }}>
-                        {new Date(a.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
-                      </p>
-                      <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", margin: 0 }}>
-                        {badge(a.global_score).label}{a.video_analysis ? " · Analyse vidéo incluse" : ""}
-                      </p>
-                    </div>
-                    <span style={{ fontSize: 11, color: "rgba(220,220,245,0.25)" }}>→</span>
+
+                    {/* ── Expanded: mini-scores + actions ── */}
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.22 }} style={{ overflow: "hidden" }}>
+                          <div style={{ padding: "0 16px 14px", borderTop: "0.5px solid rgba(255,255,255,0.05)" }}>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12, marginBottom: 14 }}>
+                              {Object.keys(DIM_META).map(k => {
+                                const s = a.scores[k as keyof typeof a.scores] ?? 0;
+                                const m = DIM_META[k];
+                                return (
+                                  <span key={k} style={{ padding: "3px 10px", borderRadius: 100, background: `${m.color}14`, border: `0.5px solid ${m.color}30`, fontFamily: T.b, fontSize: 11, color: m.color }}>
+                                    {m.emoji} {s}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                              <button onClick={() => loadHistoricBilan(a)}
+                                style={{ flex: 1, padding: "10px 0", borderRadius: 100, cursor: "pointer", background: "#2b5ce6", border: "none", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "#fff" }}>
+                                Voir ce bilan →
+                              </button>
+                              {a.video_analysis && (
+                                <button onClick={() => loadHistoricBilan(a, true)}
+                                  style={{ flex: 1, padding: "10px 0", borderRadius: 100, cursor: "pointer", background: "rgba(167,139,250,0.12)", border: "0.5px solid rgba(167,139,250,0.3)", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "#a78bfa" }}>
+                                  🎥 Analyse vidéo →
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </motion.div>
                 );
               })}
@@ -967,13 +1018,6 @@ export default function DashboardPage() {
         </div>
 
       </div>
-
-      {/* Assessment Modal */}
-      <AnimatePresence>
-        {selectedAssessment && (
-          <AssessmentModal assessment={selectedAssessment} onClose={() => setSelectedAssessment(null)} />
-        )}
-      </AnimatePresence>
 
       {/* Delete Account Modal */}
       <AnimatePresence>
