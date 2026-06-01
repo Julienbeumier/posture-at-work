@@ -47,6 +47,31 @@ export default function AnalyzingPage() {
       const questionnaire_scores: Scores | null = scoresRaw ? JSON.parse(scoresRaw) : null;
       const questionnaire_answers = answersRaw ? JSON.parse(answersRaw) : {};
 
+      const jobType = (questionnaire_scores as (Record<string, unknown> | null))?.job_type as string
+        ?? sessionStorage.getItem("paw_video_job_type")
+        ?? localStorage.getItem("paw_job_type")
+        ?? "bureau";
+
+      // ── Debout analysis mode ─────────────────────────────────────────────
+      if (framesPersonneRaw && !framesPosteRaw && jobType === "debout") {
+        const framesPersonne: string[] = JSON.parse(framesPersonneRaw);
+        const res = await fetch("/api/analyze-video", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            frames: framesPersonne,
+            analysisType: "debout",
+            job_type: "debout",
+            questionnaire_scores,
+            questionnaire_answers,
+          }),
+        });
+        const data = await res.json();
+        sessionStorage.setItem("paw_analysis_personne", JSON.stringify(data));
+        setTimeout(() => router.push("/final-report"), 1200);
+        return;
+      }
+
       // ── Dual analysis mode (bureau) ─────────────────────────────────────
       if (framesPersonneRaw && framesPosteRaw) {
         setIsDual(true);

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import type { AnalysisReport, PersonneAnalysis, PosteAnalysis } from "@/lib/analysis-types";
+import type { AnalysisReport, PersonneAnalysis, PosteAnalysis, DeboutAnalysis } from "@/lib/analysis-types";
 
 // ─── System prompt ────────────────────────────────────────────────────────────
 
@@ -458,6 +458,112 @@ function buildFallbackPoste(): PosteAnalysis {
   };
 }
 
+function buildFallbackDebout(): DeboutAnalysis {
+  return {
+    analysisType: "debout",
+    globalPostureScore: 60,
+    jobTypeDetected: "Poste debout non identifié",
+    posture: {
+      colonne:           { score: 60, status: "attention", observation: "Légère hyperlordose compensatoire visible" },
+      epaules:           { score: 65, status: "attention", observation: "Épaules légèrement asymétriques" },
+      tete_cou:          { score: 62, status: "attention", observation: "Légère projection de la tête en avant" },
+      appui_jambes:      { score: 58, status: "attention", observation: "Appui préférentiel sur une jambe" },
+      membres_superieurs:{ score: 65, status: "attention", observation: "Non visible sur cette image" },
+    },
+    environnement: {
+      plan_travail:       { hauteur: "non_visible", observation: "Hauteur du plan de travail non évaluable" },
+      tapis_antifatigue:  "non_visible",
+      sol:                "Non identifiable",
+      contraintes_visibles: [],
+    },
+    mainIssues: [
+      { zone: "Colonne", issue: "Hyperlordose compensatoire", severity: "modere", consequence: "Lombalgies à moyen terme" },
+      { zone: "Appui", issue: "Asymétrie de l'appui", severity: "faible", consequence: "Fatigue musculaire unilatérale" },
+    ],
+    positivePoints: ["Position globalement fonctionnelle"],
+    recommendations: [
+      { priority: 1, action: "Varier les positions toutes les 30 minutes", why: "Éviter la fatigue musculaire statique", applicable_tous_postes: true },
+      { priority: 2, action: "Vérifier la hauteur du plan de travail", why: "Adapter l'ergonomie au poste", applicable_tous_postes: true },
+      { priority: 3, action: "Exercices de renforcement de la voûte plantaire", why: "Protéger les pieds et les genoux", applicable_tous_postes: true },
+    ],
+    overallAssessment: "Posture debout avec plusieurs points d'amélioration identifiés. Des ajustements simples peuvent réduire significativement la fatigue.",
+  };
+}
+
+// ─── Debout analysis prompt ────────────────────────────────────────────────────
+
+const DEBOUT_ANALYSIS_PROMPT = `Tu es un expert en ergonomie et kinésithérapie spécialisé dans l'analyse des travailleurs en station debout.
+Tu analyses des images d'un travailleur debout à son poste.
+
+Le poste de travail peut être TRÈS varié :
+comptoir de caisse, établi d'artisan, table de massage, cuisine professionnelle, chaîne de production, accueil, entrepôt, chantier, salle de classe — NE PAS supposer qu'il y a un ordinateur ou un bureau classique.
+
+Analyse dans cet ordre :
+
+1. POSTURE GLOBALE DEBOUT
+   - La colonne vertébrale est-elle alignée ?
+   - Y a-t-il une hyperlordose lombaire visible ?
+   - Les épaules sont-elles au même niveau ?
+   - La tête est-elle dans l'axe ou projetée en avant ?
+   - Le tronc est-il droit ou incliné ?
+
+2. APPUI ET ÉQUILIBRE
+   - L'appui est-il symétrique sur les deux jambes ?
+   - Y a-t-il une jambe préférentielle ?
+   - Les genoux sont-ils légèrement fléchis ou bloqués ?
+   - La position des pieds est-elle stable et équilibrée ?
+
+3. MEMBRES SUPÉRIEURS (selon ce qui est visible)
+   - Position des bras et des épaules pendant le travail
+   - Élévation des épaules visible ?
+   - Flexion/extension des poignets si visible
+
+4. ENVIRONNEMENT IMMÉDIAT (ce qui est visible)
+   - Hauteur du plan de travail semble-t-elle adaptée ?
+   - L'espace de travail force-t-il une posture contrainte ?
+   - Présence d'un tapis anti-fatigue visible ?
+   - Type de sol identifiable ?
+   - L'environnement oblige-t-il à se courber ou se pencher ?
+
+5. RISQUES TMS IDENTIFIÉS — ne citer QUE ce qui est clairement visible.
+
+6. POINTS POSITIFS
+
+7. RECOMMANDATIONS PRIORITAIRES — 3 actions applicables à n'importe quel poste debout.
+
+IMPORTANT :
+- Si tu ne vois pas clairement un élément, écris "Non visible sur cette image"
+- Ne suppose pas la présence d'équipements non visibles (ordinateur, clavier, etc.)
+- Adapte tes recommandations au type de poste visible
+
+Réponds UNIQUEMENT en JSON valide :
+{
+  "analysisType": "debout",
+  "globalPostureScore": <number 0-100>,
+  "jobTypeDetected": "<description courte du poste observé>",
+  "posture": {
+    "colonne": { "score": <number>, "status": "<bon|attention|critique>", "observation": "<string>" },
+    "epaules": { "score": <number>, "status": "<bon|attention|critique>", "observation": "<string>" },
+    "tete_cou": { "score": <number>, "status": "<bon|attention|critique>", "observation": "<string>" },
+    "appui_jambes": { "score": <number>, "status": "<bon|attention|critique>", "observation": "<string>" },
+    "membres_superieurs": { "score": <number>, "status": "<bon|attention|critique>", "observation": "<string>" }
+  },
+  "environnement": {
+    "plan_travail": { "hauteur": "<adapte|trop_bas|trop_haut|non_visible>", "observation": "<string>" },
+    "tapis_antifatigue": "<oui|non|non_visible>",
+    "sol": "<string>",
+    "contraintes_visibles": ["<string>"]
+  },
+  "mainIssues": [
+    { "zone": "<string>", "issue": "<string>", "severity": "<faible|modere|eleve>", "consequence": "<string>" }
+  ],
+  "positivePoints": ["<string>"],
+  "recommendations": [
+    { "priority": <number>, "action": "<string>", "why": "<string>", "applicable_tous_postes": <boolean> }
+  ],
+  "overallAssessment": "<string>"
+}`;
+
 // ─── Job-type specific prompts ────────────────────────────────────────────────
 
 const JOB_SYSTEM_PROMPTS: Record<string, string> = {
@@ -591,6 +697,31 @@ export async function POST(req: NextRequest) {
       const textBlock = msg.content.find(b => b.type === "text");
       if (!textBlock || textBlock.type !== "text") return NextResponse.json(buildFallbackPoste());
       const result: PosteAnalysis = parseJSON(textBlock.text);
+      return NextResponse.json(result);
+    }
+
+    // ── Debout analysis mode ────────────────────────────────────────────────
+    if (analysisType === "debout") {
+      const frameList = frames ?? frames_posture ?? [];
+      if (!frameList.length) return NextResponse.json(buildFallbackDebout());
+      if (!apiKey) return NextResponse.json(buildFallbackDebout());
+
+      const client = new Anthropic({ apiKey });
+      const msg = await client.messages.create({
+        model: "claude-sonnet-4-5",
+        max_tokens: 3000,
+        system: DEBOUT_ANALYSIS_PROMPT,
+        messages: [{
+          role: "user",
+          content: [
+            ...frameList.slice(0, 4).map(toImageBlock),
+            { type: "text", text: `${contextText}\n\nAnalyse les ${frameList.length} photos de ce travailleur en station debout.` },
+          ],
+        }],
+      });
+      const textBlock = msg.content.find(b => b.type === "text");
+      if (!textBlock || textBlock.type !== "text") return NextResponse.json(buildFallbackDebout());
+      const result: DeboutAnalysis = parseJSON(textBlock.text);
       return NextResponse.json(result);
     }
 

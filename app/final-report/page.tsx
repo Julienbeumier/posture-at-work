@@ -12,6 +12,8 @@ import type {
   PersonneAnalysis,
   PosteAnalysis,
   PersonneSegment,
+  DeboutAnalysis,
+  DeboutPostureSegment,
 } from "@/lib/analysis-types";
 import { saveAssessmentForUser, createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
@@ -179,6 +181,35 @@ function ElementCard({ label, score, issues, delay = 0, extra }: { label: string
   );
 }
 
+function DeboutSegCard({ label, seg, delay = 0 }: { label: string; seg: DeboutPostureSegment; delay?: number }) {
+  const color = scoreColor(seg.score);
+  const [open, setOpen] = useState(false);
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }}
+      onClick={() => setOpen(v => !v)}
+      style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", cursor: "pointer" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+        <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa" }}>{label}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color }}>{seg.score}/100</span>
+          <StatusBadge status={seg.status} />
+        </div>
+      </div>
+      <div style={{ height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 100, overflow: "hidden", marginBottom: open ? 10 : 0 }}>
+        <motion.div initial={{ width: 0 }} animate={{ width: `${seg.score}%` }} transition={{ duration: 0.8, delay: delay + 0.2 }}
+          style={{ height: "100%", background: color, borderRadius: 100 }} />
+      </div>
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} style={{ overflow: "hidden" }}>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, margin: "6px 0 0" }}>{seg.observation}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
 const SEGMENT_EXERCISE: Record<string, { name: string; instruction: string; link: string }> = {
   tete_cou:           { name: "Rétraction cervicale", instruction: "Rentre le menton sans baisser la tête, 10 rép. × 3s", link: "/mobilite?program=cible_cervicales" },
   epaules_dos_haut:   { name: "Ouverture des épaules", instruction: "Mains jointes dans le dos, poitrine vers l'avant, 30s", link: "/mobilite?program=cible_epaules" },
@@ -196,6 +227,8 @@ export default function FinalReportPage() {
   // Dual-report mode
   const [personneAnalysis, setPersonneAnalysis] = useState<PersonneAnalysis | null>(null);
   const [posteAnalysis, setPosteAnalysis] = useState<PosteAnalysis | null>(null);
+  // Debout mode
+  const [deboutAnalysis, setDeboutAnalysis] = useState<DeboutAnalysis | null>(null);
 
   const [questionnaireScore, setQuestionnaireScore] = useState<number | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -206,14 +239,17 @@ export default function FinalReportPage() {
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
 
-    // Try dual mode first
     const personneRaw = sessionStorage.getItem("paw_analysis_personne");
     const posteRaw = sessionStorage.getItem("paw_analysis_poste");
-    if (personneRaw && posteRaw) {
-      setPersonneAnalysis(JSON.parse(personneRaw));
-      setPosteAnalysis(JSON.parse(posteRaw));
+    if (personneRaw) {
+      const parsed = JSON.parse(personneRaw);
+      if (parsed.analysisType === "debout") {
+        setDeboutAnalysis(parsed);
+      } else if (posteRaw) {
+        setPersonneAnalysis(parsed);
+        setPosteAnalysis(JSON.parse(posteRaw));
+      }
     } else {
-      // Fallback to single mode
       const raw = sessionStorage.getItem("postureatwork_report");
       if (raw) setReport(JSON.parse(raw));
     }
@@ -228,7 +264,7 @@ export default function FinalReportPage() {
 
   useEffect(() => {
     if (!user || savedRef.current) return;
-    const target = report ?? personneAnalysis ?? null;
+    const target = report ?? personneAnalysis ?? deboutAnalysis ?? null;
     if (!target) return;
     savedRef.current = true;
     setSaveStatus("saving");
@@ -239,12 +275,12 @@ export default function FinalReportPage() {
     saveAssessmentForUser(user.id, scores, answers, target as unknown as Record<string, unknown>)
       .then(() => setSaveStatus("saved"))
       .catch(() => setSaveStatus("error"));
-  }, [user, report, personneAnalysis]);
+  }, [user, report, personneAnalysis, deboutAnalysis]);
 
   const isDual = !!(personneAnalysis && posteAnalysis);
 
   // ── No report ──────────────────────────────────────────────────────────────
-  if (!report && !isDual) {
+  if (!report && !isDual && !deboutAnalysis) {
     return (
       <main style={{ minHeight: "100vh", background: "#0f0f1a", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
         <div style={{ textAlign: "center", maxWidth: 340 }}>
@@ -256,6 +292,245 @@ export default function FinalReportPage() {
               Faire l&apos;analyse →
             </div>
           </Link>
+        </div>
+      </main>
+    );
+  }
+
+  // ── DEBOUT REPORT ─────────────────────────────────────────────────────────
+  if (deboutAnalysis) {
+    const da = deboutAnalysis;
+    const globalColor = scoreColor(da.globalPostureScore);
+
+    const DEBOUT_SEGS: Array<[keyof DeboutAnalysis["posture"], string]> = [
+      ["colonne", "Colonne vertébrale"],
+      ["epaules", "Épaules & niveau"],
+      ["tete_cou", "Tête & cou"],
+      ["appui_jambes", "Appui & équilibre jambes"],
+      ["membres_superieurs", "Membres supérieurs"],
+    ];
+
+    return (
+      <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingBottom: 80, position: "relative" }}>
+        <BackgroundBlobs blobs={[
+          { top: "-5%", right: "-5%", color: "rgba(167,139,250,0.10)", size: 480 },
+          { top: "45%", left: "-8%", color: "rgba(116,198,157,0.09)", size: 380 },
+          { bottom: "-10%", right: "15%", color: "rgba(43,92,230,0.07)", size: 400 },
+        ]} />
+        <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
+
+          {/* Nav */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 80, paddingBottom: 32 }}>
+            <Link href="/results" style={{ textDecoration: "none" }}>
+              <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.4)", cursor: "pointer" }}>← Résultats</span>
+            </Link>
+            <div onClick={() => window.print()} style={{ padding: "6px 14px", borderRadius: 100, cursor: "pointer", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.09)", fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>
+              🖨️ Imprimer
+            </div>
+          </div>
+
+          {/* Global score */}
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+            style={{ borderRadius: 28, padding: "28px 28px 24px", textAlign: "center", marginBottom: 20, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20, padding: "6px 14px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)" }}>
+              <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#74c69d" }}>✅ Analyse posturale — Poste debout</span>
+            </div>
+            <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#f0f0fa", marginBottom: da.jobTypeDetected ? 14 : 24 }}>
+              {firstname ? `Le bilan debout de ${firstname}` : "Ton bilan PostureAtWork — Debout"}
+            </h1>
+            {da.jobTypeDetected && (
+              <div style={{ marginBottom: 20 }}>
+                <span style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(167,139,250,0.12)", border: "0.5px solid rgba(167,139,250,0.3)", fontFamily: T.b, fontSize: 12, color: "#a78bfa" }}>
+                  Poste détecté : {da.jobTypeDetected}
+                </span>
+              </div>
+            )}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 28, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                <ScoreRing score={da.globalPostureScore} size={110} color={globalColor} />
+                <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>Score posture</span>
+              </div>
+              {questionnaireScore != null && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                  <ScoreRing score={questionnaireScore} size={82} color="#7c9fff" />
+                  <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)" }}>Questionnaire</span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Posture section */}
+          <section style={{ marginBottom: 20 }}>
+            <div style={{ borderRadius: 22, padding: "20px 20px 16px", background: "rgba(167,139,250,0.05)", border: "0.5px solid rgba(167,139,250,0.15)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <SectionTitle emoji="🧍" title="Ta posture debout" />
+                <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: globalColor }}>{da.globalPostureScore}/100</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {DEBOUT_SEGS.map(([key, label], i) => (
+                  <DeboutSegCard key={key} label={label} seg={da.posture[key]} delay={i * 0.06} />
+                ))}
+              </div>
+              <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.65, margin: 0 }}>{da.overallAssessment}</p>
+              </div>
+              {da.mainIssues.length > 0 && (
+                <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
+                  {da.mainIssues.map((issue, i) => {
+                    const sevColor = issue.severity === "eleve" ? "#f09595" : issue.severity === "modere" ? "#f4a261" : "#74c69d";
+                    return (
+                      <div key={i} style={{ borderRadius: 12, padding: "10px 14px", background: `${sevColor}10`, border: `0.5px solid ${sevColor}35` }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                          <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 12, color: sevColor }}>{issue.zone}</span>
+                          <span style={{ fontFamily: T.b, fontSize: 11, color: `${sevColor}99` }}>· {issue.severity}</span>
+                        </div>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.6)", margin: 0 }}>{issue.issue}</p>
+                        <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", margin: "3px 0 0" }}>→ {issue.consequence}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {da.positivePoints.length > 0 && (
+                <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {da.positivePoints.map((pt, i) => (
+                    <span key={i} style={{ padding: "4px 10px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontSize: 11, color: "#74c69d" }}>
+                      ✓ {pt}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Environnement section */}
+          <section style={{ marginBottom: 20 }}>
+            <div style={{ borderRadius: 22, padding: "20px 20px 16px", background: "rgba(59,130,246,0.05)", border: "0.5px solid rgba(59,130,246,0.15)" }}>
+              <SectionTitle emoji="🏭" title="Ton environnement de travail" />
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <div style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa" }}>Plan de travail</span>
+                    <StatusBadge status={da.environnement.plan_travail.hauteur === "adapte" ? "bon" : "attention"} />
+                  </div>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", margin: 0 }}>
+                    Hauteur : {da.environnement.plan_travail.hauteur.replace(/_/g, " ")}
+                  </p>
+                  {da.environnement.plan_travail.observation && (
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: "3px 0 0", lineHeight: 1.5 }}>{da.environnement.plan_travail.observation}</p>
+                  )}
+                </div>
+                <div style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa" }}>Tapis anti-fatigue</span>
+                    <StatusBadge status={da.environnement.tapis_antifatigue === "oui" ? "bon" : "attention"} />
+                  </div>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: 0 }}>
+                    {da.environnement.tapis_antifatigue === "oui" ? "Présent — bonne pratique" : da.environnement.tapis_antifatigue === "non" ? "Absent — recommandé pour le confort" : "Non visible sur les images"}
+                  </p>
+                </div>
+                {da.environnement.sol && (
+                  <div style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
+                    <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa" }}>Sol</span>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: "4px 0 0" }}>{da.environnement.sol}</p>
+                  </div>
+                )}
+                {da.environnement.contraintes_visibles.length > 0 && (
+                  <div style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(240,149,149,0.06)", border: "0.5px solid rgba(240,149,149,0.2)" }}>
+                    <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f09595" }}>Contraintes détectées</span>
+                    <ul style={{ paddingLeft: 14, margin: "6px 0 0" }}>
+                      {da.environnement.contraintes_visibles.map((c, i) => (
+                        <li key={i} style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.6 }}>{c}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* Recommendations */}
+          {da.recommendations.length > 0 && (
+            <section style={{ marginBottom: 20 }}>
+              <SectionTitle emoji="⚡" title="Tes priorités" />
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {da.recommendations.slice(0, 5).map((rec, i) => (
+                  <motion.div key={i}
+                    initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.08 }}
+                    style={{ borderRadius: 18, padding: "16px 18px", background: i === 0 ? "rgba(240,149,149,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${i === 0 ? "rgba(240,149,149,0.25)" : "rgba(255,255,255,0.08)"}` }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                      <div style={{ width: 26, height: 26, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 12, color: i === 0 ? "#f09595" : "rgba(220,220,245,0.35)" }}>
+                        {i + 1}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", display: "block", marginBottom: 6 }}>{rec.action}</span>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, margin: 0 }}>{rec.why}</p>
+                        {rec.applicable_tous_postes && (
+                          <span style={{ display: "inline-block", marginTop: 6, padding: "2px 8px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontSize: 10, color: "#74c69d" }}>
+                            Applicable à tous les postes debout
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Save */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+            style={{ borderRadius: 24, padding: "24px 26px", marginBottom: 16, background: "linear-gradient(135deg, rgba(116,198,157,0.07), rgba(43,92,230,0.07))", border: "0.5px solid rgba(116,198,157,0.2)" }}>
+            <AnimatePresence mode="wait">
+              {saveStatus === "saved" ? (
+                <motion.div key="saved" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: "center", padding: "12px 0" }}>
+                  <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
+                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa", marginBottom: 6 }}>Rapport sauvegardé !</p>
+                  <Link href="/dashboard" style={{ textDecoration: "none" }}>
+                    <div style={{ display: "inline-block", padding: "10px 24px", borderRadius: 100, background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#74c69d", cursor: "pointer" }}>
+                      Voir mon dashboard →
+                    </div>
+                  </Link>
+                </motion.div>
+              ) : !user ? (
+                <motion.div key="unauthenticated" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <div style={{ fontSize: 24, marginBottom: 10 }}>💾</div>
+                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", marginBottom: 6 }}>Sauvegarder mon rapport</p>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)", marginBottom: 20, lineHeight: 1.65 }}>Crée un compte gratuit pour accéder à ton bilan depuis n&apos;importe où.</p>
+                  <div onClick={() => router.push("/auth?redirect=/final-report")}
+                    style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
+                    Créer mon compte gratuit →
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div key="autosave" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)" }}>
+                    {saveStatus === "saving" ? "Sauvegarde en cours…" : `Connecté — ${user.email}`}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Footer */}
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <Link href="/results" style={{ textDecoration: "none", flex: 1 }}>
+              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)" }}>
+                ← Résultats questionnaire
+              </div>
+            </Link>
+            <Link href="/video-intro" style={{ textDecoration: "none", flex: 1 }}>
+              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)" }}>
+                🔄 Refaire l&apos;analyse
+              </div>
+            </Link>
+            <Link href="/dashboard" style={{ textDecoration: "none", flex: 1 }}>
+              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#7c9fff" }}>
+                Dashboard →
+              </div>
+            </Link>
+          </div>
+
         </div>
       </main>
     );

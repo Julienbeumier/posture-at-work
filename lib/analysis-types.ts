@@ -126,3 +126,44 @@ export interface PosteAnalysis {
   }>;
   overallAssessment: string;
 }
+
+// ─── Debout analysis type ─────────────────────────────────────────────────────
+
+export interface DeboutPostureSegment {
+  score: number;
+  status: "bon" | "attention" | "critique";
+  observation: string;
+}
+
+export interface DeboutAnalysis {
+  analysisType: "debout";
+  globalPostureScore: number;
+  jobTypeDetected?: string;
+  posture: {
+    colonne: DeboutPostureSegment;
+    epaules: DeboutPostureSegment;
+    tete_cou: DeboutPostureSegment;
+    appui_jambes: DeboutPostureSegment;
+    membres_superieurs: DeboutPostureSegment;
+  };
+  environnement: {
+    plan_travail: { hauteur: "adapte" | "trop_bas" | "trop_haut" | "non_visible"; observation: string };
+    tapis_antifatigue: "oui" | "non" | "non_visible";
+    sol: string;
+    contraintes_visibles: string[];
+  };
+  mainIssues: Array<{
+    zone: string;
+    issue: string;
+    severity: "faible" | "modere" | "eleve";
+    consequence: string;
+  }>;
+  positivePoints: string[];
+  recommendations: Array<{
+    priority: number;
+    action: string;
+    why: string;
+    applicable_tous_postes: boolean;
+  }>;
+  overallAssessment: string;
+}

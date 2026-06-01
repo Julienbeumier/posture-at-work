@@ -23,12 +23,12 @@ type Phase =
 const STEP1_DURATION = 40;
 const STEP2_DURATION = 15;
 
-// Default (debout/other) step 1 speech
-const STEP1_SPEECH: Array<{ t: number; text: string }> = [
-  { t: 0, text: "Installe ton téléphone sur le côté pour qu'on te voie de profil, de la tête aux genoux. Maintenant reprends ta position de travail habituelle." },
-  { t: 12, text: "Parfait. Continue à travailler normalement, tape quelque chose sur ton clavier." },
-  { t: 22, text: "Très bien. Regarde ton téléphone comme tu le fais d'habitude au bureau." },
-  { t: 32, text: "Dernière étape. Relâche tout. Position naturelle." },
+// Debout step 1 speech
+const DEBOUT_STEP1_SPEECH: Array<{ t: number; text: string }> = [
+  { t: 0, text: "Place ton téléphone de côté pour qu'on te voie de la tête aux pieds. Prends ta position de travail habituelle." },
+  { t: 10, text: "Reste debout dans ta position naturelle. Comme si tu travaillais normalement." },
+  { t: 20, text: "Continue à faire semblant de travailler — gestes habituels, position normale." },
+  { t: 30, text: "Dernières secondes. Position naturelle, regarde devant toi." },
 ];
 
 // Bureau phase 1 speech
@@ -171,7 +171,7 @@ export default function VideoCapturePage() {
     framesRef.current.posture = [];
     const startTime = Date.now();
     const isBureauMode = jobTypeRef.current === "bureau";
-    const speechScript = isBureauMode ? BUREAU_STEP1_SPEECH : STEP1_SPEECH;
+    const speechScript = isBureauMode ? BUREAU_STEP1_SPEECH : DEBOUT_STEP1_SPEECH;
 
     intervalRef.current = setInterval(() => {
       const e = (Date.now() - startTime) / 1000;
@@ -179,7 +179,7 @@ export default function VideoCapturePage() {
       if (e >= STEP1_DURATION && intervalRef.current) clearInterval(intervalRef.current);
     }, 100);
 
-    speechScript.forEach(({ t, text }) => {
+    speechScript.forEach(({ t, text }: { t: number; text: string }) => {
       addTimer(() => { setCurrentInstruction(text); speak(text); }, t * 1000);
     });
 
@@ -207,7 +207,15 @@ export default function VideoCapturePage() {
         setPhase("processing");
         setTimeout(() => router.push("/video-capture-poste"), 800);
       } else {
-        setPhase("between");
+        // Debout mode: no step 2, save frames and go directly to analyzing
+        try {
+          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture));
+        } catch {
+          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture.slice(0, 4)));
+        }
+        if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
+        setPhase("processing");
+        setTimeout(() => { setPhase("done"); router.push("/analyzing"); }, 600);
       }
     }, STEP1_DURATION * 1000);
   }, [router]);
@@ -283,7 +291,7 @@ export default function VideoCapturePage() {
             <p className="text-slate-400 text-sm leading-relaxed">
               {isBureau
                 ? "40 secondes de profil assis. Place ton téléphone sur le côté avant de commencer."
-                : <>2 étapes courtes : <strong className="text-white">40s de profil</strong> puis <strong className="text-white">15s de bureau</strong>. Installe ton téléphone et mets tes écouteurs.</>
+                : "40 secondes pour analyser ta posture debout. Installe ton téléphone face à toi et mets tes écouteurs."
               }
             </p>
             <motion.button
@@ -338,7 +346,7 @@ export default function VideoCapturePage() {
                 color: isBureau ? "#7c9fff" : "#a78bfa",
                 border: `1px solid ${isBureau ? "rgba(43,92,230,0.35)" : "rgba(167,139,250,0.35)"}`,
               }}>
-                {isBureau ? "📹 Phase 1/2 — Analyse posture" : "Étape 1 / 2 — Profil assis"}
+                {isBureau ? "📹 Phase 1/2 — Analyse posture" : "📹 Analyse posture debout"}
               </span>
               <button onClick={switchCamera}
                 style={{ width: 42, height: 42, borderRadius: 21, background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)", color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -346,19 +354,60 @@ export default function VideoCapturePage() {
               </button>
             </div>
 
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
-              {/* Sitting silhouette */}
-              <svg width="80" height="140" viewBox="0 0 80 140" opacity={0.35}>
-                <circle cx="40" cy="14" r="12" fill="white" />
-                <rect x="26" y="28" width="28" height="38" rx="8" fill="white" />
-                <rect x="54" y="48" width="22" height="10" rx="5" fill="white" />
-                <rect x="26" y="62" width="28" height="8" rx="4" fill="white" />
-                <rect x="26" y="70" width="10" height="36" rx="5" fill="white" />
-                <rect x="44" y="70" width="10" height="36" rx="5" fill="white" />
-              </svg>
-              <p style={{ color: "rgba(255,255,255,0.65)", fontSize: 13, textAlign: "center", maxWidth: 240 }}>
-                {isBureau ? "Vue de profil — assis dans ta position habituelle" : "Cadre-toi de profil, de la tête aux genoux"}
-              </p>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, padding: "0 20px" }}>
+              {isBureau ? (
+                <>
+                  <svg width="80" height="140" viewBox="0 0 80 140" opacity={0.35}>
+                    <circle cx="40" cy="14" r="12" fill="white" />
+                    <rect x="26" y="28" width="28" height="38" rx="8" fill="white" />
+                    <rect x="54" y="48" width="22" height="10" rx="5" fill="white" />
+                    <rect x="26" y="62" width="28" height="8" rx="4" fill="white" />
+                    <rect x="26" y="70" width="10" height="36" rx="5" fill="white" />
+                    <rect x="44" y="70" width="10" height="36" rx="5" fill="white" />
+                  </svg>
+                  <p style={{ color: "rgba(255,255,255,0.65)", fontSize: 13, textAlign: "center", maxWidth: 240 }}>
+                    Vue de profil — assis dans ta position habituelle
+                  </p>
+                </>
+              ) : (
+                <>
+                  <svg width="70" height="130" viewBox="0 0 70 130" opacity={0.35}>
+                    <circle cx="35" cy="12" r="11" fill="white" />
+                    <rect x="24" y="25" width="22" height="38" rx="7" fill="white" />
+                    <rect x="6" y="28" width="16" height="8" rx="4" fill="white" />
+                    <rect x="48" y="28" width="16" height="8" rx="4" fill="white" />
+                    <rect x="24" y="63" width="9" height="46" rx="4" fill="white" />
+                    <rect x="37" y="63" width="9" height="46" rx="4" fill="white" />
+                  </svg>
+                  <div style={{ width: "100%", maxWidth: 300 }}>
+                    <p style={{ color: "rgba(255,255,255,0.80)", fontSize: 13, fontWeight: 700, textAlign: "center", marginBottom: 10 }}>
+                      📍 Prépare-toi
+                    </p>
+                    {[
+                      "Place ton téléphone à 2-3 mètres de toi",
+                      "Il doit te voir de la tête aux pieds",
+                      "Prends ta position de travail habituelle",
+                      "Pas besoin de PC ou de bureau visible",
+                    ].map((item, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 5 }}>
+                        <span style={{ color: "#a78bfa", flexShrink: 0 }}>›</span>
+                        <span style={{ color: "rgba(255,255,255,0.65)", fontSize: 12 }}>{item}</span>
+                      </div>
+                    ))}
+                    <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 4 }}>
+                      {[
+                        "Je suis visible de la tête aux pieds",
+                        "Je suis dans ma position de travail normale",
+                        "Mon téléphone est stable (posé ou appuyé)",
+                      ].map((item, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(116,198,157,0.9)" }}>
+                          <span>✅</span><span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             <div style={{ padding: "0 20px 40px" }}>
@@ -381,7 +430,7 @@ export default function VideoCapturePage() {
                 color: isBureau ? "#7c9fff" : "#a78bfa",
                 border: `1px solid ${isBureau ? "rgba(43,92,230,0.35)" : "rgba(167,139,250,0.35)"}`,
               }}>
-                {isBureau ? "📹 Phase 1/2 — Analyse posture" : "Étape 1 / 2 — Profil assis"}
+                {isBureau ? "📹 Phase 1/2 — Analyse posture" : "📹 Analyse posture debout"}
               </span>
               <span style={{ fontSize: 11, fontWeight: 800, color: "#f09595", display: "flex", alignItems: "center", gap: 5 }}>
                 <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f09595", display: "inline-block", animation: "pulse 1s infinite" }} />
