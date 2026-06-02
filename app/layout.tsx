@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import CookieBanner from "@/components/CookieBanner";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import ThemeEnforcer from "@/components/ThemeEnforcer";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -40,6 +41,7 @@ export default function RootLayout({
         style={{ fontFamily: "var(--font-jakarta), sans-serif" }}
       >
         <ThemeProvider>
+          <ThemeEnforcer />
           <Navbar />
           {children}
           <CookieBanner />
