@@ -21,21 +21,21 @@ const CATEGORIES = [
     title: "Ton setup", subtitle: "Poste de travail & ergonomie", emoji: "💻",
     color: "#2b5ce6", colorBg: "rgba(43,92,230,0.10)", colorBorder: "rgba(43,92,230,0.20)",
     selectedBg: "rgba(43,92,230,0.18)", selectedColor: "#a8c0ff",
-    requiredQ: ["q1", "q2", "q3", "q4", "q5", "q5b", "q5c"],
+    requiredQ: ["q1", "q2", "q3", "q4", "q5", "q5b", "q5c", "q_hauteur_bureau", "q_double_ecran", "q_eclairage"],
   },
   {
     index: 1, id: "cat-2",
     title: "Tes douleurs", subtitle: "État de ton corps", emoji: "🩺",
     color: "#e24b4a", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
     selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
-    requiredQ: ["q6", "q7", "q8", "q9", "q10", "q11", "q12", "q12b"],
+    requiredQ: ["q6", "q7", "q8", "q9", "q10", "q11", "q12", "q12b", "q_irradiation_bras", "q_fourmillements", "q_douleur_nuit"],
   },
   {
     index: 2, id: "cat-3",
     title: "Habitudes de travail", subtitle: "Pauses & comportements", emoji: "⏱️",
     color: "#d4622a", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
     selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
-    requiredQ: ["q14", "q14b", "q15"],
+    requiredQ: ["q14", "q14b", "q15", "q_posture_visio", "q_laptop_hors_bureau", "q_anciennete_poste"],
   },
   {
     index: 3, id: "cat-4",
@@ -73,7 +73,7 @@ function isQuestionAnswered(q: string, answers: QuestionnaireAnswers): boolean {
   const val = (answers as unknown as Record<string, unknown>)[q];
   if (q === "q21") return Array.isArray(val) && (val as string[]).length > 0;
   if (["q6", "q7", "q8", "q9", "q10", "q25"].includes(q)) return val !== null;
-  if (["q13", "q17", "q19"].includes(q)) return true;
+  if (["q13", "q17", "q19", "q_stress_travail"].includes(q)) return true;
   return typeof val === "string" && val !== "";
 }
 
@@ -338,9 +338,9 @@ function SliderInput({
 // ─── Question block wrapper ───────────────────────────────────────────────────
 
 function QBlock({
-  number, question, children, answered, cat,
+  number, question, note, children, answered, cat,
 }: {
-  number: string; question: string; children: React.ReactNode;
+  number: string; question: string; note?: string; children: React.ReactNode;
   answered: boolean; cat: typeof CATEGORIES[number];
 }) {
   return (
@@ -376,17 +376,16 @@ function QBlock({
         >
           {answered ? "✓" : number}
         </div>
-        <p
-          style={{
-            color: "var(--text-primary)",
-            fontSize: 14,
-            fontFamily: T.b,
-            lineHeight: 1.5,
-            margin: 0,
-          }}
-        >
-          {question}
-        </p>
+        <div style={{ flex: 1 }}>
+          <p style={{ color: "var(--text-primary)", fontSize: 14, fontFamily: T.b, lineHeight: 1.5, margin: 0 }}>
+            {question}
+          </p>
+          {note && (
+            <p style={{ color: "var(--t45)", fontSize: 11, fontFamily: T.b, lineHeight: 1.55, margin: "6px 0 0", padding: "6px 10px", borderRadius: 8, background: `${cat.color}12`, borderLeft: `2px solid ${cat.color}40` }}>
+              💡 {note}
+            </p>
+          )}
+        </div>
       </div>
       {children}
     </div>
@@ -714,6 +713,32 @@ function BureauQuestionnaire() {
               { value: "none_needed", label: "❌ Non, je n'en ai pas besoin" },
             ]} />
           </QBlock>
+          <QBlock number="8" question="Ton bureau (table) est-il à la bonne hauteur ?" note="La hauteur idéale permet de poser les avant-bras à plat, coudes à 90°, sans hausser les épaules." answered={!!answers.q_hauteur_bureau} cat={CATEGORIES[0]}>
+            <ChoiceGrid cat={CATEGORIES[0]} value={answers.q_hauteur_bureau} onChange={(v) => update("q_hauteur_bureau", v)} options={[
+              { value: "correct", label: "✅ Oui — coudes à 90° quand je tape" },
+              { value: "trop_haut", label: "🔸 Un peu trop haut — épaules surélevées" },
+              { value: "trop_bas", label: "🔸 Un peu trop bas — je me penche" },
+              { value: "sais_pas", label: "❓ Je ne sais pas comment vérifier" },
+              { value: "reglable", label: "📐 Bureau assis-debout réglable" },
+            ]} />
+          </QBlock>
+          <QBlock number="9" question="Utilises-tu un ou plusieurs écrans ?" note="Deux écrans côte à côte imposent des rotations cervicales répétées — la disposition compte autant que le nombre." answered={!!answers.q_double_ecran} cat={CATEGORIES[0]}>
+            <ChoiceGrid cat={CATEGORIES[0]} value={answers.q_double_ecran} onChange={(v) => update("q_double_ecran", v)} options={[
+              { value: "laptop_seul", label: "💻 Laptop seul (sans écran externe)" },
+              { value: "ecran_externe", label: "🖥️ Un écran externe" },
+              { value: "deux_ecrans", label: "🖥️🖥️ Deux écrans ou plus" },
+              { value: "laptop_plus_ecran", label: "💻🖥️ Laptop + écran externe" },
+            ]} />
+          </QBlock>
+          <QBlock number="10" question="Comment est l'éclairage de ton poste ?" note="Les reflets et le contre-jour forcent les yeux à compenser, ce qui crée des mauvaises postures (rapprochement de l'écran, inclinaison de la tête)." answered={!!answers.q_eclairage} cat={CATEGORIES[0]}>
+            <ChoiceGrid cat={CATEGORIES[0]} value={answers.q_eclairage} onChange={(v) => update("q_eclairage", v)} options={[
+              { value: "bon", label: "✅ Bon — pas de reflets sur l'écran" },
+              { value: "fenetre_dos", label: "🔸 Fenêtre dans le dos ou de côté" },
+              { value: "contre_jour", label: "⚠️ Fenêtre en face — contre-jour" },
+              { value: "artificiel", label: "💡 Éclairage artificiel uniquement" },
+              { value: "reflets", label: "😟 Reflets visibles sur mon écran" },
+            ]} />
+          </QBlock>
         </CategorySection>
 
         {/* CAT 2 — DOULEURS */}
@@ -755,6 +780,52 @@ function BureauQuestionnaire() {
               { value: "none", label: "✨ Je n'ai pas de douleurs" },
             ]} />
           </QBlock>
+          <QBlock number="16" question="As-tu des douleurs ou sensations qui descendent dans le bras ou la main ?" note="Fourmillements, décharges électriques ou douleurs qui irradient peuvent signaler une compression nerveuse cervicale." answered={!!answers.q_irradiation_bras} cat={CATEGORIES[1]}>
+            <ChoiceGrid cat={CATEGORIES[1]} value={answers.q_irradiation_bras} onChange={(v) => update("q_irradiation_bras", v)} options={[
+              { value: "non", label: "✅ Non, douleurs localisées uniquement" },
+              { value: "epaule", label: "🔸 Parfois une sensation dans l'épaule" },
+              { value: "coude", label: "😟 Oui, ça descend jusqu'au coude" },
+              { value: "main", label: "😫 Oui, jusqu'à la main / aux doigts" },
+            ]} />
+          </QBlock>
+          <QBlock number="17" question="As-tu des fourmillements ou engourdissements dans les mains ?" note="Les fourmillements nocturnes ou matinaux dans le pouce et les deux premiers doigts sont souvent le signe précoce du syndrome du canal carpien." answered={!!answers.q_fourmillements} cat={CATEGORIES[1]}>
+            <ChoiceGrid cat={CATEGORIES[1]} value={answers.q_fourmillements} onChange={(v) => update("q_fourmillements", v)} options={[
+              { value: "jamais", label: "✅ Non, jamais" },
+              { value: "nuit_reveil", label: "🔸 Parfois — surtout la nuit ou au réveil" },
+              { value: "travail", label: "😟 Souvent pendant le travail" },
+              { value: "permanent", label: "😫 Presque en permanence" },
+            ]} />
+          </QBlock>
+          <QBlock number="18" question="As-tu des maux de tête qui partent de la nuque ou de la base du crâne ?" note="Les céphalées cervicogènes sont très fréquentes chez les travailleurs sur écran et souvent confondues avec des migraines — leur cause est musculaire et posturale." answered={!!answers.q_maux_tete_nuque} cat={CATEGORIES[1]}>
+            <ChoiceGrid cat={CATEGORIES[1]} value={answers.q_maux_tete_nuque} onChange={(v) => update("q_maux_tete_nuque", v)} options={[
+              { value: "non", label: "✅ Non, pas de maux de tête de ce type" },
+              { value: "parfois", label: "🔸 Parfois en fin de journée" },
+              { value: "semaine", label: "😟 Plusieurs fois par semaine" },
+              { value: "quotidien", label: "😫 Quotidiennement" },
+            ]} />
+          </QBlock>
+          <QBlock number="19" question="As-tu une sensation de faiblesse ou de maladresse dans les mains ?" note="Difficultés à tenir des objets ou à les ramasser peut indiquer une compression nerveuse cervicale ou du canal carpien." answered={!!answers.q_perte_force} cat={CATEGORIES[1]}>
+            <ChoiceGrid cat={CATEGORIES[1]} value={answers.q_perte_force} onChange={(v) => update("q_perte_force", v)} options={[
+              { value: "normal", label: "✅ Non, force et précision normales" },
+              { value: "parfois", label: "🔸 Parfois je laisse tomber des objets" },
+              { value: "regulier", label: "😟 Oui, sensation de faiblesse régulière" },
+            ]} />
+          </QBlock>
+          <QBlock number="20" question="Tes douleurs te réveillent-elles la nuit ?" answered={!!answers.q_douleur_nuit} cat={CATEGORIES[1]}>
+            <ChoiceGrid cat={CATEGORIES[1]} value={answers.q_douleur_nuit} onChange={(v) => update("q_douleur_nuit", v)} options={[
+              { value: "non", label: "✅ Non, je dors sans douleurs" },
+              { value: "inconfortable", label: "🔸 Parfois je me réveille inconfortable" },
+              { value: "reveille", label: "😟 Oui, les douleurs me réveillent" },
+              { value: "souvent", label: "😫 Souvent — ça perturbe mon sommeil" },
+            ]} />
+          </QBlock>
+          <QBlock number="21" question="As-tu des vertiges ou sensations de tête lourde en journée ?" note="Souvent lié aux tensions des muscles sous-occipitaux — directement liées à la posture de travail et à la position de l'écran." answered={!!answers.q_vertiges} cat={CATEGORIES[1]}>
+            <ChoiceGrid cat={CATEGORIES[1]} value={answers.q_vertiges} onChange={(v) => update("q_vertiges", v)} options={[
+              { value: "non", label: "✅ Non" },
+              { value: "parfois", label: "🔸 Parfois en fin de journée" },
+              { value: "souvent", label: "😟 Souvent — surtout après le travail" },
+            ]} />
+          </QBlock>
         </CategorySection>
 
         {/* CAT 3 — HABITUDES */}
@@ -786,6 +857,35 @@ function BureauQuestionnaire() {
               { value: "hand", label: "📱 Téléphone à la main" },
               { value: "speaker", label: "☎️ Haut-parleur posé sur le bureau" },
               { value: "rarely", label: "🤷 Je téléphone peu au bureau" },
+            ]} />
+          </QBlock>
+          <QBlock number="20" question="Pendant tes réunions en visio, tu es ?" note="Les réunions en visio dans le canapé semblent confortables mais créent des tensions cervicales importantes sur la durée." answered={!!answers.q_posture_visio} cat={CATEGORIES[2]}>
+            <ChoiceGrid cat={CATEGORIES[2]} value={answers.q_posture_visio} onChange={(v) => update("q_posture_visio", v)} options={[
+              { value: "bureau", label: "🪑 Assis à mon bureau comme d'habitude" },
+              { value: "canape", label: "🛋️ Dans le canapé ou un fauteuil" },
+              { value: "allonge", label: "🛏️ Allongé ou semi-allongé" },
+              { value: "debout", label: "🚶 Debout ou en marchant" },
+              { value: "telephone", label: "📱 Sur téléphone, souvent en mouvement" },
+            ]} />
+          </QBlock>
+          <QBlock number="21" question="Travailles-tu parfois sur laptop dans le canapé ou le lit ?" note="Le laptop sur les genoux ou le lit est la position la plus destructrice pour la colonne cervicale — la tête se projette en avant et la charge sur la nuque est multipliée par 4." answered={!!answers.q_laptop_hors_bureau} cat={CATEGORIES[2]}>
+            <ChoiceGrid cat={CATEGORIES[2]} value={answers.q_laptop_hors_bureau} onChange={(v) => update("q_laptop_hors_bureau", v)} options={[
+              { value: "jamais", label: "✅ Non, toujours à mon bureau" },
+              { value: "parfois", label: "🔸 Parfois — quelques heures par semaine" },
+              { value: "souvent", label: "😟 Souvent — plusieurs heures par jour" },
+              { value: "principale", label: "😫 C'est ma position principale" },
+            ]} />
+          </QBlock>
+          <QBlock number="22" question="Comment évalues-tu ton niveau de stress au travail ?" note="Le stress chronique active en permanence les trapèzes et la nuque — travailler sur la posture sans gérer le stress donne des résultats limités." answered={true} cat={CATEGORIES[2]}>
+            <SliderInput value={answers.q_stress_travail} min={0} max={5} step={1} unit="" reference="0 = aucun stress · 5 = très important" onChange={(v) => update("q_stress_travail", v)} cat={CATEGORIES[2]} />
+          </QBlock>
+          <QBlock number="23" question="Depuis combien de temps travailles-tu dans ce poste ?" note="Après plusieurs années, les compensations posturales deviennent automatiques et nécessitent souvent un regard professionnel." answered={!!answers.q_anciennete_poste} cat={CATEGORIES[2]}>
+            <ChoiceGrid cat={CATEGORIES[2]} value={answers.q_anciennete_poste} onChange={(v) => update("q_anciennete_poste", v)} options={[
+              { value: "moins_6mois", label: "🆕 Moins de 6 mois" },
+              { value: "6m_2ans", label: "📅 6 mois à 2 ans" },
+              { value: "2_5ans", label: "📅 2 à 5 ans" },
+              { value: "5_10ans", label: "⏳ 5 à 10 ans" },
+              { value: "plus_10ans", label: "⌛ Plus de 10 ans" },
             ]} />
           </QBlock>
         </CategorySection>

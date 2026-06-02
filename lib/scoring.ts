@@ -9,6 +9,9 @@ export interface QuestionnaireAnswers {
   q5: string;   // good | bad | trackpad
   q5b: string;  // adjustable | fixed | couch | ball
   q5c: string;  // adapted | not_adapted | none_needed
+  q_hauteur_bureau: string;    // correct | trop_haut | trop_bas | sais_pas | reglable
+  q_double_ecran: string;      // laptop_seul | ecran_externe | deux_ecrans | laptop_plus_ecran
+  q_eclairage: string;         // bon | fenetre_dos | contre_jour | artificiel | reflets
 
   // Cat 2 — Pain
   q6: number | null;   // 0-5
@@ -19,12 +22,22 @@ export interface QuestionnaireAnswers {
   q11: string;  // none | days | weeks | months | year
   q12: string;  // none | morning | day | end | always
   q12b: string; // yes | partial | no | none
+  q_irradiation_bras: string;  // non | epaule | coude | main
+  q_fourmillements: string;    // jamais | nuit_reveil | travail | permanent
+  q_maux_tete_nuque: string;   // non | parfois | semaine | quotidien
+  q_perte_force: string;       // normal | parfois | regulier
+  q_douleur_nuit: string;      // non | inconfortable | reveille | souvent
+  q_vertiges: string;          // non | parfois | souvent
 
   // Cat 3 — Work habits
   q13: number;  // 1-12 slider
   q14: string;  // never | 1x | 2h | 1h
   q14b: string; // cardio | strength | yoga | team | mixed | none
   q15: string;  // headset | hand | speaker | rarely
+  q_posture_visio: string;     // bureau | canape | allonge | debout | telephone
+  q_laptop_hors_bureau: string; // jamais | parfois | souvent | principale
+  q_stress_travail: number;    // 0-5 slider
+  q_anciennete_poste: string;  // moins_6mois | 6m_2ans | 2_5ans | 5_10ans | plus_10ans
 
   // Cat 4 — Sleep & energy
   q17: number;  // 4-10 slider
@@ -51,9 +64,13 @@ export interface QuestionnaireAnswers {
 
 export const DEFAULT_ANSWERS: QuestionnaireAnswers = {
   q1: "", q2: "", q3: "", q4: "", q5: "", q5b: "", q5c: "",
+  q_hauteur_bureau: "", q_double_ecran: "", q_eclairage: "",
   q6: null, q7: null, q8: null, q9: null, q10: null,
   q11: "", q12: "", q12b: "",
+  q_irradiation_bras: "", q_fourmillements: "", q_maux_tete_nuque: "",
+  q_perte_force: "", q_douleur_nuit: "", q_vertiges: "",
   q13: 7, q14: "", q14b: "", q15: "",
+  q_posture_visio: "", q_laptop_hors_bureau: "", q_stress_travail: 2, q_anciennete_poste: "",
   q17: 7, q18: "", q19: 1.5, q20: "",
   qn1: "", qn2: "", qn3: "", qn4: "",
   q21: [], q21_other: "",
@@ -94,8 +111,13 @@ function calcSetup(a: QuestionnaireAnswers): number {
   raw += lookup({ good: 20, bad: -15, trackpad: -5 }, a.q5, 0);
   raw += lookup({ adjustable: 20, fixed: -10, couch: -25, ball: 10 }, a.q5b, 0);
   raw += lookup({ adapted: 10, not_adapted: -5, none_needed: 5 }, a.q5c, 0);
-  // min=-75, max=90, range=165
-  return clamp(Math.round(((raw + 75) / 165) * 100));
+  // New setup questions
+  raw += lookup({ correct: 12, reglable: 12, sais_pas: 0, trop_haut: -8, trop_bas: -10 }, a.q_hauteur_bureau, 0);
+  raw += lookup({ ecran_externe: 10, laptop_plus_ecran: 8, deux_ecrans: 4, laptop_seul: -10 }, a.q_double_ecran, 0);
+  raw += lookup({ bon: 10, fenetre_dos: 5, artificiel: 4, contre_jour: -12, reflets: -15 }, a.q_eclairage, 0);
+  raw += lookup({ jamais: 10, parfois: 0, souvent: -15, principale: -25 }, a.q_laptop_hors_bureau, 0);
+  // min=-107, max=122, range=229 → normalise
+  return clamp(Math.round(((raw + 107) / 229) * 100));
 }
 
 function scaleToScore(v: number | null): number {
@@ -104,27 +126,21 @@ function scaleToScore(v: number | null): number {
 }
 
 function calcPain(a: QuestionnaireAnswers): number {
-  const q11Score = lookup(
-    { none: 100, days: 80, weeks: 60, months: 40, year: 20 },
-    a.q11, 80
-  );
-  const q12Score = lookup(
-    { none: 100, morning: 60, day: 70, end: 75, always: 30 },
-    a.q12, 80
-  );
-  const q12bScore = lookup(
-    { yes: 90, partial: 70, no: 15, none: 100 },
-    a.q12b, 80
-  );
+  const q11Score = lookup({ none: 100, days: 80, weeks: 60, months: 40, year: 20 }, a.q11, 80);
+  const q12Score = lookup({ none: 100, morning: 60, day: 70, end: 75, always: 30 }, a.q12, 80);
+  const q12bScore = lookup({ yes: 90, partial: 70, no: 15, none: 100 }, a.q12b, 80);
+  // Neurological / qualitative pain signals (default 90 = not answered → neutral)
+  const qIrrad  = lookup({ non: 100, epaule: 80, coude: 40, main: 20 }, a.q_irradiation_bras, 90);
+  const qFourm  = lookup({ jamais: 100, nuit_reveil: 65, travail: 40, permanent: 15 }, a.q_fourmillements, 90);
+  const qMaux   = lookup({ non: 100, parfois: 75, semaine: 50, quotidien: 20 }, a.q_maux_tete_nuque, 90);
+  const qForce  = lookup({ normal: 100, parfois: 60, regulier: 30 }, a.q_perte_force, 90);
+  const qNuit   = lookup({ non: 100, inconfortable: 75, reveille: 40, souvent: 15 }, a.q_douleur_nuit, 90);
+  const qVert   = lookup({ non: 100, parfois: 75, souvent: 45 }, a.q_vertiges, 90);
   const all = [
-    scaleToScore(a.q6),
-    scaleToScore(a.q7),
-    scaleToScore(a.q8),
-    scaleToScore(a.q9),
-    scaleToScore(a.q10),
-    q11Score,
-    q12Score,
-    q12bScore,
+    scaleToScore(a.q6), scaleToScore(a.q7), scaleToScore(a.q8),
+    scaleToScore(a.q9), scaleToScore(a.q10),
+    q11Score, q12Score, q12bScore,
+    qIrrad, qFourm, qMaux, qForce, qNuit, qVert,
   ];
   return clamp(all.reduce((s, v) => s + v, 0) / all.length);
 }
@@ -134,12 +150,14 @@ function calcHabits(a: QuestionnaireAnswers): number {
   const q13 =
     h <= 4 ? 100 : h <= 5 ? 85 : h <= 6 ? 70 : h <= 7 ? 55 : h <= 8 ? 40 : h <= 9 ? 25 : 10;
   const q14 = lookup({ never: 0, "1x": 30, "2h": 70, "1h": 100 }, a.q14, 50);
-  const q14b = lookup(
-    { yoga: 100, mixed: 90, cardio: 75, team: 70, strength: 65, none: 15 },
-    a.q14b, 50
-  );
+  const q14b = lookup({ yoga: 100, mixed: 90, cardio: 75, team: 70, strength: 65, none: 15 }, a.q14b, 50);
   const q15 = lookup({ headset: 100, rarely: 90, speaker: 80, hand: 20 }, a.q15, 50);
-  return clamp((q13 + q14 + q14b + q15) / 4);
+  // New habits questions (default 75 = neutral when not answered)
+  const qVisio  = lookup({ debout: 100, bureau: 90, telephone: 70, canape: 40, allonge: 20 }, a.q_posture_visio, 75);
+  const qLaptop = lookup({ jamais: 100, parfois: 75, souvent: 35, principale: 10 }, a.q_laptop_hors_bureau, 75);
+  const qStress = Math.max(0, 100 - (a.q_stress_travail ?? 2) * 20);
+  const all = [q13, q14, q14b, q15, qVisio, qLaptop, qStress];
+  return clamp(all.reduce((s, v) => s + v, 0) / all.length);
 }
 
 function calcSleepEnergy(a: QuestionnaireAnswers): number {
@@ -221,6 +239,47 @@ export function getRecommendations(
   a: QuestionnaireAnswers
 ): Recommendation[] {
   const candidates: Recommendation[] = [];
+
+  // Priority 0a — irradiation / neurological alarm signs
+  if (a.q_irradiation_bras === "main" || a.q_irradiation_bras === "coude") {
+    candidates.push({
+      title: "⚠️ Douleur qui descend dans le bras — consulte un professionnel",
+      description:
+        "Une douleur ou fourmillement qui part du cou et descend dans le bras jusqu'au coude ou à la main peut indiquer une compression nerveuse cervicale (hernie ou défilé thoracobrachial). Ce signe neurologique mérite un bilan avec un médecin ou kinésithérapeute avant tout exercice.",
+      priority: "urgent",
+      score: 0,
+    });
+  }
+
+  // Priority 0b — possible canal carpien
+  if (a.q_fourmillements === "permanent" || a.q_fourmillements === "travail") {
+    candidates.push({
+      title: "🤲 Fourmillements fréquents — syndrome du canal carpien possible",
+      description:
+        "Des fourmillements dans les doigts pendant ou après le travail sont le signe classique du canal carpien. Test rapide : secoue les mains vers le bas 1 minute — si ça soulage, c'est évocateur. Évite les flexions excessives du poignet. Consulte pour confirmation, c'est traitable facilement si pris tôt.",
+      priority: a.q_fourmillements === "permanent" ? "urgent" : "important",
+      score: 5,
+    });
+  } else if (a.q_fourmillements === "nuit_reveil") {
+    candidates.push({
+      title: "🤲 Fourmillements nocturnes — surveille le canal carpien",
+      description:
+        "Les fourmillements au réveil dans le pouce, l'index et le majeur sont le signe précoce du syndrome du canal carpien. Évite de dormir poignet fléchi. Si ça s'aggrave, consulte rapidement — un traitement précoce évite l'opération.",
+      priority: "important",
+      score: 10,
+    });
+  }
+
+  // Priority 0c — nocturnal pain
+  if (a.q_douleur_nuit === "souvent" || a.q_douleur_nuit === "reveille") {
+    candidates.push({
+      title: "🌙 Douleurs nocturnes — signal à ne pas ignorer",
+      description:
+        "Des douleurs qui réveillent la nuit ou perturbent le sommeil signalent souvent une composante inflammatoire ou une compression nerveuse qui dépasse la simple posture. Consulte un professionnel de santé pour identifier la cause avant de reprendre des exercices intensifs.",
+      priority: a.q_douleur_nuit === "souvent" ? "urgent" : "important",
+      score: 8,
+    });
+  }
 
   // Priority 0 — persistent pain at rest (pathological signal)
   if (a.q12b === "no") {
@@ -364,6 +423,39 @@ export function getRecommendations(
       description: desc.trim(),
       priority: "important",
       score: scores.lifestyle,
+    });
+  }
+
+  // Stress chrono
+  if ((a.q_stress_travail ?? 0) >= 4) {
+    candidates.push({
+      title: "🧠 Stress chronique élevé — impact sur tes douleurs",
+      description:
+        "Le stress chronique active en permanence les muscles trapèzes et paravertébraux, amplifiant les douleurs de 2 à 3 fois. Travailler sur la posture sans gérer le stress donne des résultats limités. Essaie la cohérence cardiaque : 6 respirations par minute, 5 minutes, 3 fois par jour.",
+      priority: "important",
+      score: scores.lifestyle + 5,
+    });
+  }
+
+  // Laptop hors bureau
+  if (a.q_laptop_hors_bureau === "souvent" || a.q_laptop_hors_bureau === "principale") {
+    candidates.push({
+      title: "🛋️ Laptop dans le canapé — cause principale de cervicalgies en télétravail",
+      description:
+        "Le laptop sur les genoux ou dans le lit est la pire position pour la colonne cervicale. Le dos s'arrondit, la tête se projette en avant de 5 à 8 cm — multipliant la charge sur la nuque par 4. Une surface stable + support laptop à moins de 30€ change tout.",
+      priority: a.q_laptop_hors_bureau === "principale" ? "urgent" : "important",
+      score: scores.setup + 5,
+    });
+  }
+
+  // Céphalées cervicogènes
+  if (a.q_maux_tete_nuque === "quotidien" || a.q_maux_tete_nuque === "semaine") {
+    candidates.push({
+      title: "🧠 Maux de tête cervicogènes fréquents",
+      description:
+        "Les maux de tête qui partent de la nuque ou de la base du crâne sont le signe de tensions des muscles sous-occipitaux. Chin tuck toutes les heures (10 reps × 5 sec menton vers la gorge), masse la base du crâne avec les pouces, et vérifie la hauteur de ton écran — un écran trop bas est la cause principale.",
+      priority: "important",
+      score: scores.pain + 5,
     });
   }
 
