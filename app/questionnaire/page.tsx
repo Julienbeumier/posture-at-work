@@ -100,6 +100,7 @@ function ChoiceGrid({
   onChange: (v: string) => void;
   cat: typeof CATEGORIES[number];
 }) {
+  const { theme } = useTheme();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       {options.map((opt) => {
@@ -113,7 +114,7 @@ function ChoiceGrid({
             style={{
               padding: "12px 18px",
               borderRadius: 100,
-              background: sel ? cat.selectedBg : "rgba(255,255,255,0.06)",
+              background: sel ? cat.selectedBg : theme === "light" ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.06)",
               border: sel ? `1px solid ${cat.color}55` : "0.5px solid var(--border-3)",
               color: sel ? cat.selectedColor : "var(--t75)",
               fontSize: 14,
@@ -140,6 +141,7 @@ function MultiSelectGrid({
   options: OptionDef[]; value: string[]; onChange: (v: string[]) => void;
   cat: typeof CATEGORIES[number]; otherValue?: string; onOtherChange?: (v: string) => void;
 }) {
+  const { theme } = useTheme();
   function toggle(val: string) {
     if (val === "none") { onChange(["none"]); return; }
     const withoutNone = value.filter((v) => v !== "none");
@@ -163,7 +165,7 @@ function MultiSelectGrid({
             style={{
               padding: "12px 18px",
               borderRadius: 100,
-              background: sel ? cat.selectedBg : "rgba(255,255,255,0.06)",
+              background: sel ? cat.selectedBg : theme === "light" ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.06)",
               border: sel ? `1px solid ${cat.color}55` : "0.5px solid var(--border-3)",
               color: sel ? cat.selectedColor : "var(--t75)",
               fontSize: 14,
@@ -217,6 +219,7 @@ const PAIN_LABELS = ["Aucune", "Légère", "Modérée", "Importante", "Sévère"
 function PainScale({
   value, onChange, cat,
 }: { value: number | null; onChange: (v: number) => void; cat: typeof CATEGORIES[number]; }) {
+  const { theme } = useTheme();
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6 }}>
       {[0, 1, 2, 3, 4, 5].map((v) => {
@@ -230,7 +233,7 @@ function PainScale({
             style={{
               height: 60,
               borderRadius: 12,
-              background: sel ? cat.selectedBg : "rgba(255,255,255,0.05)",
+              background: sel ? cat.selectedBg : theme === "light" ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.05)",
               border: sel ? `1px solid ${cat.color}66` : "0.5px solid var(--border-2)",
               cursor: "pointer",
               display: "flex",
@@ -264,6 +267,7 @@ const WELLBEING_OPTIONS = [
 function WellbeingScale({
   value, onChange, cat,
 }: { value: number | null; onChange: (v: number) => void; cat: typeof CATEGORIES[number]; }) {
+  const { theme } = useTheme();
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 6 }}>
       {WELLBEING_OPTIONS.map((opt) => {
@@ -277,7 +281,7 @@ function WellbeingScale({
             style={{
               height: 68,
               borderRadius: 14,
-              background: sel ? cat.selectedBg : "rgba(255,255,255,0.05)",
+              background: sel ? cat.selectedBg : theme === "light" ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.05)",
               border: sel ? `1px solid ${cat.color}55` : "0.5px solid var(--border-2)",
               cursor: "pointer",
               display: "flex",
@@ -343,12 +347,13 @@ function QBlock({
   number: string; question: string; note?: string; children: React.ReactNode;
   answered: boolean; cat: typeof CATEGORIES[number];
 }) {
+  const { theme } = useTheme();
   return (
     <div
       style={{
         padding: "20px",
         borderRadius: 18,
-        background: answered ? cat.colorBg : "rgba(255,255,255,0.02)",
+        background: answered ? cat.colorBg : theme === "light" ? "rgba(15,23,42,0.03)" : "rgba(255,255,255,0.02)",
         border: answered ? `0.5px solid ${cat.colorBorder}` : "0.5px solid rgba(255,255,255,0.06)",
         transition: "all 0.3s ease",
         display: "flex",
@@ -362,7 +367,7 @@ function QBlock({
             width: 24,
             height: 24,
             borderRadius: "50%",
-            background: answered ? cat.colorBg : "rgba(255,255,255,0.05)",
+            background: answered ? cat.colorBg : theme === "light" ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.05)",
             border: answered ? `1px solid ${cat.color}55` : "0.5px solid var(--border-3)",
             display: "flex",
             alignItems: "center",
@@ -400,6 +405,7 @@ function CategorySection({
   cat: typeof CATEGORIES[number]; done: boolean;
   children: React.ReactNode; onRef: (el: HTMLElement | null) => void;
 }) {
+  const { theme } = useTheme();
   return (
     <section id={cat.id} ref={onRef} style={{ scrollMarginTop: 80 }}>
       <div style={{ borderRadius: 22, overflow: "hidden", marginBottom: 12 }}>
@@ -462,7 +468,7 @@ function CategorySection({
         <div
           style={{
             padding: "16px",
-            background: "rgba(255,255,255,0.015)",
+            background: theme === "light" ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.015)",
             border: `0.5px solid ${cat.colorBorder}`,
             borderTop: "none",
             borderRadius: "0 0 22px 22px",
@@ -491,7 +497,7 @@ const TOAST_MESSAGES = [
 
 function BureauQuestionnaire() {
   const router = useRouter();
-  const { c } = useTheme();
+  const { c, theme } = useTheme();
   const [answers, setAnswers] = useState<QuestionnaireAnswers>(DEFAULT_ANSWERS);
   const [firstname, setFirstname] = useState("");
   const [toast, setToast] = useState<string | null>(null);
@@ -514,7 +520,7 @@ function BureauQuestionnaire() {
           let msg = TOAST_MESSAGES[i];
           if (i === 1 && firstname) msg = `${msg} ${firstname}`;
           setToast(msg);
-          setTimeout(() => setToast(null), 1800);
+          setTimeout(() => setToast(null), 3000);
         }
         setTimeout(() => {
           catRefs.current[i + 1]?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -555,7 +561,7 @@ function BureauQuestionnaire() {
           position: "sticky",
           top: 0,
           zIndex: 30,
-          background: "rgba(15,15,26,0.95)",
+          background: theme === "light" ? "rgba(255,255,255,0.95)" : "rgba(15,15,26,0.95)",
           backdropFilter: "blur(20px)",
           borderBottom: "0.5px solid var(--border)",
         }}
@@ -594,7 +600,7 @@ function BureauQuestionnaire() {
                   style={{
                     padding: "5px 12px",
                     borderRadius: 100,
-                    background: isDone ? cat.colorBg : "rgba(255,255,255,0.05)",
+                    background: isDone ? cat.colorBg : theme === "light" ? "rgba(15,23,42,0.06)" : "rgba(255,255,255,0.05)",
                     border: isDone ? `0.5px solid ${cat.colorBorder}` : "0.5px solid var(--border-2)",
                     color: isDone ? cat.selectedColor : "var(--t35)",
                     fontFamily: T.h,
@@ -1018,7 +1024,7 @@ function BureauQuestionnaire() {
               right: 0,
               zIndex: 40,
               padding: "16px 20px 24px",
-              background: "linear-gradient(to top, #0f0f1a 60%, transparent)",
+              background: theme === "light" ? "linear-gradient(to top, #F3F7FF 60%, transparent)" : "linear-gradient(to top, #0f0f1a 60%, transparent)",
             }}
           >
             <div style={{ maxWidth: 680, margin: "0 auto" }}>

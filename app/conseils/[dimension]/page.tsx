@@ -514,7 +514,7 @@ export default function DimensionPage() {
                 }}>
                   {tip.icon}
                 </div>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "#e0e0f0", lineHeight: 1.65, margin: 0 }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--text-primary)", lineHeight: 1.65, margin: 0 }}>
                   {tip.text}
                 </p>
               </motion.div>
