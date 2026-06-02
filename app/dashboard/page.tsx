@@ -194,7 +194,7 @@ function GoalCircle({ done, total, color }: { done: number; total: number; color
 
 
 function Skeleton() {
-  return <div style={{ height: 80, borderRadius: 18, background: "rgba(255,255,255,0.04)", animation: "pulse 1.5s ease-in-out infinite" }} />;
+  return <div style={{ height: 80, borderRadius: 18, background: "var(--bg-card-2)", animation: "pulse 1.5s ease-in-out infinite" }} />;
 }
 
 // ─── Main dashboard ───────────────────────────────────────────────────────────
@@ -441,7 +441,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingTop: 56, paddingBottom: 80, position: "relative" }}>
+      <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingTop: 56, paddingBottom: 80, position: "relative" }}>
         <BackgroundBlobs blobs={[{ top: "-5%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 400 }]} />
         <div style={{ maxWidth: 660, margin: "0 auto", padding: "20px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
           {[1, 2, 3, 4].map((i) => <Skeleton key={i} />)}
@@ -451,7 +451,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingTop: 56, paddingBottom: 100, position: "relative" }}>
+    <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingTop: 56, paddingBottom: 100, position: "relative" }}>
       <BackgroundBlobs blobs={[
         { top: "-5%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 500 },
         { top: "40%", left: "-8%", color: "rgba(45,106,79,0.08)", size: 380 },
@@ -496,7 +496,7 @@ export default function DashboardPage() {
             )}
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 4 }}>
-                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "#f0f0fa", margin: 0 }}>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "var(--text-primary)", margin: 0 }}>
                   Bonjour {displayName} 👋
                 </p>
                 {isPremiumUser && (
@@ -556,7 +556,7 @@ export default function DashboardPage() {
             style={{ borderRadius: 16, padding: "14px 18px", background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)", display: "flex", alignItems: "flex-start", gap: 12 }}>
             <span style={{ fontSize: 18, flexShrink: 0 }}>📱</span>
             <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#f0f0fa", margin: "0 0 4px" }}>Active les rappels</p>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "var(--text-primary)", margin: "0 0 4px" }}>Active les rappels</p>
               <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", margin: 0, lineHeight: 1.5 }}>
                 Sur iOS, ajoute l&apos;app à ton écran d&apos;accueil pour recevoir des rappels posture.
               </p>
@@ -573,7 +573,7 @@ export default function DashboardPage() {
             background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)",
           }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>🎯</div>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 17, color: "#f0f0fa", marginBottom: 8 }}>Pas encore de bilan</p>
+            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 17, color: "var(--text-primary)", marginBottom: 8 }}>Pas encore de bilan</p>
             <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)", lineHeight: 1.65, marginBottom: 20 }}>
               Fais ton premier bilan en 5 minutes pour débloquer ton tableau de bord complet.
             </p>
@@ -600,7 +600,7 @@ export default function DashboardPage() {
 
         {/* ── S3 : CARREFOUR ── */}
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", marginBottom: 10 }}>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", marginBottom: 10 }}>
             Ton espace santé
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -657,11 +657,11 @@ export default function DashboardPage() {
             const meta = DIM_META[weakest === "pain" ? "pain" : weakest === "habits" ? "habits" : weakest === "sleep_energy" ? "sleep_energy" : weakest === "lifestyle" ? "lifestyle" : weakest === "nutrition" ? "nutrition" : "setup"];
             if (!prod || !meta) return null;
             return (
-              <div style={{ marginTop: 12, padding: "12px 16px", borderRadius: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ marginTop: 12, padding: "12px 16px", borderRadius: 14, background: "var(--bg-card)", border: "0.5px solid var(--border)", display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{ fontSize: 14, flexShrink: 0 }}>💡</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 11, color: "rgba(220,220,245,0.45)", margin: "0 0 2px" }}>Recommandé pour toi :</p>
-                  <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 12, color: "#f0f0fa", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</p>
+                  <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 12, color: "var(--text-primary)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</p>
                 </div>
                 <span style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 700, fontSize: 12, color: meta.color, flexShrink: 0 }}>{prod.price}</span>
                 <a href={prod.url} target="_blank" rel="noopener noreferrer" style={{ padding: "5px 12px", borderRadius: 100, textDecoration: "none", background: "#2b5ce6", fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 700, fontSize: 11, color: "#fff", flexShrink: 0 }}>Amazon →</a>
@@ -673,10 +673,10 @@ export default function DashboardPage() {
         {/* ── S4 : CHECK-IN ── */}
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.10 }} style={{
           borderRadius: 22, padding: "22px 20px",
-          background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)",
+          background: "var(--bg-card)", border: "0.5px solid var(--border)",
         }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0 }}>Check-in du jour</p>
+            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0 }}>Check-in du jour</p>
             {streak > 0 && (
               <span style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(245,158,11,0.15)", border: "0.5px solid rgba(245,158,11,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 11, color: "#fbbf24" }}>
                 🔥 {streak} jour{streak > 1 ? "s" : ""}
@@ -688,7 +688,7 @@ export default function DashboardPage() {
             {checkinSaved ? (
               <motion.div key="saved" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: "center", padding: "16px 0" }}>
                 <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
-                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", marginBottom: 6 }}>Journée validée ✅</p>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", marginBottom: 6 }}>Journée validée ✅</p>
                 <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", marginBottom: 16 }}>Reviens demain pour maintenir ton streak.</p>
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>
                   <div style={{ padding: "12px 0", borderRadius: 100, background: "rgba(45,106,79,0.20)", border: "0.5px solid rgba(45,106,79,0.35)", fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#74c69d" }}>
@@ -704,13 +704,13 @@ export default function DashboardPage() {
                   style={{
                     display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderRadius: 14, cursor: "pointer",
                     background: checkin.exercises_done ? "rgba(45,106,79,0.12)" : "rgba(255,255,255,0.03)",
-                    border: checkin.exercises_done ? "0.5px solid rgba(45,106,79,0.35)" : "0.5px solid rgba(255,255,255,0.07)",
+                    border: checkin.exercises_done ? "0.5px solid rgba(45,106,79,0.35)" : "0.5px solid var(--border)",
                   }}
                 >
                   <span style={{ fontSize: 18 }}>✅</span>
                   <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.85)", flex: 1 }}>Mes exercices du jour</span>
                   <div style={{ width: 20, height: 20, borderRadius: 6, background: checkin.exercises_done ? "#74c69d" : "rgba(255,255,255,0.06)", border: checkin.exercises_done ? "none" : "0.5px solid rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {checkin.exercises_done && <span style={{ fontSize: 10, color: "#0f0f1a", fontWeight: 900 }}>✓</span>}
+                    {checkin.exercises_done && <span style={{ fontSize: 10, color: "var(--bg-primary)", fontWeight: 900 }}>✓</span>}
                   </div>
                 </div>
 
@@ -736,12 +736,12 @@ export default function DashboardPage() {
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <button
                       onClick={() => setCheckin((c) => ({ ...c, breaks_taken: Math.max(0, c.breaks_taken - 1) }))}
-                      style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)", color: "#f0f0fa", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)", color: "var(--text-primary)", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                     >−</button>
-                    <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", width: 20, textAlign: "center" }}>{checkin.breaks_taken}</span>
+                    <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", width: 20, textAlign: "center" }}>{checkin.breaks_taken}</span>
                     <button
                       onClick={() => setCheckin((c) => ({ ...c, breaks_taken: c.breaks_taken + 1 }))}
-                      style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)", color: "#f0f0fa", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)", color: "var(--text-primary)", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                     >+</button>
                   </div>
                 </div>
@@ -761,7 +761,7 @@ export default function DashboardPage() {
                         style={{
                           flex: 1, padding: "8px 0", borderRadius: 10, cursor: "pointer",
                           background: checkin.pain_level === v ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.04)",
-                          border: checkin.pain_level === v ? "0.5px solid rgba(240,149,149,0.45)" : "0.5px solid rgba(255,255,255,0.07)",
+                          border: checkin.pain_level === v ? "0.5px solid rgba(240,149,149,0.45)" : "0.5px solid var(--border)",
                           fontFamily: T.h, fontWeight: 700, fontSize: 12,
                           color: checkin.pain_level === v ? "#f09595" : "rgba(220,220,245,0.35)",
                         }}
@@ -790,9 +790,9 @@ export default function DashboardPage() {
         {latest && (
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} style={{
             borderRadius: 22, padding: "20px 20px",
-            background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)",
+            background: "var(--bg-card)", border: "0.5px solid var(--border)",
           }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0, marginBottom: 4 }}>Tes 6 indicateurs</p>
+            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 4 }}>Tes 6 indicateurs</p>
             <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)", marginBottom: 10 }}>Clique pour voir le plan</p>
             {Object.keys(DIM_META).map((k) => (
               <ScoreBarRow
@@ -807,9 +807,9 @@ export default function DashboardPage() {
         {/* ── S6 : OBJECTIFS SEMAINE ── */}
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }} style={{
           borderRadius: 22, padding: "20px 20px",
-          background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)",
+          background: "var(--bg-card)", border: "0.5px solid var(--border)",
         }}>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0, marginBottom: 16 }}>Objectifs de la semaine</p>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 16 }}>Objectifs de la semaine</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {[
               { icon: "🧘", label: "Exercices quotidiens", done: exercisesDays, total: 5, color: "#74c69d" },
@@ -864,9 +864,9 @@ export default function DashboardPage() {
         {weekSummary && (
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }} style={{
             borderRadius: 22, padding: "20px 20px",
-            background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)",
+            background: "var(--bg-card)", border: "0.5px solid var(--border)",
           }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0, marginBottom: 14 }}>Ta semaine PAW</p>
+            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 14 }}>Ta semaine PAW</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               {[
                 { icon: "😴", label: "Douleur moy.", value: `${weekSummary.avgPain}/5`, color: weekSummary.avgPain < 2 ? "#74c69d" : weekSummary.avgPain <= 3 ? "#f4a261" : "#f09595" },
@@ -874,7 +874,7 @@ export default function DashboardPage() {
                 { icon: "💧", label: "Hydratation OK", value: `${weekSummary.waterDays}/7`, color: "#7c9fff" },
                 { icon: "⏱️", label: "Pauses/jour", value: weekSummary.avgBreaks, color: "#f4a261" },
               ].map((item) => (
-                <div key={item.label} style={{ borderRadius: 14, padding: "14px 14px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.06)" }}>
+                <div key={item.label} style={{ borderRadius: 14, padding: "14px 14px", background: "var(--bg-card)", border: "0.5px solid rgba(255,255,255,0.06)" }}>
                   <span style={{ fontSize: 18 }}>{item.icon}</span>
                   <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: item.color, margin: "6px 0 2px" }}>{item.value}</p>
                   <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.40)", margin: 0 }}>{item.label}</p>
@@ -908,10 +908,10 @@ export default function DashboardPage() {
         {latest && daysUntilBilan !== null && (
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }} style={{
             borderRadius: 22, padding: "20px 20px",
-            background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)",
+            background: "var(--bg-card)", border: "0.5px solid var(--border)",
           }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0 }}>🗓️ Prochain bilan</p>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0 }}>🗓️ Prochain bilan</p>
               <span style={{
                 padding: "4px 12px", borderRadius: 100,
                 background: daysUntilBilan <= 0 ? "rgba(240,149,149,0.15)" : "rgba(43,92,230,0.15)",
@@ -931,7 +931,7 @@ export default function DashboardPage() {
               <div style={{
                 padding: "12px 0", borderRadius: 100, textAlign: "center",
                 background: daysUntilBilan <= 0 ? "#2b5ce6" : "rgba(255,255,255,0.05)",
-                border: daysUntilBilan <= 0 ? "none" : "0.5px solid rgba(255,255,255,0.10)",
+                border: daysUntilBilan <= 0 ? "none" : "0.5px solid var(--border-3)",
                 boxShadow: daysUntilBilan <= 0 ? "0 4px 20px rgba(43,92,230,0.35)" : "none",
                 fontFamily: T.h, fontWeight: 700, fontSize: 13,
                 color: daysUntilBilan <= 0 ? "#fff" : "rgba(220,220,245,0.5)",
@@ -946,9 +946,9 @@ export default function DashboardPage() {
         {chartData && (
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.21 }} style={{
             borderRadius: 22, padding: "20px 20px",
-            background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)",
+            background: "var(--bg-card)", border: "0.5px solid var(--border)",
           }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0, marginBottom: 4 }}>📈 Ton évolution</p>
+            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 4 }}>📈 Ton évolution</p>
             <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)", marginBottom: 16 }}>
               Score global sur tes {assessments.length} derniers bilans
             </p>
@@ -957,7 +957,7 @@ export default function DashboardPage() {
                 <XAxis dataKey="date" stroke="rgba(240,240,250,0.15)" tick={{ fontSize: 10, fill: "rgba(220,220,245,0.35)" }} />
                 <YAxis domain={[0, 100]} stroke="rgba(240,240,250,0.15)" tick={{ fontSize: 10, fill: "rgba(220,220,245,0.35)" }} width={32} />
                 <Tooltip
-                  contentStyle={{ background: "#1b1b2e", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 12, fontSize: 12, color: "#f0f0fa" }}
+                  contentStyle={{ background: "var(--bg-secondary)", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 12, fontSize: 12, color: "var(--text-primary)" }}
                   labelStyle={{ color: "rgba(220,220,245,0.5)", marginBottom: 4 }}
                 />
                 <Line type="monotone" dataKey="score" stroke="#2b5ce6" strokeWidth={2.5}
@@ -974,9 +974,9 @@ export default function DashboardPage() {
         {assessments.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }} style={{
             borderRadius: 22, padding: "20px 20px",
-            background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)",
+            background: "var(--bg-card)", border: "0.5px solid var(--border)",
           }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0, marginBottom: 12 }}>📋 Mes bilans</p>
+            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 12 }}>📋 Mes bilans</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {assessments.map((a, i) => {
                 const prev = assessments[i + 1];
@@ -995,12 +995,12 @@ export default function DashboardPage() {
                         {a.global_score}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa", margin: "0 0 4px" }}>
+                        <p style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--text-primary)", margin: "0 0 4px" }}>
                           {new Date(a.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
                         </p>
                         <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                           <span style={{ padding: "2px 8px", borderRadius: 100, background: b.bg, border: `0.5px solid ${b.border}`, fontFamily: T.b, fontSize: 10, color: b.color }}>{b.label}</span>
-                          <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(255,255,255,0.05)", fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.4)" }}>
+                          <span style={{ padding: "2px 8px", borderRadius: 100, background: "var(--bg-card-3)", fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.4)" }}>
                             {jobType === "debout" ? "🏭 Debout" : "💻 Bureau"}
                           </span>
                           {a.video_analysis && (
@@ -1086,7 +1086,7 @@ export default function DashboardPage() {
               style={{ borderRadius: 24, padding: 28, width: "100%", maxWidth: 360, background: "#141422", border: "0.5px solid rgba(240,149,149,0.25)" }}
             >
               <div style={{ fontSize: 36, textAlign: "center", marginBottom: 14 }}>⚠️</div>
-              <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 17, color: "#f0f0fa", textAlign: "center", marginBottom: 10 }}>
+              <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 17, color: "var(--text-primary)", textAlign: "center", marginBottom: 10 }}>
                 Supprimer mon compte
               </p>
               <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "rgba(220,220,245,0.55)", textAlign: "center", lineHeight: 1.65, marginBottom: 24 }}>
@@ -1102,7 +1102,7 @@ export default function DashboardPage() {
                 </button>
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  style={{ padding: "12px 0", borderRadius: 100, background: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.10)", color: "rgba(220,220,245,0.50)", fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer" }}
+                  style={{ padding: "12px 0", borderRadius: 100, background: "var(--bg-card-3)", border: "0.5px solid var(--border-3)", color: "rgba(220,220,245,0.50)", fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer" }}
                 >
                   Annuler
                 </button>

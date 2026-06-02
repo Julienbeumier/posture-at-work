@@ -56,7 +56,7 @@ function TimerCircle({ elapsed, total, color }: { elapsed: number; total: number
         />
       </svg>
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 44, color: "#f0f0fa", lineHeight: 1 }}>{remaining}</span>
+        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 44, color: "var(--text-primary)", lineHeight: 1 }}>{remaining}</span>
         <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.4)", marginTop: 2 }}>secondes</span>
       </div>
     </div>
@@ -74,14 +74,14 @@ function ExerciseCard({ ex, index, onStart, isDiscreetMode }: {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      style={{ borderRadius: 18, padding: "18px 20px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", marginBottom: 10 }}
+      style={{ borderRadius: 18, padding: "18px 20px", background: "var(--bg-card)", border: "0.5px solid var(--border)", marginBottom: 10 }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
         <div style={{ width: 48, height: 48, borderRadius: 14, background: `${ex.zoneColor}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>
           {ex.emoji}
         </div>
         <div style={{ flex: 1 }}>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: 0 }}>{ex.name}</p>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0 }}>{ex.name}</p>
           {ex.subtitle && <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.4)", margin: 0 }}>{ex.subtitle}</p>}
           <div style={{ display: "flex", gap: 6, marginTop: 4, flexWrap: "wrap" }}>
             <span style={{ padding: "2px 8px", borderRadius: 100, background: `${ex.zoneColor}18`, border: `0.5px solid ${ex.zoneColor}40`, fontFamily: T.b, fontWeight: 600, fontSize: 10, color: ex.zoneColor }}>
@@ -375,7 +375,7 @@ export default function MobilitePage() {
   const sessionDuration = currentExercises.reduce((s, e) => s + e.duration, 0);
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingBottom: 100, position: "relative" }}>
+    <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingBottom: 100, position: "relative" }}>
       <BackgroundBlobs blobs={[
         { top: "-5%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 500 },
         { top: "50%", left: "-8%", color: "rgba(45,106,79,0.08)", size: 380 },
@@ -387,7 +387,7 @@ export default function MobilitePage() {
         <div style={{ paddingTop: 80, paddingBottom: 24 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div>
-              <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#f0f0fa", margin: 0, letterSpacing: "-0.5px" }}>
+              <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "var(--text-primary)", margin: 0, letterSpacing: "-0.5px" }}>
                 Exercices & Mobilité
               </h1>
               {streak > 0 && (
@@ -406,7 +406,7 @@ export default function MobilitePage() {
                     background: voiceEnabled ? "rgba(43,92,230,0.20)" : "rgba(255,255,255,0.06)",
                     fontFamily: T.b, fontWeight: 700, fontSize: 12,
                     color: voiceEnabled ? "#7c9fff" : "rgba(220,220,245,0.5)",
-                    border: voiceEnabled ? "0.5px solid rgba(43,92,230,0.4)" : "0.5px solid rgba(255,255,255,0.10)",
+                    border: voiceEnabled ? "0.5px solid rgba(43,92,230,0.4)" : "0.5px solid var(--border-3)",
                   }}
                 >
                   {voiceEnabled ? "🔊 Guide vocal ON" : "🔇 Guide vocal"}
@@ -419,7 +419,7 @@ export default function MobilitePage() {
                   background: discreetMode ? "rgba(116,198,157,0.20)" : "rgba(255,255,255,0.06)",
                   fontFamily: T.b, fontWeight: 700, fontSize: 12,
                   color: discreetMode ? "#74c69d" : "rgba(220,220,245,0.5)",
-                  border: discreetMode ? "0.5px solid rgba(116,198,157,0.4)" : "0.5px solid rgba(255,255,255,0.10)",
+                  border: discreetMode ? "0.5px solid rgba(116,198,157,0.4)" : "0.5px solid var(--border-3)",
                 }}
               >
                 🤫 {discreetMode ? "Mode discret ON" : "Mode discret"}
@@ -473,7 +473,7 @@ export default function MobilitePage() {
                 style={{
                   padding: "8px 16px", borderRadius: 100, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
                   background: sel ? "rgba(43,92,230,0.20)" : "rgba(255,255,255,0.05)",
-                  border: sel ? "0.5px solid rgba(43,92,230,0.45)" : "0.5px solid rgba(255,255,255,0.08)",
+                  border: sel ? "0.5px solid rgba(43,92,230,0.45)" : "0.5px solid var(--border-2)",
                   fontFamily: T.h, fontWeight: 700, fontSize: 12,
                   color: sel ? "#7c9fff" : "rgba(220,220,245,0.45)",
                 }}
@@ -491,9 +491,9 @@ export default function MobilitePage() {
                 style={{
                   padding: "10px 16px", borderRadius: 14, cursor: "pointer", flexShrink: 0, textAlign: "left",
                   background: sel ? "rgba(43,92,230,0.15)" : "rgba(255,255,255,0.03)",
-                  border: sel ? "0.5px solid rgba(43,92,230,0.40)" : "0.5px solid rgba(255,255,255,0.07)",
+                  border: sel ? "0.5px solid rgba(43,92,230,0.40)" : "0.5px solid var(--border)",
                 }}>
-                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: sel ? "#7c9fff" : "#f0f0fa", margin: 0 }}>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: sel ? "#7c9fff" : "var(--text-primary)", margin: 0 }}>
                   {prog.icon} {prog.label}
                 </p>
                 <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.35)", margin: "2px 0 0" }}>{prog.duration}</p>
@@ -511,7 +511,7 @@ export default function MobilitePage() {
               <div style={{ borderRadius: 20, padding: "18px 20px", background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.20)", marginBottom: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                   <div>
-                    <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#f0f0fa", margin: 0 }}>{activeProgram.icon} {activeProgram.label}</p>
+                    <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "var(--text-primary)", margin: 0 }}>{activeProgram.icon} {activeProgram.label}</p>
                     <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: "2px 0 0" }}>{activeProgram.description}</p>
                   </div>
                   <div style={{ textAlign: "right" }}>
@@ -569,7 +569,7 @@ export default function MobilitePage() {
                 <div style={{ width: 64, height: 64, borderRadius: 18, background: `${currentEx.zoneColor}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, margin: "0 auto 12px" }}>
                   {currentEx.emoji}
                 </div>
-                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "#f0f0fa", margin: "0 0 4px" }}>{currentEx.name}</p>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "var(--text-primary)", margin: "0 0 4px" }}>{currentEx.name}</p>
                 <span style={{ padding: "3px 12px", borderRadius: 100, background: `${currentEx.zoneColor}18`, fontFamily: T.b, fontWeight: 600, fontSize: 11, color: currentEx.zoneColor }}>
                   {currentEx.zone}
                 </span>
@@ -590,7 +590,7 @@ export default function MobilitePage() {
               </div>
 
               {/* Instructions */}
-              <div style={{ width: "100%", padding: "16px 18px", borderRadius: 16, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)" }}>
+              <div style={{ width: "100%", padding: "16px 18px", borderRadius: 16, background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
                 <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)", lineHeight: 1.65, margin: 0 }}>{currentEx.instruction}</p>
               </div>
 
@@ -599,7 +599,7 @@ export default function MobilitePage() {
                 <span style={{ padding: "5px 14px", borderRadius: 100, background: `${currentEx.zoneColor}15`, border: `0.5px solid ${currentEx.zoneColor}40`, fontFamily: T.b, fontWeight: 600, fontSize: 12, color: currentEx.zoneColor }}>
                   {currentEx.reps}
                 </span>
-                <span style={{ padding: "5px 14px", borderRadius: 100, background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.40)" }}>
+                <span style={{ padding: "5px 14px", borderRadius: 100, background: "var(--bg-card-2)", border: "0.5px solid var(--border-2)", fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.40)" }}>
                   {currentEx.frequency}
                 </span>
               </div>
@@ -607,7 +607,7 @@ export default function MobilitePage() {
               {/* Controls */}
               <div style={{ display: "flex", gap: 10, width: "100%" }}>
                 <button onClick={() => { stopTimer(); setPhase("select"); setCompletedIds([]); }}
-                  style={{ flex: 1, padding: "12px 0", borderRadius: 100, background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.10)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)", cursor: "pointer" }}>
+                  style={{ flex: 1, padding: "12px 0", borderRadius: 100, background: "var(--bg-card-2)", border: "0.5px solid var(--border-3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)", cursor: "pointer" }}>
                   Terminer
                 </button>
                 <button onClick={() => goNext(currentIdx)}
@@ -625,7 +625,7 @@ export default function MobilitePage() {
               <motion.div animate={{ rotate: [0, 10, -10, 8, 0] }} transition={{ duration: 0.6 }} style={{ fontSize: 64, marginBottom: 16 }}>
                 🎉
               </motion.div>
-              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#f0f0fa", margin: "0 0 8px" }}>Session terminée !</p>
+              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "var(--text-primary)", margin: "0 0 8px" }}>Session terminée !</p>
               <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 18, color: "#74c69d", margin: "0 0 24px" }}>{endMessage}</p>
 
               <div style={{ borderRadius: 20, padding: "20px 24px", background: "rgba(45,106,79,0.10)", border: "0.5px solid rgba(45,106,79,0.25)", marginBottom: 16 }}>
@@ -659,11 +659,11 @@ export default function MobilitePage() {
 
               <div style={{ display: "flex", gap: 10 }}>
                 <button onClick={() => { setPhase("select"); setCompletedIds([]); }}
-                  style={{ flex: 1, padding: "12px 0", borderRadius: 100, background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.10)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.50)", cursor: "pointer" }}>
+                  style={{ flex: 1, padding: "12px 0", borderRadius: 100, background: "var(--bg-card-2)", border: "0.5px solid var(--border-3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.50)", cursor: "pointer" }}>
                   🔄 Refaire
                 </button>
                 <Link href="/dashboard" style={{ flex: 1, textDecoration: "none" }}>
-                  <div style={{ padding: "12px 0", borderRadius: 100, background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.10)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.50)", textAlign: "center" }}>
+                  <div style={{ padding: "12px 0", borderRadius: 100, background: "var(--bg-card-2)", border: "0.5px solid var(--border-3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.50)", textAlign: "center" }}>
                     Dashboard
                   </div>
                 </Link>

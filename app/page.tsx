@@ -182,7 +182,7 @@ export default function LandingPage() {
             fontSize: "clamp(32px, 5vw, 54px)",
             lineHeight: 1.15,
             letterSpacing: "-0.5px",
-            color: "#f0f0fa",
+            color: "var(--text-primary)",
             marginBottom: 20,
           }}
         >
@@ -270,8 +270,8 @@ export default function LandingPage() {
                 flex: 1,
                 padding: "28px 20px",
                 borderRadius: 18,
-                background: "rgba(255,255,255,0.04)",
-                border: "0.5px solid rgba(255,255,255,0.07)",
+                background: "var(--bg-card-2)",
+                border: "0.5px solid var(--border)",
                 textAlign: "center",
               }}
             >
@@ -280,7 +280,7 @@ export default function LandingPage() {
                   fontFamily: T.h,
                   fontWeight: 900,
                   fontSize: 36,
-                  color: "#f0f0fa",
+                  color: "var(--text-primary)",
                   marginBottom: 6,
                   letterSpacing: "-0.5px",
                 }}
@@ -303,7 +303,7 @@ export default function LandingPage() {
               fontFamily: T.h,
               fontWeight: 900,
               fontSize: 32,
-              color: "#f0f0fa",
+              color: "var(--text-primary)",
               letterSpacing: "-0.5px",
               marginBottom: 12,
             }}
@@ -438,7 +438,7 @@ export default function LandingPage() {
               </span>
             </div>
             <div>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: "#f0f0fa", marginBottom: 4 }}>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: "var(--text-primary)", marginBottom: 4 }}>
                 Score global
               </p>
               <span
@@ -511,7 +511,7 @@ export default function LandingPage() {
       {/* ── TESTIMONIALS ── */}
       <section style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 40 }}>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "#f0f0fa", letterSpacing: "-0.5px", marginBottom: 10 }}>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 10 }}>
             Ils ont changé leurs habitudes
           </h2>
           <p style={{ color: "rgba(220,220,245,0.50)", fontFamily: T.b, fontSize: 14 }}>
@@ -527,8 +527,8 @@ export default function LandingPage() {
               style={{
                 padding: "24px",
                 borderRadius: 18,
-                background: "rgba(255,255,255,0.03)",
-                border: "0.5px solid rgba(255,255,255,0.07)",
+                background: "var(--bg-card)",
+                border: "0.5px solid var(--border)",
                 display: "flex",
                 flexDirection: "column",
                 gap: 16,
@@ -555,7 +555,7 @@ export default function LandingPage() {
                   {t.initials}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <p style={{ color: "#f0f0fa", fontFamily: T.h, fontWeight: 700, fontSize: 13 }}>
+                  <p style={{ color: "var(--text-primary)", fontFamily: T.h, fontWeight: 700, fontSize: 13 }}>
                     {t.nom} <span style={{ fontSize: 14 }}>{t.emoji}</span>
                   </p>
                   <p style={{ color: "rgba(220,220,245,0.38)", fontFamily: T.b, fontSize: 11 }}>

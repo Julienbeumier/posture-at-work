@@ -198,7 +198,7 @@ function SubScoreBar({
           }}>
             <span style={{ fontSize: 16, flexShrink: 0 }}>🛒</span>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#f0f0fa", margin: 0 }}>{p.name}</p>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "var(--text-primary)", margin: 0 }}>{p.name}</p>
               <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.45)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.reason}</p>
             </div>
             <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: dimensionColor, flexShrink: 0 }}>{p.price}</span>
@@ -400,7 +400,7 @@ export default function ResultsPage() {
 
   if (!scores || !answers) {
     return (
-      <main style={{ minHeight: "100vh", background: "#0f0f1a", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <main style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <span style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.4)" }}>Calcul en cours…</span>
       </main>
     );
@@ -434,7 +434,7 @@ export default function ResultsPage() {
   } : null;
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingBottom: 80, position: "relative" }}>
+    <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingBottom: 80, position: "relative" }}>
       <BackgroundBlobs blobs={[
         { top: "-5%", right: "-5%", color: "rgba(43,92,230,0.14)", size: 500 },
         { top: "35%", left: "-8%", color: "rgba(116,198,157,0.08)", size: 380 },
@@ -472,7 +472,7 @@ export default function ResultsPage() {
           </div>
 
           <div>
-            <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "#f0f0fa", margin: 0, marginBottom: 8, lineHeight: 1.2 }}>
+            <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "var(--text-primary)", margin: 0, marginBottom: 8, lineHeight: 1.2 }}>
               {firstname ? `Le bilan de ${firstname}` : "Ton bilan PostureAtWork"}
             </h1>
             <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.55)", lineHeight: 1.7, maxWidth: 420, margin: "0 auto" }}>
@@ -545,10 +545,10 @@ export default function ResultsPage() {
           else { msg = "Ton ressenti correspond bien à ta situation réelle — bonne conscience corporelle."; msgColor = "#7c9fff"; }
           return (
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
-              style={{ borderRadius: 18, padding: "16px 20px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", marginBottom: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+              style={{ borderRadius: 18, padding: "16px 20px", background: "var(--bg-card)", border: "0.5px solid var(--border-2)", marginBottom: 16, display: "flex", flexDirection: "column", gap: 10 }}>
               <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "rgba(220,220,245,0.55)", margin: 0 }}>🪞 Ton ressenti vs ton score réel</p>
               <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                <div style={{ flex: 1, textAlign: "center", padding: "10px 0", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.07)" }}>
+                <div style={{ flex: 1, textAlign: "center", padding: "10px 0", borderRadius: 12, background: "var(--bg-card-2)", border: "0.5px solid var(--border)" }}>
                   <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#a8c0ff", margin: 0 }}>{selfPct}</p>
                   <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)", margin: 0 }}>Ton ressenti</p>
                 </div>
@@ -570,12 +570,12 @@ export default function ResultsPage() {
           transition={{ duration: 0.5, delay: 0.2 }}
           style={{
             borderRadius: 24, padding: "24px 28px",
-            background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)",
+            background: "var(--bg-card)", border: "0.5px solid var(--border-2)",
             marginBottom: 20,
           }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-            <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa" }}>Tes 6 indicateurs</span>
+            <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)" }}>Tes 6 indicateurs</span>
             <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.3)" }}>Clique pour détails</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -602,7 +602,7 @@ export default function ResultsPage() {
           transition={{ delay: 0.35 }}
           style={{
             display: "flex", gap: 4, padding: 4, borderRadius: 16,
-            background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)",
+            background: "var(--bg-card-2)", border: "0.5px solid var(--border-2)",
             marginBottom: 16,
           }}
         >
@@ -613,7 +613,7 @@ export default function ResultsPage() {
               style={{
                 flex: 1, textAlign: "center", padding: "10px 0", borderRadius: 12, cursor: "pointer",
                 background: activeTab === tab ? "rgba(255,255,255,0.08)" : "transparent",
-                color: activeTab === tab ? "#f0f0fa" : "rgba(220,220,245,0.35)",
+                color: activeTab === tab ? "var(--text-primary)" : "rgba(220,220,245,0.35)",
                 fontFamily: T.b, fontWeight: 600, fontSize: 13,
                 transition: "all 0.2s ease",
               }}
@@ -654,7 +654,7 @@ export default function ResultsPage() {
                     }} />
                     <div style={{ position: "relative", zIndex: 1 }}>
                       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
-                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", lineHeight: 1.3 }}>{rec.title}</span>
+                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)", lineHeight: 1.3 }}>{rec.title}</span>
                         <span style={{
                           flexShrink: 0, padding: "3px 10px", borderRadius: 100,
                           background: cfg.tagBg, color: cfg.tagColor,
@@ -696,7 +696,7 @@ export default function ResultsPage() {
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                     <span style={{ fontSize: 28 }}>{ex.emoji}</span>
                     <div>
-                      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", margin: 0 }}>{ex.name}</p>
+                      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)", margin: 0 }}>{ex.name}</p>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
                         <span style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff" }}>⏱ {ex.duration}</span>
                         <span style={{ color: "rgba(220,220,245,0.2)", fontSize: 10 }}>·</span>
@@ -720,7 +720,7 @@ export default function ResultsPage() {
           transition={{ delay: 0.42 }}
           style={{ marginBottom: 16 }}
         >
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", margin: "0 0 12px" }}>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", margin: "0 0 12px" }}>
             Tes prochaines étapes
           </p>
           {(() => {
@@ -805,7 +805,7 @@ export default function ResultsPage() {
             </>
           ) : (
             <>
-              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#f0f0fa", margin: "0 0 6px" }}>
+              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "var(--text-primary)", margin: "0 0 6px" }}>
                 🚀 Tu n&apos;as accès qu&apos;à une partie de PAW
               </p>
               <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.50)", margin: "0 0 16px" }}>
@@ -840,7 +840,7 @@ export default function ResultsPage() {
             marginBottom: 16,
           }}
         >
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", margin: 0, marginBottom: 6 }}>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", margin: 0, marginBottom: 6 }}>
             Reçois ton rapport par email
           </p>
           <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 16 }}>
@@ -872,7 +872,7 @@ export default function ResultsPage() {
                     style={{
                       flex: 1, padding: "12px 16px", borderRadius: 12,
                       background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.15)",
-                      color: "#f0f0fa", fontSize: 14, fontFamily: T.b, outline: "none",
+                      color: "var(--text-primary)", fontSize: 14, fontFamily: T.b, outline: "none",
                     }}
                   />
                   <div
@@ -922,7 +922,7 @@ export default function ResultsPage() {
           <Link href="/questionnaire" style={{ textDecoration: "none", flex: 1 }}>
             <div style={{
               padding: "12px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-              background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)",
+              background: "var(--bg-card-2)", border: "0.5px solid var(--border-2)",
               fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)",
             }}>
               🔄 Refaire le bilan
@@ -931,7 +931,7 @@ export default function ResultsPage() {
           <Link href="/" style={{ textDecoration: "none", flex: 1 }}>
             <div style={{
               padding: "12px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-              background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)",
+              background: "var(--bg-card-2)", border: "0.5px solid var(--border-2)",
               fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)",
             }}>
               🏠 Accueil

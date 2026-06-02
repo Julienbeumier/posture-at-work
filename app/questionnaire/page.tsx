@@ -113,7 +113,7 @@ function ChoiceGrid({
               padding: "12px 18px",
               borderRadius: 100,
               background: sel ? cat.selectedBg : "rgba(255,255,255,0.06)",
-              border: sel ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.10)",
+              border: sel ? `1px solid ${cat.color}55` : "0.5px solid var(--border-3)",
               color: sel ? cat.selectedColor : "rgba(220,220,245,0.75)",
               fontSize: 14,
               fontFamily: T.b,
@@ -163,7 +163,7 @@ function MultiSelectGrid({
               padding: "12px 18px",
               borderRadius: 100,
               background: sel ? cat.selectedBg : "rgba(255,255,255,0.06)",
-              border: sel ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.10)",
+              border: sel ? `1px solid ${cat.color}55` : "0.5px solid var(--border-3)",
               color: sel ? cat.selectedColor : "rgba(220,220,245,0.75)",
               fontSize: 14,
               fontFamily: T.b,
@@ -196,7 +196,7 @@ function MultiSelectGrid({
                 borderRadius: 100,
                 background: cat.colorBg,
                 border: `1px solid ${cat.colorBorder}`,
-                color: "#f0f0fa",
+                color: "var(--text-primary)",
                 fontSize: 14,
                 fontFamily: T.b,
                 outline: "none",
@@ -230,7 +230,7 @@ function PainScale({
               height: 60,
               borderRadius: 12,
               background: sel ? cat.selectedBg : "rgba(255,255,255,0.05)",
-              border: sel ? `1px solid ${cat.color}66` : "0.5px solid rgba(255,255,255,0.08)",
+              border: sel ? `1px solid ${cat.color}66` : "0.5px solid var(--border-2)",
               cursor: "pointer",
               display: "flex",
               flexDirection: "column",
@@ -277,7 +277,7 @@ function WellbeingScale({
               height: 68,
               borderRadius: 14,
               background: sel ? cat.selectedBg : "rgba(255,255,255,0.05)",
-              border: sel ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.08)",
+              border: sel ? `1px solid ${cat.color}55` : "0.5px solid var(--border-2)",
               cursor: "pointer",
               display: "flex",
               flexDirection: "column",
@@ -362,7 +362,7 @@ function QBlock({
             height: 24,
             borderRadius: "50%",
             background: answered ? cat.colorBg : "rgba(255,255,255,0.05)",
-            border: answered ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.10)",
+            border: answered ? `1px solid ${cat.color}55` : "0.5px solid var(--border-3)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -377,7 +377,7 @@ function QBlock({
         </div>
         <p
           style={{
-            color: "#f0f0fa",
+            color: "var(--text-primary)",
             fontSize: 14,
             fontFamily: T.b,
             lineHeight: 1.5,
@@ -431,7 +431,7 @@ function CategorySection({
               {cat.emoji}
             </div>
             <div>
-              <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 17, color: "#f0f0fa", margin: 0, letterSpacing: "-0.3px" }}>
+              <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 17, color: "var(--text-primary)", margin: 0, letterSpacing: "-0.3px" }}>
                 {cat.title}
               </h2>
               <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 12, fontFamily: T.b, margin: 0 }}>
@@ -556,7 +556,7 @@ function BureauQuestionnaire() {
           zIndex: 30,
           background: "rgba(15,15,26,0.95)",
           backdropFilter: "blur(20px)",
-          borderBottom: "0.5px solid rgba(255,255,255,0.07)",
+          borderBottom: "0.5px solid var(--border)",
         }}
       >
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "12px 20px" }}>
@@ -566,7 +566,7 @@ function BureauQuestionnaire() {
                 ← Retour
               </button>
               <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>
-                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa" }}>PAW</span>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)" }}>PAW</span>
                 <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#7c9fff" }}>.</span>
               </Link>
             </div>
@@ -594,7 +594,7 @@ function BureauQuestionnaire() {
                     padding: "5px 12px",
                     borderRadius: 100,
                     background: isDone ? cat.colorBg : "rgba(255,255,255,0.05)",
-                    border: isDone ? `0.5px solid ${cat.colorBorder}` : "0.5px solid rgba(255,255,255,0.08)",
+                    border: isDone ? `0.5px solid ${cat.colorBorder}` : "0.5px solid var(--border-2)",
                     color: isDone ? cat.selectedColor : "rgba(220,220,245,0.35)",
                     fontFamily: T.h,
                     fontWeight: 700,

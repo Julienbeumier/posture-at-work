@@ -18,7 +18,21 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const saved = (localStorage.getItem("paw_theme") || "dark") as "dark" | "light";
+    setTheme(saved);
+    document.documentElement.setAttribute("data-theme", saved);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    localStorage.setItem("paw_theme", next);
+    document.documentElement.setAttribute("data-theme", next);
+  };
 
   useEffect(() => {
     const supabase = createClient();
@@ -108,7 +122,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" style={{ textDecoration: "none" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", letterSpacing: "-0.5px" }}>
+            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
               PAW
             </span>
             <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#7c9fff" }}>.</span>
@@ -117,6 +131,32 @@ export default function Navbar() {
 
         {/* Right side */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+
+          {/* Theme toggle pill */}
+          <button
+            onClick={toggleTheme}
+            aria-label="Changer de thème"
+            style={{
+              position: "relative", display: "flex", alignItems: "center",
+              width: 64, height: 32, borderRadius: 100, padding: 4, cursor: "pointer",
+              background: theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(43,92,230,0.12)",
+              border: theme === "dark" ? "0.5px solid rgba(255,255,255,0.15)" : "0.5px solid rgba(43,92,230,0.25)",
+              transition: "all 0.3s ease", outline: "none",
+            }}
+          >
+            <span style={{
+              position: "absolute", left: theme === "dark" ? 4 : 32, width: 24, height: 24,
+              borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 13, lineHeight: 1,
+              background: theme === "dark" ? "rgba(255,255,255,0.15)" : "#2b5ce6",
+              transition: "left 0.25s ease, background 0.25s ease",
+            }}>
+              {theme === "dark" ? "🌙" : "☀️"}
+            </span>
+            <span style={{ position: "absolute", right: theme === "dark" ? 6 : "auto", left: theme === "light" ? 6 : "auto", fontSize: 11, opacity: 0.4 }}>
+              {theme === "dark" ? "☀️" : "🌙"}
+            </span>
+          </button>
 
           {/* Desktop nav links (hidden on mobile) */}
           <span className="hidden md:flex items-center" style={{ gap: 8 }}>
@@ -156,7 +196,7 @@ export default function Navbar() {
               </div>
               {menuOpen && (
                 <div style={{ position: "absolute", right: 0, top: 42, width: 180, borderRadius: 16, background: "rgba(18,18,30,0.98)", border: "0.5px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.5)", overflow: "hidden" }}>
-                  <div style={{ padding: "12px 16px", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
+                  <div style={{ padding: "12px 16px", borderBottom: "0.5px solid var(--border)" }}>
                     <p style={{ color: "rgba(220,220,245,0.55)", fontSize: 11, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</p>
                   </div>
                   <div onClick={() => { router.push("/dashboard"); setMenuOpen(false); }} style={{ padding: "10px 16px", color: "rgba(220,220,245,0.75)", fontSize: 13, cursor: "pointer" }}>
@@ -183,7 +223,7 @@ export default function Navbar() {
           <button
             className="md:hidden"
             onClick={(e) => { e.stopPropagation(); setIsMenuOpen((v) => !v); }}
-            style={{ background: "none", border: "none", color: "#f0f0fa", fontSize: 26, cursor: "pointer", padding: "4px 8px", lineHeight: 1, minHeight: 44, minWidth: 44, display: "flex", alignItems: "center", justifyContent: "center" }}
+            style={{ background: "none", border: "none", color: "var(--text-primary)", fontSize: 26, cursor: "pointer", padding: "4px 8px", lineHeight: 1, minHeight: 44, minWidth: 44, display: "flex", alignItems: "center", justifyContent: "center" }}
             aria-label="Menu"
           >
             {isMenuOpen ? "✕" : "≡"}
@@ -199,8 +239,8 @@ export default function Navbar() {
             position: "fixed",
             top: 64,
             right: 16,
-            background: "#1b1b2e",
-            border: "1px solid rgba(255,255,255,0.10)",
+            background: "var(--bg-secondary)",
+            border: "1px solid var(--border-3)",
             borderRadius: 16,
             padding: "8px 0",
             zIndex: 100,
@@ -209,7 +249,7 @@ export default function Navbar() {
           }}
         >
           {user && (
-            <div style={{ padding: "10px 20px 12px", borderBottom: "0.5px solid rgba(255,255,255,0.08)", marginBottom: 4 }}>
+            <div style={{ padding: "10px 20px 12px", borderBottom: "0.5px solid var(--border-2)", marginBottom: 4 }}>
               <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", margin: 0 }}>
                 {user.email}
               </p>

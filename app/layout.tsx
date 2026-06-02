@@ -30,11 +30,15 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr" className={`${nunito.variable} ${jakarta.variable}`}>
+      <head>
+        {/* Anti-flash: apply saved theme before first paint */}
+        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('paw_theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}` }} />
+      </head>
       <body
         className="min-h-screen antialiased"
         style={{
-          background: "#0f0f1a",
-          color: "#f0f0fa",
+          background: "var(--bg-primary)",
+          color: "var(--text-primary)",
           fontFamily: "var(--font-jakarta), sans-serif",
         }}
       >
