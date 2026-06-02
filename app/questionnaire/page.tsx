@@ -114,7 +114,7 @@ function ChoiceGrid({
               borderRadius: 100,
               background: sel ? cat.selectedBg : "rgba(255,255,255,0.06)",
               border: sel ? `1px solid ${cat.color}55` : "0.5px solid var(--border-3)",
-              color: sel ? cat.selectedColor : "rgba(220,220,245,0.75)",
+              color: sel ? cat.selectedColor : "var(--t75)",
               fontSize: 14,
               fontFamily: T.b,
               cursor: "pointer",
@@ -164,7 +164,7 @@ function MultiSelectGrid({
               borderRadius: 100,
               background: sel ? cat.selectedBg : "rgba(255,255,255,0.06)",
               border: sel ? `1px solid ${cat.color}55` : "0.5px solid var(--border-3)",
-              color: sel ? cat.selectedColor : "rgba(220,220,245,0.75)",
+              color: sel ? cat.selectedColor : "var(--t75)",
               fontSize: 14,
               fontFamily: T.b,
               cursor: "pointer",
@@ -241,8 +241,8 @@ function PainScale({
             }}
           >
             <span style={{ fontSize: 16 }}>{PAIN_EMOJIS[v]}</span>
-            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 11, color: sel ? cat.selectedColor : "rgba(220,220,245,0.4)" }}>{v}</span>
-            <span style={{ fontSize: 8, color: sel ? cat.selectedColor : "rgba(220,220,245,0.25)", textAlign: "center", lineHeight: 1.1, overflow: "hidden", padding: "0 2px", width: "100%" }}>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 11, color: sel ? cat.selectedColor : "var(--t40)" }}>{v}</span>
+            <span style={{ fontSize: 8, color: sel ? cat.selectedColor : "var(--t25)", textAlign: "center", lineHeight: 1.1, overflow: "hidden", padding: "0 2px", width: "100%" }}>
               {PAIN_LABELS[v]}
             </span>
           </motion.div>
@@ -288,7 +288,7 @@ function WellbeingScale({
             }}
           >
             <span style={{ fontSize: 22 }}>{opt.emoji}</span>
-            <span style={{ fontSize: 9, fontFamily: T.b, color: sel ? cat.selectedColor : "rgba(220,220,245,0.35)", textAlign: "center", overflow: "hidden", padding: "0 3px", width: "100%" }}>
+            <span style={{ fontSize: 9, fontFamily: T.b, color: sel ? cat.selectedColor : "var(--t35)", textAlign: "center", overflow: "hidden", padding: "0 3px", width: "100%" }}>
               {opt.label}
             </span>
           </motion.div>
@@ -311,7 +311,7 @@ function SliderInput({
         <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 40, color: cat.selectedColor }}>{value}<span style={{ fontSize: 22 }}>{unit}</span></span>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <span style={{ color: "rgba(220,220,245,0.35)", fontSize: 11, width: 24, textAlign: "center" }}>{min}</span>
+        <span style={{ color: "var(--t35)", fontSize: 11, width: 24, textAlign: "center" }}>{min}</span>
         <input
           type="range" min={min} max={max} step={step} value={value}
           onChange={(e) => onChange(Number(e.target.value))}
@@ -325,10 +325,10 @@ function SliderInput({
             appearance: "none",
           }}
         />
-        <span style={{ color: "rgba(220,220,245,0.35)", fontSize: 11, width: 24, textAlign: "center" }}>{max}</span>
+        <span style={{ color: "var(--t35)", fontSize: 11, width: 24, textAlign: "center" }}>{max}</span>
       </div>
       {reference && (
-        <p style={{ textAlign: "center", color: "rgba(220,220,245,0.35)", fontSize: 12, fontFamily: T.b }}>{reference}</p>
+        <p style={{ textAlign: "center", color: "var(--t35)", fontSize: 12, fontFamily: T.b }}>{reference}</p>
       )}
     </div>
   );
@@ -370,7 +370,7 @@ function QBlock({
             fontSize: 11,
             fontFamily: T.h,
             fontWeight: 700,
-            color: answered ? cat.color : "rgba(220,220,245,0.35)",
+            color: answered ? cat.color : "var(--t35)",
           }}
         >
           {answered ? "✓" : number}
@@ -434,7 +434,7 @@ function CategorySection({
               <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 17, color: "var(--text-primary)", margin: 0, letterSpacing: "-0.3px" }}>
                 {cat.title}
               </h2>
-              <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 12, fontFamily: T.b, margin: 0 }}>
+              <p style={{ color: "var(--t40)", fontSize: 12, fontFamily: T.b, margin: 0 }}>
                 {cat.subtitle}
               </p>
             </div>
@@ -562,7 +562,7 @@ function BureauQuestionnaire() {
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "12px 20px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "rgba(220,220,245,0.40)", fontSize: 13, fontFamily: T.b, cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+              <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "var(--t40)", fontSize: 13, fontFamily: T.b, cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
                 ← Retour
               </button>
               <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>
@@ -570,7 +570,7 @@ function BureauQuestionnaire() {
                 <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#7c9fff" }}>.</span>
               </Link>
             </div>
-            <span style={{ color: "rgba(220,220,245,0.40)", fontSize: 13, fontFamily: T.b }}>
+            <span style={{ color: "var(--t40)", fontSize: 13, fontFamily: T.b }}>
               {done} / {CATEGORIES.length} catégories
             </span>
           </div>
@@ -595,7 +595,7 @@ function BureauQuestionnaire() {
                     borderRadius: 100,
                     background: isDone ? cat.colorBg : "rgba(255,255,255,0.05)",
                     border: isDone ? `0.5px solid ${cat.colorBorder}` : "0.5px solid var(--border-2)",
-                    color: isDone ? cat.selectedColor : "rgba(220,220,245,0.35)",
+                    color: isDone ? cat.selectedColor : "var(--t35)",
                     fontFamily: T.h,
                     fontWeight: 700,
                     fontSize: 12,
@@ -650,7 +650,7 @@ function BureauQuestionnaire() {
         {/* Greeting */}
         {firstname && (
           <div style={{ textAlign: "center", paddingBottom: 12 }}>
-            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color: "rgba(220,220,245,0.55)" }}>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color: "var(--t55)" }}>
               Bonjour {firstname} 👋
             </span>
           </div>
@@ -939,7 +939,7 @@ function BureauQuestionnaire() {
               >
                 Voir mes résultats →
               </div>
-              <p style={{ textAlign: "center", color: "rgba(220,220,245,0.30)", fontSize: 12, fontFamily: T.b, marginTop: 8 }}>
+              <p style={{ textAlign: "center", color: "var(--t30)", fontSize: 12, fontFamily: T.b, marginTop: 8 }}>
                 Toutes les questions sont répondues ✓
               </p>
             </div>

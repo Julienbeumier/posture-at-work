@@ -85,7 +85,7 @@ export default function Navbar() {
   const menuItemStyle: React.CSSProperties = {
     display: "block",
     padding: "12px 20px",
-    color: "rgba(220,220,245,0.85)",
+    color: "var(--t85)",
     fontSize: 14,
     fontWeight: 600,
     fontFamily: T.h,
@@ -175,7 +175,7 @@ export default function Navbar() {
               </>
             ) : (
               <Link href="/auth" style={{ textDecoration: "none" }}>
-                <div style={{ color: "rgba(220,220,245,0.55)", fontSize: 14, cursor: "pointer" }}>
+                <div style={{ color: "var(--t55)", fontSize: 14, cursor: "pointer" }}>
                   Se connecter
                 </div>
               </Link>
@@ -197,9 +197,9 @@ export default function Navbar() {
               {menuOpen && (
                 <div style={{ position: "absolute", right: 0, top: 42, width: 180, borderRadius: 16, background: "rgba(18,18,30,0.98)", border: "0.5px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.5)", overflow: "hidden" }}>
                   <div style={{ padding: "12px 16px", borderBottom: "0.5px solid var(--border)" }}>
-                    <p style={{ color: "rgba(220,220,245,0.55)", fontSize: 11, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</p>
+                    <p style={{ color: "var(--t55)", fontSize: 11, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</p>
                   </div>
-                  <div onClick={() => { router.push("/dashboard"); setMenuOpen(false); }} style={{ padding: "10px 16px", color: "rgba(220,220,245,0.75)", fontSize: 13, cursor: "pointer" }}>
+                  <div onClick={() => { router.push("/dashboard"); setMenuOpen(false); }} style={{ padding: "10px 16px", color: "var(--t75)", fontSize: 13, cursor: "pointer" }}>
                     📊 Mon compte
                   </div>
                   <div onClick={signOut} style={{ padding: "10px 16px", color: "#f09595", fontSize: 13, cursor: "pointer" }}>
@@ -250,7 +250,7 @@ export default function Navbar() {
         >
           {user && (
             <div style={{ padding: "10px 20px 12px", borderBottom: "0.5px solid var(--border-2)", marginBottom: 4 }}>
-              <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", margin: 0 }}>
+              <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", margin: 0 }}>
                 {user.email}
               </p>
             </div>

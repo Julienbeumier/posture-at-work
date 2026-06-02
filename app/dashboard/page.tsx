@@ -125,7 +125,7 @@ function HeroCircle({ score }: { score: number }) {
       </svg>
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "#a8c0ff", lineHeight: 1 }}>{score}</span>
-        <span style={{ fontSize: 8, color: "rgba(220,220,245,0.4)" }}>/100</span>
+        <span style={{ fontSize: 8, color: "var(--t40)" }}>/100</span>
       </div>
     </div>
   );
@@ -143,7 +143,7 @@ function ScoreBarRow({ dimKey, score, prev }: { dimKey: string; score: number; p
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, alignItems: "center" }}>
-            <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.75)" }}>{meta?.label}</span>
+            <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t75)" }}>{meta?.label}</span>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color }}>{score}</span>
               {delta != null && delta !== 0 && (
@@ -162,7 +162,7 @@ function ScoreBarRow({ dimKey, score, prev }: { dimKey: string; score: number; p
             />
           </div>
         </div>
-        <span style={{ fontSize: 10, color: "rgba(220,220,245,0.25)", flexShrink: 0 }}>→</span>
+        <span style={{ fontSize: 10, color: "var(--t25)", flexShrink: 0 }}>→</span>
       </div>
     </Link>
   );
@@ -533,7 +533,7 @@ export default function DashboardPage() {
                 </div>
               )}
               {latest && (
-                <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.4)", margin: "4px 0 0" }}>
+                <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: "4px 0 0" }}>
                   Bilan du {new Date(latest.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}
                 </p>
               )}
@@ -557,12 +557,12 @@ export default function DashboardPage() {
             <span style={{ fontSize: 18, flexShrink: 0 }}>📱</span>
             <div style={{ flex: 1 }}>
               <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "var(--text-primary)", margin: "0 0 4px" }}>Active les rappels</p>
-              <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", margin: 0, lineHeight: 1.5 }}>
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", margin: 0, lineHeight: 1.5 }}>
                 Sur iOS, ajoute l&apos;app à ton écran d&apos;accueil pour recevoir des rappels posture.
               </p>
             </div>
             <button onClick={() => setShowIosBanner(false)}
-              style={{ background: "none", border: "none", color: "rgba(220,220,245,0.3)", fontSize: 16, cursor: "pointer", flexShrink: 0, padding: 0 }}>✕</button>
+              style={{ background: "none", border: "none", color: "var(--t30)", fontSize: 16, cursor: "pointer", flexShrink: 0, padding: 0 }}>✕</button>
           </motion.div>
         )}
 
@@ -574,7 +574,7 @@ export default function DashboardPage() {
           }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>🎯</div>
             <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 17, color: "var(--text-primary)", marginBottom: 8 }}>Pas encore de bilan</p>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)", lineHeight: 1.65, marginBottom: 20 }}>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", lineHeight: 1.65, marginBottom: 20 }}>
               Fais ton premier bilan en 5 minutes pour débloquer ton tableau de bord complet.
             </p>
             <Link href="/onboarding" style={{ textDecoration: "none" }}>
@@ -593,7 +593,7 @@ export default function DashboardPage() {
           <p style={{ fontFamily: T.b, fontSize: 10, fontWeight: 700, color: "rgba(168,192,255,0.5)", letterSpacing: "0.1em", textTransform: "uppercase", margin: 0, marginBottom: 8 }}>
             TIP DU JOUR
           </p>
-          <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.85)", lineHeight: 1.65, margin: 0 }}>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t85)", lineHeight: 1.65, margin: 0 }}>
             {tip}
           </p>
         </motion.div>
@@ -638,7 +638,7 @@ export default function DashboardPage() {
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: s.color, margin: 0, marginBottom: 3, position: "relative" }}>
                       {isVideoCard ? (isPremiumUser ? "Lancer mon analyse →" : "Lancer maintenant →") : s.title}
                     </p>
-                    <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.45)", margin: 0, position: "relative" }}>
+                    <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0, position: "relative" }}>
                       {desc}
                     </p>
                   </div>
@@ -660,7 +660,7 @@ export default function DashboardPage() {
               <div style={{ marginTop: 12, padding: "12px 16px", borderRadius: 14, background: "var(--bg-card)", border: "0.5px solid var(--border)", display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{ fontSize: 14, flexShrink: 0 }}>💡</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 11, color: "rgba(220,220,245,0.45)", margin: "0 0 2px" }}>Recommandé pour toi :</p>
+                  <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 11, color: "var(--t45)", margin: "0 0 2px" }}>Recommandé pour toi :</p>
                   <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 12, color: "var(--text-primary)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</p>
                 </div>
                 <span style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 700, fontSize: 12, color: meta.color, flexShrink: 0 }}>{prod.price}</span>
@@ -689,7 +689,7 @@ export default function DashboardPage() {
               <motion.div key="saved" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: "center", padding: "16px 0" }}>
                 <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
                 <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", marginBottom: 6 }}>Journée validée ✅</p>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", marginBottom: 16 }}>Reviens demain pour maintenir ton streak.</p>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", marginBottom: 16 }}>Reviens demain pour maintenir ton streak.</p>
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>
                   <div style={{ padding: "12px 0", borderRadius: 100, background: "rgba(45,106,79,0.20)", border: "0.5px solid rgba(45,106,79,0.35)", fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#74c69d" }}>
                     🧘 Faire mes exercices →
@@ -708,7 +708,7 @@ export default function DashboardPage() {
                   }}
                 >
                   <span style={{ fontSize: 18 }}>✅</span>
-                  <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.85)", flex: 1 }}>Mes exercices du jour</span>
+                  <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t85)", flex: 1 }}>Mes exercices du jour</span>
                   <div style={{ width: 20, height: 20, borderRadius: 6, background: checkin.exercises_done ? "#74c69d" : "rgba(255,255,255,0.06)", border: checkin.exercises_done ? "none" : "0.5px solid rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {checkin.exercises_done && <span style={{ fontSize: 10, color: "var(--bg-primary)", fontWeight: 900 }}>✓</span>}
                   </div>
@@ -718,9 +718,9 @@ export default function DashboardPage() {
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                     <span style={{ fontSize: 16 }}>💧</span>
-                    <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)", flex: 1 }}>Eau aujourd&apos;hui</span>
+                    <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t75)", flex: 1 }}>Eau aujourd&apos;hui</span>
                     <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: waterGlasses >= 6 ? "#74c69d" : "#a8c0ff" }}>{waterGlasses}</span>
-                    <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)" }}>verres{waterGlasses >= 6 ? " ✓" : ""}</span>
+                    <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)" }}>verres{waterGlasses >= 6 ? " ✓" : ""}</span>
                   </div>
                   <input
                     type="range" min={0} max={10} step={1} value={waterGlasses}
@@ -732,7 +732,7 @@ export default function DashboardPage() {
                 {/* Breaks */}
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ fontSize: 16 }}>⏱️</span>
-                  <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)", flex: 1 }}>Pauses actives</span>
+                  <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t75)", flex: 1 }}>Pauses actives</span>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <button
                       onClick={() => setCheckin((c) => ({ ...c, breaks_taken: Math.max(0, c.breaks_taken - 1) }))}
@@ -750,8 +750,8 @@ export default function DashboardPage() {
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                     <span style={{ fontSize: 16 }}>🤕</span>
-                    <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)", flex: 1 }}>Douleur du jour</span>
-                    <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "rgba(220,220,245,0.5)" }}>{checkin.pain_level}/5</span>
+                    <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t75)", flex: 1 }}>Douleur du jour</span>
+                    <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "var(--t50)" }}>{checkin.pain_level}/5</span>
                   </div>
                   <div style={{ display: "flex", gap: 6 }}>
                     {[0, 1, 2, 3, 4, 5].map((v) => (
@@ -763,7 +763,7 @@ export default function DashboardPage() {
                           background: checkin.pain_level === v ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.04)",
                           border: checkin.pain_level === v ? "0.5px solid rgba(240,149,149,0.45)" : "0.5px solid var(--border)",
                           fontFamily: T.h, fontWeight: 700, fontSize: 12,
-                          color: checkin.pain_level === v ? "#f09595" : "rgba(220,220,245,0.35)",
+                          color: checkin.pain_level === v ? "#f09595" : "var(--t35)",
                         }}
                       >{v}</button>
                     ))}
@@ -793,7 +793,7 @@ export default function DashboardPage() {
             background: "var(--bg-card)", border: "0.5px solid var(--border)",
           }}>
             <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 4 }}>Tes 6 indicateurs</p>
-            <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)", marginBottom: 10 }}>Clique pour voir le plan</p>
+            <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", marginBottom: 10 }}>Clique pour voir le plan</p>
             {Object.keys(DIM_META).map((k) => (
               <ScoreBarRow
                 key={k} dimKey={k}
@@ -821,7 +821,7 @@ export default function DashboardPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
                     <span style={{ fontSize: 13 }}>{g.icon}</span>
-                    <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.75)" }}>{g.label}</span>
+                    <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t75)" }}>{g.label}</span>
                   </div>
                   <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden" }}>
                     <motion.div
@@ -831,7 +831,7 @@ export default function DashboardPage() {
                       transition={{ duration: 0.7, ease: "easeOut" }}
                     />
                   </div>
-                  <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.35)", marginTop: 4 }}>
+                  <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)", marginTop: 4 }}>
                     {g.done} jour{g.done > 1 ? "s" : ""} atteint{g.done > 1 ? "s" : ""} cette semaine
                   </p>
                 </div>
@@ -849,7 +849,7 @@ export default function DashboardPage() {
             <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f09595", margin: 0, marginBottom: 6 }}>
               ⚠️ Ta douleur semble progresser cette semaine
             </p>
-            <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.60)", lineHeight: 1.65, marginBottom: 14 }}>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t60)", lineHeight: 1.65, marginBottom: 14 }}>
               Ton niveau de douleur a augmenté ces derniers jours. Voici quoi faire maintenant.
             </p>
             <Link href="/conseils/douleurs" style={{ textDecoration: "none" }}>
@@ -877,7 +877,7 @@ export default function DashboardPage() {
                 <div key={item.label} style={{ borderRadius: 14, padding: "14px 14px", background: "var(--bg-card)", border: "0.5px solid rgba(255,255,255,0.06)" }}>
                   <span style={{ fontSize: 18 }}>{item.icon}</span>
                   <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: item.color, margin: "6px 0 2px" }}>{item.value}</p>
-                  <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.40)", margin: 0 }}>{item.label}</p>
+                  <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: 0 }}>{item.label}</p>
                 </div>
               ))}
             </div>
@@ -896,7 +896,7 @@ export default function DashboardPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {improvements.slice(0, 4).map((imp) => (
                 <div key={imp.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)" }}>{imp.label}</span>
+                  <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t75)" }}>{imp.label}</span>
                   <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#74c69d" }}>+{imp.delta} pts</span>
                 </div>
               ))}
@@ -922,7 +922,7 @@ export default function DashboardPage() {
                 {daysUntilBilan <= 0 ? "Maintenant !" : `Dans ${daysUntilBilan}j`}
               </span>
             </div>
-            <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", marginBottom: 14 }}>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", marginBottom: 14 }}>
               {daysUntilBilan <= 0
                 ? "Il est temps de refaire ton bilan pour mesurer ta progression !"
                 : `Recommandé le ${nextBilanDate!.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}`}
@@ -934,7 +934,7 @@ export default function DashboardPage() {
                 border: daysUntilBilan <= 0 ? "none" : "0.5px solid var(--border-3)",
                 boxShadow: daysUntilBilan <= 0 ? "0 4px 20px rgba(43,92,230,0.35)" : "none",
                 fontFamily: T.h, fontWeight: 700, fontSize: 13,
-                color: daysUntilBilan <= 0 ? "#fff" : "rgba(220,220,245,0.5)",
+                color: daysUntilBilan <= 0 ? "#fff" : "var(--t50)",
               }}>
                 Nouveau bilan →
               </div>
@@ -949,16 +949,16 @@ export default function DashboardPage() {
             background: "var(--bg-card)", border: "0.5px solid var(--border)",
           }}>
             <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 4 }}>📈 Ton évolution</p>
-            <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)", marginBottom: 16 }}>
+            <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", marginBottom: 16 }}>
               Score global sur tes {assessments.length} derniers bilans
             </p>
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={chartData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
-                <XAxis dataKey="date" stroke="rgba(240,240,250,0.15)" tick={{ fontSize: 10, fill: "rgba(220,220,245,0.35)" }} />
-                <YAxis domain={[0, 100]} stroke="rgba(240,240,250,0.15)" tick={{ fontSize: 10, fill: "rgba(220,220,245,0.35)" }} width={32} />
+                <XAxis dataKey="date" stroke="rgba(240,240,250,0.15)" tick={{ fontSize: 10, fill: "var(--t35)" }} />
+                <YAxis domain={[0, 100]} stroke="rgba(240,240,250,0.15)" tick={{ fontSize: 10, fill: "var(--t35)" }} width={32} />
                 <Tooltip
                   contentStyle={{ background: "var(--bg-secondary)", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 12, fontSize: 12, color: "var(--text-primary)" }}
-                  labelStyle={{ color: "rgba(220,220,245,0.5)", marginBottom: 4 }}
+                  labelStyle={{ color: "var(--t50)", marginBottom: 4 }}
                 />
                 <Line type="monotone" dataKey="score" stroke="#2b5ce6" strokeWidth={2.5}
                   dot={{ fill: "#2b5ce6", r: 4, strokeWidth: 0 }}
@@ -1000,7 +1000,7 @@ export default function DashboardPage() {
                         </p>
                         <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                           <span style={{ padding: "2px 8px", borderRadius: 100, background: b.bg, border: `0.5px solid ${b.border}`, fontFamily: T.b, fontSize: 10, color: b.color }}>{b.label}</span>
-                          <span style={{ padding: "2px 8px", borderRadius: 100, background: "var(--bg-card-3)", fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.4)" }}>
+                          <span style={{ padding: "2px 8px", borderRadius: 100, background: "var(--bg-card-3)", fontFamily: T.b, fontSize: 10, color: "var(--t40)" }}>
                             {jobType === "debout" ? "🏭 Debout" : "💻 Bureau"}
                           </span>
                           {a.video_analysis && (
@@ -1013,7 +1013,7 @@ export default function DashboardPage() {
                           )}
                         </div>
                       </div>
-                      <span style={{ fontSize: 10, color: "rgba(220,220,245,0.25)", flexShrink: 0 }}>{isExpanded ? "▲" : "▼"}</span>
+                      <span style={{ fontSize: 10, color: "var(--t25)", flexShrink: 0 }}>{isExpanded ? "▲" : "▼"}</span>
                     </div>
 
                     {/* ── Expanded: mini-scores + actions ── */}
@@ -1089,7 +1089,7 @@ export default function DashboardPage() {
               <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 17, color: "var(--text-primary)", textAlign: "center", marginBottom: 10 }}>
                 Supprimer mon compte
               </p>
-              <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "rgba(220,220,245,0.55)", textAlign: "center", lineHeight: 1.65, marginBottom: 24 }}>
+              <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "var(--t55)", textAlign: "center", lineHeight: 1.65, marginBottom: 24 }}>
                 Es-tu sûr ? Toutes tes données seront supprimées définitivement (bilans, check-ins, scores). Cette action est irréversible.
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -1102,7 +1102,7 @@ export default function DashboardPage() {
                 </button>
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  style={{ padding: "12px 0", borderRadius: 100, background: "var(--bg-card-3)", border: "0.5px solid var(--border-3)", color: "rgba(220,220,245,0.50)", fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer" }}
+                  style={{ padding: "12px 0", borderRadius: 100, background: "var(--bg-card-3)", border: "0.5px solid var(--border-3)", color: "var(--t50)", fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer" }}
                 >
                   Annuler
                 </button>

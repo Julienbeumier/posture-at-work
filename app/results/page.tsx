@@ -80,7 +80,7 @@ function ScoreCircle({ score }: { score: number }) {
         <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 38, color: "#a8c0ff", lineHeight: 1 }}>
           {displayed}
         </span>
-        <span style={{ fontSize: 11, color: "rgba(220,220,245,0.45)", marginTop: 2 }}>/100</span>
+        <span style={{ fontSize: 11, color: "var(--t45)", marginTop: 2 }}>/100</span>
       </div>
     </div>
   );
@@ -143,13 +143,13 @@ function SubScoreBar({
         style={{ cursor: "pointer" }}
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: T.b, fontSize: 13, color: "var(--t75)" }}>
             <span>{emoji}</span>
             <span>{label}</span>
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color }}>{displayed}</span>
-            <span style={{ fontSize: 10, color: "rgba(220,220,245,0.3)" }}>{expanded ? "▲" : "▼"}</span>
+            <span style={{ fontSize: 10, color: "var(--t30)" }}>{expanded ? "▲" : "▼"}</span>
           </div>
         </div>
         <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden", marginBottom: 4 }}>
@@ -166,7 +166,7 @@ function SubScoreBar({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.5)", lineHeight: 1.6, paddingTop: 4, paddingBottom: 2 }}
+              style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", lineHeight: 1.6, paddingTop: 4, paddingBottom: 2 }}
             >
               {interpretation}
             </motion.p>
@@ -199,7 +199,7 @@ function SubScoreBar({
             <span style={{ fontSize: 16, flexShrink: 0 }}>🛒</span>
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "var(--text-primary)", margin: 0 }}>{p.name}</p>
-              <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.45)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.reason}</p>
+              <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.reason}</p>
             </div>
             <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: dimensionColor, flexShrink: 0 }}>{p.price}</span>
             <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{
@@ -401,7 +401,7 @@ export default function ResultsPage() {
   if (!scores || !answers) {
     return (
       <main style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.4)" }}>Calcul en cours…</span>
+        <span style={{ fontFamily: T.b, fontSize: 14, color: "var(--t40)" }}>Calcul en cours…</span>
       </main>
     );
   }
@@ -475,7 +475,7 @@ export default function ResultsPage() {
             <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "var(--text-primary)", margin: 0, marginBottom: 8, lineHeight: 1.2 }}>
               {firstname ? `Le bilan de ${firstname}` : "Ton bilan PostureAtWork"}
             </h1>
-            <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.55)", lineHeight: 1.7, maxWidth: 420, margin: "0 auto" }}>
+            <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)", lineHeight: 1.7, maxWidth: 420, margin: "0 auto" }}>
               {firstname ? `Voici ce qu'on a analysé pour toi, ${firstname}. ` : ""}
               {scores.global >= 70
                 ? "Tu as de bonnes bases. Affine les détails pour atteindre un confort optimal."
@@ -491,7 +491,7 @@ export default function ResultsPage() {
             return (
               <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 18px", borderRadius: 14, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)", maxWidth: 480, textAlign: "left" }}>
                 <span style={{ fontSize: 20, flexShrink: 0 }}>{jc.emoji}</span>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.65, margin: 0 }}>{jc.intro}</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{jc.intro}</p>
               </div>
             );
           })()}
@@ -539,23 +539,23 @@ export default function ResultsPage() {
           const selfPct = Math.round(((ae - 1) / 4) * 100);
           const diff = selfPct - scores.global;
           let msg = "";
-          let msgColor = "rgba(220,220,245,0.55)";
+          let msgColor = "var(--t55)";
           if (diff > 20) { msg = "Tu t'estimes mieux que ton score — tes douleurs sont peut-être devenues normales pour toi. C'est un signal à ne pas ignorer."; msgColor = "#f4a261"; }
           else if (diff < -20) { msg = "Tu es plus solide que tu ne le crois ! Ton score est meilleur que ton ressenti."; msgColor = "#74c69d"; }
           else { msg = "Ton ressenti correspond bien à ta situation réelle — bonne conscience corporelle."; msgColor = "#7c9fff"; }
           return (
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
               style={{ borderRadius: 18, padding: "16px 20px", background: "var(--bg-card)", border: "0.5px solid var(--border-2)", marginBottom: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "rgba(220,220,245,0.55)", margin: 0 }}>🪞 Ton ressenti vs ton score réel</p>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "var(--t55)", margin: 0 }}>🪞 Ton ressenti vs ton score réel</p>
               <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                 <div style={{ flex: 1, textAlign: "center", padding: "10px 0", borderRadius: 12, background: "var(--bg-card-2)", border: "0.5px solid var(--border)" }}>
                   <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#a8c0ff", margin: 0 }}>{selfPct}</p>
-                  <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)", margin: 0 }}>Ton ressenti</p>
+                  <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", margin: 0 }}>Ton ressenti</p>
                 </div>
-                <span style={{ color: "rgba(220,220,245,0.25)", fontSize: 18 }}>vs</span>
+                <span style={{ color: "var(--t25)", fontSize: 18 }}>vs</span>
                 <div style={{ flex: 1, textAlign: "center", padding: "10px 0", borderRadius: 12, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)" }}>
                   <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#7c9fff", margin: 0 }}>{scores.global}</p>
-                  <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)", margin: 0 }}>Score PAW</p>
+                  <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", margin: 0 }}>Score PAW</p>
                 </div>
               </div>
               <p style={{ fontFamily: T.b, fontSize: 12, color: msgColor, lineHeight: 1.6, margin: 0 }}>{msg}</p>
@@ -576,7 +576,7 @@ export default function ResultsPage() {
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
             <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)" }}>Tes 6 indicateurs</span>
-            <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.3)" }}>Clique pour détails</span>
+            <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)" }}>Clique pour détails</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             {SUB_SCORES.map(({ key, label, emoji, dimensionPath, dimensionColor }, i) => (
@@ -613,7 +613,7 @@ export default function ResultsPage() {
               style={{
                 flex: 1, textAlign: "center", padding: "10px 0", borderRadius: 12, cursor: "pointer",
                 background: activeTab === tab ? "rgba(255,255,255,0.08)" : "transparent",
-                color: activeTab === tab ? "var(--text-primary)" : "rgba(220,220,245,0.35)",
+                color: activeTab === tab ? "var(--text-primary)" : "var(--t35)",
                 fontFamily: T.b, fontWeight: 600, fontSize: 13,
                 transition: "all 0.2s ease",
               }}
@@ -663,7 +663,7 @@ export default function ResultsPage() {
                           {cfg.label}
                         </span>
                       </div>
-                      <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.6)", lineHeight: 1.65, margin: 0 }}>
+                      <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t60)", lineHeight: 1.65, margin: 0 }}>
                         {rec.description}
                       </p>
                     </div>
@@ -699,12 +699,12 @@ export default function ResultsPage() {
                       <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)", margin: 0 }}>{ex.name}</p>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
                         <span style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff" }}>⏱ {ex.duration}</span>
-                        <span style={{ color: "rgba(220,220,245,0.2)", fontSize: 10 }}>·</span>
-                        <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.4)" }}>{ex.targets}</span>
+                        <span style={{ color: "var(--t20)", fontSize: 10 }}>·</span>
+                        <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)" }}>{ex.targets}</span>
                       </div>
                     </div>
                   </div>
-                  <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, margin: 0 }}>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.65, margin: 0 }}>
                     {ex.description}
                   </p>
                 </motion.div>
@@ -731,21 +731,21 @@ export default function ResultsPage() {
                   <div style={{ borderRadius: 18, padding: "16px 14px", background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)", textAlign: "center", cursor: "pointer" }}>
                     <div style={{ fontSize: 24, marginBottom: 8 }}>🧘</div>
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#7c9fff", margin: "0 0 4px" }}>Exercices</p>
-                    <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.40)", margin: 0 }}>Programme guidé</p>
+                    <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: 0 }}>Programme guidé</p>
                   </div>
                 </Link>
                 <Link href={lowestDim.dimensionPath} style={{ textDecoration: "none" }}>
                   <div style={{ borderRadius: 18, padding: "16px 14px", background: "rgba(124,58,237,0.10)", border: "0.5px solid rgba(124,58,237,0.25)", textAlign: "center", cursor: "pointer" }}>
                     <div style={{ fontSize: 24, marginBottom: 8 }}>🎯</div>
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#a78bfa", margin: "0 0 4px" }}>Plan prioritaire</p>
-                    <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.40)", margin: 0 }}>{lowestDim.label}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: 0 }}>{lowestDim.label}</p>
                   </div>
                 </Link>
                 <Link href="/video-intro" style={{ textDecoration: "none" }}>
                   <div style={{ borderRadius: 18, padding: "16px 14px", background: "rgba(45,106,79,0.10)", border: "0.5px solid rgba(45,106,79,0.25)", textAlign: "center", cursor: "pointer" }}>
                     <div style={{ fontSize: 24, marginBottom: 8 }}>🎬</div>
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#74c69d", margin: "0 0 4px" }}>Analyse IA</p>
-                    <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.40)", margin: 0 }}>Posture vidéo</p>
+                    <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: 0 }}>Posture vidéo</p>
                   </div>
                 </Link>
               </div>
@@ -766,7 +766,7 @@ export default function ResultsPage() {
                 {facts.map((fact, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                     <span style={{ color: "#a78bfa", fontSize: 14, flexShrink: 0, marginTop: 1 }}>•</span>
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.6, margin: 0 }}>{fact}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.6, margin: 0 }}>{fact}</p>
                   </div>
                 ))}
               </div>
@@ -791,14 +791,14 @@ export default function ResultsPage() {
               <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#74c69d", margin: "0 0 6px" }}>
                 👑 Offert en beta — accès complet activé
               </p>
-              <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.50)", margin: "0 0 16px" }}>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", margin: "0 0 16px" }}>
                 Tous les outils PAW sont débloqués pour toi.
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {["Conseils détaillés accessibles", "Analyse vidéo IA accessible", "Dashboard & historique accessible", "Rapport PDF accessible"].map((item) => (
                   <div key={item} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 12, color: "#74c69d" }}>✓</span>
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", margin: 0 }}>{item}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", margin: 0 }}>{item}</p>
                   </div>
                 ))}
               </div>
@@ -808,14 +808,14 @@ export default function ResultsPage() {
               <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "var(--text-primary)", margin: "0 0 6px" }}>
                 🚀 Tu n&apos;as accès qu&apos;à une partie de PAW
               </p>
-              <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.50)", margin: "0 0 16px" }}>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", margin: "0 0 16px" }}>
                 Le premium est offert en beta — profites-en
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
                 {["Conseils détaillés bloqués", "Analyse vidéo IA bloquée", "Dashboard bloqué", "Rapport PDF bloqué"].map((item) => (
                   <div key={item} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 12, color: "#f09595" }}>✕</span>
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", margin: 0 }}>{item}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", margin: 0 }}>{item}</p>
                   </div>
                 ))}
               </div>
@@ -843,7 +843,7 @@ export default function ResultsPage() {
           <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", margin: 0, marginBottom: 6 }}>
             Reçois ton rapport par email
           </p>
-          <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 16 }}>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.65, marginBottom: 16 }}>
             Tes 3 priorités + un exercice ciblé — directement dans ta boîte.
           </p>
 
@@ -923,7 +923,7 @@ export default function ResultsPage() {
             <div style={{
               padding: "12px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
               background: "var(--bg-card-2)", border: "0.5px solid var(--border-2)",
-              fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)",
+              fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--t45)",
             }}>
               🔄 Refaire le bilan
             </div>
@@ -932,7 +932,7 @@ export default function ResultsPage() {
             <div style={{
               padding: "12px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
               background: "var(--bg-card-2)", border: "0.5px solid var(--border-2)",
-              fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)",
+              fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--t45)",
             }}>
               🏠 Accueil
             </div>

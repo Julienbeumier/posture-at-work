@@ -57,7 +57,7 @@ function TimerCircle({ elapsed, total, color }: { elapsed: number; total: number
       </svg>
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 44, color: "var(--text-primary)", lineHeight: 1 }}>{remaining}</span>
-        <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.4)", marginTop: 2 }}>secondes</span>
+        <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", marginTop: 2 }}>secondes</span>
       </div>
     </div>
   );
@@ -82,7 +82,7 @@ function ExerciseCard({ ex, index, onStart, isDiscreetMode }: {
         </div>
         <div style={{ flex: 1 }}>
           <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0 }}>{ex.name}</p>
-          {ex.subtitle && <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.4)", margin: 0 }}>{ex.subtitle}</p>}
+          {ex.subtitle && <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: 0 }}>{ex.subtitle}</p>}
           <div style={{ display: "flex", gap: 6, marginTop: 4, flexWrap: "wrap" }}>
             <span style={{ padding: "2px 8px", borderRadius: 100, background: `${ex.zoneColor}18`, border: `0.5px solid ${ex.zoneColor}40`, fontFamily: T.b, fontWeight: 600, fontSize: 10, color: ex.zoneColor }}>
               {ex.zone}
@@ -96,10 +96,10 @@ function ExerciseCard({ ex, index, onStart, isDiscreetMode }: {
         </div>
         <div style={{ textAlign: "right", flexShrink: 0 }}>
           <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: ex.zoneColor, margin: 0 }}>{ex.duration}s</p>
-          <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.35)", margin: 0 }}>{ex.reps}</p>
+          <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)", margin: 0 }}>{ex.reps}</p>
         </div>
       </div>
-      <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.6, marginBottom: 12 }}>{ex.instruction}</p>
+      <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.6, marginBottom: 12 }}>{ex.instruction}</p>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <span style={{ padding: "3px 10px", borderRadius: 100, background: "rgba(116,198,157,0.10)", border: "0.5px solid rgba(116,198,157,0.25)", fontFamily: T.b, fontSize: 10, color: "#74c69d" }}>
           ✨ {ex.benefit}
@@ -391,7 +391,7 @@ export default function MobilitePage() {
                 Exercices & Mobilité
               </h1>
               {streak > 0 && (
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.45)", margin: "4px 0 0" }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t45)", margin: "4px 0 0" }}>
                   🔥 {streak} jour{streak > 1 ? "s" : ""} consécutif{streak > 1 ? "s" : ""}
                 </p>
               )}
@@ -405,7 +405,7 @@ export default function MobilitePage() {
                     padding: "8px 14px", borderRadius: 100, cursor: "pointer",
                     background: voiceEnabled ? "rgba(43,92,230,0.20)" : "rgba(255,255,255,0.06)",
                     fontFamily: T.b, fontWeight: 700, fontSize: 12,
-                    color: voiceEnabled ? "#7c9fff" : "rgba(220,220,245,0.5)",
+                    color: voiceEnabled ? "#7c9fff" : "var(--t50)",
                     border: voiceEnabled ? "0.5px solid rgba(43,92,230,0.4)" : "0.5px solid var(--border-3)",
                   }}
                 >
@@ -418,7 +418,7 @@ export default function MobilitePage() {
                   padding: "8px 14px", borderRadius: 100, cursor: "pointer",
                   background: discreetMode ? "rgba(116,198,157,0.20)" : "rgba(255,255,255,0.06)",
                   fontFamily: T.b, fontWeight: 700, fontSize: 12,
-                  color: discreetMode ? "#74c69d" : "rgba(220,220,245,0.5)",
+                  color: discreetMode ? "#74c69d" : "var(--t50)",
                   border: discreetMode ? "0.5px solid rgba(116,198,157,0.4)" : "0.5px solid var(--border-3)",
                 }}
               >
@@ -448,14 +448,14 @@ export default function MobilitePage() {
           {notifBanner && (
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
               style={{ marginBottom: 16, padding: "14px 18px", borderRadius: 16, background: "rgba(167,139,250,0.10)", border: "0.5px solid rgba(167,139,250,0.25)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-              <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)", margin: 0 }}>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t75)", margin: 0 }}>
                 💪 Activer les rappels d'exercices ?
               </p>
               <div style={{ display: "flex", gap: 8 }}>
                 <button onClick={requestNotifications} style={{ padding: "7px 14px", borderRadius: 100, background: "#a78bfa", border: "none", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#fff", cursor: "pointer" }}>
                   Oui, me rappeler
                 </button>
-                <button onClick={() => setNotifBanner(false)} style={{ padding: "7px 12px", borderRadius: 100, background: "transparent", border: "0.5px solid rgba(255,255,255,0.15)", fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.4)", cursor: "pointer" }}>
+                <button onClick={() => setNotifBanner(false)} style={{ padding: "7px 12px", borderRadius: 100, background: "transparent", border: "0.5px solid rgba(255,255,255,0.15)", fontFamily: T.b, fontSize: 12, color: "var(--t40)", cursor: "pointer" }}>
                   Plus tard
                 </button>
               </div>
@@ -475,7 +475,7 @@ export default function MobilitePage() {
                   background: sel ? "rgba(43,92,230,0.20)" : "rgba(255,255,255,0.05)",
                   border: sel ? "0.5px solid rgba(43,92,230,0.45)" : "0.5px solid var(--border-2)",
                   fontFamily: T.h, fontWeight: 700, fontSize: 12,
-                  color: sel ? "#7c9fff" : "rgba(220,220,245,0.45)",
+                  color: sel ? "#7c9fff" : "var(--t45)",
                 }}
               >{labels[t]}</button>
             );
@@ -496,7 +496,7 @@ export default function MobilitePage() {
                 <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: sel ? "#7c9fff" : "var(--text-primary)", margin: 0 }}>
                   {prog.icon} {prog.label}
                 </p>
-                <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.35)", margin: "2px 0 0" }}>{prog.duration}</p>
+                <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)", margin: "2px 0 0" }}>{prog.duration}</p>
               </button>
             );
           })}
@@ -512,11 +512,11 @@ export default function MobilitePage() {
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                   <div>
                     <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "var(--text-primary)", margin: 0 }}>{activeProgram.icon} {activeProgram.label}</p>
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: "2px 0 0" }}>{activeProgram.description}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", margin: "2px 0 0" }}>{activeProgram.description}</p>
                   </div>
                   <div style={{ textAlign: "right" }}>
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: "#7c9fff", margin: 0 }}>{activeProgram.duration}</p>
-                    <p style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.35)", margin: 0 }}>{currentExercises.length} exercices</p>
+                    <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)", margin: 0 }}>{currentExercises.length} exercices</p>
                   </div>
                 </div>
                 <button onClick={startSession} style={{
@@ -538,8 +538,8 @@ export default function MobilitePage() {
               {/* Weekly challenge */}
               <div style={{ borderRadius: 20, padding: "18px 20px", marginTop: 8, background: "rgba(167,139,250,0.08)", border: "0.5px solid rgba(167,139,250,0.20)" }}>
                 <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#a78bfa", margin: "0 0 6px" }}>🏆 Challenge de la semaine</p>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.70)", lineHeight: 1.6, margin: "0 0 10px" }}>{weekChallenge.label}</p>
-                <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)", margin: 0 }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t70)", lineHeight: 1.6, margin: "0 0 10px" }}>{weekChallenge.label}</p>
+                <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", margin: 0 }}>
                   Badge à débloquer : {weekChallenge.badge}
                 </p>
               </div>
@@ -553,13 +553,13 @@ export default function MobilitePage() {
 
               {/* Progress bar */}
               <div style={{ width: "100%", display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 13, color: "rgba(220,220,245,0.55)", whiteSpace: "nowrap" }}>
+                <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 13, color: "var(--t55)", whiteSpace: "nowrap" }}>
                   Exercice {currentIdx + 1}/{currentExercises.length}
                 </span>
                 <div style={{ flex: 1, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden" }}>
                   <div style={{ height: "100%", background: currentEx.zoneColor, borderRadius: 100, width: `${((currentIdx + 1) / currentExercises.length) * 100}%`, transition: "width 0.3s ease" }} />
                 </div>
-                <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "rgba(220,220,245,0.35)", whiteSpace: "nowrap" }}>
+                <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "var(--t35)", whiteSpace: "nowrap" }}>
                   ~{Math.ceil((sessionDuration - currentExercises.slice(0, currentIdx).reduce((s, e) => s + e.duration, 0)) / 60)}min
                 </span>
               </div>
@@ -591,7 +591,7 @@ export default function MobilitePage() {
 
               {/* Instructions */}
               <div style={{ width: "100%", padding: "16px 18px", borderRadius: 16, background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)", lineHeight: 1.65, margin: 0 }}>{currentEx.instruction}</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t75)", lineHeight: 1.65, margin: 0 }}>{currentEx.instruction}</p>
               </div>
 
               {/* Reps badge */}
@@ -599,7 +599,7 @@ export default function MobilitePage() {
                 <span style={{ padding: "5px 14px", borderRadius: 100, background: `${currentEx.zoneColor}15`, border: `0.5px solid ${currentEx.zoneColor}40`, fontFamily: T.b, fontWeight: 600, fontSize: 12, color: currentEx.zoneColor }}>
                   {currentEx.reps}
                 </span>
-                <span style={{ padding: "5px 14px", borderRadius: 100, background: "var(--bg-card-2)", border: "0.5px solid var(--border-2)", fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.40)" }}>
+                <span style={{ padding: "5px 14px", borderRadius: 100, background: "var(--bg-card-2)", border: "0.5px solid var(--border-2)", fontFamily: T.b, fontSize: 12, color: "var(--t40)" }}>
                   {currentEx.frequency}
                 </span>
               </div>
@@ -607,7 +607,7 @@ export default function MobilitePage() {
               {/* Controls */}
               <div style={{ display: "flex", gap: 10, width: "100%" }}>
                 <button onClick={() => { stopTimer(); setPhase("select"); setCompletedIds([]); }}
-                  style={{ flex: 1, padding: "12px 0", borderRadius: 100, background: "var(--bg-card-2)", border: "0.5px solid var(--border-3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)", cursor: "pointer" }}>
+                  style={{ flex: 1, padding: "12px 0", borderRadius: 100, background: "var(--bg-card-2)", border: "0.5px solid var(--border-3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--t45)", cursor: "pointer" }}>
                   Terminer
                 </button>
                 <button onClick={() => goNext(currentIdx)}
@@ -632,13 +632,13 @@ export default function MobilitePage() {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                   <div>
                     <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#74c69d", margin: 0 }}>{completedIds.length}</p>
-                    <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", margin: "2px 0 0" }}>exercices complétés</p>
+                    <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: "2px 0 0" }}>exercices complétés</p>
                   </div>
                   <div>
                     <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#74c69d", margin: 0 }}>
                       {Math.round(completedIds.reduce((s, id) => s + (EXERCISES[id]?.duration ?? 0), 0) / 60)}min
                     </p>
-                    <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", margin: "2px 0 0" }}>durée totale</p>
+                    <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: "2px 0 0" }}>durée totale</p>
                   </div>
                 </div>
               </div>
@@ -659,11 +659,11 @@ export default function MobilitePage() {
 
               <div style={{ display: "flex", gap: 10 }}>
                 <button onClick={() => { setPhase("select"); setCompletedIds([]); }}
-                  style={{ flex: 1, padding: "12px 0", borderRadius: 100, background: "var(--bg-card-2)", border: "0.5px solid var(--border-3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.50)", cursor: "pointer" }}>
+                  style={{ flex: 1, padding: "12px 0", borderRadius: 100, background: "var(--bg-card-2)", border: "0.5px solid var(--border-3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--t50)", cursor: "pointer" }}>
                   🔄 Refaire
                 </button>
                 <Link href="/dashboard" style={{ flex: 1, textDecoration: "none" }}>
-                  <div style={{ padding: "12px 0", borderRadius: 100, background: "var(--bg-card-2)", border: "0.5px solid var(--border-3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.50)", textAlign: "center" }}>
+                  <div style={{ padding: "12px 0", borderRadius: 100, background: "var(--bg-card-2)", border: "0.5px solid var(--border-3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--t50)", textAlign: "center" }}>
                     Dashboard
                   </div>
                 </Link>

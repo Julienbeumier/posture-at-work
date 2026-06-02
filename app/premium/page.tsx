@@ -97,13 +97,13 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   return (
     <div style={{ borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
       <div onClick={() => setOpen(v => !v)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 0", cursor: "pointer", gap: 12 }}>
-        <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#f0f0fa" }}>{q}</span>
-        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "rgba(220,220,245,0.4)", flexShrink: 0 }}>{open ? "−" : "+"}</span>
+        <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "var(--text-primary)" }}>{q}</span>
+        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--t40)", flexShrink: 0 }}>{open ? "−" : "+"}</span>
       </div>
       <AnimatePresence>
         {open && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }} style={{ overflow: "hidden" }}>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.6)", lineHeight: 1.7, paddingBottom: 16, margin: 0 }}>{a}</p>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t60)", lineHeight: 1.7, paddingBottom: 16, margin: 0 }}>{a}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -143,7 +143,7 @@ export default function PremiumPage() {
   };
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingTop: 80, paddingBottom: 80, position: "relative", overflow: "hidden" }}>
+    <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingTop: 80, paddingBottom: 80, position: "relative", overflow: "hidden" }}>
 
       {/* Background blobs */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
@@ -162,11 +162,11 @@ export default function PremiumPage() {
               <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#74c69d", marginBottom: 12 }}>
                 Tu as déjà le premium activé !
               </h1>
-              <p style={{ fontFamily: T.b, fontSize: 15, color: "rgba(220,220,245,0.65)", lineHeight: 1.7, marginBottom: 28 }}>
+              <p style={{ fontFamily: T.b, fontSize: 15, color: "var(--t65)", lineHeight: 1.7, marginBottom: 28 }}>
                 Tous les accès sont débloqués.<br />Conseils détaillés, analyse vidéo IA, dashboard, rapport PDF — tout est à toi.
               </p>
               <Link href="/dashboard" style={{ textDecoration: "none" }}>
-                <div style={{ display: "inline-block", padding: "14px 28px", borderRadius: 100, background: "#74c69d", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#0f0f1a", cursor: "pointer" }}>
+                <div style={{ display: "inline-block", padding: "14px 28px", borderRadius: 100, background: "#74c69d", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--bg-primary)", cursor: "pointer" }}>
                   ← Retour au dashboard
                 </div>
               </Link>
@@ -181,14 +181,14 @@ export default function PremiumPage() {
             <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#d4a22a" }}>🎁 Accès premium offert en beta</span>
           </div>
 
-          <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 30, color: "#f0f0fa", lineHeight: 1.25, marginBottom: 16, letterSpacing: "-0.5px" }}>
+          <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 30, color: "var(--text-primary)", lineHeight: 1.25, marginBottom: 16, letterSpacing: "-0.5px" }}>
             Le questionnaire te dit<br />
             <span style={{ color: "#7c9fff" }}>où tu en es.</span><br />
             Le premium t&apos;aide<br />
             à t&apos;améliorer. <span style={{ color: "#74c69d" }}>Pour toujours.</span>
           </h1>
 
-          <p style={{ fontFamily: T.b, fontSize: 15, color: "rgba(220,220,245,0.6)", lineHeight: 1.75, marginBottom: 28, maxWidth: 480, margin: "0 auto 28px" }}>
+          <p style={{ fontFamily: T.b, fontSize: 15, color: "var(--t60)", lineHeight: 1.75, marginBottom: 28, maxWidth: 480, margin: "0 auto 28px" }}>
             Conseils détaillés, exercices guidés, analyse vidéo IA, suivi dans le temps — tout ce dont ton corps a besoin pour aller mieux au travail.
           </p>
 
@@ -197,22 +197,22 @@ export default function PremiumPage() {
             🚀 Activer mon accès premium gratuit →
           </div>
 
-          <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.35)", margin: 0 }}>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", margin: 0 }}>
             ✨ Gratuit pendant la beta · Normalement 9.99€ à vie
           </p>
         </motion.div>
 
         {/* ── SECTION 2 : COMPARAISON ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ marginBottom: 48 }}>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", textAlign: "center", marginBottom: 28 }}>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", textAlign: "center", marginBottom: 28 }}>
             Qu&apos;est-ce qui change avec le premium ?
           </h2>
 
           <div style={{ borderRadius: 20, overflow: "hidden", border: "0.5px solid rgba(255,255,255,0.08)" }}>
             {/* Column headers */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 80px 80px", background: "rgba(255,255,255,0.03)" }}>
-              <div style={{ padding: "14px 20px", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "rgba(220,220,245,0.4)", letterSpacing: "0.05em" }}>FONCTIONNALITÉ</div>
-              <div style={{ padding: "14px 8px", textAlign: "center", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "rgba(220,220,245,0.4)" }}>Gratuit</div>
+              <div style={{ padding: "14px 20px", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "var(--t40)", letterSpacing: "0.05em" }}>FONCTIONNALITÉ</div>
+              <div style={{ padding: "14px 8px", textAlign: "center", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "var(--t40)" }}>Gratuit</div>
               <div style={{ padding: "14px 8px", textAlign: "center", background: "rgba(43,92,230,0.08)", borderLeft: "0.5px solid rgba(43,92,230,0.15)" }}>
                 <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#7c9fff" }}>Premium</span>
                 <br />
@@ -223,11 +223,11 @@ export default function PremiumPage() {
             {ROWS.map((section, si) => (
               <div key={si}>
                 <div style={{ padding: "8px 20px", background: "rgba(255,255,255,0.02)", borderTop: "0.5px solid rgba(255,255,255,0.05)" }}>
-                  <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "rgba(220,220,245,0.3)", letterSpacing: "0.08em" }}>{section.section}</span>
+                  <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "var(--t30)", letterSpacing: "0.08em" }}>{section.section}</span>
                 </div>
                 {section.items.map((row, ri) => (
                   <div key={ri} style={{ display: "grid", gridTemplateColumns: "1fr 80px 80px", borderTop: "0.5px solid rgba(255,255,255,0.04)", background: ri % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)" }}>
-                    <div style={{ padding: "11px 20px", fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.65)" }}>{row.label}</div>
+                    <div style={{ padding: "11px 20px", fontFamily: T.b, fontSize: 12, color: "var(--t65)" }}>{row.label}</div>
                     <div style={{ padding: "11px 8px", textAlign: "center" }}><Check val={row.free} /></div>
                     <div style={{ padding: "11px 8px", textAlign: "center", background: "rgba(43,92,230,0.06)", borderLeft: "0.5px solid rgba(43,92,230,0.10)" }}><Check val={row.premium} /></div>
                   </div>
@@ -239,7 +239,7 @@ export default function PremiumPage() {
 
         {/* ── SECTION 3 : 6 FEATURES ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} style={{ marginBottom: 48 }}>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", textAlign: "center", marginBottom: 20 }}>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", textAlign: "center", marginBottom: 20 }}>
             Tout ce que tu débloques
           </h2>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -248,7 +248,7 @@ export default function PremiumPage() {
                 style={{ borderRadius: 18, padding: "18px 16px", background: f.bg, border: `0.5px solid ${f.border}` }}>
                 <div style={{ fontSize: 24, marginBottom: 10 }}>{f.emoji}</div>
                 <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: f.color, margin: "0 0 8px" }}>{f.title}</p>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.6, margin: 0 }}>{f.desc}</p>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.6, margin: 0 }}>{f.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -258,12 +258,12 @@ export default function PremiumPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ marginBottom: 48 }}>
           <div style={{ borderRadius: 24, padding: "36px 28px", textAlign: "center", background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)" }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>🎁</div>
-            <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", marginBottom: 16 }}>
+            <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", marginBottom: 16 }}>
               Accès premium offert — mais pas pour longtemps
             </h2>
-            <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.6)", lineHeight: 1.8, marginBottom: 28, maxWidth: 480, margin: "0 auto 28px" }}>
+            <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t60)", lineHeight: 1.8, marginBottom: 28, maxWidth: 480, margin: "0 auto 28px" }}>
               PostureAtWork est en phase beta avec ses premiers utilisateurs.<br /><br />
-              Pendant cette période, <strong style={{ color: "#f0f0fa" }}>TOUT le premium est entièrement gratuit</strong> — analyse vidéo, dashboard, exercices complets, rapport PDF.<br /><br />
+              Pendant cette période, <strong style={{ color: "var(--text-primary)" }}>TOUT le premium est entièrement gratuit</strong> — analyse vidéo, dashboard, exercices complets, rapport PDF.<br /><br />
               Dès le lancement officiel, l&apos;accès sera à <strong style={{ color: "#d4a22a" }}>9.99€ en one-shot</strong> (accès à vie).<br /><br />
               <strong style={{ color: "#74c69d" }}>Si tu actives maintenant → accès à vie offert.</strong>
             </p>
@@ -276,7 +276,7 @@ export default function PremiumPage() {
               🚀 Activer mon accès premium gratuit →
             </motion.div>
 
-            <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.35)", margin: 0 }}>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", margin: 0 }}>
               Sans carte bancaire · Sans engagement · Juste créer un compte gratuit
             </p>
           </div>
@@ -284,7 +284,7 @@ export default function PremiumPage() {
 
         {/* ── SECTION 5 : TÉMOIGNAGES ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} style={{ marginBottom: 48 }}>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", textAlign: "center", marginBottom: 20 }}>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", textAlign: "center", marginBottom: 20 }}>
             Ce qu&apos;ils disent
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -295,14 +295,14 @@ export default function PremiumPage() {
                     {t.initials}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#f0f0fa", margin: 0 }}>{t.name}</p>
-                    <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.4)", margin: 0 }}>{t.role}</p>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "var(--text-primary)", margin: 0 }}>{t.name}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: 0 }}>{t.role}</p>
                   </div>
                   <span style={{ padding: "3px 10px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.h, fontWeight: 700, fontSize: 11, color: "#74c69d", flexShrink: 0 }}>
                     {t.badge}
                   </span>
                 </div>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.65, margin: 0 }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>
                   &ldquo;{t.text}&rdquo;
                 </p>
               </div>
@@ -312,7 +312,7 @@ export default function PremiumPage() {
 
         {/* ── SECTION 6 : FAQ ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ marginBottom: 48 }}>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", textAlign: "center", marginBottom: 20 }}>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", textAlign: "center", marginBottom: 20 }}>
             Questions fréquentes
           </h2>
           <div style={{ borderRadius: 20, padding: "4px 24px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)" }}>
@@ -326,7 +326,7 @@ export default function PremiumPage() {
             style={{ display: "inline-block", padding: "16px 32px", borderRadius: 100, cursor: "pointer", background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.4)", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 12 }}>
             🚀 Activer maintenant — c&apos;est gratuit
           </div>
-          <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.3)" }}>Accès à vie offert pendant la beta</p>
+          <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)" }}>Accès à vie offert pendant la beta</p>
         </div>
 
         </>)}

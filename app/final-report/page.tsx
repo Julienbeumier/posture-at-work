@@ -32,7 +32,7 @@ const STATUS_CONFIG: Record<StatusLevel, { color: string; bg: string; border: st
 const PRIORITY_COLOR: Record<string, { color: string; label: string }> = {
   haute:     { color: "#f09595", label: "Priorité haute" },
   moyenne:   { color: "#f4a261", label: "Priorité moyenne" },
-  optionnel: { color: "rgba(220,220,245,0.35)", label: "Optionnel" },
+  optionnel: { color: "var(--t35)", label: "Optionnel" },
 };
 
 function traduire(key: string): string {
@@ -65,10 +65,10 @@ function ExpandableCard({ title, status, children, delay = 0 }: { title: string;
       onClick={() => setOpen(v => !v)}
       style={{ borderRadius: 16, overflow: "hidden", cursor: "pointer", background: cfg.bg, border: `0.5px solid ${cfg.border}` }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", gap: 12 }}>
-        <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa" }}>{title}</span>
+        <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--text-primary)" }}>{title}</span>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <StatusBadge status={status} />
-          <span style={{ fontSize: 10, color: "rgba(220,220,245,0.3)" }}>{open ? "▲" : "▼"}</span>
+          <span style={{ fontSize: 10, color: "var(--t30)" }}>{open ? "▲" : "▼"}</span>
         </div>
       </div>
       <AnimatePresence>
@@ -85,11 +85,11 @@ function ExpandableCard({ title, status, children, delay = 0 }: { title: string;
 function PostureCard({ label, item, delay = 0 }: { label: string; item: PostureItem; delay?: number }) {
   return (
     <ExpandableCard title={label} status={item.status} delay={delay}>
-      <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.7)", lineHeight: 1.65, marginBottom: 8, marginTop: 10 }}>
-        <span style={{ color: "#f0f0fa", fontWeight: 600 }}>Observation : </span>{item.observation}
+      <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t70)", lineHeight: 1.65, marginBottom: 8, marginTop: 10 }}>
+        <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>Observation : </span>{item.observation}
       </p>
-      <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65 }}>
-        <span style={{ color: "rgba(220,220,245,0.75)", fontWeight: 600 }}>Impact : </span>{item.impact}
+      <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.65 }}>
+        <span style={{ color: "var(--t75)", fontWeight: 600 }}>Impact : </span>{item.impact}
       </p>
     </ExpandableCard>
   );
@@ -98,10 +98,10 @@ function PostureCard({ label, item, delay = 0 }: { label: string; item: PostureI
 function SetupCard({ label, item, delay = 0 }: { label: string; item: SetupItem; delay?: number }) {
   return (
     <ExpandableCard title={label} status={item.status} delay={delay}>
-      <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.7)", lineHeight: 1.65, marginBottom: 8, marginTop: 10 }}>
-        <span style={{ color: "#f0f0fa", fontWeight: 600 }}>Observation : </span>{item.observation}
+      <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t70)", lineHeight: 1.65, marginBottom: 8, marginTop: 10 }}>
+        <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>Observation : </span>{item.observation}
       </p>
-      <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65 }}>
+      <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.65 }}>
         <span style={{ color: "#74c69d" }}>→ </span>{item.recommendation}
       </p>
     </ExpandableCard>
@@ -131,7 +131,7 @@ function SectionTitle({ emoji, title }: { emoji: string; title: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
       <span style={{ fontSize: 20 }}>{emoji}</span>
-      <h2 style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", margin: 0 }}>{title}</h2>
+      <h2 style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", margin: 0 }}>{title}</h2>
     </div>
   );
 }
@@ -148,7 +148,7 @@ function SegmentBar({ label, seg, delay = 0 }: { label: string; seg: PersonneSeg
       onClick={() => setOpen(v => !v)}
       style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", cursor: "pointer" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-        <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa" }}>{label}</span>
+        <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--text-primary)" }}>{label}</span>
         <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color }}>{seg.score}/100</span>
       </div>
       <div style={{ height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 100, overflow: "hidden", marginBottom: open ? 10 : 0 }}>
@@ -160,10 +160,10 @@ function SegmentBar({ label, seg, delay = 0 }: { label: string; seg: PersonneSeg
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} style={{ overflow: "hidden" }}>
             {seg.issues.length > 0 && (
               <ul style={{ paddingLeft: 14, margin: "6px 0 4px" }}>
-                {seg.issues.map((issue, i) => <li key={i} style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.65 }}>{issue}</li>)}
+                {seg.issues.map((issue, i) => <li key={i} style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65 }}>{issue}</li>)}
               </ul>
             )}
-            {seg.note && <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)", margin: "4px 0 0" }}>{seg.note}</p>}
+            {seg.note && <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", margin: "4px 0 0" }}>{seg.note}</p>}
           </motion.div>
         )}
       </AnimatePresence>
@@ -177,16 +177,16 @@ function ElementCard({ label, score, issues, delay = 0, extra }: { label: string
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }}
       style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-        <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa" }}>{label}</span>
+        <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--text-primary)" }}>{label}</span>
         <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color }}>{score}/100</span>
       </div>
       <div style={{ height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 100, overflow: "hidden", marginBottom: 8 }}>
         <motion.div initial={{ width: 0 }} animate={{ width: `${score}%` }} transition={{ duration: 0.8, delay: delay + 0.2 }}
           style={{ height: "100%", background: color, borderRadius: 100 }} />
       </div>
-      {extra && <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.4)", marginBottom: 4 }}>{extra}</p>}
+      {extra && <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", marginBottom: 4 }}>{extra}</p>}
       {issues.map((issue, i) => (
-        <p key={i} style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.5, margin: "2px 0" }}>• {issue}</p>
+        <p key={i} style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.5, margin: "2px 0" }}>• {issue}</p>
       ))}
     </motion.div>
   );
@@ -200,7 +200,7 @@ function DeboutSegCard({ label, seg, delay = 0 }: { label: string; seg: DeboutPo
       onClick={() => setOpen(v => !v)}
       style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", cursor: "pointer" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-        <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa" }}>{label}</span>
+        <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--text-primary)" }}>{label}</span>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color }}>{seg.score}/100</span>
           <StatusBadge status={seg.status} />
@@ -213,7 +213,7 @@ function DeboutSegCard({ label, seg, delay = 0 }: { label: string; seg: DeboutPo
       <AnimatePresence>
         {open && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} style={{ overflow: "hidden" }}>
-            <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, margin: "6px 0 0" }}>{seg.observation}</p>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, margin: "6px 0 0" }}>{seg.observation}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -315,11 +315,11 @@ export default function FinalReportPage() {
   // ── No report ──────────────────────────────────────────────────────────────
   if (!report && !isDual && !deboutAnalysis) {
     return (
-      <main style={{ minHeight: "100vh", background: "#0f0f1a", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
+      <main style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
         <div style={{ textAlign: "center", maxWidth: 340 }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>📋</div>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", marginBottom: 10 }}>Aucun rapport trouvé</h2>
-          <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.5)", marginBottom: 24 }}>Tu n&apos;as pas encore effectué l&apos;analyse vidéo.</p>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", marginBottom: 10 }}>Aucun rapport trouvé</h2>
+          <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t50)", marginBottom: 24 }}>Tu n&apos;as pas encore effectué l&apos;analyse vidéo.</p>
           <Link href="/video-intro" style={{ textDecoration: "none" }}>
             <div style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "linear-gradient(135deg, #7c3aed, #4f46e5)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
               Faire l&apos;analyse →
@@ -344,7 +344,7 @@ export default function FinalReportPage() {
     ];
 
     return (
-      <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingBottom: 80, position: "relative" }}>
+      <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingBottom: 80, position: "relative" }}>
         <BackgroundBlobs blobs={[
           { top: "-5%", right: "-5%", color: "rgba(167,139,250,0.10)", size: 480 },
           { top: "45%", left: "-8%", color: "rgba(116,198,157,0.09)", size: 380 },
@@ -355,9 +355,9 @@ export default function FinalReportPage() {
           {/* Nav */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 80, paddingBottom: 32 }}>
             <Link href="/results" style={{ textDecoration: "none" }}>
-              <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.4)", cursor: "pointer" }}>← Résultats</span>
+              <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t40)", cursor: "pointer" }}>← Résultats</span>
             </Link>
-            <div onClick={() => window.print()} style={{ padding: "6px 14px", borderRadius: 100, cursor: "pointer", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.09)", fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>
+            <div onClick={() => window.print()} style={{ padding: "6px 14px", borderRadius: 100, cursor: "pointer", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.09)", fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>
               🖨️ Imprimer
             </div>
           </div>
@@ -368,7 +368,7 @@ export default function FinalReportPage() {
             <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20, padding: "6px 14px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)" }}>
               <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#74c69d" }}>✅ Analyse posturale — Poste debout</span>
             </div>
-            <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#f0f0fa", marginBottom: da.jobTypeDetected ? 14 : 24 }}>
+            <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "var(--text-primary)", marginBottom: da.jobTypeDetected ? 14 : 24 }}>
               {firstname ? `Le bilan debout de ${firstname}` : "Ton bilan PostureAtWork — Debout"}
             </h1>
             {da.jobTypeDetected && (
@@ -381,12 +381,12 @@ export default function FinalReportPage() {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 28, flexWrap: "wrap" }}>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                 <ScoreRing score={da.globalPostureScore} size={110} color={globalColor} />
-                <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>Score posture</span>
+                <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>Score posture</span>
               </div>
               {questionnaireScore != null && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                   <ScoreRing score={questionnaireScore} size={82} color="#7c9fff" />
-                  <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)" }}>Questionnaire</span>
+                  <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)" }}>Questionnaire</span>
                 </div>
               )}
             </div>
@@ -405,7 +405,7 @@ export default function FinalReportPage() {
                 ))}
               </div>
               <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.65, margin: 0 }}>{da.overallAssessment}</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{da.overallAssessment}</p>
               </div>
               {da.mainIssues.length > 0 && (
                 <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
@@ -417,8 +417,8 @@ export default function FinalReportPage() {
                           <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 12, color: sevColor }}>{issue.zone}</span>
                           <span style={{ fontFamily: T.b, fontSize: 11, color: `${sevColor}99` }}>· {traduire(issue.severity)}</span>
                         </div>
-                        <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.6)", margin: 0 }}>{issue.issue}</p>
-                        <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", margin: "3px 0 0" }}>→ {issue.consequence}</p>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t60)", margin: 0 }}>{issue.issue}</p>
+                        <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: "3px 0 0" }}>→ {issue.consequence}</p>
                       </div>
                     );
                   })}
@@ -443,29 +443,29 @@ export default function FinalReportPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <div style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa" }}>Plan de travail</span>
+                    <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--text-primary)" }}>Plan de travail</span>
                     <StatusBadge status={da.environnement.plan_travail.hauteur === "adapte" ? "bon" : "attention"} />
                   </div>
-                  <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", margin: 0 }}>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", margin: 0 }}>
                     Hauteur : {traduire(da.environnement.plan_travail.hauteur)}
                   </p>
                   {da.environnement.plan_travail.observation && (
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: "3px 0 0", lineHeight: 1.5 }}>{da.environnement.plan_travail.observation}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", margin: "3px 0 0", lineHeight: 1.5 }}>{da.environnement.plan_travail.observation}</p>
                   )}
                 </div>
                 <div style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa" }}>Tapis anti-fatigue</span>
+                    <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--text-primary)" }}>Tapis anti-fatigue</span>
                     <StatusBadge status={da.environnement.tapis_antifatigue === "oui" ? "bon" : "attention"} />
                   </div>
-                  <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: 0 }}>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", margin: 0 }}>
                     {da.environnement.tapis_antifatigue === "oui" ? "Présent — bonne pratique" : da.environnement.tapis_antifatigue === "non" ? "Absent — recommandé pour le confort" : "Non visible sur les images"}
                   </p>
                 </div>
                 {da.environnement.sol && (
                   <div style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
-                    <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f0f0fa" }}>Sol</span>
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: "4px 0 0" }}>{da.environnement.sol}</p>
+                    <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--text-primary)" }}>Sol</span>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", margin: "4px 0 0" }}>{da.environnement.sol}</p>
                   </div>
                 )}
                 {da.environnement.contraintes_visibles.length > 0 && (
@@ -473,7 +473,7 @@ export default function FinalReportPage() {
                     <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f09595" }}>Contraintes détectées</span>
                     <ul style={{ paddingLeft: 14, margin: "6px 0 0" }}>
                       {da.environnement.contraintes_visibles.map((c, i) => (
-                        <li key={i} style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.6 }}>{c}</li>
+                        <li key={i} style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.6 }}>{c}</li>
                       ))}
                     </ul>
                   </div>
@@ -492,12 +492,12 @@ export default function FinalReportPage() {
                     initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.08 }}
                     style={{ borderRadius: 18, padding: "16px 18px", background: i === 0 ? "rgba(240,149,149,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${i === 0 ? "rgba(240,149,149,0.25)" : "rgba(255,255,255,0.08)"}` }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                      <div style={{ width: 26, height: 26, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 12, color: i === 0 ? "#f09595" : "rgba(220,220,245,0.35)" }}>
+                      <div style={{ width: 26, height: 26, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 12, color: i === 0 ? "#f09595" : "var(--t35)" }}>
                         {i + 1}
                       </div>
                       <div style={{ flex: 1 }}>
-                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", display: "block", marginBottom: 6 }}>{rec.action}</span>
-                        <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, margin: 0 }}>{rec.why}</p>
+                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)", display: "block", marginBottom: 6 }}>{rec.action}</span>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, margin: 0 }}>{rec.why}</p>
                         {rec.applicable_tous_postes && (
                           <span style={{ display: "inline-block", marginTop: 6, padding: "2px 8px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontSize: 10, color: "#74c69d" }}>
                             Applicable à tous les postes debout
@@ -518,7 +518,7 @@ export default function FinalReportPage() {
               {saveStatus === "saved" ? (
                 <motion.div key="saved" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: "center", padding: "12px 0" }}>
                   <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
-                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa", marginBottom: 6 }}>Rapport sauvegardé !</p>
+                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)", marginBottom: 6 }}>Rapport sauvegardé !</p>
                   <Link href="/dashboard" style={{ textDecoration: "none" }}>
                     <div style={{ display: "inline-block", padding: "10px 24px", borderRadius: 100, background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#74c69d", cursor: "pointer" }}>
                       Voir mon dashboard →
@@ -528,8 +528,8 @@ export default function FinalReportPage() {
               ) : !user ? (
                 <motion.div key="unauthenticated" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <div style={{ fontSize: 24, marginBottom: 10 }}>💾</div>
-                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", marginBottom: 6 }}>Sauvegarder mon rapport</p>
-                  <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)", marginBottom: 20, lineHeight: 1.65 }}>Crée un compte gratuit pour accéder à ton bilan depuis n&apos;importe où.</p>
+                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", marginBottom: 6 }}>Sauvegarder mon rapport</p>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", marginBottom: 20, lineHeight: 1.65 }}>Crée un compte gratuit pour accéder à ton bilan depuis n&apos;importe où.</p>
                   <div onClick={() => router.push("/auth?redirect=/final-report")}
                     style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
                     Créer mon compte gratuit →
@@ -537,7 +537,7 @@ export default function FinalReportPage() {
                 </motion.div>
               ) : (
                 <motion.div key="autosave" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)" }}>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)" }}>
                     {saveStatus === "saving" ? "Sauvegarde en cours…" : `Connecté — ${user.email}`}
                   </p>
                 </motion.div>
@@ -548,12 +548,12 @@ export default function FinalReportPage() {
           {/* Footer */}
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <Link href="/results" style={{ textDecoration: "none", flex: 1 }}>
-              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)" }}>
+              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--t45)" }}>
                 ← Résultats questionnaire
               </div>
             </Link>
             <Link href="/video-intro" style={{ textDecoration: "none", flex: 1 }}>
-              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)" }}>
+              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--t45)" }}>
                 🔄 Refaire l&apos;analyse
               </div>
             </Link>
@@ -596,7 +596,7 @@ export default function FinalReportPage() {
       .filter(([, seg]) => seg.score < 65).slice(0, 3).map(([key]) => key);
 
     return (
-      <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingBottom: 80, position: "relative" }}>
+      <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingBottom: 80, position: "relative" }}>
         <BackgroundBlobs blobs={[
           { top: "-5%", right: "-5%", color: "rgba(167,139,250,0.10)", size: 480 },
           { top: "45%", left: "-8%", color: "rgba(43,92,230,0.09)", size: 380 },
@@ -607,10 +607,10 @@ export default function FinalReportPage() {
           {/* Nav */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 80, paddingBottom: 32 }}>
             <Link href="/results" style={{ textDecoration: "none" }}>
-              <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.4)", cursor: "pointer" }}>← Résultats</span>
+              <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t40)", cursor: "pointer" }}>← Résultats</span>
             </Link>
             <div style={{ display: "flex", gap: 8 }}>
-              <div onClick={() => window.print()} style={{ padding: "6px 14px", borderRadius: 100, cursor: "pointer", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.09)", fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>
+              <div onClick={() => window.print()} style={{ padding: "6px 14px", borderRadius: 100, cursor: "pointer", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.09)", fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>
                 🖨️ Imprimer
               </div>
             </div>
@@ -622,26 +622,26 @@ export default function FinalReportPage() {
             <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20, padding: "6px 14px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)" }}>
               <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#74c69d" }}>✅ Analyse complète — Posture & Setup</span>
             </div>
-            <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#f0f0fa", marginBottom: 24 }}>
+            <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "var(--text-primary)", marginBottom: 24 }}>
               {firstname ? `Le bilan complet de ${firstname}` : "Ton bilan PostureAtWork complet"}
             </h1>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 28, flexWrap: "wrap" }}>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                 <ScoreRing score={globalScore} size={110} color={globalColor} />
-                <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>Score global</span>
+                <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>Score global</span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                 <ScoreRing score={pa.globalPostureScore} size={82} color="#a78bfa" />
-                <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>Posture</span>
+                <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>Posture</span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                 <ScoreRing score={po.globalSetupScore} size={82} color="#60a5fa" />
-                <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>Setup</span>
+                <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>Setup</span>
               </div>
               {questionnaireScore != null && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                   <ScoreRing score={questionnaireScore} size={68} color="#7c9fff" />
-                  <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)" }}>Questionnaire</span>
+                  <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)" }}>Questionnaire</span>
                 </div>
               )}
             </div>
@@ -669,7 +669,7 @@ export default function FinalReportPage() {
 
               {/* Synthesis */}
               <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.65, margin: 0 }}>{pa.overallAssessment}</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{pa.overallAssessment}</p>
               </div>
 
               {/* Issues */}
@@ -683,8 +683,8 @@ export default function FinalReportPage() {
                           <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 12, color: sevColor }}>{issue.zone}</span>
                           <span style={{ fontFamily: T.b, fontSize: 11, color: `${sevColor}99` }}>· {traduire(issue.severity)}</span>
                         </div>
-                        <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.6)", margin: 0 }}>{issue.issue}</p>
-                        <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", margin: "3px 0 0" }}>→ {issue.consequence}</p>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t60)", margin: 0 }}>{issue.issue}</p>
+                        <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: "3px 0 0" }}>→ {issue.consequence}</p>
                       </div>
                     );
                   })}
@@ -707,7 +707,7 @@ export default function FinalReportPage() {
           {/* ── SEPARATOR ── */}
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
             <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
-            <span style={{ padding: "6px 16px", borderRadius: 100, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "rgba(220,220,245,0.5)" }}>+</span>
+            <span style={{ padding: "6px 16px", borderRadius: 100, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--t50)" }}>+</span>
             <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
           </div>
 
@@ -735,7 +735,7 @@ export default function FinalReportPage() {
               </div>
 
               <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(59,130,246,0.07)", border: "0.5px solid rgba(59,130,246,0.18)" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.65, margin: 0 }}>{po.overallAssessment}</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{po.overallAssessment}</p>
               </div>
 
               {po.positivePoints.length > 0 && (
@@ -762,12 +762,12 @@ export default function FinalReportPage() {
                     initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.08 }}
                     style={{ borderRadius: 18, padding: "16px 18px", background: i === 0 ? "rgba(240,149,149,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${i === 0 ? "rgba(240,149,149,0.25)" : "rgba(255,255,255,0.08)"}` }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 8 }}>
-                      <div style={{ width: 26, height: 26, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 12, color: i === 0 ? "#f09595" : "rgba(220,220,245,0.35)" }}>
+                      <div style={{ width: 26, height: 26, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 12, color: i === 0 ? "#f09595" : "var(--t35)" }}>
                         {i + 1}
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
-                          <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{rec.action}</span>
+                          <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{rec.action}</span>
                           <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: `${accentColor}18`, color: accentColor }}>
                             {isPosture ? "Posture" : "Setup"}
                           </span>
@@ -776,7 +776,7 @@ export default function FinalReportPage() {
                             : rec.cost && <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: "rgba(244,162,97,0.12)", color: "#f4a261" }}>{rec.cost}</span>
                           }
                         </div>
-                        <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, margin: 0 }}>{rec.why}</p>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, margin: 0 }}>{rec.why}</p>
                       </div>
                     </div>
                   </motion.div>
@@ -798,10 +798,10 @@ export default function FinalReportPage() {
                       style={{ borderRadius: 18, padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                          <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{product.name}</span>
+                          <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{product.name}</span>
                           <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 11, color: pCfg.color, background: `${pCfg.color}18` }}>{pCfg.label}</span>
                         </div>
-                        <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", lineHeight: 1.6, margin: 0 }}>{product.reason}</p>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", lineHeight: 1.6, margin: 0 }}>{product.reason}</p>
                       </div>
                       <a href={amazonUrl} target="_blank" rel="noopener noreferrer"
                         style={{ flexShrink: 0, padding: "8px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer" }}>
@@ -827,8 +827,8 @@ export default function FinalReportPage() {
                       <div key={key} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 0", borderBottom: i < badSegments.length - 1 ? "0.5px solid rgba(255,255,255,0.05)" : "none" }}>
                         <span style={{ fontSize: 18, width: 28, textAlign: "center", flexShrink: 0, marginTop: 1 }}>🏋️</span>
                         <div style={{ flex: 1 }}>
-                          <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#f0f0fa", margin: "0 0 2px" }}>{ex.name}</p>
-                          <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.45)", margin: 0 }}>{ex.instruction}</p>
+                          <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "var(--text-primary)", margin: "0 0 2px" }}>{ex.name}</p>
+                          <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0 }}>{ex.instruction}</p>
                         </div>
                       </div>
                     );
@@ -850,7 +850,7 @@ export default function FinalReportPage() {
               {saveStatus === "saved" ? (
                 <motion.div key="saved" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: "center", padding: "12px 0" }}>
                   <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
-                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa", marginBottom: 6 }}>Rapport sauvegardé !</p>
+                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)", marginBottom: 6 }}>Rapport sauvegardé !</p>
                   <Link href="/dashboard" style={{ textDecoration: "none" }}>
                     <div style={{ display: "inline-block", padding: "10px 24px", borderRadius: 100, background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#74c69d", cursor: "pointer" }}>
                       Voir mon dashboard →
@@ -860,8 +860,8 @@ export default function FinalReportPage() {
               ) : !user ? (
                 <motion.div key="unauthenticated" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <div style={{ fontSize: 24, marginBottom: 10 }}>💾</div>
-                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", marginBottom: 6 }}>Sauvegarder mon rapport</p>
-                  <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)", marginBottom: 20, lineHeight: 1.65 }}>Crée un compte gratuit pour accéder à ton bilan depuis n&apos;importe où.</p>
+                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", marginBottom: 6 }}>Sauvegarder mon rapport</p>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", marginBottom: 20, lineHeight: 1.65 }}>Crée un compte gratuit pour accéder à ton bilan depuis n&apos;importe où.</p>
                   <div onClick={() => router.push("/auth?redirect=/final-report")}
                     style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
                     Créer mon compte gratuit →
@@ -869,7 +869,7 @@ export default function FinalReportPage() {
                 </motion.div>
               ) : (
                 <motion.div key="autosave" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)" }}>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)" }}>
                     {saveStatus === "saving" ? "Sauvegarde en cours…" : `Connecté — ${user.email}`}
                   </p>
                 </motion.div>
@@ -880,12 +880,12 @@ export default function FinalReportPage() {
           {/* ── FOOTER ── */}
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <Link href="/results" style={{ textDecoration: "none", flex: 1 }}>
-              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)" }}>
+              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--t45)" }}>
                 ← Résultats questionnaire
               </div>
             </Link>
             <Link href="/video-intro" style={{ textDecoration: "none", flex: 1 }}>
-              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)" }}>
+              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--t45)" }}>
                 🔄 Refaire l&apos;analyse
               </div>
             </Link>
@@ -909,7 +909,7 @@ export default function FinalReportPage() {
   const combinedColor = combinedScore >= 70 ? "#74c69d" : combinedScore >= 50 ? "#f4a261" : "#f09595";
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingBottom: 80, position: "relative" }}>
+    <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingBottom: 80, position: "relative" }}>
       <BackgroundBlobs blobs={[
         { top: "-5%", right: "-5%", color: "rgba(124,58,237,0.12)", size: 480 },
         { top: "40%", left: "-8%", color: "rgba(43,92,230,0.10)", size: 380 },
@@ -920,9 +920,9 @@ export default function FinalReportPage() {
         {/* Nav */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 80, paddingBottom: 32 }}>
           <Link href="/results" style={{ textDecoration: "none" }}>
-            <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.4)", cursor: "pointer" }}>← Résultats</span>
+            <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t40)", cursor: "pointer" }}>← Résultats</span>
           </Link>
-          <div onClick={() => window.print()} style={{ padding: "6px 14px", borderRadius: 100, cursor: "pointer", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.09)", fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>
+          <div onClick={() => window.print()} style={{ padding: "6px 14px", borderRadius: 100, cursor: "pointer", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.09)", fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>
             🖨️ Imprimer
           </div>
         </div>
@@ -933,22 +933,22 @@ export default function FinalReportPage() {
           <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20, padding: "6px 14px", borderRadius: 100, background: "rgba(167,139,250,0.12)", border: "0.5px solid rgba(167,139,250,0.3)" }}>
             <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#a78bfa" }}>Rapport Analyse IA · Bilan complet</span>
           </div>
-          <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#f0f0fa", marginBottom: 24 }}>
+          <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "var(--text-primary)", marginBottom: 24 }}>
             {firstname ? `Le bilan complet de ${firstname}` : "Ton bilan PostureAtWork complet"}
           </h1>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 32, flexWrap: "wrap" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
               <ScoreRing score={combinedScore} size={110} color={combinedColor} />
-              <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>Score global</span>
+              <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>Score global</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
               <ScoreRing score={postureScore} size={82} color="#a78bfa" />
-              <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>Posture (IA)</span>
+              <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>Posture (IA)</span>
             </div>
             {questionnaireScore != null && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                 <ScoreRing score={questionnaireScore} size={82} color="#7c9fff" />
-                <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)" }}>Questionnaire</span>
+                <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>Questionnaire</span>
               </div>
             )}
           </div>
@@ -965,7 +965,7 @@ export default function FinalReportPage() {
           </div>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
             style={{ marginTop: 10, borderRadius: 16, padding: "14px 18px", background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.2)" }}>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.65, margin: 0 }}>{report!.posture_analysis.overall_observation}</p>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{report!.posture_analysis.overall_observation}</p>
           </motion.div>
         </section>
 
@@ -980,7 +980,7 @@ export default function FinalReportPage() {
           </div>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
             style={{ marginTop: 10, borderRadius: 16, padding: "14px 18px", background: "rgba(43,92,230,0.07)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.65, margin: 0 }}>{report!.setup_analysis.overall_observation}</p>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{report!.setup_analysis.overall_observation}</p>
           </motion.div>
         </section>
 
@@ -993,16 +993,16 @@ export default function FinalReportPage() {
                 style={{ borderRadius: 20, padding: "18px 20px", position: "relative", overflow: "hidden", background: i === 0 ? "rgba(240,149,149,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${i === 0 ? "rgba(240,149,149,0.25)" : "rgba(255,255,255,0.08)"}` }}>
                 <div style={{ position: "relative", zIndex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: 10, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 13, color: i === 0 ? "#f09595" : "rgba(220,220,245,0.35)" }}>
+                    <div style={{ width: 28, height: 28, borderRadius: 10, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 13, color: i === 0 ? "#f09595" : "var(--t35)" }}>
                       {action.rank}
                     </div>
-                    <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{action.title}</span>
+                    <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{action.title}</span>
                   </div>
-                  <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 4 }}>
-                    <span style={{ color: "rgba(220,220,245,0.8)", fontWeight: 600 }}>Pourquoi : </span>{action.why}
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, marginBottom: 4 }}>
+                    <span style={{ color: "var(--t80)", fontWeight: 600 }}>Pourquoi : </span>{action.why}
                   </p>
-                  <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 6 }}>
-                    <span style={{ color: "rgba(220,220,245,0.8)", fontWeight: 600 }}>Comment : </span>{action.how}
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, marginBottom: 6 }}>
+                    <span style={{ color: "var(--t80)", fontWeight: 600 }}>Comment : </span>{action.how}
                   </p>
                   <p style={{ fontFamily: T.b, fontSize: 12, color: "#74c69d", fontWeight: 600 }}>Impact : {action.impact}</p>
                 </div>
@@ -1019,14 +1019,14 @@ export default function FinalReportPage() {
               <motion.div key={i} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.09 }}
                 style={{ borderRadius: 20, padding: "18px 20px", background: "rgba(43,92,230,0.07)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
                 <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
-                  <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{ex.name}</span>
+                  <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{ex.name}</span>
                   <span style={{ flexShrink: 0, padding: "3px 10px", borderRadius: 100, background: "rgba(43,92,230,0.15)", color: "#7c9fff", fontFamily: T.b, fontWeight: 600, fontSize: 11 }}>{ex.target}</span>
                 </div>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 8 }}>{ex.instruction}</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.65, marginBottom: 8 }}>{ex.instruction}</p>
                 <div style={{ display: "flex", gap: 10 }}>
                   <span style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff" }}>⏱ {ex.duration}</span>
-                  <span style={{ color: "rgba(220,220,245,0.2)" }}>·</span>
-                  <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.4)" }}>{ex.frequency}</span>
+                  <span style={{ color: "var(--t20)" }}>·</span>
+                  <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)" }}>{ex.frequency}</span>
                 </div>
               </motion.div>
             ))}
@@ -1045,10 +1045,10 @@ export default function FinalReportPage() {
                   style={{ borderRadius: 20, padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{product.name}</span>
+                      <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{product.name}</span>
                       <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 11, color: pCfg.color, background: `${pCfg.color}18` }}>{pCfg.label}</span>
                     </div>
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", lineHeight: 1.6, margin: 0 }}>{product.reason}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", lineHeight: 1.6, margin: 0 }}>{product.reason}</p>
                   </div>
                   <a href={amazonUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
                     style={{ flexShrink: 0, padding: "8px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer" }}>
@@ -1064,8 +1064,8 @@ export default function FinalReportPage() {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           style={{ borderRadius: 24, padding: "24px 26px", marginBottom: 16, background: "linear-gradient(135deg, rgba(167,139,250,0.08), rgba(43,92,230,0.08))", border: "0.5px solid rgba(167,139,250,0.2)" }}>
           <div style={{ fontSize: 24, marginBottom: 10 }}>🩺</div>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", marginBottom: 8 }}>Mot de ton kiné IA</p>
-          <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.7, margin: 0 }}>{report!.final_message}</p>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", marginBottom: 8 }}>Mot de ton kiné IA</p>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.7, margin: 0 }}>{report!.final_message}</p>
         </motion.div>
 
         {/* Programme */}
@@ -1080,8 +1080,8 @@ export default function FinalReportPage() {
             <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: i < 2 ? "0.5px solid rgba(255,255,255,0.05)" : "none" }}>
               <span style={{ fontSize: 18, width: 32, textAlign: "center" }}>{ex.emoji}</span>
               <div style={{ flex: 1 }}>
-                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#f0f0fa", margin: 0 }}>{ex.name}</p>
-                <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", margin: 0 }}>{ex.reps}</p>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "var(--text-primary)", margin: 0 }}>{ex.name}</p>
+                <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: 0 }}>{ex.reps}</p>
               </div>
               <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(116,198,157,0.12)", fontFamily: T.b, fontSize: 10, color: "#74c69d" }}>{ex.zone}</span>
             </div>
@@ -1100,7 +1100,7 @@ export default function FinalReportPage() {
             {saveStatus === "saved" ? (
               <motion.div key="saved" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: "center", padding: "12px 0" }}>
                 <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
-                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa", marginBottom: 6 }}>Rapport sauvegardé !</p>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)", marginBottom: 6 }}>Rapport sauvegardé !</p>
                 <Link href="/dashboard" style={{ textDecoration: "none" }}>
                   <div style={{ display: "inline-block", padding: "10px 24px", borderRadius: 100, background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#74c69d", cursor: "pointer" }}>
                     Voir mon dashboard →
@@ -1109,26 +1109,26 @@ export default function FinalReportPage() {
               </motion.div>
             ) : saveStatus === "saving" ? (
               <motion.div key="saving" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: "center", padding: "12px 0" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)" }}>Sauvegarde en cours…</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)" }}>Sauvegarde en cours…</p>
               </motion.div>
             ) : user ? (
               <motion.div key="autosave" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)" }}>
-                  Connecté en tant que <span style={{ color: "#f0f0fa" }}>{user.email}</span>.
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)" }}>
+                  Connecté en tant que <span style={{ color: "var(--text-primary)" }}>{user.email}</span>.
                 </p>
               </motion.div>
             ) : (
               <motion.div key="unauthenticated" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <div style={{ fontSize: 24, marginBottom: 10 }}>💾</div>
-                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", marginBottom: 6 }}>Sauvegarder mon rapport</p>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)", marginBottom: 20, lineHeight: 1.65 }}>Crée un compte gratuit pour accéder à ton bilan depuis n&apos;importe où.</p>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", marginBottom: 6 }}>Sauvegarder mon rapport</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", marginBottom: 20, lineHeight: 1.65 }}>Crée un compte gratuit pour accéder à ton bilan depuis n&apos;importe où.</p>
                 <div onClick={() => router.push("/auth?redirect=/final-report")}
                   style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
                   Créer mon compte gratuit →
                 </div>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.35)", textAlign: "center", marginTop: 12 }}>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", textAlign: "center", marginTop: 12 }}>
                   Déjà un compte ?{" "}
-                  <span onClick={() => router.push("/auth?redirect=/final-report")} style={{ color: "rgba(220,220,245,0.55)", textDecoration: "underline", cursor: "pointer" }}>Se connecter</span>
+                  <span onClick={() => router.push("/auth?redirect=/final-report")} style={{ color: "var(--t55)", textDecoration: "underline", cursor: "pointer" }}>Se connecter</span>
                 </p>
               </motion.div>
             )}
@@ -1152,12 +1152,12 @@ export default function FinalReportPage() {
         {/* Bottom actions */}
         <div style={{ display: "flex", gap: 10 }}>
           <Link href="/results" style={{ textDecoration: "none", flex: 1 }}>
-            <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)" }}>
+            <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--t45)" }}>
               ← Résultats
             </div>
           </Link>
           <Link href="/questionnaire" style={{ textDecoration: "none", flex: 1 }}>
-            <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)" }}>
+            <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--t45)" }}>
               🔄 Refaire
             </div>
           </Link>

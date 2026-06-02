@@ -45,7 +45,7 @@ function ExercisePreview({ ex, color }: { ex: Exercise; color: string }) {
         <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "var(--text-primary)", margin: 0 }}>{ex.name}</p>
         <div style={{ display: "flex", gap: 8, marginTop: 3 }}>
           <span style={{ fontFamily: T.b, fontSize: 11, color }}>⏱ {ex.reps}</span>
-          <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.3)" }}>·</span>
+          <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)" }}>·</span>
           <span style={{ padding: "1px 7px", borderRadius: 100, background: `${ex.zoneColor}18`, fontFamily: T.b, fontSize: 10, color: ex.zoneColor }}>{ex.zone}</span>
         </div>
       </div>
@@ -146,7 +146,7 @@ function ProductCard({ p }: { p: Product }) {
               {pStyle.label}
             </span>
           </div>
-          <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.50)", lineHeight: 1.6, margin: "0 0 12px" }}>{p.reason}</p>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", lineHeight: 1.6, margin: "0 0 12px" }}>{p.reason}</p>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
             <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{p.price}</span>
             <a
@@ -274,7 +274,7 @@ export default function DimensionPage() {
   if (!ready) {
     return (
       <main style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.4)" }}>Chargement…</span>
+        <span style={{ fontFamily: T.b, fontSize: 14, color: "var(--t40)" }}>Chargement…</span>
       </main>
     );
   }
@@ -312,7 +312,7 @@ export default function DimensionPage() {
           <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "var(--text-primary)", margin: "0 0 10px", lineHeight: 1.3 }}>
             Ton analyse {m.label.toLowerCase()} n&apos;est pas encore disponible
           </p>
-          <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.50)", lineHeight: 1.65, margin: "0 0 28px" }}>
+          <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t50)", lineHeight: 1.65, margin: "0 0 28px" }}>
             Fais ton bilan en 5 minutes pour découvrir ton score {m.label.toLowerCase()} et recevoir des conseils vraiment personnalisés.
           </p>
           <Link href="/onboarding" style={{ textDecoration: "none" }}>
@@ -320,7 +320,7 @@ export default function DimensionPage() {
               Faire mon bilan maintenant →
             </div>
           </Link>
-          <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.30)", margin: 0 }}>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t30)", margin: 0 }}>
             Gratuit · Sans inscription · 5 minutes
           </p>
         </div>
@@ -343,7 +343,7 @@ export default function DimensionPage() {
         {/* Nav */}
         <div style={{ paddingTop: 80, paddingBottom: isExampleMode ? 16 : 32 }}>
           <Link href={isExampleMode ? "/exemple-rapport" : "/results"} style={{ textDecoration: "none" }}>
-            <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.4)", cursor: "pointer" }}>
+            <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t40)", cursor: "pointer" }}>
               {isExampleMode ? "← Exemple de rapport" : "← Mes résultats"}
             </span>
           </Link>
@@ -351,7 +351,7 @@ export default function DimensionPage() {
 
         {/* Premium bandeau */}
         <div style={{ marginBottom: 20, padding: "10px 16px", borderRadius: 12, background: premium ? "rgba(245,158,11,0.08)" : "rgba(43,92,230,0.08)", border: `0.5px solid ${premium ? "rgba(245,158,11,0.25)" : "rgba(43,92,230,0.20)"}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <p style={{ fontFamily: T.b, fontSize: 12, color: premium ? "rgba(245,158,11,0.85)" : "rgba(220,220,245,0.55)", margin: 0, lineHeight: 1.5 }}>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: premium ? "rgba(245,158,11,0.85)" : "var(--t55)", margin: 0, lineHeight: 1.5 }}>
             {premium ? "👑 Offert en beta — tous les conseils détaillés sont débloqués" : "💎 Conseils détaillés disponibles avec le premium — offert en beta"}
           </p>
           {!premium && (
@@ -405,7 +405,7 @@ export default function DimensionPage() {
               background: "rgba(255,255,255,0.08)", border: "0.5px solid rgba(255,255,255,0.12)",
             }}>
               <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: meta.color }}>{score}</span>
-              <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.4)", marginLeft: 4 }}>/100</span>
+              <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)", marginLeft: 4 }}>/100</span>
             </div>
             <div style={{
               padding: "5px 14px", borderRadius: 100,
@@ -422,7 +422,7 @@ export default function DimensionPage() {
             const interp = getScoreInterpretation(jc, dimKey, score);
             if (!interp) return null;
             return (
-              <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.60)", lineHeight: 1.65, margin: "14px 0 0", borderTop: "0.5px solid var(--border)", paddingTop: 14 }}>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t60)", lineHeight: 1.65, margin: "14px 0 0", borderTop: "0.5px solid var(--border)", paddingTop: 14 }}>
                 {jc.emoji} {interp}
               </p>
             );
@@ -436,7 +436,7 @@ export default function DimensionPage() {
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
               style={{ borderRadius: 16, padding: "14px 18px", marginBottom: 16, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)", display: "flex", alignItems: "flex-start", gap: 10 }}>
               <span style={{ fontSize: 20, flexShrink: 0 }}>{jc.emoji}</span>
-              <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.70)", lineHeight: 1.65, margin: 0 }}>{jc.intro}</p>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t70)", lineHeight: 1.65, margin: 0 }}>{jc.intro}</p>
             </motion.div>
           );
         })()}
@@ -459,7 +459,7 @@ export default function DimensionPage() {
                   flexShrink: 0, width: 6, height: 6, borderRadius: "50%",
                   background: meta.color, marginTop: 7,
                 }} />
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)", lineHeight: 1.65, margin: 0 }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t75)", lineHeight: 1.65, margin: 0 }}>
                   {item}
                 </p>
               </div>
@@ -478,7 +478,7 @@ export default function DimensionPage() {
           }}
         >
           <SectionTitle>⚡ Ce que ça provoque</SectionTitle>
-          <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.75, margin: 0 }}>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.75, margin: 0 }}>
             {displayConsequences}
           </p>
         </motion.div>
@@ -556,7 +556,7 @@ export default function DimensionPage() {
                   </div>
                   <p style={{
                     fontFamily: T.b, fontSize: 13, margin: 0,
-                    color: isChecked ? "rgba(220,220,245,0.45)" : "var(--text-primary)",
+                    color: isChecked ? "var(--t45)" : "var(--text-primary)",
                     textDecoration: isChecked ? "line-through" : "none",
                   }}>{action}</p>
                 </div>
@@ -624,7 +624,7 @@ export default function DimensionPage() {
                 {facts.map((fact, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                     <span style={{ color: "#a78bfa", fontSize: 14, flexShrink: 0, marginTop: 1 }}>•</span>
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.6, margin: 0 }}>{fact}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.6, margin: 0 }}>{fact}</p>
                   </div>
                 ))}
               </div>
@@ -638,7 +638,7 @@ export default function DimensionPage() {
             <div style={{
               padding: "12px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
               background: "var(--bg-card-2)", border: "0.5px solid var(--border-2)",
-              fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "rgba(220,220,245,0.45)",
+              fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--t45)",
             }}>
               ← Mes résultats
             </div>

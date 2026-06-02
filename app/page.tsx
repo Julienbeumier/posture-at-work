@@ -199,7 +199,7 @@ export default function LandingPage() {
             fontFamily: T.b,
             fontSize: 17,
             lineHeight: 1.7,
-            color: "rgba(220,220,245,0.65)",
+            color: "var(--t65)",
             maxWidth: 520,
             margin: "0 auto 36px",
           }}
@@ -287,7 +287,7 @@ export default function LandingPage() {
               >
                 {s.value}
               </div>
-              <div style={{ color: "rgba(220,220,245,0.40)", fontSize: 13, fontFamily: T.b }}>
+              <div style={{ color: "var(--t40)", fontSize: 13, fontFamily: T.b }}>
                 {s.label}
               </div>
             </div>
@@ -310,7 +310,7 @@ export default function LandingPage() {
           >
             6 dimensions analysées
           </h2>
-          <p style={{ color: "rgba(220,220,245,0.65)", fontFamily: T.b, fontSize: 15 }}>
+          <p style={{ color: "var(--t65)", fontFamily: T.b, fontSize: 15 }}>
             Une vue complète de ta santé au travail — pas juste la posture.
           </p>
         </motion.div>
@@ -373,7 +373,7 @@ export default function LandingPage() {
               </h3>
               <p
                 style={{
-                  color: "rgba(220,220,245,0.55)",
+                  color: "var(--t55)",
                   fontSize: 13,
                   lineHeight: 1.6,
                   fontFamily: T.b,
@@ -405,7 +405,7 @@ export default function LandingPage() {
               fontSize: 10,
               letterSpacing: 2,
               textTransform: "uppercase",
-              color: "rgba(220,220,245,0.40)",
+              color: "var(--t40)",
               marginBottom: 20,
             }}
           >
@@ -464,7 +464,7 @@ export default function LandingPage() {
                 <span
                   style={{
                     width: 72,
-                    color: "rgba(220,220,245,0.55)",
+                    color: "var(--t55)",
                     fontSize: 12,
                     fontFamily: T.b,
                     flexShrink: 0,
@@ -514,7 +514,7 @@ export default function LandingPage() {
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 10 }}>
             Ils ont changé leurs habitudes
           </h2>
-          <p style={{ color: "rgba(220,220,245,0.50)", fontFamily: T.b, fontSize: 14 }}>
+          <p style={{ color: "var(--t50)", fontFamily: T.b, fontSize: 14 }}>
             Des résultats concrets, en quelques semaines.
           </p>
         </motion.div>
@@ -539,7 +539,7 @@ export default function LandingPage() {
                 <span style={{ fontFamily: "Georgia, serif", fontSize: 48, color: t.color, lineHeight: 1, opacity: 0.7, display: "block", marginBottom: 4 }}>
                   &ldquo;
                 </span>
-                <p style={{ fontFamily: T.b, fontSize: 14, lineHeight: 1.7, color: "rgba(220,220,245,0.82)", fontStyle: "italic" }}>
+                <p style={{ fontFamily: T.b, fontSize: 14, lineHeight: 1.7, color: "var(--t82)", fontStyle: "italic" }}>
                   {t.texte}
                 </p>
               </div>
@@ -558,7 +558,7 @@ export default function LandingPage() {
                   <p style={{ color: "var(--text-primary)", fontFamily: T.h, fontWeight: 700, fontSize: 13 }}>
                     {t.nom} <span style={{ fontSize: 14 }}>{t.emoji}</span>
                   </p>
-                  <p style={{ color: "rgba(220,220,245,0.38)", fontFamily: T.b, fontSize: 11 }}>
+                  <p style={{ color: "var(--t38)", fontFamily: T.b, fontSize: 11 }}>
                     {t.role}
                   </p>
                 </div>
@@ -646,7 +646,7 @@ export default function LandingPage() {
           zIndex: 1,
           textAlign: "center",
           padding: "0 24px 40px",
-          color: "rgba(220,220,245,0.25)",
+          color: "var(--t25)",
           fontFamily: T.b,
           fontSize: 13,
         }}

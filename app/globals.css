@@ -2,8 +2,8 @@
 
 /* ─── Theme variables ───────────────────────────────────────────────────────── */
 
-:root[data-theme="dark"],
-:root {
+:root,
+:root[data-theme="dark"] {
   --bg-primary: #0f0f1a;
   --bg-secondary: #1b1b2e;
   --bg-card: rgba(255,255,255,0.03);
@@ -17,9 +17,27 @@
   --text-muted: rgba(220,220,245,0.40);
   --accent: #2b5ce6;
   --accent-hover: #3d6ef0;
-  --blob-opacity: 0.15;
+  --shadow: transparent;
 
-  /* Legacy vars */
+  /* Per-opacity text tokens */
+  --t85: rgba(220,220,245,0.85);
+  --t82: rgba(220,220,245,0.82);
+  --t80: rgba(220,220,245,0.80);
+  --t75: rgba(220,220,245,0.75);
+  --t70: rgba(220,220,245,0.70);
+  --t65: rgba(220,220,245,0.65);
+  --t60: rgba(220,220,245,0.60);
+  --t55: rgba(220,220,245,0.55);
+  --t50: rgba(220,220,245,0.50);
+  --t45: rgba(220,220,245,0.45);
+  --t40: rgba(220,220,245,0.40);
+  --t38: rgba(220,220,245,0.38);
+  --t35: rgba(220,220,245,0.35);
+  --t30: rgba(220,220,245,0.30);
+  --t25: rgba(220,220,245,0.25);
+  --t20: rgba(220,220,245,0.20);
+
+  /* Legacy */
   --background: #0f0f1a;
   --foreground: #f0f0fa;
   --accent-green: #22c55e;
@@ -27,23 +45,41 @@
 }
 
 :root[data-theme="light"] {
-  --bg-primary: #f4f3ff;
+  --bg-primary: #f0f2ff;
   --bg-secondary: #ffffff;
-  --bg-card: rgba(255,255,255,0.85);
-  --bg-card-2: rgba(255,255,255,0.90);
+  --bg-card: rgba(255,255,255,0.90);
+  --bg-card-2: rgba(255,255,255,0.92);
   --bg-card-3: rgba(255,255,255,0.95);
-  --border: rgba(43,92,230,0.12);
-  --border-2: rgba(43,92,230,0.15);
-  --border-3: rgba(43,92,230,0.18);
+  --border: rgba(43,92,230,0.15);
+  --border-2: rgba(43,92,230,0.18);
+  --border-3: rgba(43,92,230,0.20);
   --text-primary: #1a1a2e;
   --text-secondary: #4a4a6a;
-  --text-muted: #9090aa;
+  --text-muted: #8888aa;
   --accent: #2b5ce6;
   --accent-hover: #1a4bc4;
-  --blob-opacity: 0.07;
+  --shadow: rgba(43,92,230,0.10);
 
-  /* Legacy vars */
-  --background: #f4f3ff;
+  /* Per-opacity text tokens → readable dark values */
+  --t85: #1a1a2e;
+  --t82: #1a1a2e;
+  --t80: #1a1a2e;
+  --t75: #2a2a3e;
+  --t70: #3a3a55;
+  --t65: #4a4a6a;
+  --t60: #4a4a6a;
+  --t55: #5a5a7a;
+  --t50: #5a5a7a;
+  --t45: #6a6a8a;
+  --t40: #7a7a9a;
+  --t38: #7a7a9a;
+  --t35: #8888aa;
+  --t30: #8888aa;
+  --t25: #9090b0;
+  --t20: #9090b0;
+
+  /* Legacy */
+  --background: #f0f2ff;
   --foreground: #1a1a2e;
 }
 
@@ -69,13 +105,69 @@ body {
 
 /* ─── Light mode structural overrides ──────────────────────────────────────── */
 
+[data-theme="light"] body {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
 [data-theme="light"] main {
   background: var(--bg-primary) !important;
 }
 
 [data-theme="light"] nav {
-  background: rgba(255,255,255,0.92) !important;
-  box-shadow: 0 2px 20px rgba(43,92,230,0.08);
+  background: rgba(255,255,255,0.95) !important;
+  border-bottom: 1px solid rgba(43,92,230,0.10) !important;
+  backdrop-filter: blur(20px) !important;
+  box-shadow: 0 2px 20px rgba(43,92,230,0.08) !important;
+}
+
+[data-theme="light"] nav a,
+[data-theme="light"] nav button {
+  color: #1a1a2e !important;
+}
+
+/* ─── Light mode: remaining hard-coded backgrounds (fallback) ───────────────── */
+
+[data-theme="light"] [style*="background: \"#0f0f1a\""],
+[data-theme="light"] [style*="background: \"#1b1b2e\""],
+[data-theme="light"] [style*="background: \"var(--bg-primary)\""] {
+  background: var(--bg-primary) !important;
+}
+
+/* Cards and containers */
+[data-theme="light"] [style*="rgba(255,255,255, 0.03)"],
+[data-theme="light"] [style*="rgba(255, 255, 255, 0.03)"],
+[data-theme="light"] [style*="rgba(255,255,255, 0.04)"],
+[data-theme="light"] [style*="rgba(255, 255, 255, 0.04)"] {
+  background: rgba(255,255,255,0.90) !important;
+  box-shadow: 0 2px 12px rgba(43,92,230,0.06) !important;
+}
+
+/* Borders */
+[data-theme="light"] [style*="rgba(255, 255, 255, 0.07)"],
+[data-theme="light"] [style*="rgba(255,255,255, 0.07)"],
+[data-theme="light"] [style*="rgba(255, 255, 255, 0.08)"],
+[data-theme="light"] [style*="rgba(255,255,255, 0.08)"] {
+  border-color: rgba(43,92,230,0.12) !important;
+}
+
+/* Inputs */
+[data-theme="light"] input:not([type="range"]),
+[data-theme="light"] textarea {
+  background: #ffffff !important;
+  color: #1a1a2e !important;
+  border-color: rgba(43,92,230,0.20) !important;
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: #8888aa !important;
+}
+
+/* Background blobs — reduce opacity in light mode */
+[data-theme="light"] [style*="filter: blur"],
+[data-theme="light"] [style*="filter:blur"] {
+  opacity: 0.07 !important;
 }
 
 /* ─── Utilities ──────────────────────────────────────────────────────────────── */
