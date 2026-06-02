@@ -44,43 +44,59 @@
   --accent-blue: #3b82f6;
 }
 
+/* ─── Light mode — ErgoCheck inspired ─────────────────────────────────────── */
+
 :root[data-theme="light"] {
-  --bg-primary: #f0f2ff;
-  --bg-secondary: #ffffff;
-  --bg-card: rgba(255,255,255,0.90);
-  --bg-card-2: rgba(255,255,255,0.92);
-  --bg-card-3: rgba(255,255,255,0.95);
-  --border: rgba(43,92,230,0.15);
-  --border-2: rgba(43,92,230,0.18);
-  --border-3: rgba(43,92,230,0.20);
-  --text-primary: #1a1a2e;
-  --text-secondary: #4a4a6a;
-  --text-muted: #8888aa;
-  --accent: #2b5ce6;
+  /* Backgrounds */
+  --bg-primary: #F3F7FF;
+  --bg-secondary: #ECF7FF;
+  --bg-card: rgba(255,255,255,0.74);
+  --bg-card-2: rgba(255,255,255,0.60);
+  --bg-card-3: rgba(255,255,255,0.85);
+
+  /* Textes */
+  --text-primary: #0B1220;
+  --text-secondary: #3E4C63;
+  --text-muted: #6B7A99;
+
+  /* Bordures */
+  --border: rgba(15,23,42,0.12);
+  --border-2: rgba(15,23,42,0.15);
+  --border-3: rgba(15,23,42,0.18);
+
+  /* Ombres */
+  --shadow: 0 18px 55px rgba(15,23,42,0.12);
+  --shadow-sm: 0 10px 30px rgba(15,23,42,0.10);
+
+  /* Accents */
+  --accent: #2563EB;
   --accent-hover: #1a4bc4;
-  --shadow: rgba(43,92,230,0.10);
+  --accent-blue: #2563EB;
+  --accent-green: #10B981;
+  --accent-warn: #F59E0B;
+  --accent-danger: #EF4444;
 
   /* Per-opacity text tokens → readable dark values */
-  --t85: #1a1a2e;
-  --t82: #1a1a2e;
-  --t80: #1a1a2e;
-  --t75: #2a2a3e;
-  --t70: #3a3a55;
-  --t65: #4a4a6a;
-  --t60: #4a4a6a;
-  --t55: #5a5a7a;
-  --t50: #5a5a7a;
-  --t45: #6a6a8a;
-  --t40: #7a7a9a;
-  --t38: #7a7a9a;
-  --t35: #8888aa;
-  --t30: #8888aa;
-  --t25: #9090b0;
-  --t20: #9090b0;
+  --t85: #0B1220;
+  --t82: #0B1220;
+  --t80: #0B1220;
+  --t75: #1a2535;
+  --t70: #2a3548;
+  --t65: #3E4C63;
+  --t60: #3E4C63;
+  --t55: #4a5870;
+  --t50: #4a5870;
+  --t45: #576480;
+  --t40: #6B7A99;
+  --t38: #6B7A99;
+  --t35: #7a89aa;
+  --t30: #7a89aa;
+  --t25: #8a97b8;
+  --t20: #8a97b8;
 
   /* Legacy */
-  --background: #f0f2ff;
-  --foreground: #1a1a2e;
+  --background: #F3F7FF;
+  --foreground: #0B1220;
 }
 
 @theme inline {
@@ -103,71 +119,146 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* ─── Light mode structural overrides ──────────────────────────────────────── */
+/* ─── Light mode: background gradient ──────────────────────────────────────── */
 
 [data-theme="light"] body {
-  background: var(--bg-primary) !important;
-  color: var(--text-primary) !important;
+  background:
+    radial-gradient(1100px 700px at 12% 8%, rgba(37,99,235,0.12), transparent 58%),
+    radial-gradient(900px 600px at 92% 14%, rgba(56,189,248,0.10), transparent 55%),
+    radial-gradient(850px 520px at 65% 92%, rgba(16,185,129,0.08), transparent 55%),
+    linear-gradient(180deg, #F3F7FF, #ECF7FF) !important;
+  color: #0B1220 !important;
 }
+
+/* ─── Light mode: text ──────────────────────────────────────────────────────── */
+
+[data-theme="light"] * {
+  color: inherit;
+}
+
+[data-theme="light"] body,
+[data-theme="light"] p,
+[data-theme="light"] span,
+[data-theme="light"] div,
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] label,
+[data-theme="light"] button {
+  color: #0B1220;
+}
+
+/* ─── Light mode: structure ─────────────────────────────────────────────────── */
 
 [data-theme="light"] main {
-  background: var(--bg-primary) !important;
+  background: transparent !important;
 }
 
-[data-theme="light"] nav {
-  background: rgba(255,255,255,0.95) !important;
-  border-bottom: 1px solid rgba(43,92,230,0.10) !important;
+[data-theme="light"] nav,
+[data-theme="light"] header {
+  background: rgba(255,255,255,0.85) !important;
+  border-bottom: 1px solid rgba(15,23,42,0.10) !important;
   backdrop-filter: blur(20px) !important;
-  box-shadow: 0 2px 20px rgba(43,92,230,0.08) !important;
+  box-shadow: 0 2px 20px rgba(15,23,42,0.06) !important;
 }
 
 [data-theme="light"] nav a,
-[data-theme="light"] nav button {
-  color: #1a1a2e !important;
+[data-theme="light"] nav button,
+[data-theme="light"] nav span {
+  color: #0B1220 !important;
 }
 
-/* ─── Light mode: remaining hard-coded backgrounds (fallback) ───────────────── */
+/* ─── Light mode: cards & containers ───────────────────────────────────────── */
 
-[data-theme="light"] [style*="background: \"#0f0f1a\""],
-[data-theme="light"] [style*="background: \"#1b1b2e\""],
-[data-theme="light"] [style*="background: \"var(--bg-primary)\""] {
-  background: var(--bg-primary) !important;
-}
-
-/* Cards and containers */
-[data-theme="light"] [style*="rgba(255,255,255, 0.03)"],
+[data-theme="light"] [style*="rgba(255,255,255,0.03)"],
+[data-theme="light"] [style*="rgba(255,255,255,0.04)"],
+[data-theme="light"] [style*="rgba(255,255,255,0.05)"],
+[data-theme="light"] [style*="rgba(255,255,255,0.02)"],
 [data-theme="light"] [style*="rgba(255, 255, 255, 0.03)"],
-[data-theme="light"] [style*="rgba(255,255,255, 0.04)"],
-[data-theme="light"] [style*="rgba(255, 255, 255, 0.04)"] {
-  background: rgba(255,255,255,0.90) !important;
-  box-shadow: 0 2px 12px rgba(43,92,230,0.06) !important;
+[data-theme="light"] [style*="rgba(255, 255, 255, 0.04)"],
+[data-theme="light"] [style*="rgba(255, 255, 255, 0.05)"] {
+  background: rgba(255,255,255,0.74) !important;
+  border-color: rgba(15,23,42,0.10) !important;
+  box-shadow: 0 10px 30px rgba(15,23,42,0.08) !important;
+  backdrop-filter: blur(14px) !important;
 }
 
-/* Borders */
+/* Hard-coded dark backgrounds → transparent (shows body gradient) */
+[data-theme="light"] [style*="background: #0f0f1a"],
+[data-theme="light"] [style*="background:#0f0f1a"],
+[data-theme="light"] [style*="background: #1b1b2e"],
+[data-theme="light"] [style*="background:#1b1b2e"],
+[data-theme="light"] [style*="background: #0a0a0a"],
+[data-theme="light"] [style*="background:#0a0a0a"] {
+  background: transparent !important;
+}
+
+[data-theme="light"] [style*="rgba(10,10,10"],
+[data-theme="light"] [style*="rgba(15,15,26"],
+[data-theme="light"] [style*="rgba(27,27,46"] {
+  background: rgba(255,255,255,0.74) !important;
+}
+
+/* ─── Light mode: borders ───────────────────────────────────────────────────── */
+
+[data-theme="light"] [style*="rgba(255,255,255,0.06)"],
+[data-theme="light"] [style*="rgba(255,255,255,0.07)"],
+[data-theme="light"] [style*="rgba(255,255,255,0.08)"],
+[data-theme="light"] [style*="rgba(255,255,255,0.10)"],
+[data-theme="light"] [style*="rgba(255,255,255,0.12)"],
+[data-theme="light"] [style*="rgba(255,255,255,0.15)"],
+[data-theme="light"] [style*="rgba(255, 255, 255, 0.06)"],
 [data-theme="light"] [style*="rgba(255, 255, 255, 0.07)"],
-[data-theme="light"] [style*="rgba(255,255,255, 0.07)"],
 [data-theme="light"] [style*="rgba(255, 255, 255, 0.08)"],
-[data-theme="light"] [style*="rgba(255,255,255, 0.08)"] {
-  border-color: rgba(43,92,230,0.12) !important;
+[data-theme="light"] [style*="rgba(255, 255, 255, 0.10)"] {
+  border-color: rgba(15,23,42,0.10) !important;
 }
 
-/* Inputs */
+/* Questionnaire options */
+[data-theme="light"] [style*="rgba(255,255,255,0.05)"] {
+  background: rgba(255,255,255,0.60) !important;
+  border-color: rgba(15,23,42,0.10) !important;
+}
+
+/* ─── Light mode: nav accent buttons ────────────────────────────────────────── */
+
+[data-theme="light"] [style*="background: rgba(43,92,230,0.15)"],
+[data-theme="light"] [style*="background: rgba(43,92,230,0.1)"],
+[data-theme="light"] [style*="background:rgba(43,92,230,0.15)"],
+[data-theme="light"] [style*="background: rgba(43,92,230,0.18)"] {
+  background: rgba(37,99,235,0.10) !important;
+  color: #2563EB !important;
+}
+
+/* Primary CTA button */
+[data-theme="light"] [style*="background: #2b5ce6"],
+[data-theme="light"] [style*="background:#2b5ce6"] {
+  background: #2563EB !important;
+  color: #ffffff !important;
+}
+
+/* ─── Light mode: inputs ────────────────────────────────────────────────────── */
+
 [data-theme="light"] input:not([type="range"]),
-[data-theme="light"] textarea {
-  background: #ffffff !important;
-  color: #1a1a2e !important;
-  border-color: rgba(43,92,230,0.20) !important;
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  background: rgba(255,255,255,0.90) !important;
+  color: #0B1220 !important;
+  border-color: rgba(15,23,42,0.15) !important;
 }
 
 [data-theme="light"] input::placeholder,
 [data-theme="light"] textarea::placeholder {
-  color: #8888aa !important;
+  color: #6B7A99 !important;
 }
 
-/* Background blobs — reduce opacity in light mode */
+/* ─── Light mode: blobs ─────────────────────────────────────────────────────── */
+
 [data-theme="light"] [style*="filter: blur"],
 [data-theme="light"] [style*="filter:blur"] {
-  opacity: 0.07 !important;
+  opacity: 0.06 !important;
 }
 
 /* ─── Utilities ──────────────────────────────────────────────────────────────── */
