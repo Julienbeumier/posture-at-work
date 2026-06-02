@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const T = {
   h: "var(--font-nunito), sans-serif",
@@ -59,33 +60,6 @@ const RECS = [
   },
 ];
 
-const EXERCISES = [
-  {
-    name: "Rétraction cervicale",
-    target: "Nuque & muscles cervicaux profonds",
-    duration: "10 rép. × 3",
-    instruction: "Assis droit, rentre doucement le menton vers la gorge (double menton) sans baisser la tête. Tiens 3 secondes. Renforce les fléchisseurs profonds du cou contre la projection antérieure de la tête.",
-    frequency: "Toutes les heures",
-    emoji: "🧘",
-  },
-  {
-    name: "Ouverture pectorale au mur",
-    target: "Pectoraux & face antérieure des épaules",
-    duration: "45 sec × 2",
-    instruction: "Debout dans un angle, avant-bras en L contre le mur. Avance le buste jusqu'à sentir l'ouverture dans la poitrine. Contre les épaules enroulées vers l'avant typiques du laptop.",
-    frequency: "Matin et soir",
-    emoji: "🤸",
-  },
-  {
-    name: "Cat-Cow assis",
-    target: "Colonne vertébrale complète",
-    duration: "10 cycles",
-    instruction: "Sur ta chaise, mains sur les genoux. Expire en arrondissant le dos (chat). Inspire en creusant les lombaires, poitrine vers l'avant (vache). Mouvement lent et respiré.",
-    frequency: "2× par jour",
-    emoji: "🐱",
-  },
-];
-
 const PRODUCTS = [
   {
     name: "Rehausseur écran GRIFEMA",
@@ -135,7 +109,7 @@ function scoreBarColor(score: number) {
 
 // ─── Score circle ─────────────────────────────────────────────────────────────
 
-function ScoreCircle({ score }: { score: number }) {
+function ScoreCircle({ score, theme, textColor }: { score: number; theme: "dark" | "light"; textColor: string }) {
   const [displayed, setDisplayed] = useState(0);
 
   useEffect(() => {
@@ -162,8 +136,12 @@ function ScoreCircle({ score }: { score: number }) {
   return (
     <div style={{ position: "relative", width: size, height: size }}>
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="rgba(43,92,230,0.12)"
-          stroke="rgba(43,92,230,0.35)" strokeWidth={sw} />
+        <circle
+          cx={size / 2} cy={size / 2} r={r}
+          fill={theme === "light" ? "rgba(43,92,230,0.08)" : "rgba(43,92,230,0.12)"}
+          stroke={theme === "light" ? "rgba(43,92,230,0.25)" : "rgba(43,92,230,0.35)"}
+          strokeWidth={sw}
+        />
         <circle cx={size / 2} cy={size / 2} r={r} fill="none"
           stroke={color} strokeWidth={sw} strokeLinecap="round"
           strokeDasharray={circ} strokeDashoffset={circ - dash}
@@ -171,8 +149,8 @@ function ScoreCircle({ score }: { score: number }) {
         />
       </svg>
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 38, color: "#a8c0ff", lineHeight: 1 }}>{displayed}</span>
-        <span style={{ fontSize: 11, color: "rgba(220,220,245,0.45)", marginTop: 2 }}>/100</span>
+        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 38, color: textColor, lineHeight: 1 }}>{displayed}</span>
+        <span style={{ fontSize: 11, color: "rgba(120,130,160,0.6)", marginTop: 2 }}>/100</span>
       </div>
     </div>
   );
@@ -180,8 +158,9 @@ function ScoreCircle({ score }: { score: number }) {
 
 // ─── Sub-score bar ────────────────────────────────────────────────────────────
 
-function SubScoreBar({ label, emoji, score, dimensionColor, dimensionPath, delay = 0 }: {
-  label: string; emoji: string; score: number; dimensionColor: string; dimensionPath: string; delay?: number;
+function SubScoreBar({ label, emoji, score, dimensionColor, dimensionPath, delay = 0, textPrimary, textMuted }: {
+  label: string; emoji: string; score: number; dimensionColor: string; dimensionPath: string;
+  delay?: number; textPrimary: string; textMuted: string;
 }) {
   const color = scoreBarColor(score);
   const [expanded, setExpanded] = useState(false);
@@ -218,15 +197,15 @@ function SubScoreBar({ label, emoji, score, dimensionColor, dimensionPath, delay
     >
       <div onClick={() => setExpanded((v) => !v)} style={{ cursor: "pointer" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: T.b, fontSize: 13, color: textPrimary }}>
             <span>{emoji}</span><span>{label}</span>
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color }}>{displayed}</span>
-            <span style={{ fontSize: 10, color: "rgba(220,220,245,0.3)" }}>{expanded ? "▲" : "▼"}</span>
+            <span style={{ fontSize: 10, color: textMuted }}>{expanded ? "▲" : "▼"}</span>
           </div>
         </div>
-        <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden", marginBottom: 4 }}>
+        <div style={{ height: 5, background: "rgba(128,128,160,0.15)", borderRadius: 100, overflow: "hidden", marginBottom: 4 }}>
           <motion.div
             style={{ height: "100%", borderRadius: 100, background: color }}
             initial={{ width: 0 }}
@@ -240,7 +219,7 @@ function SubScoreBar({ label, emoji, score, dimensionColor, dimensionPath, delay
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.5)", lineHeight: 1.6, paddingTop: 4, paddingBottom: 2 }}
+              style={{ fontFamily: T.b, fontSize: 12, color: textMuted, lineHeight: 1.6, paddingTop: 4, paddingBottom: 2 }}
             >
               {interpretations[label === "Setup & ergonomie" ? "setup" :
                 label === "Douleurs" ? "pain" :
@@ -282,27 +261,28 @@ const THOMAS_ANSWERS = {
 function clearExampleMode() {
   sessionStorage.removeItem("paw_example_mode");
   localStorage.removeItem("paw_example_mode");
-  // Ne pas toucher à paw_job_type — l'utilisateur le choisira dans l'onboarding
 }
 
 export default function ExempleRapportPage() {
+  const { c, theme } = useTheme();
   const [activeTab, setActiveTab] = useState<"recs" | "exercises">("recs");
 
   useEffect(() => {
-    // Forcer TOUTES les données Thomas — ne jamais écraser paw_firstname (prénom réel)
     localStorage.setItem("paw_job_type", "bureau");
-    localStorage.setItem("paw_example_mode", "true");   // persistance inter-tab
-    localStorage.setItem("paw_example_firstname", "Thomas");  // clé séparée — jamais paw_firstname
+    localStorage.setItem("paw_example_mode", "true");
+    localStorage.setItem("paw_example_firstname", "Thomas");
     localStorage.setItem("paw_age", "26-35");
     localStorage.setItem("paw_hours_week", "35-40h");
 
-    sessionStorage.setItem("paw_example_mode", "true"); // garde pour la session
+    sessionStorage.setItem("paw_example_mode", "true");
     sessionStorage.setItem("postureatwork_scores", JSON.stringify(THOMAS_SCORES));
     sessionStorage.setItem("postureatwork_answers", JSON.stringify(THOMAS_ANSWERS));
   }, []);
 
+  const scoreTextColor = theme === "light" ? "#1d4ed8" : "#a8c0ff";
+
   return (
-    <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingBottom: 80, position: "relative" }}>
+    <main style={{ minHeight: "100vh", background: c.mainBg, paddingBottom: 80, position: "relative" }}>
       <BackgroundBlobs blobs={[
         { top: "-5%", right: "-5%", color: "rgba(43,92,230,0.14)", size: 500 },
         { top: "35%", left: "-8%", color: "rgba(240,149,149,0.07)", size: 380 },
@@ -318,14 +298,12 @@ export default function ExempleRapportPage() {
         display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
         flexWrap: "wrap",
       }}>
-        <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.75)" }}>
+        <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary }}>
           📋 Ceci est un exemple de rapport
         </span>
-        <span style={{ color: "rgba(220,220,245,0.3)", fontSize: 13 }}>—</span>
+        <span style={{ color: c.textMuted, fontSize: 13 }}>—</span>
         <Link href="/questionnaire" onClick={clearExampleMode} style={{ textDecoration: "none" }}>
-          <span style={{
-            fontFamily: T.b, fontWeight: 700, fontSize: 13, color: "#7c9fff", cursor: "pointer",
-          }}>
+          <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 13, color: "#7c9fff", cursor: "pointer" }}>
             Commencer mon bilan →
           </span>
         </Link>
@@ -340,7 +318,6 @@ export default function ExempleRapportPage() {
           transition={{ duration: 0.6 }}
           style={{ paddingTop: 48, paddingBottom: 40, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 20 }}
         >
-          {/* Chip */}
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 6,
             padding: "6px 14px", borderRadius: 100,
@@ -350,7 +327,7 @@ export default function ExempleRapportPage() {
             <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#f09595" }}>Rapport complet — Thomas, Dev web 32 ans</span>
           </div>
 
-          <ScoreCircle score={SCORES.global} />
+          <ScoreCircle score={SCORES.global} theme={theme} textColor={scoreTextColor} />
 
           <div style={{
             padding: "6px 16px", borderRadius: 100,
@@ -360,10 +337,10 @@ export default function ExempleRapportPage() {
           </div>
 
           <div>
-            <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#f0f0fa", margin: 0, marginBottom: 8, lineHeight: 1.2 }}>
+            <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: c.textPrimary, margin: 0, marginBottom: 8, lineHeight: 1.2 }}>
               Bilan PostureAtWork — Thomas
             </h1>
-            <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.55)", lineHeight: 1.7, maxWidth: 420, margin: "0 auto" }}>
+            <p style={{ fontFamily: T.b, fontSize: 14, color: c.textSecondary, lineHeight: 1.7, maxWidth: 420, margin: "0 auto" }}>
               Ton corps envoie des signaux importants. Agis sur les priorités urgentes dès maintenant — la plupart se corrigent en moins de 2 semaines.
             </p>
           </div>
@@ -376,19 +353,19 @@ export default function ExempleRapportPage() {
           transition={{ delay: 0.1 }}
           style={{
             borderRadius: 20, padding: "18px 22px", marginBottom: 20,
-            background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)",
+            background: c.bgCard, border: `0.5px solid ${c.border2}`,
             display: "flex", gap: 16, alignItems: "flex-start", flexWrap: "wrap",
           }}
         >
           <div style={{ fontSize: 32 }}>👨‍💻</div>
           <div style={{ flex: 1 }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", margin: "0 0 6px" }}>Thomas, 32 ans — Développeur web</p>
+            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: "0 0 6px" }}>Thomas, 32 ans — Développeur web</p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {["Laptop seul", "9h/jour assis", "Nuque 3/5", "Dort 6h", "1× cardio/sem."].map((tag) => (
                 <span key={tag} style={{
                   padding: "3px 10px", borderRadius: 100,
-                  background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.1)",
-                  fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.55)",
+                  background: c.bgCard2, border: `0.5px solid ${c.border2}`,
+                  fontFamily: T.b, fontSize: 11, color: c.textMuted,
                 }}>
                   {tag}
                 </span>
@@ -404,13 +381,13 @@ export default function ExempleRapportPage() {
           transition={{ duration: 0.5, delay: 0.15 }}
           style={{
             borderRadius: 24, padding: "24px 28px",
-            background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)",
+            background: c.bgCard, border: `0.5px solid ${c.border2}`,
             marginBottom: 20,
           }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-            <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa" }}>Ses 6 indicateurs</span>
-            <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.3)" }}>Clique pour détails</span>
+            <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: c.textPrimary }}>Ses 6 indicateurs</span>
+            <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>Clique pour détails</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             {SUB_SCORES.map(({ key, label, emoji, score, dimensionColor, dimensionPath }, i) => (
@@ -422,6 +399,8 @@ export default function ExempleRapportPage() {
                 dimensionColor={dimensionColor}
                 dimensionPath={dimensionPath}
                 delay={i * 0.15}
+                textPrimary={c.textSecondary}
+                textMuted={c.textMuted}
               />
             ))}
           </div>
@@ -434,7 +413,7 @@ export default function ExempleRapportPage() {
           transition={{ delay: 0.3 }}
           style={{
             display: "flex", gap: 4, padding: 4, borderRadius: 16,
-            background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)",
+            background: c.bgCard2, border: `0.5px solid ${c.border2}`,
             marginBottom: 16,
           }}
         >
@@ -444,8 +423,8 @@ export default function ExempleRapportPage() {
               onClick={() => setActiveTab(tab)}
               style={{
                 flex: 1, textAlign: "center", padding: "10px 0", borderRadius: 12, cursor: "pointer",
-                background: activeTab === tab ? "rgba(255,255,255,0.08)" : "transparent",
-                color: activeTab === tab ? "#f0f0fa" : "rgba(220,220,245,0.35)",
+                background: activeTab === tab ? c.bgCard2 : "transparent",
+                color: activeTab === tab ? c.textPrimary : c.textMuted,
                 fontFamily: T.b, fontWeight: 600, fontSize: 13,
                 transition: "all 0.2s ease",
               }}
@@ -485,7 +464,7 @@ export default function ExempleRapportPage() {
                     }} />
                     <div style={{ position: "relative", zIndex: 1 }}>
                       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
-                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", lineHeight: 1.3 }}>{rec.title}</span>
+                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: c.textPrimary, lineHeight: 1.3 }}>{rec.title}</span>
                         <span style={{
                           flexShrink: 0, padding: "3px 10px", borderRadius: 100,
                           background: cfg.tagBg, color: cfg.tagColor,
@@ -494,7 +473,7 @@ export default function ExempleRapportPage() {
                           {cfg.label}
                         </span>
                       </div>
-                      <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.6)", lineHeight: 1.65, margin: 0 }}>
+                      <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.65, margin: 0 }}>
                         {rec.description}
                       </p>
                     </div>
@@ -520,25 +499,25 @@ export default function ExempleRapportPage() {
                   "Surélève ton écran avec des livres — maintenant",
                   "Fais la rétraction cervicale : 10 reps, maintenant",
                 ].map((action, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.07)", marginBottom: i === 0 ? 8 : 0 }}>
-                    <div style={{ width: 20, height: 20, borderRadius: 6, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.15)", flexShrink: 0 }} />
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: "#f0f0fa", margin: 0 }}>{action}</p>
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: i === 0 ? 8 : 0 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: 6, background: c.bgCard2, border: `0.5px solid ${c.border2}`, flexShrink: 0 }} />
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textPrimary, margin: 0 }}>{action}</p>
                   </div>
                 ))}
               </div>
               {/* Programme exercices */}
-              <div style={{ borderRadius: 18, padding: "18px 20px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)" }}>
-                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa", margin: "0 0 12px" }}>🧘 Programme nuque & dos</p>
+              <div style={{ borderRadius: 18, padding: "18px 20px", background: c.bgCard, border: `0.5px solid ${c.border}` }}>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: c.textPrimary, margin: "0 0 12px" }}>🧘 Programme nuque & dos</p>
                 {[
                   { emoji: "🦆", name: "Rétraction cervicale", reps: "10 rép. × 5 sec", zone: "Nuque" },
                   { emoji: "↔️", name: "Inclinaison latérale nuque", reps: "30 sec par côté", zone: "Cervicales" },
                   { emoji: "🌿", name: "Flexion lombaire", reps: "45 sec × 2", zone: "Bas du dos" },
                 ].map((ex, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: i < 2 ? "0.5px solid rgba(255,255,255,0.05)" : "none" }}>
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: i < 2 ? `0.5px solid ${c.border}` : "none" }}>
                     <span style={{ fontSize: 18, width: 28, textAlign: "center" }}>{ex.emoji}</span>
                     <div style={{ flex: 1 }}>
-                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#f0f0fa", margin: 0 }}>{ex.name}</p>
-                      <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.40)", margin: 0 }}>{ex.reps}</p>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: 0 }}>{ex.name}</p>
+                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{ex.reps}</p>
                     </div>
                     <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(226,75,74,0.12)", fontFamily: T.b, fontSize: 10, color: "#f09595" }}>{ex.zone}</span>
                   </div>
@@ -560,12 +539,12 @@ export default function ExempleRapportPage() {
           transition={{ delay: 0.35 }}
           style={{ marginBottom: 20 }}
         >
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#f0f0fa", marginBottom: 12 }}>🛍️ Produits recommandés</p>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: c.textPrimary, marginBottom: 12 }}>🛍️ Produits recommandés</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {PRODUCTS.map((p, i) => {
               const pCfg = PRIORITY_COLOR[p.priority] ?? PRIORITY_COLOR.optionnel;
               return (
-                <div key={i} style={{ borderRadius: 16, padding: "16px 18px", position: "relative", overflow: "hidden", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
+                <div key={i} style={{ borderRadius: 16, padding: "16px 18px", position: "relative", overflow: "hidden", background: c.bgCard, border: `0.5px solid ${c.border2}` }}>
                   {p.badge && (
                     <span style={{ position: "absolute", top: 12, right: 12, padding: "2px 9px", borderRadius: 100, fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#74c69d", background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)" }}>
                       {p.badge}
@@ -575,12 +554,12 @@ export default function ExempleRapportPage() {
                     <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(43,92,230,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>🛒</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
-                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{p.name}</span>
+                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: c.textPrimary }}>{p.name}</span>
                         <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, color: pCfg.color, background: `${pCfg.color}18` }}>{pCfg.label}</span>
                       </div>
-                      <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.50)", lineHeight: 1.6, margin: "0 0 12px" }}>{p.reason}</p>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, lineHeight: 1.6, margin: "0 0 12px" }}>{p.reason}</p>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f0f0fa" }}>{p.price}</span>
+                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: c.textPrimary }}>{p.price}</span>
                         <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ padding: "8px 16px", borderRadius: 100, textDecoration: "none", background: "#2b5ce6", boxShadow: "0 2px 12px rgba(43,92,230,0.35)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#fff", flexShrink: 0 }}>
                           Voir sur Amazon →
                         </a>
@@ -605,9 +584,9 @@ export default function ExempleRapportPage() {
           }}
         >
           <div style={{ fontSize: 24, marginBottom: 10 }}>🩺</div>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#f0f0fa", marginBottom: 8 }}>Mot du kiné IA</p>
-          <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.65)", lineHeight: 1.7, margin: 0 }}>
-            Thomas, ton profil est très représentatif des développeurs qui travaillent sur laptop depuis chez eux. Les 2 premières actions — support laptop et élimination du déjeuner-écran — auront un impact immédiat sur ta nuque et ton énergie de l'après-midi. Commence par là cette semaine. Le reste suivra naturellement.
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, marginBottom: 8 }}>Mot du kiné IA</p>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.7, margin: 0 }}>
+            Thomas, ton profil est très représentatif des développeurs qui travaillent sur laptop depuis chez eux. Les 2 premières actions — support laptop et élimination du déjeuner-écran — auront un impact immédiat sur ta nuque et ton énergie de l&apos;après-midi. Commence par là cette semaine. Le reste suivra naturellement.
           </p>
         </motion.div>
 
@@ -622,10 +601,10 @@ export default function ExempleRapportPage() {
             border: "0.5px solid rgba(43,92,230,0.28)",
           }}
         >
-          <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa", marginBottom: 8 }}>
+          <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: c.textPrimary, marginBottom: 8 }}>
             Prêt à obtenir ton vrai bilan ?
           </p>
-          <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.55)", lineHeight: 1.65, marginBottom: 20 }}>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.65, marginBottom: 20 }}>
             5 minutes. Gratuit. Personnalisé selon tes vraies réponses.
           </p>
           <Link href="/questionnaire" onClick={clearExampleMode} style={{ textDecoration: "none" }}>
