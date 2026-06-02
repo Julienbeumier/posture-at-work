@@ -18,9 +18,9 @@ const COLORED_BGS = [
 const WHITISH = [
   "white", "#fff", "#ffffff",
   "#f0f0fa", "#f0f0ff", "#fffffe",
-  "rgba(255, 255, 255", "rgba(255,255,255",
-  "rgba(240, 240, 250", "rgba(240,240,250",
-  "rgba(220, 220, 245", "rgba(220,220,245",
+  "rgba(255,255,255", "rgba(255, 255, 255",
+  "rgba(240,240,250", "rgba(240, 240, 250",
+  "rgba(220,220,245", "rgba(220, 220, 245",
 ];
 
 function hasColoredAncestor(el: HTMLElement): boolean {
