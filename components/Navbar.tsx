@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 import { usePremium } from "@/hooks/usePremium";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 const HIDDEN_ON = ["/questionnaire", "/video-capture"];
@@ -14,25 +15,12 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { premium } = usePremium();
+  const { theme, toggle: toggleTheme } = useTheme();
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const saved = (localStorage.getItem("paw_theme") || "dark") as "dark" | "light";
-    setTheme(saved);
-    document.documentElement.setAttribute("data-theme", saved);
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    localStorage.setItem("paw_theme", next);
-    document.documentElement.setAttribute("data-theme", next);
-  };
 
   useEffect(() => {
     const supabase = createClient();

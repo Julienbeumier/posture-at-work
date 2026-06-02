@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import CookieBanner from "@/components/CookieBanner";
 import { Analytics } from "@vercel/analytics/react";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -36,15 +37,13 @@ export default function RootLayout({
       </head>
       <body
         className="min-h-screen antialiased"
-        style={{
-          background: "var(--bg-primary)",
-          color: "var(--text-primary)",
-          fontFamily: "var(--font-jakarta), sans-serif",
-        }}
+        style={{ fontFamily: "var(--font-jakarta), sans-serif" }}
       >
-        <Navbar />
-        {children}
-        <CookieBanner />
+        <ThemeProvider>
+          <Navbar />
+          {children}
+          <CookieBanner />
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>

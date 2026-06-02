@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { calculateScores, DEFAULT_ANSWERS, type QuestionnaireAnswers } from "@/lib/scoring";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const T = {
   h: "var(--font-nunito), sans-serif",
@@ -491,6 +492,7 @@ const TOAST_MESSAGES = [
 
 function BureauQuestionnaire() {
   const router = useRouter();
+  const { c } = useTheme();
   const [answers, setAnswers] = useState<QuestionnaireAnswers>(DEFAULT_ANSWERS);
   const [firstname, setFirstname] = useState("");
   const [toast, setToast] = useState<string | null>(null);
@@ -542,7 +544,7 @@ function BureauQuestionnaire() {
   const done = completedCount(answers);
 
   return (
-    <main style={{ minHeight: "100vh", paddingBottom: 80 }}>
+    <main style={{ minHeight: "100vh", paddingBottom: 80, background: c.mainBg }}>
       <BackgroundBlobs blobs={[
         { top: "0%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 400 },
         { top: "50%", left: "-8%", color: "rgba(226,75,74,0.08)", size: 350 },
@@ -575,7 +577,7 @@ function BureauQuestionnaire() {
             </span>
           </div>
           {/* Progress bar */}
-          <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden", marginBottom: 10 }}>
+          <div style={{ height: 3, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden", marginBottom: 10 }}>
             <motion.div
               style={{ height: "100%", borderRadius: 100, background: "#2b5ce6" }}
               animate={{ width: `${(done / CATEGORIES.length) * 100}%` }}

@@ -16,6 +16,7 @@ import {
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { getJobContent } from "@/lib/job-content";
 import { usePremium } from "@/hooks/usePremium";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const T = {
   h: "var(--font-nunito), sans-serif",
@@ -152,7 +153,7 @@ function SubScoreBar({
             <span style={{ fontSize: 10, color: "var(--t30)" }}>{expanded ? "▲" : "▼"}</span>
           </div>
         </div>
-        <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden", marginBottom: 4 }}>
+        <div style={{ height: 5, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden", marginBottom: 4 }}>
           <motion.div
             style={{ height: "100%", borderRadius: 100, background: color }}
             initial={{ width: 0 }}
@@ -268,6 +269,7 @@ const PRIORITY_STYLE = {
 export default function ResultsPage() {
   const router = useRouter();
   const { premium } = usePremium();
+  const { c } = useTheme();
   const [answers, setAnswers] = useState<QuestionnaireAnswers | null>(null);
   const [scores, setScores] = useState<Scores | null>(null);
   const [activeTab, setActiveTab] = useState<"recs" | "exercises">("recs");
@@ -400,7 +402,7 @@ export default function ResultsPage() {
 
   if (!scores || !answers) {
     return (
-      <main style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <main style={{ minHeight: "100vh", background: c.mainBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <span style={{ fontFamily: T.b, fontSize: 14, color: "var(--t40)" }}>Calcul en cours…</span>
       </main>
     );
@@ -434,7 +436,7 @@ export default function ResultsPage() {
   } : null;
 
   return (
-    <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingBottom: 80, position: "relative" }}>
+    <main style={{ minHeight: "100vh", background: c.mainBg, paddingBottom: 80, position: "relative" }}>
       <BackgroundBlobs blobs={[
         { top: "-5%", right: "-5%", color: "rgba(43,92,230,0.14)", size: 500 },
         { top: "35%", left: "-8%", color: "rgba(116,198,157,0.08)", size: 380 },
@@ -871,7 +873,7 @@ export default function ResultsPage() {
                     placeholder="ton@email.com"
                     style={{
                       flex: 1, padding: "12px 16px", borderRadius: 12,
-                      background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.15)",
+                      background: "var(--bg-card-2)", border: "0.5px solid rgba(255,255,255,0.15)",
                       color: "var(--text-primary)", fontSize: 14, fontFamily: T.b, outline: "none",
                     }}
                   />

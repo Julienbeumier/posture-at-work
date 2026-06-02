@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 import { usePremium } from "@/hooks/usePremium";
+import { useTheme } from "@/contexts/ThemeContext";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -153,7 +154,7 @@ function ScoreBarRow({ dimKey, score, prev }: { dimKey: string; score: number; p
               )}
             </div>
           </div>
-          <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden" }}>
+          <div style={{ height: 4, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden" }}>
             <motion.div
               style={{ height: "100%", borderRadius: 100, background: color }}
               initial={{ width: 0 }}
@@ -202,6 +203,7 @@ function Skeleton() {
 export default function DashboardPage() {
   const router = useRouter();
   const { premium: isPremiumUser } = usePremium();
+  const { c } = useTheme();
   const [user, setUser] = useState<User | null>(null);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [weeklyCheckins, setWeeklyCheckins] = useState<DailyCheckin[]>([]);
@@ -441,7 +443,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingTop: 56, paddingBottom: 80, position: "relative" }}>
+      <main style={{ minHeight: "100vh", background: c.mainBg, paddingTop: 56, paddingBottom: 80, position: "relative" }}>
         <BackgroundBlobs blobs={[{ top: "-5%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 400 }]} />
         <div style={{ maxWidth: 660, margin: "0 auto", padding: "20px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
           {[1, 2, 3, 4].map((i) => <Skeleton key={i} />)}
@@ -451,7 +453,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingTop: 56, paddingBottom: 100, position: "relative" }}>
+    <main style={{ minHeight: "100vh", background: c.mainBg, paddingTop: 56, paddingBottom: 100, position: "relative" }}>
       <BackgroundBlobs blobs={[
         { top: "-5%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 500 },
         { top: "40%", left: "-8%", color: "rgba(45,106,79,0.08)", size: 380 },
@@ -736,12 +738,12 @@ export default function DashboardPage() {
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <button
                       onClick={() => setCheckin((c) => ({ ...c, breaks_taken: Math.max(0, c.breaks_taken - 1) }))}
-                      style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)", color: "var(--text-primary)", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      style={{ width: 28, height: 28, borderRadius: 8, background: "var(--bg-card-2)", border: "0.5px solid rgba(255,255,255,0.12)", color: "var(--text-primary)", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                     >−</button>
                     <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", width: 20, textAlign: "center" }}>{checkin.breaks_taken}</span>
                     <button
                       onClick={() => setCheckin((c) => ({ ...c, breaks_taken: c.breaks_taken + 1 }))}
-                      style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)", color: "var(--text-primary)", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      style={{ width: 28, height: 28, borderRadius: 8, background: "var(--bg-card-2)", border: "0.5px solid rgba(255,255,255,0.12)", color: "var(--text-primary)", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                     >+</button>
                   </div>
                 </div>
@@ -823,7 +825,7 @@ export default function DashboardPage() {
                     <span style={{ fontSize: 13 }}>{g.icon}</span>
                     <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t75)" }}>{g.label}</span>
                   </div>
-                  <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden" }}>
+                  <div style={{ height: 3, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden" }}>
                     <motion.div
                       style={{ height: "100%", borderRadius: 100, background: g.color }}
                       initial={{ width: 0 }}

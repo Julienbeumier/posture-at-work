@@ -12,6 +12,7 @@ import { createClient } from "@/lib/supabase";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { getJobContent, getScoreInterpretation, getJobDimensionContent, type JobDimensionContent } from "@/lib/job-content";
 import { usePremium } from "@/hooks/usePremium";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const T = {
   h: "var(--font-nunito), sans-serif",
@@ -171,6 +172,7 @@ function ProductCard({ p }: { p: Product }) {
 export default function DimensionPage() {
   const params = useParams();
   const { premium } = usePremium();
+  const { c } = useTheme();
   const dimensionParam = typeof params.dimension === "string" ? params.dimension : "";
 
   const [advice, setAdvice] = useState<DimensionAdvice | null>(null);
@@ -273,7 +275,7 @@ export default function DimensionPage() {
 
   if (!ready) {
     return (
-      <main style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <main style={{ minHeight: "100vh", background: c.mainBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <span style={{ fontFamily: T.b, fontSize: 14, color: "var(--t40)" }}>Chargement…</span>
       </main>
     );
@@ -281,7 +283,7 @@ export default function DimensionPage() {
 
   if (!isValidDimension(dimensionParam) || (!advice && !jobDimContent)) {
     return (
-      <main style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
+      <main style={{ minHeight: "100vh", background: c.mainBg, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
         <div style={{ textAlign: "center" }}>
           <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", marginBottom: 12 }}>Dimension inconnue</p>
           <Link href="/results" style={{ textDecoration: "none", color: "#7c9fff", fontFamily: T.b, fontSize: 14 }}>← Retour aux résultats</Link>
@@ -303,7 +305,7 @@ export default function DimensionPage() {
   if (!hasBilan) {
     const m = DIMENSION_META[dimensionParam] ?? DIMENSION_META["setup"];
     return (
-      <main style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 24px", position: "relative" }}>
+      <main style={{ minHeight: "100vh", background: c.mainBg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 24px", position: "relative" }}>
         <BackgroundBlobs blobs={[{ top: "-5%", right: "-5%", color: m.colorBg, size: 400 }]} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: 400, width: "100%", textAlign: "center" }}>
           <div style={{ width: 64, height: 64, borderRadius: 20, background: m.colorBg, border: `0.5px solid ${m.colorBorder}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 20px" }}>
@@ -332,7 +334,7 @@ export default function DimensionPage() {
   const badge = scoreBadge(score);
 
   return (
-    <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingBottom: 80, position: "relative" }}>
+    <main style={{ minHeight: "100vh", background: c.mainBg, paddingBottom: 80, position: "relative" }}>
       <BackgroundBlobs blobs={[
         { top: "-5%", right: "-5%", color: `${meta.colorBg}`, size: 500 },
         { bottom: "-10%", left: "-5%", color: "rgba(43,92,230,0.08)", size: 400 },

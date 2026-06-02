@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const T = {
   h: "var(--font-nunito), sans-serif",
@@ -33,6 +34,7 @@ type Step = 1 | 2 | 3 | 4 | 5;
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { c } = useTheme();
   const [step, setStep] = useState<Step>(1);
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
@@ -95,7 +97,7 @@ export default function OnboardingPage() {
     <main
       style={{
         minHeight: "100vh",
-        background: "#0f0f1a",
+        background: c.mainBg,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -114,7 +116,7 @@ export default function OnboardingPage() {
       <div style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: 420 }}>
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#f0f0fa" }}>
+          <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "var(--text-primary)" }}>
             PAW
           </span>
           <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#7c9fff" }}>
@@ -153,7 +155,7 @@ export default function OnboardingPage() {
             style={{
               background: "none",
               border: "none",
-              color: "rgba(220,220,245,0.45)",
+              color: "var(--t45)",
               fontSize: 13,
               cursor: "pointer",
               padding: "0 0 24px 0",
@@ -185,7 +187,7 @@ export default function OnboardingPage() {
                     fontFamily: T.h,
                     fontWeight: 900,
                     fontSize: 30,
-                    color: "#f0f0fa",
+                    color: "var(--text-primary)",
                     textAlign: "center",
                     margin: 0,
                     marginBottom: 10,
@@ -199,7 +201,7 @@ export default function OnboardingPage() {
                   style={{
                     fontFamily: T.b,
                     fontSize: 15,
-                    color: "rgba(220,220,245,0.50)",
+                    color: "var(--t50)",
                     textAlign: "center",
                     margin: 0,
                     marginBottom: 40,
@@ -213,7 +215,7 @@ export default function OnboardingPage() {
                   style={{
                     fontFamily: T.b,
                     fontSize: 13,
-                    color: "rgba(220,220,245,0.55)",
+                    color: "var(--t55)",
                     marginBottom: 10,
                   }}
                 >
@@ -231,9 +233,9 @@ export default function OnboardingPage() {
                     width: "100%",
                     padding: "16px 20px",
                     borderRadius: 14,
-                    background: "rgba(255,255,255,0.06)",
+                    background: "var(--bg-card-2)",
                     border: "1px solid rgba(255,255,255,0.15)",
-                    color: "#f0f0fa",
+                    color: "var(--text-primary)",
                     fontSize: 16,
                     fontFamily: T.b,
                     outline: "none",
@@ -280,7 +282,7 @@ export default function OnboardingPage() {
                     fontFamily: T.h,
                     fontWeight: 900,
                     fontSize: 28,
-                    color: "#f0f0fa",
+                    color: "var(--text-primary)",
                     textAlign: "center",
                     margin: 0,
                     marginBottom: 10,
@@ -294,7 +296,7 @@ export default function OnboardingPage() {
                   style={{
                     fontFamily: T.b,
                     fontSize: 14,
-                    color: "rgba(220,220,245,0.45)",
+                    color: "var(--t45)",
                     textAlign: "center",
                     margin: 0,
                     marginBottom: 32,
@@ -320,7 +322,7 @@ export default function OnboardingPage() {
                         borderRadius: 100,
                         background: age === opt ? "rgba(43,92,230,0.20)" : "rgba(255,255,255,0.06)",
                         border: `0.5px solid ${age === opt ? "#7c9fff" : "rgba(255,255,255,0.15)"}`,
-                        color: age === opt ? "#7c9fff" : "rgba(220,220,245,0.75)",
+                        color: age === opt ? "#7c9fff" : "var(--t75)",
                         fontSize: 14,
                         fontWeight: 600,
                         fontFamily: T.b,
@@ -350,7 +352,7 @@ export default function OnboardingPage() {
                     fontFamily: T.h,
                     fontWeight: 900,
                     fontSize: 28,
-                    color: "#f0f0fa",
+                    color: "var(--text-primary)",
                     textAlign: "center",
                     margin: 0,
                     marginBottom: 10,
@@ -364,7 +366,7 @@ export default function OnboardingPage() {
                   style={{
                     fontFamily: T.b,
                     fontSize: 14,
-                    color: "rgba(220,220,245,0.45)",
+                    color: "var(--t45)",
                     textAlign: "center",
                     margin: 0,
                     marginBottom: 32,
@@ -405,7 +407,7 @@ export default function OnboardingPage() {
                             fontFamily: T.h,
                             fontWeight: 800,
                             fontSize: 15,
-                            color: sel ? "#7c9fff" : "#f0f0fa",
+                            color: sel ? "#7c9fff" : "var(--text-primary)",
                             marginBottom: 8,
                             lineHeight: 1.3,
                           }}
@@ -416,7 +418,7 @@ export default function OnboardingPage() {
                           style={{
                             fontFamily: T.b,
                             fontSize: 11,
-                            color: sel ? "rgba(124,159,255,0.75)" : "rgba(220,220,245,0.40)",
+                            color: sel ? "rgba(124,159,255,0.75)" : "var(--t40)",
                             lineHeight: 1.5,
                           }}
                         >
@@ -426,7 +428,7 @@ export default function OnboardingPage() {
                     );
                   })}
                 </div>
-                <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.30)", textAlign: "center", margin: "16px 0 0", lineHeight: 1.5 }}>
+                <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)", textAlign: "center", margin: "16px 0 0", lineHeight: 1.5 }}>
                   Cette catégorie couvre tout travail principalement debout ou en mobilité
                 </p>
               </motion.div>
@@ -447,7 +449,7 @@ export default function OnboardingPage() {
                     fontFamily: T.h,
                     fontWeight: 900,
                     fontSize: 28,
-                    color: "#f0f0fa",
+                    color: "var(--text-primary)",
                     textAlign: "center",
                     margin: 0,
                     marginBottom: 10,
@@ -461,7 +463,7 @@ export default function OnboardingPage() {
                   style={{
                     fontFamily: T.b,
                     fontSize: 14,
-                    color: "rgba(220,220,245,0.45)",
+                    color: "var(--t45)",
                     textAlign: "center",
                     margin: 0,
                     marginBottom: 32,
@@ -490,7 +492,7 @@ export default function OnboardingPage() {
                         border: `0.5px solid ${
                           hoursWeek === opt ? "#7c9fff" : "rgba(255,255,255,0.15)"
                         }`,
-                        color: hoursWeek === opt ? "#7c9fff" : "rgba(220,220,245,0.75)",
+                        color: hoursWeek === opt ? "#7c9fff" : "var(--t75)",
                         fontSize: 14,
                         fontWeight: 600,
                         fontFamily: T.b,
@@ -519,8 +521,8 @@ export default function OnboardingPage() {
                   style={{
                     padding: "36px 28px",
                     borderRadius: 24,
-                    background: "rgba(255,255,255,0.04)",
-                    border: "0.5px solid rgba(255,255,255,0.10)",
+                    background: "var(--bg-card-2)",
+                    border: "0.5px solid var(--border-3)",
                     textAlign: "center",
                   }}
                 >
@@ -529,7 +531,7 @@ export default function OnboardingPage() {
                       fontFamily: T.h,
                       fontWeight: 900,
                       fontSize: 32,
-                      color: "#f0f0fa",
+                      color: "var(--text-primary)",
                       margin: 0,
                       marginBottom: 12,
                       letterSpacing: "-0.5px",
@@ -543,7 +545,7 @@ export default function OnboardingPage() {
                     style={{
                       fontFamily: T.b,
                       fontSize: 15,
-                      color: "rgba(220,220,245,0.55)",
+                      color: "var(--t55)",
                       margin: 0,
                       marginBottom: 24,
                       lineHeight: 1.6,
