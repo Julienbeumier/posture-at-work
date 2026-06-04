@@ -22,9 +22,49 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "PostureAtWork — Ton bilan santé au bureau",
+  metadataBase: new URL("https://posture-at-work.vercel.app"),
+  title: {
+    default: "PostureAtWork — Bilan ergonomique gratuit en 5 minutes",
+    template: "%s | PostureAtWork",
+  },
   description:
-    "Screening santé gratuit pour les travailleurs sédentaires. Résultats immédiats et conseils personnalisés en 5 minutes.",
+    "Analyse ta posture, tes douleurs et tes habitudes au travail en 5 minutes. Bilan ergonomique gratuit avec conseils personnalisés pour les travailleurs sédentaires et debout.",
+  keywords: [
+    "bilan ergonomique", "posture bureau", "douleurs dos travail",
+    "ergonomie poste de travail", "mal de dos télétravail",
+    "bilan santé travail", "TMS prévention", "posture laptop",
+  ],
+  authors: [{ name: "PostureAtWork" }],
+  creator: "PostureAtWork",
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    url: "https://posture-at-work.vercel.app",
+    siteName: "PostureAtWork",
+    title: "PostureAtWork — Bilan ergonomique gratuit en 5 minutes",
+    description: "Analyse ta posture, tes douleurs et tes habitudes au travail en 5 minutes. Conseils personnalisés et analyse IA.",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "PostureAtWork — Bilan ergonomique gratuit" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PostureAtWork — Bilan ergonomique gratuit en 5 minutes",
+    description: "Analyse ta posture et tes douleurs au travail en 5 minutes. Gratuit.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "https://posture-at-work.vercel.app",
+  },
 };
 
 export default function RootLayout({
