@@ -65,6 +65,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://posture-at-work.vercel.app",
   },
+  verification: {
+    google: "Ba6UTM-ePEuvCQTZGVpTAZx2Ao3aqacFw1_q7tpTu38",
+  },
 };
 
 export default function RootLayout({
