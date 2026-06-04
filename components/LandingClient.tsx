@@ -452,7 +452,7 @@ export default function LandingClient() {
               { label: "Exemple de rapport", href: "/exemple-rapport" },
               { label: "Questionnaire", href: "/questionnaire" },
               { label: "Exercices", href: "/mobilite" },
-              { label: "Contact", href: "mailto:julienbeumier@outlook.com" },
+              { label: "À propos & Contact", href: "/about" },
             ].map((l) => (
               <Link key={l.label} href={l.href} style={{ textDecoration: "none" }}>
                 <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)" }}>{l.label}</span>
