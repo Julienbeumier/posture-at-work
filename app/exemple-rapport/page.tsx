@@ -282,12 +282,10 @@ export default function ExempleRapportPage() {
     sessionStorage.setItem("postureatwork_answers", JSON.stringify(THOMAS_ANSWERS));
 
     return () => {
-      // Nettoyage immédiat au départ de la page — ne pas laisser les scores de Thomas polluer /results
+      // Nettoyage des scores de Thomas au départ — mais on garde paw_example_mode pour que
+      // /conseils/[dimension] puisse détecter le mode et repopuler les données si besoin
       sessionStorage.removeItem("postureatwork_scores");
       sessionStorage.removeItem("postureatwork_answers");
-      sessionStorage.removeItem("paw_example_mode");
-      localStorage.removeItem("paw_example_mode");
-      localStorage.removeItem("paw_example_firstname");
     };
   }, []);
 

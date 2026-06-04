@@ -169,6 +169,18 @@ function ProductCard({ p }: { p: Product }) {
   );
 }
 
+// Données de Thomas utilisées comme fallback depuis /exemple-rapport
+const THOMAS_SCORES = {
+  global: 45, setup: 32, pain: 48, habits: 55,
+  sleep_energy: 45, nutrition: 30, lifestyle: 60,
+};
+const THOMAS_ANSWERS = {
+  q1: "laptop_seul", q2: "teletravail", q3: "non_trop_bas",
+  q4: "moins_50cm", q5: "trackpad", q5b: "chaise_fixe",
+  q13: 9, q14: "jamais", q14b: "cardio", q15: "tete_baissee",
+  q17: 6, q18: "fatigue", q6: 3, q7: 2, q8: 2,
+};
+
 export default function DimensionPage() {
   const params = useParams();
   const { premium } = usePremium();
@@ -191,6 +203,13 @@ export default function DimensionPage() {
       // ── 1. Example mode ──────────────────────────────────────────────────
       let isExample = sessionStorage.getItem("paw_example_mode") === "true"
                    || localStorage.getItem("paw_example_mode") === "true";
+
+      // ── 1b. Si mode exemple mais scores absents (cleanup exemple-rapport a tourné en premier),
+      //        repopuler les données de Thomas pour que la suite fonctionne normalement ──────
+      if (isExample && !sessionStorage.getItem("postureatwork_scores")) {
+        sessionStorage.setItem("postureatwork_scores", JSON.stringify(THOMAS_SCORES));
+        sessionStorage.setItem("postureatwork_answers", JSON.stringify(THOMAS_ANSWERS));
+      }
 
       // ── 2. Source of truth: scores from sessionStorage (set by questionnaire submit) ──
       const scoresRaw = sessionStorage.getItem("postureatwork_scores");
