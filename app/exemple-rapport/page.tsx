@@ -261,6 +261,9 @@ const THOMAS_ANSWERS = {
 function clearExampleMode() {
   sessionStorage.removeItem("paw_example_mode");
   localStorage.removeItem("paw_example_mode");
+  // Effacer aussi les scores de Thomas pour ne pas polluer /results
+  sessionStorage.removeItem("postureatwork_scores");
+  sessionStorage.removeItem("postureatwork_answers");
 }
 
 export default function ExempleRapportPage() {
@@ -277,6 +280,15 @@ export default function ExempleRapportPage() {
     sessionStorage.setItem("paw_example_mode", "true");
     sessionStorage.setItem("postureatwork_scores", JSON.stringify(THOMAS_SCORES));
     sessionStorage.setItem("postureatwork_answers", JSON.stringify(THOMAS_ANSWERS));
+
+    return () => {
+      // Nettoyage immédiat au départ de la page — ne pas laisser les scores de Thomas polluer /results
+      sessionStorage.removeItem("postureatwork_scores");
+      sessionStorage.removeItem("postureatwork_answers");
+      sessionStorage.removeItem("paw_example_mode");
+      localStorage.removeItem("paw_example_mode");
+      localStorage.removeItem("paw_example_firstname");
+    };
   }, []);
 
   const scoreTextColor = theme === "light" ? "#1d4ed8" : "#a8c0ff";
