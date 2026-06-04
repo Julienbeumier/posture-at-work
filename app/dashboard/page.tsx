@@ -226,6 +226,7 @@ export default function DashboardPage() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [showIosBanner, setShowIosBanner] = useState(false);
   const [premiumToast, setPremiumToast] = useState(false);
+  const [showFeedbackBanner, setShowFeedbackBanner] = useState(false);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -328,6 +329,16 @@ export default function DashboardPage() {
     loadDashboard();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const key = `paw_feedback_shown_${user.id}`;
+    if (localStorage.getItem(key)) return;
+    const premiumSince = localStorage.getItem("paw_premium_since");
+    if (!premiumSince) return;
+    const diff = Date.now() - new Date(premiumSince).getTime();
+    if (diff >= 48 * 60 * 60 * 1000) setShowFeedbackBanner(true);
+  }, [user]);
 
   async function deleteAccount() {
     if (!user) return;
@@ -482,6 +493,53 @@ export default function DashboardPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* ── FEEDBACK BANNER ── */}
+        {showFeedbackBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              borderRadius: 18, padding: "18px 20px",
+              background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)",
+              display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap",
+            }}
+          >
+            <div style={{ fontSize: 28 }}>💬</div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: c.textPrimary, margin: "0 0 4px" }}>
+                2 minutes pour améliorer PAW ?
+              </p>
+              <p style={{ fontFamily: T.b, fontSize: 12, color: c.textSecondary, margin: 0 }}>
+                Ton avis est précieux pour nous aider à construire le meilleur outil de santé au travail.
+              </p>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <Link href="/feedback" style={{ textDecoration: "none" }}>
+                <button style={{
+                  padding: "9px 18px", borderRadius: 100, border: "none",
+                  background: "#2b5ce6", color: "#fff",
+                  fontFamily: T.h, fontWeight: 700, fontSize: 13, cursor: "pointer",
+                }}>
+                  Donner mon avis →
+                </button>
+              </Link>
+              <button
+                onClick={() => {
+                  setShowFeedbackBanner(false);
+                  localStorage.setItem(`paw_feedback_shown_${user!.id}`, "true");
+                }}
+                style={{
+                  padding: "9px 14px", borderRadius: 100,
+                  background: "transparent", border: `0.5px solid ${c.border2}`,
+                  color: c.textMuted, fontFamily: T.b, fontSize: 12, cursor: "pointer",
+                }}
+              >
+                Plus tard
+              </button>
+            </div>
+          </motion.div>
+        )}
 
         {/* ── S1 : HERO SCORE ── */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} style={{

@@ -10,7 +10,11 @@ export async function activatePremium(
   userId?: string
 ): Promise<void> {
   localStorage.setItem("paw_premium", "true");
-  localStorage.setItem("paw_premium_activated_at", new Date().toISOString());
+  const now = new Date().toISOString();
+  localStorage.setItem("paw_premium_activated_at", now);
+  if (!localStorage.getItem("paw_premium_since")) {
+    localStorage.setItem("paw_premium_since", now);
+  }
   if (userId) {
     await supabase.from("profiles").upsert({
       user_id: userId,
