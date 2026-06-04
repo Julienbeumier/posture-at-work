@@ -254,8 +254,8 @@ export default function LandingClient() {
                 padding: "16px 24px",
                 borderRadius: 100,
                 background: "transparent",
-                color: "rgba(255,255,255,0.85)",
-                border: "1.5px solid rgba(255,255,255,0.35)",
+                color: "var(--text-primary)",
+                border: "1.5px solid var(--border-3)",
                 fontFamily: T.h,
                 fontWeight: 700,
                 fontSize: 15,
@@ -291,6 +291,36 @@ export default function LandingClient() {
             </div>
           ))}
         </motion.div>
+      </section>
+
+      {/* ── COMMENT ÇA MARCHE ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
+        <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 40 }}>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 10 }}>
+            Comment ça marche ?
+          </h2>
+          <p style={{ color: "var(--t50)", fontFamily: T.b, fontSize: 14 }}>Simple, rapide, actionnable.</p>
+        </motion.div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+          {[
+            { step: "01", icon: "📋", title: "Tu réponds au questionnaire", desc: "32 questions sur ton setup, tes douleurs, ton sommeil et tes habitudes. Adapté selon ton métier — bureau ou debout.", color: "#2b5ce6" },
+            { step: "02", icon: "🔬", title: "PAW analyse ta situation", desc: "Un score sur 100 par dimension, des flags cliniques détectés, et une analyse IA de ta posture en temps réel via ta caméra.", color: "#7c3aed" },
+            { step: "03", icon: "✅", title: "Tu reçois ton plan d'action", desc: "Des recommandations concrètes classées par priorité, des exercices ciblés et des produits adaptés à ton profil exact.", color: "#1d9e75" },
+          ].map((item, i) => (
+            <motion.div
+              key={i}
+              {...fadeUp(i * 0.1)}
+              style={{ padding: "28px 24px", borderRadius: 20, background: "var(--bg-card)", border: "0.5px solid var(--border)", position: "relative" }}
+            >
+              <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 36, height: 36, borderRadius: 10, background: `${item.color}18`, border: `1px solid ${item.color}35`, fontFamily: T.h, fontWeight: 900, fontSize: 13, color: item.color, marginBottom: 16 }}>
+                {item.step}
+              </div>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>{item.icon}</div>
+              <h3 style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", marginBottom: 8 }}>{item.title}</h3>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.65 }}>{item.desc}</p>
+            </motion.div>
+          ))}
+        </div>
       </section>
 
       {/* ── PILLARS ── */}
@@ -408,8 +438,31 @@ export default function LandingClient() {
         </motion.div>
       </section>
 
-      <footer style={{ position: "relative", zIndex: 1, textAlign: "center", padding: "0 24px 40px", color: "var(--t25)", fontFamily: T.b, fontSize: 13 }}>
-        PostureAtWork — Screening santé pour les travailleurs sédentaires
+      <footer style={{ position: "relative", zIndex: 1, padding: "40px 24px 40px", borderTop: "0.5px solid var(--border)" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+          <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "var(--text-primary)" }}>
+            PAW<span style={{ color: "#2b5ce6" }}>.</span>
+          </p>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", textAlign: "center", maxWidth: 400 }}>
+            Bilan ergonomique gratuit pour les travailleurs sédentaires et debout.
+            <br />Prévention TMS · Santé au travail · Analyse posturale IA
+          </p>
+          <div style={{ display: "flex", gap: 24, flexWrap: "wrap", justifyContent: "center" }}>
+            {[
+              { label: "Exemple de rapport", href: "/exemple-rapport" },
+              { label: "Questionnaire", href: "/questionnaire" },
+              { label: "Exercices", href: "/mobilite" },
+              { label: "Contact", href: "mailto:julienbeumier@outlook.com" },
+            ].map((l) => (
+              <Link key={l.label} href={l.href} style={{ textDecoration: "none" }}>
+                <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)" }}>{l.label}</span>
+              </Link>
+            ))}
+          </div>
+          <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t25)" }}>
+            © {new Date().getFullYear()} PostureAtWork · Tous droits réservés
+          </p>
+        </div>
       </footer>
 
       <style>{`
