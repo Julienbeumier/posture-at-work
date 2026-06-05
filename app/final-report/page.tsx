@@ -302,7 +302,8 @@ export default function FinalReportPage() {
       }).eq("id", latest[0].id);
     };
 
-    saveAssessmentForUser(user.id, scores, answers, target as unknown as Record<string, unknown>)
+    const companyId = localStorage.getItem("paw_company_id") ?? null;
+    saveAssessmentForUser(user.id, scores, answers, target as unknown as Record<string, unknown>, companyId)
       .then(async () => {
         await saveVideoAnalysis();
         setSaveStatus("saved");
