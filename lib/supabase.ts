@@ -85,7 +85,8 @@ export async function saveAssessmentForUser(
   userId: string,
   scores: AssessmentScores,
   answers: Record<string, unknown>,
-  videoAnalysis?: Record<string, unknown> | null
+  videoAnalysis?: Record<string, unknown> | null,
+  companyId?: string | null
 ): Promise<{ error: Error | null }> {
   const client = createClient();
   const { error } = await client.from("assessments").insert([{
@@ -94,6 +95,118 @@ export async function saveAssessmentForUser(
     answers,
     global_score: scores.global,
     video_analysis: videoAnalysis ?? null,
+    company_id: companyId ?? null,
   }]);
   return { error: error as Error | null };
+}
+
+// ─── B2B Types ────────────────────────────────────────────────────────────────
+
+export interface Company {
+  id: string;
+  name: string;
+  contact_email: string;
+  contact_name?: string;
+  plan: "starter" | "pme" | "enterprise";
+  max_employees: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface CompanyMembership {
+  id: string;
+  company_id: string;
+  user_id: string;
+  role: "admin" | "employee";
+  anonymous_id: string;
+  joined_at: string;
+}
+
+export interface CompanyInvite {
+  id: string;
+  company_id: string;
+  email?: string;
+  code: string;
+  used_at?: string;
+  expires_at: string;
+  created_at: string;
+}
+
+// ─── B2B Helpers ──────────────────────────────────────────────────────────────
+
+export async function getCompanyForUser(userId: string): Promise<Company | null> {
+  const client = createClient();
+  const { data } = await client
+    .from("company_memberships")
+    .select("company_id, role, companies(*)")
+    .eq("user_id", userId)
+    .maybeSingle();
+  return (data?.companies as unknown as Company) ?? null;
+}
+
+export async function getMembershipForUser(userId: string): Promise<CompanyMembership | null> {
+  const client = createClient();
+  const { data } = await client
+    .from("company_memberships")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+  return data ?? null;
+}
+
+export async function validateInviteCode(code: string): Promise<{ company: Company; invite: CompanyInvite } | null> {
+  const client = createClient();
+  const { data } = await client
+    .from("company_invites")
+    .select("*, companies(*)")
+    .eq("code", code.toUpperCase())
+    .is("used_at", null)
+    .gt("expires_at", new Date().toISOString())
+    .maybeSingle();
+  if (!data) return null;
+  return {
+    invite: data as unknown as CompanyInvite,
+    company: data.companies as unknown as Company,
+  };
+}
+
+export async function useInviteCode(
+  code: string,
+  userId: string,
+  companyId: string
+): Promise<{ error: Error | null }> {
+  const client = createClient();
+
+  const { count } = await client
+    .from("company_memberships")
+    .select("*", { count: "exact", head: true })
+    .eq("company_id", companyId);
+
+  const anonymousId = `Employé #${(count ?? 0) + 1}`;
+
+  await client
+    .from("company_invites")
+    .update({ used_at: new Date().toISOString(), used_by: userId })
+    .eq("code", code.toUpperCase());
+
+  const { error } = await client
+    .from("company_memberships")
+    .insert({
+      company_id: companyId,
+      user_id: userId,
+      role: "employee",
+      anonymous_id: anonymousId,
+    });
+
+  return { error: error as Error | null };
+}
+
+export async function generateInviteCode(companyId: string): Promise<string | null> {
+  const client = createClient();
+  const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+  const { error } = await client
+    .from("company_invites")
+    .insert({ company_id: companyId, code });
+  if (error) return null;
+  return code;
 }
