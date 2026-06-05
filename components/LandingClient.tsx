@@ -452,6 +452,7 @@ export default function LandingClient() {
               { label: "Exemple de rapport", href: "/exemple-rapport" },
               { label: "Questionnaire", href: "/questionnaire" },
               { label: "Exercices", href: "/mobilite" },
+              { label: "Entreprise", href: "/entreprise" },
               { label: "À propos & Contact", href: "/about" },
             ].map((l) => (
               <Link key={l.label} href={l.href} style={{ textDecoration: "none" }}>

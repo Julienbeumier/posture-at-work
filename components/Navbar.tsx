@@ -146,6 +146,13 @@ export default function Navbar() {
             </span>
           </button>
 
+          {/* Entreprise link (desktop) */}
+          <Link href="/entreprise" className="hidden md:block" style={{ textDecoration: "none" }}>
+            <div style={{ color: "var(--t55)", fontSize: 14, cursor: "pointer", fontFamily: T.h }}>
+              Entreprise
+            </div>
+          </Link>
+
           {/* Desktop nav links (hidden on mobile) */}
           <span className="hidden md:flex items-center" style={{ gap: 8 }}>
             {user ? (
@@ -257,6 +264,9 @@ export default function Navbar() {
           </Link>
           <Link href="/exemple-rapport" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
             👁️ Voir un exemple
+          </Link>
+          <Link href="/entreprise" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+            🏢 Entreprise
           </Link>
           {!user && (
             <Link href="/auth" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
