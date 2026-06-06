@@ -257,7 +257,7 @@ export default function EntrepriseSignupPage() {
         </AnimatePresence>
 
         <p style={{ textAlign: "center", fontFamily: T.b, fontSize: 12, color: c.textMuted, marginTop: 16 }}>
-          Déjà un compte ? <a href="/auth" style={{ color: "#2b5ce6", textDecoration: "none" }}>Se connecter</a>
+          Déjà un compte ? <a href="/entreprise/login" style={{ color: "#2b5ce6", textDecoration: "none" }}>Se connecter</a>
         </p>
       </div>
     </main>
