@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { createServerClient } from "@/lib/supabase";
+import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
   try {
@@ -8,12 +10,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Champs manquants" }, { status: 400 });
     }
 
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    // Service role — bypass RLS
+    const supabaseAdmin = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+
+    // Récupérer l'user connecté via cookies
+    const cookieStore = await cookies();
+    const supabaseUser = createServerClient(cookieStore);
+    const { data: { user } } = await supabaseUser.auth.getUser();
 
     const maxEmployees = plan === "starter" ? 25 : plan === "pme" ? 100 : 999;
 
-    const { data: company, error: companyError } = await supabase
+    // Créer la company
+    const { data: company, error: companyError } = await supabaseAdmin
       .from("companies")
       .insert({
         name,
@@ -26,20 +38,28 @@ export async function POST(req: Request) {
       .single();
 
     if (companyError || !company) {
+      console.error("[create company error]", companyError);
       return NextResponse.json({ error: companyError?.message }, { status: 500 });
     }
 
+    // Créer le membership admin
     if (user) {
-      await supabase.from("company_memberships").insert({
-        company_id: company.id,
-        user_id: user.id,
-        role: "admin",
-        anonymous_id: "Admin",
-      });
+      const { error: memberError } = await supabaseAdmin
+        .from("company_memberships")
+        .insert({
+          company_id: company.id,
+          user_id: user.id,
+          role: "admin",
+          anonymous_id: "Admin",
+        });
+      if (memberError) console.error("[membership error]", memberError);
+    } else {
+      console.warn("[create] Aucun user connecté — membership non créé");
     }
 
+    // Générer un premier code d'invitation
     const code = Math.random().toString(36).substring(2, 10).toUpperCase();
-    await supabase.from("company_invites").insert({
+    await supabaseAdmin.from("company_invites").insert({
       company_id: company.id,
       code,
     });
