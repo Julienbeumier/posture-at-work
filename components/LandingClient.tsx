@@ -102,19 +102,6 @@ const TESTIMONIALS = [
   },
 ];
 
-const stats = [
-  { value: "5min", label: "pour ton bilan complet" },
-  { value: "360°", label: "analyse corps & environnement" },
-];
-
-const scorePreview = [
-  { label: "Setup", score: 72, color: "#2b5ce6" },
-  { label: "Douleurs", score: 38, color: "#e24b4a" },
-  { label: "Habitudes", score: 55, color: "#d4622a" },
-  { label: "Sommeil", score: 80, color: "#2d6a4f" },
-  { label: "Nutrition", score: 45, color: "#7c3aed" },
-];
-
 function fadeUp(delay = 0) {
   return {
     initial: { opacity: 0, y: 24 },
@@ -146,123 +133,51 @@ export default function LandingClient() {
       <BackgroundBlobs />
 
       {/* ── HERO ── */}
-      <section
-        style={{
-          position: "relative",
-          zIndex: 1,
-          maxWidth: 760,
-          margin: "0 auto",
-          padding: "140px 24px 80px",
-          textAlign: "center",
-        }}
-      >
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: "140px 24px 80px", textAlign: "center" }}>
         <motion.div {...fadeUp(0)} style={{ marginBottom: 28 }}>
-          <span
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "7px 18px",
-              borderRadius: 100,
-              background: "rgba(43,92,230,0.15)",
-              color: "#a8c0ff",
-              fontSize: 12,
-              fontFamily: T.h,
-              fontWeight: 700,
-              letterSpacing: 2,
-              textTransform: "uppercase",
-              border: "1px solid rgba(43,92,230,0.25)",
-            }}
-          >
-            <span
-              style={{
-                width: 7,
-                height: 7,
-                borderRadius: "50%",
-                background: "#74c69d",
-                display: "inline-block",
-                animation: "pulse 2s infinite",
-              }}
-            />
-            Bilan santé gratuit · Résultats immédiats
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "7px 18px", borderRadius: 100,
+            background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.3)",
+            color: "#7c9fff", fontSize: 12, fontFamily: T.h, fontWeight: 700, letterSpacing: "0.04em",
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#2b5ce6", display: "inline-block" }} />
+            Bilan clinique. Résultats immédiats.
           </span>
         </motion.div>
 
-        <motion.h1
-          {...fadeUp(0.1)}
-          style={{
-            fontFamily: T.h,
-            fontWeight: 900,
-            fontSize: "clamp(32px, 5vw, 54px)",
-            lineHeight: 1.15,
-            letterSpacing: "-0.5px",
-            color: "var(--text-primary)",
-            marginBottom: 20,
-          }}
-        >
-          8h assis par jour.
-          <br />
-          Ton corps mérite{" "}
-          <span style={{ color: "#7c9fff" }}>mieux.</span>
+        <motion.h1 {...fadeUp(0.05)} style={{
+          fontFamily: T.h, fontWeight: 900, fontSize: "clamp(36px, 5vw, 52px)",
+          lineHeight: 1.1, color: "var(--text-primary)", margin: "0 0 20px", letterSpacing: "-1px",
+        }}>
+          Nuque, dos, épaules.<br />
+          <span style={{ color: "#2b5ce6" }}>Ton corps te donne des signaux.</span><br />
+          PAW t&apos;aide à les comprendre.
         </motion.h1>
 
-        <motion.p
-          {...fadeUp(0.2)}
-          style={{
-            fontFamily: T.b,
-            fontSize: 17,
-            lineHeight: 1.7,
-            color: "var(--t65)",
-            maxWidth: 520,
-            margin: "0 auto 36px",
-          }}
-        >
-          En 5 minutes, obtiens un screening complet de ta santé au travail —
-          posture, douleurs, énergie, nutrition — et des conseils actionnables
-          adaptés à ta situation réelle.
+        <motion.p {...fadeUp(0.1)} style={{
+          fontSize: 16, color: "var(--t60)", lineHeight: 1.75,
+          maxWidth: 520, margin: "0 auto 36px", fontFamily: T.b,
+        }}>
+          8h au bureau ou 8h debout — peu importe ton poste. C&apos;est là que tout commence : les tensions, les douleurs, la fatigue chronique. PAW analyse ton environnement de travail et te dit exactement ce qui ne va pas.
         </motion.p>
 
-        <motion.div
-          {...fadeUp(0.3)}
-          style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}
-        >
-          <Link href="/onboarding" style={{ textDecoration: "none", width: "100%", maxWidth: 380 }}>
-            <div
-              style={{
-                display: "block",
-                width: "100%",
-                padding: "18px 24px",
-                borderRadius: 100,
-                background: "#2b5ce6",
-                color: "#ffffff",
-                fontFamily: T.h,
-                fontWeight: 800,
-                fontSize: 16,
-                textAlign: "center",
-                cursor: "pointer",
-                boxShadow: "0 0 40px rgba(43,92,230,0.4)",
-              }}
-            >
-              Commencer mon bilan gratuit →
+        <motion.div {...fadeUp(0.15)} style={{ display: "flex", gap: 12, justifyContent: "center", alignItems: "center", flexWrap: "wrap" }}>
+          <Link href="/questionnaire" style={{ textDecoration: "none" }}>
+            <div style={{
+              padding: "14px 28px", borderRadius: 100, background: "#2b5ce6",
+              color: "#fff", fontFamily: T.h, fontWeight: 800, fontSize: 15, cursor: "pointer",
+              boxShadow: "0 4px 24px rgba(43,92,230,0.35)",
+            }}>
+              Faire mon bilan →
             </div>
           </Link>
-          <Link href="/exemple-rapport" style={{ textDecoration: "none", width: "100%", maxWidth: 380 }}>
-            <div
-              style={{
-                display: "block",
-                width: "100%",
-                padding: "16px 24px",
-                borderRadius: 100,
-                background: "transparent",
-                color: "var(--text-primary)",
-                border: "1.5px solid var(--border-3)",
-                fontFamily: T.h,
-                fontWeight: 700,
-                fontSize: 15,
-                textAlign: "center",
-                cursor: "pointer",
-              }}
-            >
+          <Link href="/exemple-rapport" style={{ textDecoration: "none" }}>
+            <div style={{
+              padding: "14px 24px", borderRadius: 100,
+              background: "transparent", border: "0.5px solid var(--border-3)",
+              color: "var(--text-primary)", fontFamily: T.b, fontSize: 14, cursor: "pointer",
+            }}>
               Voir un exemple de rapport
             </div>
           </Link>
@@ -270,33 +185,68 @@ export default function LandingClient() {
       </section>
 
       {/* ── STATS ── */}
-      <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
-        <motion.div {...fadeUp(0)} style={{ display: "flex", gap: 10 }}>
-          {stats.map((s, i) => (
-            <div
-              key={i}
-              style={{
-                flex: 1,
-                padding: "28px 20px",
-                borderRadius: 18,
-                background: "var(--bg-card-2)",
-                border: "0.5px solid var(--border)",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontFamily: T.h, fontWeight: 900, fontSize: 36, color: "var(--text-primary)", marginBottom: 6, letterSpacing: "-0.5px" }}>
-                {s.value}
-              </div>
-              <div style={{ color: "var(--t40)", fontSize: 13, fontFamily: T.b }}>{s.label}</div>
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
+        <motion.div {...fadeUp(0)} style={{
+          display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
+          borderRadius: 20, overflow: "hidden",
+          border: "0.5px solid var(--border)",
+          background: "var(--bg-card)",
+          marginBottom: 80,
+        }}>
+          {[
+            { value: "88%", label: "des maladies professionnelles sont des TMS", source: "Ameli, 2024" },
+            { value: "5min", label: "pour un bilan complet de ta santé au travail", source: null },
+            { value: "360°", label: "posture, douleurs, sommeil, nutrition, habitudes", source: null },
+          ].map((s, i) => (
+            <div key={i} style={{
+              padding: "32px 24px", textAlign: "center",
+              borderRight: i < 2 ? "0.5px solid var(--border)" : "none",
+            }}>
+              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 34, color: "#2b5ce6", margin: "0 0 6px" }}>{s.value}</p>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t45)", lineHeight: 1.5, margin: 0 }}>{s.label}</p>
+              {s.source && <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t30)", margin: "4px 0 0" }}>Source : {s.source}</p>}
             </div>
           ))}
+        </motion.div>
+      </section>
+
+      {/* ── KINÉ SECTION ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
+        <motion.div {...fadeUp(0)} style={{ marginBottom: 32 }}>
+          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 14 }}>Créé par un praticien</p>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 32, color: "var(--text-primary)", margin: "0 0 14px", letterSpacing: "-0.5px", lineHeight: 1.15 }}>
+            L&apos;IA analyse.<br />Le kiné a défini les règles.
+          </h2>
+          <p style={{ fontFamily: T.b, fontSize: 15, color: "var(--t55)", lineHeight: 1.75, maxWidth: 540, margin: 0 }}>
+            Derrière Posture At Work, un kinésithérapeute qui voit ces douleurs en cabinet chaque semaine. Chaque question, chaque seuil d&apos;alerte, chaque recommandation a été pensé à partir de cas réels — pas dans un bureau tech.
+          </p>
+        </motion.div>
+        <motion.div {...fadeUp(0.1)} style={{
+          display: "flex", gap: 24, alignItems: "flex-start",
+          padding: 28, borderRadius: 16,
+          background: "var(--bg-card)", border: "0.5px solid var(--border)",
+        }}>
+          <div style={{
+            width: 56, height: 56, borderRadius: "50%", flexShrink: 0,
+            background: "rgba(43,92,230,0.15)", border: "1.5px solid rgba(43,92,230,0.35)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#7c9fff",
+          }}>JB</div>
+          <div>
+            <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "var(--text-primary)", margin: "0 0 4px" }}>Julien Beumier</p>
+            <p style={{ fontSize: 12, color: "#2b5ce6", fontWeight: 600, fontFamily: T.b, margin: "0 0 10px" }}>Kinésithérapeute · Fondateur de PostureAtWork</p>
+            <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)", lineHeight: 1.65, margin: 0 }}>
+              &quot;Chaque semaine en cabinet, je vois les mêmes TMS revenir. Dos, nuque, poignets. Des douleurs qui s&apos;installent sur des mois avant que les gens consultent — et qui auraient pu être évitées.&quot;
+            </p>
+          </div>
         </motion.div>
       </section>
 
       {/* ── COMMENT ÇA MARCHE ── */}
       <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 40 }}>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 10 }}>
+          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 14 }}>Simple & rapide</p>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 32, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 10 }}>
             Comment ça marche ?
           </h2>
           <p style={{ color: "var(--t50)", fontFamily: T.b, fontSize: 14 }}>Simple, rapide, actionnable.</p>
@@ -304,14 +254,10 @@ export default function LandingClient() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           {[
             { step: "01", icon: "📋", title: "Tu réponds au questionnaire", desc: "32 questions sur ton setup, tes douleurs, ton sommeil et tes habitudes. Adapté selon ton métier — bureau ou debout.", color: "#2b5ce6" },
-            { step: "02", icon: "🔬", title: "PAW analyse ta situation", desc: "Un score sur 100 par dimension, des flags cliniques détectés, et une analyse IA de ta posture en temps réel via ta caméra.", color: "#7c3aed" },
-            { step: "03", icon: "✅", title: "Tu reçois ton plan d'action", desc: "Des recommandations concrètes classées par priorité, des exercices ciblés et des produits adaptés à ton profil exact.", color: "#1d9e75" },
+            { step: "02", icon: "🔬", title: "PAW analyse ta situation", desc: "Un score sur 100 par dimension, des flags cliniques détectés, et une analyse IA de ta posture via ta caméra.", color: "#7c3aed" },
+            { step: "03", icon: "✅", title: "Tu reçois ton plan d'action", desc: "Des recommandations concrètes classées par priorité, des exercices ciblés et des produits adaptés à ton profil.", color: "#1d9e75" },
           ].map((item, i) => (
-            <motion.div
-              key={i}
-              {...fadeUp(i * 0.1)}
-              style={{ padding: "28px 24px", borderRadius: 20, background: "var(--bg-card)", border: "0.5px solid var(--border)", position: "relative" }}
-            >
+            <motion.div key={i} {...fadeUp(i * 0.1)} style={{ padding: "28px 24px", borderRadius: 20, background: "var(--bg-card)", border: "0.5px solid var(--border)", position: "relative" }}>
               <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 36, height: 36, borderRadius: 10, background: `${item.color}18`, border: `1px solid ${item.color}35`, fontFamily: T.h, fontWeight: 900, fontSize: 13, color: item.color, marginBottom: 16 }}>
                 {item.step}
               </div>
@@ -326,72 +272,34 @@ export default function LandingClient() {
       {/* ── PILLARS ── */}
       <section style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 48 }}>
+          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 14 }}>6 dimensions analysées</p>
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 32, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 12 }}>
-            6 dimensions analysées
+            Une vue complète.<br />Pas juste la posture.
           </h2>
           <p style={{ color: "var(--t65)", fontFamily: T.b, fontSize: 15 }}>
-            Une vue complète de ta santé au travail — pas juste la posture.
+            Parce que les douleurs au travail ont rarement une seule cause.
           </p>
         </motion.div>
-
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
           {pillars.map((p, i) => (
-            <motion.div
-              key={i}
-              {...fadeUp(i * 0.07)}
-              style={{ padding: "24px", borderRadius: 20, background: p.bg, border: `0.5px solid ${p.border}`, position: "relative", overflow: "hidden" }}
-            >
+            <motion.div key={i} {...fadeUp(i * 0.07)} style={{ padding: "24px", borderRadius: 20, background: p.bg, border: `0.5px solid ${p.border}`, position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: -30, right: -30, width: 100, height: 100, borderRadius: "50%", background: p.blob, filter: "blur(30px)", opacity: 0.6 }} />
               <div style={{ width: 44, height: 44, borderRadius: 12, background: p.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, marginBottom: 14, position: "relative" }}>
                 {p.icon}
               </div>
-              <h3 style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: p.titleColor, marginBottom: 8, position: "relative" }}>
-                {p.title}
-              </h3>
-              <p style={{ color: "var(--t55)", fontSize: 13, lineHeight: 1.6, fontFamily: T.b, position: "relative" }}>
-                {p.desc}
-              </p>
+              <h3 style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: p.titleColor, marginBottom: 8, position: "relative" }}>{p.title}</h3>
+              <p style={{ color: "var(--t55)", fontSize: 13, lineHeight: 1.6, fontFamily: T.b, position: "relative" }}>{p.desc}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* ── SCORE PREVIEW ── */}
-      <section style={{ position: "relative", zIndex: 1, maxWidth: 700, margin: "0 auto 80px", padding: "0 24px" }}>
-        <motion.div {...fadeUp(0)} style={{ padding: "36px 32px", borderRadius: 22, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)" }}>
-          <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "var(--t40)", marginBottom: 20 }}>
-            Exemple de rapport
-          </p>
-          <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 28 }}>
-            <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(43,92,230,0.12)", border: "3px solid rgba(43,92,230,0.35)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "#a8c0ff" }}>58</span>
-            </div>
-            <div>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: "var(--text-primary)", marginBottom: 4 }}>Score global</p>
-              <span style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(212,98,42,0.15)", color: "#f4a261", border: "1px solid rgba(212,98,42,0.3)", fontSize: 12, fontFamily: T.h, fontWeight: 700 }}>
-                Zones à améliorer
-              </span>
-            </div>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {scorePreview.map((s, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ width: 72, color: "var(--t55)", fontSize: 12, fontFamily: T.b, flexShrink: 0 }}>{s.label}</span>
-                <div style={{ flex: 1, height: 6, borderRadius: 100, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-                  <div style={{ width: `${s.score}%`, height: "100%", borderRadius: 100, background: s.score >= 70 ? "#2b5ce6" : s.score >= 50 ? "#d4622a" : "#e24b4a" }} />
-                </div>
-                <span style={{ width: 30, textAlign: "right", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: s.score >= 70 ? "#a8c0ff" : s.score >= 50 ? "#f4a261" : "#f09595" }}>{s.score}</span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
-
       {/* ── TESTIMONIALS ── */}
       <section style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 40 }}>
+          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 14 }}>Ils l&apos;ont testé</p>
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 10 }}>
-            Ils ont changé leurs habitudes
+            Ce que ça change, concrètement.
           </h2>
           <p style={{ color: "var(--t50)", fontFamily: T.b, fontSize: 14 }}>Des résultats concrets, en quelques semaines.</p>
         </motion.div>
@@ -411,40 +319,93 @@ export default function LandingClient() {
                   <p style={{ color: "var(--t38)", fontFamily: T.b, fontSize: 11 }}>{t.role}</p>
                 </div>
               </div>
-              <div>
-                <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 100, background: `${t.color}18`, border: `1px solid ${t.color}35`, color: t.color, fontFamily: T.h, fontWeight: 700, fontSize: 11 }}>
-                  Score : {t.score}
-                </span>
-              </div>
+              <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 100, background: `${t.color}18`, border: `1px solid ${t.color}35`, color: t.color, fontFamily: T.h, fontWeight: 700, fontSize: 11 }}>
+                Score : {t.score}
+              </span>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* ── BOTTOM CTA ── */}
-      <section style={{ position: "relative", zIndex: 1, maxWidth: 700, margin: "0 auto 80px", padding: "0 24px" }}>
-        <motion.div {...fadeUp(0)} style={{ padding: "48px 36px", borderRadius: 22, background: "#2b5ce6", textAlign: "center" }}>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "#fff", letterSpacing: "-0.5px", marginBottom: 12 }}>
-            Prêt à prendre soin de toi ?
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 700, margin: "0 auto 32px", padding: "0 24px" }}>
+        <motion.div {...fadeUp(0)} style={{ padding: "56px 40px", borderRadius: 22, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)", textAlign: "center" }}>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 12 }}>
+            5 minutes. Un rapport.<br />Des actions concrètes sur ce qui te fait vraiment mal.
           </h2>
-          <p style={{ color: "rgba(255,255,255,0.75)", fontFamily: T.b, fontSize: 15, marginBottom: 28, lineHeight: 1.6 }}>
-            En 5 minutes, tu sauras exactement où tu en es et quoi faire.
+          <p style={{ color: "var(--t50)", fontFamily: T.b, fontSize: 14, marginBottom: 28, lineHeight: 1.6 }}>
+            Ton corps t&apos;envoie des signaux depuis un moment.<br />Il est temps de les écouter.
           </p>
           <Link href="/questionnaire" style={{ textDecoration: "none" }}>
-            <div style={{ display: "inline-block", padding: "16px 36px", borderRadius: 100, background: "#ffffff", color: "#2b5ce6", fontFamily: T.h, fontWeight: 800, fontSize: 15, cursor: "pointer" }}>
-              Commencer mon bilan gratuit →
+            <div style={{ display: "inline-block", padding: "15px 32px", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 800, fontSize: 15, cursor: "pointer", boxShadow: "0 4px 24px rgba(43,92,230,0.35)" }}>
+              Faire mon bilan →
             </div>
           </Link>
         </motion.div>
       </section>
 
-      <footer style={{ position: "relative", zIndex: 1, padding: "40px 24px 40px", borderTop: "0.5px solid var(--border)" }}>
+      {/* ── B2B SECTION ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
+        <motion.div {...fadeUp(0)} style={{ borderRadius: 20, overflow: "hidden", border: "0.5px solid rgba(124,58,237,0.25)" }}>
+          {/* Top */}
+          <div style={{ padding: "40px 40px 32px", background: "rgba(124,58,237,0.07)", borderBottom: "0.5px solid rgba(124,58,237,0.15)" }}>
+            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#a78bfa", textTransform: "uppercase", marginBottom: 12 }}>PostureAtWork Entreprise</p>
+            <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "var(--text-primary)", margin: "0 0 12px", lineHeight: 1.15 }}>
+              Vos équipes travaillent dur.<br />Leurs douleurs s&apos;accumulent en silence.
+            </h2>
+            <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)", lineHeight: 1.75, margin: 0, maxWidth: 600 }}>
+              Les TMS sont la première cause de maladie professionnelle. Ils désorganisent les équipes, augmentent l&apos;absentéisme et pèsent sur votre score ESG Social. PAW Entreprise vous donne une vue claire sur la santé ergonomique de vos collaborateurs — avant que ça coûte cher.
+            </p>
+          </div>
+          {/* Stats */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderBottom: "0.5px solid rgba(124,58,237,0.15)" }}>
+            {[
+              { value: "88%", label: "des maladies professionnelles reconnues sont des TMS", source: "Ameli, 2024" },
+              { value: "73 jours", label: "d'arrêt de travail en moyenne par cas de TMS", source: "StopTMS, 2025" },
+              { value: "10,4M", label: "de journées de travail perdues chaque année en France", source: "Assurance Maladie, 2024" },
+            ].map((s, i) => (
+              <div key={i} style={{ padding: "28px 24px", borderRight: i < 2 ? "0.5px solid rgba(124,58,237,0.15)" : "none" }}>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#a78bfa", margin: "0 0 6px" }}>{s.value}</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t45)", lineHeight: 1.5, margin: "0 0 4px" }}>{s.label}</p>
+                <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t30)", margin: 0 }}>Source : {s.source}</p>
+              </div>
+            ))}
+          </div>
+          {/* Bottom CTA */}
+          <div style={{ padding: "24px 40px", background: "rgba(124,58,237,0.04)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t45)", margin: 0, lineHeight: 1.6 }}>
+              Dashboard RH anonymisé · Rapport collectif · Suivi trimestriel · Angle CSRD/ESG
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end" }}>
+              <Link href="/about" style={{ textDecoration: "none" }}>
+                <div style={{ padding: "13px 26px", borderRadius: 100, background: "#7c3aed", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
+                  Demander un devis →
+                </div>
+              </Link>
+              <Link href="/entreprise/login" style={{ textDecoration: "none" }}>
+                <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t45)" }}>
+                  Déjà client ?{" "}
+                  <span style={{ color: "#a78bfa", fontWeight: 600 }}>Accéder au dashboard entreprise →</span>
+                </span>
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ position: "relative", zIndex: 1, padding: "40px 24px", borderTop: "0.5px solid var(--border)" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-          <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "var(--text-primary)" }}>
-            PAW<span style={{ color: "#2b5ce6" }}>.</span>
-          </p>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+            <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "var(--text-primary)", margin: 0 }}>
+              PAW<span style={{ color: "#2b5ce6" }}>.</span>
+            </p>
+            <p style={{ fontFamily: T.b, fontSize: 9, letterSpacing: "0.18em", color: "var(--t35)", textTransform: "uppercase", margin: 0 }}>
+              Posture At Work
+            </p>
+          </div>
           <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", textAlign: "center", maxWidth: 400 }}>
-            Bilan ergonomique gratuit pour les travailleurs sédentaires et debout.
+            Bilan ergonomique pour les travailleurs sédentaires et debout.
             <br />Prévention TMS · Santé au travail · Analyse posturale IA
           </p>
           <div style={{ display: "flex", gap: 24, flexWrap: "wrap", justifyContent: "center" }}>
