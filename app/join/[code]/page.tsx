@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { createClient, validateInviteCode, useInviteCode } from "@/lib/supabase";
+import { createClient, validateInviteCode } from "@/lib/supabase";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { Company } from "@/lib/supabase";
 
@@ -28,12 +28,19 @@ export default function JoinPage() {
 
   const joinCompany = useCallback(async (userId: string, companyId: string) => {
     setStep("joining");
-    const { error: joinError } = await useInviteCode(code, userId, companyId);
-    if (joinError) {
+    const res = await fetch("/api/entreprise/join", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, userId, companyId }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
       setError("Erreur lors de la jonction à l'entreprise");
-      setStep("auth");
+      setStep("welcome");
       return;
     }
+
     localStorage.setItem("paw_company_id", companyId);
     localStorage.setItem("paw_is_b2b", "true");
     setStep("done");
