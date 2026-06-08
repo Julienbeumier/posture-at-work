@@ -62,6 +62,7 @@ export async function POST(req: Request) {
     await supabaseAdmin.from("company_invites").insert({
       company_id: company.id,
       code,
+      expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     });
 
     return NextResponse.json({ companyId: company.id, inviteCode: code });
