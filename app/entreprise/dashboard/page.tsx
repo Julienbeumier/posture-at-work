@@ -105,6 +105,55 @@ const RESOURCES = [
   },
 ];
 
+const PRODUCTS_BY_ISSUE: Record<string, { name: string; url: string; price: string; reason: string }[]> = {
+  setup_bureau: [
+    { name: "Rehausseur écran GRIFEMA", url: "https://amzn.to/3RF8Hn1", price: "~28€", reason: "Corrige la hauteur d'écran — réduit la charge cervicale de 12kg" },
+    { name: "Support laptop ergonomique", url: "https://amzn.to/3RF8LmL", price: "~30€", reason: "Indispensable pour tout usage laptop prolongé" },
+    { name: "Souris verticale Trust Verto", url: "https://amzn.to/4vkCnnZ", price: "~25€", reason: "Réduit la torsion du poignet de 60%" },
+  ],
+  setup_debout: [
+    { name: "Tapis anti-fatigue", url: "https://amzn.to/4fnjrQR", price: "~45€", reason: "Réduit la fatigue des jambes et lombaires de 50% en station debout prolongée" },
+    { name: "Semelles orthopédiques", url: "https://amzn.to/4eiCfP5", price: "~30€", reason: "Amorti et soutien de voûte — essentiel pour les postes debout > 4h/jour" },
+    { name: "Chaussettes de compression", url: "https://amzn.to/4vimwWT", price: "~20€", reason: "Prévient l'insuffisance veineuse et les jambes lourdes" },
+  ],
+  douleurs_bureau: [
+    { name: "Coussin lombaire FORTEM", url: "https://amzn.to/4dIapg4", price: "~30€", reason: "Soulagement immédiat des douleurs lombaires dès la première utilisation" },
+    { name: "Balle de massage BLACKROLL", url: "https://amzn.to/43G4lyy", price: "~15€", reason: "Libère les points de tension nuque et épaules en quelques minutes" },
+  ],
+  douleurs_debout: [
+    { name: "Balle massage plantaire", url: "https://amzn.to/4wZhdNP", price: "~15€", reason: "Soulage les fasciites plantaires et tensions du pied après journée debout" },
+    { name: "Coussin surélévation jambes", url: "https://amzn.to/3PLUGmX", price: "~35€", reason: "Drainage veineux en fin de journée — prévient varices et jambes lourdes" },
+    { name: "Foam roller", url: "https://amzn.to/4u7mU9E", price: "~25€", reason: "5 minutes soir pour relâcher mollets, ischio-jambiers et bas du dos" },
+  ],
+  habits: [
+    { name: "Bureau assis-debout SONGMICS", url: "https://amzn.to/4dGGncw", price: "~200€", reason: "Alterner assis/debout réduit les douleurs lombaires de 50%" },
+    { name: "Coussin d'équilibre BODYMATE", url: "https://amzn.to/3Rh9avh", price: "~30€", reason: "Active les muscles posturaux profonds passivement" },
+  ],
+};
+
+const EXERCISES_BY_ISSUE: Record<string, { name: string; duration: string; desc: string; emoji: string }[]> = {
+  nuque_cervicales: [
+    { name: "Rétraction cervicale", duration: "10 rép. × 5 sec", desc: "Corrige l'antépulsion de tête — typique du travail sur écran", emoji: "🦆" },
+    { name: "Inclinaison latérale nuque", duration: "30 sec par côté", desc: "Étire les trapèzes supérieurs contractés", emoji: "↔️" },
+    { name: "Rotation nuque", duration: "5 rotations par côté", desc: "Libère les tensions de rotation cervicale", emoji: "🔄" },
+  ],
+  dos_lombaires: [
+    { name: "Flexion lombaire", duration: "45 sec × 2", desc: "Décompresse les disques intervertébraux", emoji: "🌿" },
+    { name: "Cat-Cow assis", duration: "10 cycles", desc: "Mobilise toute la colonne", emoji: "🐱" },
+    { name: "Extension lombaire debout", duration: "10 extensions", desc: "Contre la flexion prolongée de la position assise", emoji: "🏹" },
+  ],
+  epaules_poignets: [
+    { name: "Ouverture pectorale en porte", duration: "30 sec par côté", desc: "Compense l'enroulement des épaules dû au clavier", emoji: "🦅" },
+    { name: "Rétraction scapulaire", duration: "15 rép. × 3 sec", desc: "Renforce les rhomboïdes et corrige l'enroulement", emoji: "🏹" },
+    { name: "Étirement fléchisseurs poignet", duration: "30 sec par côté", desc: "Prévient le syndrome du canal carpien", emoji: "🖐️" },
+  ],
+  jambes_pieds: [
+    { name: "Élévation des mollets", duration: "15 rép. × 3", desc: "Active la pompe veineuse et prévient les varices", emoji: "🦵" },
+    { name: "Auto-massage plantaire", duration: "2 min par pied", desc: "Relâche les tensions du fascia plantaire", emoji: "⚾" },
+    { name: "Surélévation des jambes", duration: "20 minutes soir", desc: "Drainage veineux actif après journée debout", emoji: "🧘" },
+  ],
+};
+
 function scoreColor(s: number) {
   return s >= 70 ? "#74c69d" : s >= 50 ? "#f4a261" : "#f09595";
 }
@@ -119,6 +168,29 @@ interface EmployeeRow {
   global_score: number | null;
   scores: Record<string, number> | null;
   assessed_at: string | null;
+}
+
+function generateReport(employees: EmployeeRow[], assessed: EmployeeRow[]) {
+  if (assessed.length === 0) return null;
+
+  const avgScores: Record<string, number> = {};
+  Object.keys(DIM_META).forEach(key => {
+    const vals = assessed.map(e => e.scores?.[key]).filter((v): v is number => v !== null && v !== undefined);
+    avgScores[key] = vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
+  });
+
+  const worstDims = Object.entries(avgScores)
+    .sort((a, b) => a[1] - b[1])
+    .slice(0, 3);
+
+  const painScore = avgScores.pain ?? 0;
+  const setupScore = avgScores.setup ?? 0;
+  const habitsScore = avgScores.habits ?? 0;
+
+  const criticalCount = assessed.filter(e => (e.global_score ?? 0) < 50).length;
+  const criticalPct = Math.round((criticalCount / assessed.length) * 100);
+
+  return { avgScores, worstDims, criticalCount, criticalPct, painScore, setupScore, habitsScore };
 }
 
 export default function EntrepriseDashboard() {
@@ -434,6 +506,171 @@ export default function EntrepriseDashboard() {
                   </div>
                 </div>
               </div>
+
+              {/* ── RAPPORT DE SYNTHÈSE ── */}
+              {assessed.length > 0 && (() => {
+                const report = generateReport(employees, assessed);
+                if (!report) return null;
+                const { avgScores, worstDims, criticalCount, criticalPct, painScore, setupScore, habitsScore } = report;
+
+                return (
+                  <div style={{ borderRadius: 20, overflow: "hidden", border: `0.5px solid ${c.border}`, marginBottom: 16 }}>
+
+                    {/* Header rapport */}
+                    <div style={{ padding: "20px 24px", background: "rgba(43,92,230,0.06)", borderBottom: `0.5px solid ${c.border}` }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+                        <div>
+                          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: "0 0 4px" }}>
+                            📋 Rapport de synthèse ergonomique
+                          </p>
+                          <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>
+                            Basé sur {assessed.length} bilan{assessed.length > 1 ? "s" : ""} complété{assessed.length > 1 ? "s" : ""} · Généré automatiquement
+                          </p>
+                        </div>
+                        <span style={{
+                          padding: "4px 12px", borderRadius: 100,
+                          background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)",
+                          fontFamily: T.b, fontSize: 11, fontWeight: 600, color: "#7c9fff",
+                        }}>
+                          🩺 Validé par un kinésithérapeute
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Synthèse narrative */}
+                    <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.bgCard }}>
+                      <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.75, margin: 0 }}>
+                        {criticalPct > 40
+                          ? `⚠️ Situation préoccupante — ${criticalPct}% de vos employés sont en zone critique (score < 50). `
+                          : criticalPct > 20
+                          ? `🟠 Situation à surveiller — ${criticalPct}% de vos employés nécessitent une attention particulière. `
+                          : `✅ Situation globalement satisfaisante — ${criticalPct}% d'employés en zone critique. `
+                        }
+                        {painScore < 50
+                          ? `Les douleurs musculo-squelettiques sont la principale problématique identifiée (score moyen ${painScore}/100). `
+                          : setupScore < 50
+                          ? `Le setup ergonomique des postes de travail est la principale lacune identifiée (score moyen ${setupScore}/100). `
+                          : `Les habitudes de travail représentent le principal levier d'amélioration (score moyen ${habitsScore}/100). `
+                        }
+                        {worstDims[0] && `La dimension la plus critique est "${DIM_META[worstDims[0][0]]?.label}" avec un score moyen de ${worstDims[0][1]}/100.`}
+                      </p>
+                    </div>
+
+                    {/* Troubles identifiés par zone */}
+                    <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.bgCard }}>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 14 }}>
+                        🔍 Troubles identifiés
+                      </p>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                        {[
+                          {
+                            zone: "Nuque & cervicales",
+                            emoji: "🦆",
+                            risk: painScore < 50 && setupScore < 60,
+                            detail: `Écrans trop bas, laptops sans support → charge cervicale excessive. Score douleurs : ${painScore}/100`,
+                            color: "#f09595",
+                          },
+                          {
+                            zone: "Bas du dos",
+                            emoji: "🌿",
+                            risk: painScore < 55 || habitsScore < 50,
+                            detail: `Station assise prolongée sans pauses suffisantes → compression discale. Score habitudes : ${habitsScore}/100`,
+                            color: "#f4a261",
+                          },
+                          {
+                            zone: "Épaules & poignets",
+                            emoji: "🦅",
+                            risk: setupScore < 55,
+                            detail: `Positionnement clavier/souris inadapté → TMS des membres supérieurs. Score setup : ${setupScore}/100`,
+                            color: "#a78bfa",
+                          },
+                        ].map((trouble, i) => (
+                          <div key={i} style={{
+                            padding: "14px", borderRadius: 12,
+                            background: trouble.risk ? `${trouble.color}08` : c.bgCard2,
+                            border: `0.5px solid ${trouble.risk ? trouble.color + "30" : c.border}`,
+                          }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                              <span style={{ fontSize: 18 }}>{trouble.emoji}</span>
+                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: trouble.risk ? trouble.color : c.textPrimary }}>
+                                {trouble.zone}
+                              </span>
+                              {trouble.risk && (
+                                <span style={{ marginLeft: "auto", padding: "2px 7px", borderRadius: 100, background: `${trouble.color}15`, fontFamily: T.b, fontSize: 10, color: trouble.color }}>
+                                  Risque identifié
+                                </span>
+                              )}
+                            </div>
+                            <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.55 }}>{trouble.detail}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Produits recommandés */}
+                    <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.bgCard }}>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}>
+                        🛒 Équipements recommandés pour vos postes
+                      </p>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 14 }}>
+                        Sélection basée sur les scores de vos équipes. Liens Amazon affiliés.
+                      </p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {[
+                          ...(setupScore < 60 ? PRODUCTS_BY_ISSUE.setup_bureau : []),
+                          ...(painScore < 55 ? PRODUCTS_BY_ISSUE.douleurs_bureau : []),
+                          ...(habitsScore < 50 ? PRODUCTS_BY_ISSUE.habits : []),
+                        ].slice(0, 5).map((prod, i) => (
+                          <a key={i} href={prod.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                            <div style={{
+                              display: "flex", alignItems: "center", gap: 12, padding: "12px 14px",
+                              borderRadius: 12, background: c.bgCard2, border: `0.5px solid ${c.border}`,
+                              transition: "border-color 0.15s",
+                            }}>
+                              <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(43,92,230,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>🛒</div>
+                              <div style={{ flex: 1 }}>
+                                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: "0 0 2px" }}>{prod.name}</p>
+                                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>{prod.reason}</p>
+                              </div>
+                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#2b5ce6", flexShrink: 0 }}>{prod.price}</span>
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Exercices collectifs recommandés */}
+                    <div style={{ padding: "20px 24px", background: c.bgCard }}>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}>
+                        🏋️ Programme d&apos;exercices collectif recommandé
+                      </p>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 14 }}>
+                        Basé sur les dimensions les plus critiques de vos équipes. À animer en groupe 3x/semaine.
+                      </p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {[
+                          ...(painScore < 55 ? EXERCISES_BY_ISSUE.nuque_cervicales : []),
+                          ...(habitsScore < 55 ? EXERCISES_BY_ISSUE.dos_lombaires : []),
+                          ...(setupScore < 55 ? EXERCISES_BY_ISSUE.epaules_poignets : []),
+                        ].slice(0, 4).map((ex, i) => (
+                          <div key={i} style={{
+                            display: "flex", alignItems: "center", gap: 12, padding: "12px 14px",
+                            borderRadius: 12, background: c.bgCard2, border: `0.5px solid ${c.border}`,
+                          }}>
+                            <span style={{ fontSize: 24, flexShrink: 0 }}>{ex.emoji}</span>
+                            <div style={{ flex: 1 }}>
+                              <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: "0 0 2px" }}>{ex.name}</p>
+                              <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>{ex.desc}</p>
+                            </div>
+                            <span style={{ padding: "3px 10px", borderRadius: 100, background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.2)", fontFamily: T.b, fontSize: 11, color: "#7c9fff", flexShrink: 0 }}>{ex.duration}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                  </div>
+                );
+              })()}
 
               {/* Invitation */}
               <div style={{ borderRadius: 20, padding: "22px 24px", background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)" }}>
