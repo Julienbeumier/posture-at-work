@@ -183,6 +183,12 @@ export default function EntrepriseClient() {
               </button>
             </Link>
           </div>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t40)", marginTop: 12 }}>
+            Déjà un espace entreprise ?{" "}
+            <Link href="/entreprise/login" style={{ color: "#2b5ce6", textDecoration: "none", fontWeight: 600 }}>
+              Se connecter →
+            </Link>
+          </p>
         </motion.div>
 
         {/* ── STATS ── */}

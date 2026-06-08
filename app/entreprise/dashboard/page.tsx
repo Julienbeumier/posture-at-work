@@ -50,64 +50,18 @@ export default function EntrepriseDashboard() {
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/entreprise/signup"); return; }
+      if (!user) { router.push("/entreprise/login"); return; }
 
-      const { data: membership } = await supabase
-        .from("company_memberships")
-        .select("company_id, role, companies(*)")
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .maybeSingle();
+      const res = await fetch("/api/entreprise/dashboard-data");
+      if (!res.ok) { router.push("/entreprise/login"); return; }
 
-      if (!membership) { router.push("/entreprise/signup"); return; }
+      const data = await res.json();
+      setCompany(data.company);
+      setEmployees(data.employees ?? []);
 
-      const comp = membership.companies as unknown as Company;
-      setCompany(comp);
-
-      const { data: members } = await supabase
-        .from("company_memberships")
-        .select("anonymous_id, joined_at, user_id")
-        .eq("company_id", comp.id)
-        .eq("role", "employee")
-        .order("joined_at", { ascending: true });
-
-      if (!members?.length) { setLoading(false); return; }
-
-      const rows: EmployeeRow[] = await Promise.all(
-        members.map(async (m) => {
-          const { data: assessment } = await supabase
-            .from("assessments")
-            .select("global_score, scores, created_at")
-            .eq("user_id", m.user_id)
-            .eq("company_id", comp.id)
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-
-          return {
-            anonymous_id: m.anonymous_id,
-            joined_at: m.joined_at,
-            global_score: assessment?.global_score ?? null,
-            scores: assessment?.scores ?? null,
-            assessed_at: assessment?.created_at ?? null,
-          };
-        })
-      );
-
-      setEmployees(rows);
-
-      const { data: invite } = await supabase
-        .from("company_invites")
-        .select("code")
-        .eq("company_id", comp.id)
-        .is("used_at", null)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (invite) {
-        setInviteCode(invite.code);
-        setInviteUrl(`https://postureatwork.com/join/${invite.code}`);
+      if (data.inviteCode) {
+        setInviteCode(data.inviteCode);
+        setInviteUrl(`https://postureatwork.com/join/${data.inviteCode}`);
       }
 
       setLoading(false);
