@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
     await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: "julienbeumier@outlook.com",
+      to: "hello@postureatwork.com",
       subject: `[PAW Contact] Message de ${nom}`,
       html: `
         <h2>Nouveau message via PostureAtWork</h2>
