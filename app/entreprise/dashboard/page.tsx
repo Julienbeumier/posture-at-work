@@ -168,29 +168,76 @@ interface EmployeeRow {
   global_score: number | null;
   scores: Record<string, number> | null;
   assessed_at: string | null;
+  job_type: "bureau" | "debout" | null;
+  answers: Record<string, unknown> | null;
 }
 
-function generateReport(employees: EmployeeRow[], assessed: EmployeeRow[]) {
+function generateReport(assessed: EmployeeRow[]) {
   if (assessed.length === 0) return null;
 
-  const avgScores: Record<string, number> = {};
-  Object.keys(DIM_META).forEach(key => {
-    const vals = assessed.map(e => e.scores?.[key]).filter((v): v is number => v !== null && v !== undefined);
-    avgScores[key] = vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
-  });
+  const bureauGroup = assessed.filter(e => e.job_type === "bureau");
+  const deboutGroup = assessed.filter(e => e.job_type === "debout");
+  const hasGroups = bureauGroup.length > 0 && deboutGroup.length > 0;
 
-  const worstDims = Object.entries(avgScores)
-    .sort((a, b) => a[1] - b[1])
-    .slice(0, 3);
+  function avgDim(group: EmployeeRow[], key: string) {
+    const vals = group.map(e => e.scores?.[key]).filter((v): v is number => v !== null && v !== undefined);
+    return vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
+  }
 
-  const painScore = avgScores.pain ?? 0;
-  const setupScore = avgScores.setup ?? 0;
-  const habitsScore = avgScores.habits ?? 0;
+  function avgGlobalGroup(group: EmployeeRow[]) {
+    const vals = group.map(e => e.global_score).filter((v): v is number => v !== null);
+    return vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
+  }
 
+  const bureau = {
+    count: bureauGroup.length,
+    global: avgGlobalGroup(bureauGroup),
+    setup: avgDim(bureauGroup, "setup"),
+    pain: avgDim(bureauGroup, "pain"),
+    habits: avgDim(bureauGroup, "habits"),
+    sleep: avgDim(bureauGroup, "sleep_energy"),
+    nutrition: avgDim(bureauGroup, "nutrition"),
+    lifestyle: avgDim(bureauGroup, "lifestyle"),
+    critique: bureauGroup.filter(e => (e.global_score ?? 0) < 50).length,
+  };
+
+  const debout = {
+    count: deboutGroup.length,
+    global: avgGlobalGroup(deboutGroup),
+    setup: avgDim(deboutGroup, "setup"),
+    pain: avgDim(deboutGroup, "pain"),
+    habits: avgDim(deboutGroup, "habits"),
+    sleep: avgDim(deboutGroup, "sleep_energy"),
+    nutrition: avgDim(deboutGroup, "nutrition"),
+    lifestyle: avgDim(deboutGroup, "lifestyle"),
+    critique: deboutGroup.filter(e => (e.global_score ?? 0) < 50).length,
+  };
+
+  const allSetup = avgDim(assessed, "setup") ?? 0;
+  const allPain = avgDim(assessed, "pain") ?? 0;
+  const allHabits = avgDim(assessed, "habits") ?? 0;
+  const allSleep = avgDim(assessed, "sleep_energy") ?? 0;
+  const allNutrition = avgDim(assessed, "nutrition") ?? 0;
+  const allLifestyle = avgDim(assessed, "lifestyle") ?? 0;
   const criticalCount = assessed.filter(e => (e.global_score ?? 0) < 50).length;
   const criticalPct = Math.round((criticalCount / assessed.length) * 100);
 
-  return { avgScores, worstDims, criticalCount, criticalPct, painScore, setupScore, habitsScore };
+  const bureauMainIssue = bureau.pain !== null && bureau.pain < 50 ? "douleurs cervicales et nuque"
+    : bureau.setup !== null && bureau.setup < 55 ? "setup ergonomique inadapté"
+    : bureau.habits !== null && bureau.habits < 55 ? "manque de pauses actives"
+    : "fatigue et récupération insuffisante";
+
+  const deboutMainIssue = debout.pain !== null && debout.pain < 45 ? "douleurs lombaires et membres inférieurs"
+    : debout.habits !== null && debout.habits < 50 ? "postures de travail et manutention"
+    : debout.lifestyle !== null && debout.lifestyle < 50 ? "récupération physique insuffisante"
+    : "fatigue musculaire chronique";
+
+  return {
+    bureau, debout, hasGroups,
+    allSetup, allPain, allHabits, allSleep, allNutrition, allLifestyle,
+    criticalCount, criticalPct,
+    bureauMainIssue, deboutMainIssue,
+  };
 }
 
 export default function EntrepriseDashboard() {
@@ -509,162 +556,359 @@ export default function EntrepriseDashboard() {
 
               {/* ── RAPPORT DE SYNTHÈSE ── */}
               {assessed.length > 0 && (() => {
-                const report = generateReport(employees, assessed);
-                if (!report) return null;
-                const { avgScores, worstDims, criticalCount, criticalPct, painScore, setupScore, habitsScore } = report;
+                const r = generateReport(assessed);
+                if (!r) return null;
+                const { bureau, debout, hasGroups, allSetup, allPain, allHabits, allSleep, criticalCount, criticalPct, bureauMainIssue, deboutMainIssue } = r;
 
                 return (
                   <div style={{ borderRadius: 20, overflow: "hidden", border: `0.5px solid ${c.border}`, marginBottom: 16 }}>
 
-                    {/* Header rapport */}
-                    <div style={{ padding: "20px 24px", background: "rgba(43,92,230,0.06)", borderBottom: `0.5px solid ${c.border}` }}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-                        <div>
-                          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: "0 0 4px" }}>
-                            📋 Rapport de synthèse ergonomique
-                          </p>
-                          <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>
-                            Basé sur {assessed.length} bilan{assessed.length > 1 ? "s" : ""} complété{assessed.length > 1 ? "s" : ""} · Généré automatiquement
-                          </p>
-                        </div>
-                        <span style={{
-                          padding: "4px 12px", borderRadius: 100,
-                          background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)",
-                          fontFamily: T.b, fontSize: 11, fontWeight: 600, color: "#7c9fff",
-                        }}>
-                          🩺 Validé par un kinésithérapeute
-                        </span>
+                    {/* Header */}
+                    <div style={{ padding: "20px 24px", background: "rgba(43,92,230,0.06)", borderBottom: `0.5px solid ${c.border}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+                      <div>
+                        <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: "0 0 4px" }}>📋 Rapport de synthèse ergonomique</p>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>
+                          Basé sur {assessed.length} bilan{assessed.length > 1 ? "s" : ""} · {hasGroups ? `${bureau.count} postes bureau · ${debout.count} postes debout` : "Profil mixte"}
+                        </p>
                       </div>
+                      <span style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)", fontFamily: T.b, fontSize: 11, fontWeight: 600, color: "#7c9fff" }}>
+                        🩺 Validé par un kinésithérapeute
+                      </span>
                     </div>
 
-                    {/* Synthèse narrative */}
+                    {/* Synthèse narrative globale */}
                     <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.bgCard }}>
-                      <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.75, margin: 0 }}>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 10 }}>🔎 Synthèse générale</p>
+                      <p style={{ fontFamily: T.b, fontSize: 14, color: c.textSecondary, lineHeight: 1.8, margin: "0 0 12px" }}>
                         {criticalPct > 40
-                          ? `⚠️ Situation préoccupante — ${criticalPct}% de vos employés sont en zone critique (score < 50). `
+                          ? `⚠️ Situation préoccupante — ${criticalPct}% de vos employés (${criticalCount} personnes) sont en zone critique (score inférieur à 50/100). Une intervention rapide est recommandée.`
                           : criticalPct > 20
-                          ? `🟠 Situation à surveiller — ${criticalPct}% de vos employés nécessitent une attention particulière. `
-                          : `✅ Situation globalement satisfaisante — ${criticalPct}% d'employés en zone critique. `
+                          ? `🟠 Situation à surveiller — ${criticalPct}% de vos employés (${criticalCount} personnes) nécessitent une attention particulière dans les prochaines semaines.`
+                          : `✅ Situation globalement satisfaisante — seulement ${criticalPct}% d'employés en zone critique. Des améliorations restent possibles sur les dimensions les plus basses.`
                         }
-                        {painScore < 50
-                          ? `Les douleurs musculo-squelettiques sont la principale problématique identifiée (score moyen ${painScore}/100). `
-                          : setupScore < 50
-                          ? `Le setup ergonomique des postes de travail est la principale lacune identifiée (score moyen ${setupScore}/100). `
-                          : `Les habitudes de travail représentent le principal levier d'amélioration (score moyen ${habitsScore}/100). `
-                        }
-                        {worstDims[0] && `La dimension la plus critique est "${DIM_META[worstDims[0][0]]?.label}" avec un score moyen de ${worstDims[0][1]}/100.`}
                       </p>
+                      {hasGroups && (
+                        <p style={{ fontFamily: T.b, fontSize: 14, color: c.textSecondary, lineHeight: 1.8, margin: 0 }}>
+                          {`L'analyse révèle des profils de risque distincts entre vos deux groupes : l'équipe bureau (${bureau.count} personnes, score moyen ${bureau.global}/100) présente principalement des problématiques de ${bureauMainIssue}, tandis que l'équipe debout/entrepôt (${debout.count} personnes, score moyen ${debout.global}/100) est davantage exposée aux ${deboutMainIssue}.`}
+                        </p>
+                      )}
                     </div>
 
-                    {/* Troubles identifiés par zone */}
+                    {/* Comparaison par groupe */}
+                    {hasGroups && (
+                      <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.bgCard }}>
+                        <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 14 }}>📊 Comparaison bureau vs entrepôt</p>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                          {/* Bureau */}
+                          <div style={{ padding: "16px", borderRadius: 14, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                              <span style={{ fontSize: 18 }}>💻</span>
+                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#7c9fff" }}>Équipe bureau ({bureau.count})</span>
+                              <span style={{ marginLeft: "auto", fontFamily: T.h, fontWeight: 900, fontSize: 18, color: bureau.global ? scoreColor(bureau.global) : c.textMuted }}>{bureau.global ?? "—"}</span>
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {[
+                                { label: "Setup", val: bureau.setup },
+                                { label: "Douleurs", val: bureau.pain },
+                                { label: "Habitudes", val: bureau.habits },
+                                { label: "Sommeil", val: bureau.sleep },
+                              ].map(({ label, val }) => (
+                                <div key={label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <span style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, width: 70, flexShrink: 0 }}>{label}</span>
+                                  <div style={{ flex: 1, height: 5, background: c.bgCard2, borderRadius: 100, overflow: "hidden" }}>
+                                    <div style={{ width: `${val ?? 0}%`, height: "100%", borderRadius: 100, background: val ? scoreColor(val) : c.border }} />
+                                  </div>
+                                  <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: val ? scoreColor(val) : c.textMuted, width: 24, textAlign: "right" }}>{val ?? "—"}</span>
+                                </div>
+                              ))}
+                            </div>
+                            <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10, background: "rgba(240,149,149,0.08)", border: "0.5px solid rgba(240,149,149,0.2)" }}>
+                              <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595", margin: 0, lineHeight: 1.5 }}>
+                                ⚠️ Principale problématique : <strong>{bureauMainIssue}</strong>
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Debout */}
+                          <div style={{ padding: "16px", borderRadius: 14, background: "rgba(212,98,42,0.06)", border: "0.5px solid rgba(212,98,42,0.2)" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                              <span style={{ fontSize: 18 }}>🏭</span>
+                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#f4a261" }}>Équipe debout ({debout.count})</span>
+                              <span style={{ marginLeft: "auto", fontFamily: T.h, fontWeight: 900, fontSize: 18, color: debout.global ? scoreColor(debout.global) : c.textMuted }}>{debout.global ?? "—"}</span>
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {[
+                                { label: "Setup", val: debout.setup },
+                                { label: "Douleurs", val: debout.pain },
+                                { label: "Habitudes", val: debout.habits },
+                                { label: "Sommeil", val: debout.sleep },
+                              ].map(({ label, val }) => (
+                                <div key={label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <span style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, width: 70, flexShrink: 0 }}>{label}</span>
+                                  <div style={{ flex: 1, height: 5, background: c.bgCard2, borderRadius: 100, overflow: "hidden" }}>
+                                    <div style={{ width: `${val ?? 0}%`, height: "100%", borderRadius: 100, background: val ? scoreColor(val) : c.border }} />
+                                  </div>
+                                  <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: val ? scoreColor(val) : c.textMuted, width: 24, textAlign: "right" }}>{val ?? "—"}</span>
+                                </div>
+                              ))}
+                            </div>
+                            <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10, background: "rgba(244,162,97,0.08)", border: "0.5px solid rgba(244,162,97,0.2)" }}>
+                              <p style={{ fontFamily: T.b, fontSize: 12, color: "#f4a261", margin: 0, lineHeight: 1.5 }}>
+                                ⚠️ Principale problématique : <strong>{deboutMainIssue}</strong>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Troubles identifiés par zone anatomique */}
                     <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.bgCard }}>
-                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 14 }}>
-                        🔍 Troubles identifiés
-                      </p>
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 14 }}>🔍 Troubles identifiés par zone anatomique</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                         {[
                           {
                             zone: "Nuque & cervicales",
                             emoji: "🦆",
-                            risk: painScore < 50 && setupScore < 60,
-                            detail: `Écrans trop bas, laptops sans support → charge cervicale excessive. Score douleurs : ${painScore}/100`,
-                            color: "#f09595",
+                            risk: allPain < 55 && allSetup < 65,
+                            niveau: allPain < 45 ? "Critique" : allPain < 55 ? "Élevé" : "Modéré",
+                            couleur: allPain < 45 ? "#f09595" : allPain < 55 ? "#f4a261" : "#74c69d",
+                            detail: hasGroups
+                              ? `Bureau : douleurs cervicales liées aux écrans trop bas et laptops sans support (score setup ${bureau.setup}/100). Debout : tensions cervicales par port de charges en hauteur.`
+                              : `Douleurs cervicales liées à la posture de travail — charge sur les vertèbres cervicales augmentée par la flexion de tête. Score douleurs : ${allPain}/100`,
+                            conseils: [
+                              "Vérifier la hauteur des écrans — haut de l'écran au niveau des yeux",
+                              "Interdire l'usage de laptop seul sans rehausseur et clavier externe",
+                              "Intégrer 3 min de rétraction cervicale toutes les 2h",
+                            ],
                           },
                           {
-                            zone: "Bas du dos",
+                            zone: "Bas du dos & lombaires",
                             emoji: "🌿",
-                            risk: painScore < 55 || habitsScore < 50,
-                            detail: `Station assise prolongée sans pauses suffisantes → compression discale. Score habitudes : ${habitsScore}/100`,
-                            color: "#f4a261",
+                            risk: allHabits < 60 || allPain < 55,
+                            niveau: allHabits < 50 ? "Critique" : allHabits < 60 ? "Élevé" : "Modéré",
+                            couleur: allHabits < 50 ? "#f09595" : allHabits < 60 ? "#f4a261" : "#74c69d",
+                            detail: hasGroups
+                              ? `Bureau : compression discale par station assise prolongée sans pauses (${bureau.habits}/100 habitudes). Debout/entrepôt : lombalgies par manutention sans formation et postures de levage incorrectes (${debout.pain}/100 douleurs).`
+                              : `Lombalgies liées aux habitudes de travail — station prolongée sans alternance posturale. Score habitudes : ${allHabits}/100`,
+                            conseils: [
+                              "Mettre en place une alarme toutes les 45 min pour lever les équipes",
+                              "Former les manutentionnaires aux 5 principes de levage sécurisé",
+                              "Installer des tapis anti-fatigue aux postes debout fixes",
+                            ],
                           },
                           {
-                            zone: "Épaules & poignets",
+                            zone: "Épaules & membres supérieurs",
                             emoji: "🦅",
-                            risk: setupScore < 55,
-                            detail: `Positionnement clavier/souris inadapté → TMS des membres supérieurs. Score setup : ${setupScore}/100`,
-                            color: "#a78bfa",
+                            risk: allSetup < 65,
+                            niveau: allSetup < 50 ? "Critique" : allSetup < 60 ? "Élevé" : "Modéré",
+                            couleur: allSetup < 50 ? "#f09595" : allSetup < 60 ? "#f4a261" : "#74c69d",
+                            detail: hasGroups
+                              ? `Bureau : syndrome d'enroulement des épaules par positionnement clavier/souris inadapté (${bureau.setup}/100). Entrepôt : tendinopathies d'épaule par gestes répétitifs au-dessus des épaules.`
+                              : `TMS des membres supérieurs liés au setup ergonomique. Score setup : ${allSetup}/100`,
+                            conseils: [
+                              "Vérifier que clavier et souris sont à hauteur des coudes",
+                              "Proposer des souris verticales aux employés signalant des douleurs poignets",
+                              "Limiter les gestes répétitifs au-dessus des épaules — réorganiser les rangements",
+                            ],
                           },
-                        ].map((trouble, i) => (
-                          <div key={i} style={{
-                            padding: "14px", borderRadius: 12,
-                            background: trouble.risk ? `${trouble.color}08` : c.bgCard2,
-                            border: `0.5px solid ${trouble.risk ? trouble.color + "30" : c.border}`,
-                          }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                              <span style={{ fontSize: 18 }}>{trouble.emoji}</span>
-                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: trouble.risk ? trouble.color : c.textPrimary }}>
-                                {trouble.zone}
+                          {
+                            zone: "Jambes & pieds",
+                            emoji: "🦵",
+                            risk: hasGroups && (debout.pain ?? 100) < 55,
+                            niveau: hasGroups && (debout.pain ?? 100) < 45 ? "Critique" : "Modéré",
+                            couleur: hasGroups && (debout.pain ?? 100) < 45 ? "#f09595" : hasGroups && (debout.pain ?? 100) < 55 ? "#f4a261" : "#74c69d",
+                            detail: hasGroups
+                              ? `Spécifique équipe debout — jambes lourdes, œdèmes en fin de journée, risque d'insuffisance veineuse. Fatigue plantaire fréquente. Score douleurs entrepôt : ${debout.pain}/100`
+                              : "Zone moins concernée pour les postes bureau.",
+                            conseils: [
+                              "Imposer des chaussures de travail avec semelle amortissante",
+                              "Installer des tapis anti-fatigue sur les postes debout fixes",
+                              "Encourager la surélévation des jambes 20 min après le travail",
+                            ],
+                          },
+                        ].filter(t => t.risk || t.zone !== "Jambes & pieds" || hasGroups).map((trouble, i) => (
+                          <div key={i} style={{ borderRadius: 14, overflow: "hidden", border: `0.5px solid ${trouble.couleur}30` }}>
+                            <div style={{ padding: "12px 16px", background: `${trouble.couleur}08`, display: "flex", alignItems: "center", gap: 10 }}>
+                              <span style={{ fontSize: 20 }}>{trouble.emoji}</span>
+                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: trouble.couleur }}>{trouble.zone}</span>
+                              <span style={{ marginLeft: "auto", padding: "2px 10px", borderRadius: 100, background: `${trouble.couleur}15`, fontFamily: T.b, fontSize: 11, fontWeight: 600, color: trouble.couleur }}>
+                                {trouble.niveau}
                               </span>
-                              {trouble.risk && (
-                                <span style={{ marginLeft: "auto", padding: "2px 7px", borderRadius: 100, background: `${trouble.color}15`, fontFamily: T.b, fontSize: 10, color: trouble.color }}>
-                                  Risque identifié
-                                </span>
-                              )}
                             </div>
-                            <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.55 }}>{trouble.detail}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Produits recommandés */}
-                    <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.bgCard }}>
-                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}>
-                        🛒 Équipements recommandés pour vos postes
-                      </p>
-                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 14 }}>
-                        Sélection basée sur les scores de vos équipes. Liens Amazon affiliés.
-                      </p>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                        {[
-                          ...(setupScore < 60 ? PRODUCTS_BY_ISSUE.setup_bureau : []),
-                          ...(painScore < 55 ? PRODUCTS_BY_ISSUE.douleurs_bureau : []),
-                          ...(habitsScore < 50 ? PRODUCTS_BY_ISSUE.habits : []),
-                        ].slice(0, 5).map((prod, i) => (
-                          <a key={i} href={prod.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                            <div style={{
-                              display: "flex", alignItems: "center", gap: 12, padding: "12px 14px",
-                              borderRadius: 12, background: c.bgCard2, border: `0.5px solid ${c.border}`,
-                              transition: "border-color 0.15s",
-                            }}>
-                              <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(43,92,230,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>🛒</div>
-                              <div style={{ flex: 1 }}>
-                                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: "0 0 2px" }}>{prod.name}</p>
-                                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>{prod.reason}</p>
+                            <div style={{ padding: "14px 16px", background: c.bgCard }}>
+                              <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.7, margin: "0 0 12px" }}>{trouble.detail}</p>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                {trouble.conseils.map((conseil, j) => (
+                                  <div key={j} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                    <span style={{ color: trouble.couleur, fontSize: 12, marginTop: 2, flexShrink: 0 }}>→</span>
+                                    <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.5 }}>{conseil}</span>
+                                  </div>
+                                ))}
                               </div>
-                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#2b5ce6", flexShrink: 0 }}>{prod.price}</span>
                             </div>
-                          </a>
+                          </div>
                         ))}
                       </div>
                     </div>
 
-                    {/* Exercices collectifs recommandés */}
-                    <div style={{ padding: "20px 24px", background: c.bgCard }}>
-                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}>
-                        🏋️ Programme d&apos;exercices collectif recommandé
-                      </p>
-                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 14 }}>
-                        Basé sur les dimensions les plus critiques de vos équipes. À animer en groupe 3x/semaine.
-                      </p>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {/* Plan d'action employeur */}
+                    <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.bgCard }}>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}>🗓️ Plan d&apos;action recommandé</p>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 16 }}>Classé par impact et faisabilité — à adapter à votre contexte.</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                         {[
-                          ...(painScore < 55 ? EXERCISES_BY_ISSUE.nuque_cervicales : []),
-                          ...(habitsScore < 55 ? EXERCISES_BY_ISSUE.dos_lombaires : []),
-                          ...(setupScore < 55 ? EXERCISES_BY_ISSUE.epaules_poignets : []),
-                        ].slice(0, 4).map((ex, i) => (
-                          <div key={i} style={{
-                            display: "flex", alignItems: "center", gap: 12, padding: "12px 14px",
-                            borderRadius: 12, background: c.bgCard2, border: `0.5px solid ${c.border}`,
-                          }}>
-                            <span style={{ fontSize: 24, flexShrink: 0 }}>{ex.emoji}</span>
-                            <div style={{ flex: 1 }}>
-                              <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: "0 0 2px" }}>{ex.name}</p>
-                              <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>{ex.desc}</p>
+                          {
+                            horizon: "Cette semaine",
+                            color: "#f09595",
+                            actions: [
+                              allSetup < 60 ? "Faire l'inventaire des postes sans rehausseur d'écran et sans clavier externe" : null,
+                              allPain < 55 ? "Identifier les 3 employés avec les scores douleurs les plus bas et les rencontrer" : null,
+                              "Envoyer le programme d'exercices collectif à toutes les équipes",
+                            ].filter(Boolean) as string[],
+                          },
+                          {
+                            horizon: "Dans le mois",
+                            color: "#f4a261",
+                            actions: [
+                              allSetup < 60 ? "Équiper les postes bureau critiques : rehausseur + clavier externe (budget ~60€/poste)" : null,
+                              hasGroups && (debout.pain ?? 100) < 55 ? "Installer des tapis anti-fatigue aux postes debout fixes (budget ~45€/poste)" : null,
+                              allHabits < 55 ? "Mettre en place un système de pause active toutes les 45 min (app, alarme partagée)" : null,
+                              "Organiser une session de formation gestes et postures avec un kinésithérapeute",
+                            ].filter(Boolean) as string[],
+                          },
+                          {
+                            horizon: "Dans les 3 mois",
+                            color: "#74c69d",
+                            actions: [
+                              "Refaire passer les bilans PAW aux équipes pour mesurer l'évolution",
+                              "Intégrer les résultats dans votre rapport ESG Social / CSRD",
+                              allSetup < 55 ? "Étudier l'installation de bureaux assis-debout pour les postes les plus critiques" : null,
+                              "Planifier le call de restitution trimestriel avec le kinésithérapeute PAW",
+                            ].filter(Boolean) as string[],
+                          },
+                        ].map((phase, i) => (
+                          <div key={i} style={{ padding: "14px 16px", borderRadius: 12, background: c.bgCard2, border: `0.5px solid ${c.border}` }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                              <span style={{ width: 10, height: 10, borderRadius: "50%", background: phase.color, flexShrink: 0 }} />
+                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: phase.color }}>{phase.horizon}</span>
                             </div>
-                            <span style={{ padding: "3px 10px", borderRadius: 100, background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.2)", fontFamily: T.b, fontSize: 11, color: "#7c9fff", flexShrink: 0 }}>{ex.duration}</span>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {phase.actions.map((action, j) => (
+                                <div key={j} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                  <span style={{ color: phase.color, fontSize: 12, marginTop: 2, flexShrink: 0 }}>✓</span>
+                                  <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.5 }}>{action}</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         ))}
+                      </div>
+                    </div>
+
+                    {/* Produits recommandés par profil */}
+                    <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.bgCard }}>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}>🛒 Équipements recommandés</p>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 16 }}>Sélection basée sur les scores de vos équipes — par profil de poste.</p>
+                      <div style={{ display: "grid", gridTemplateColumns: hasGroups ? "1fr 1fr" : "1fr", gap: 12 }}>
+                        {hasGroups ? (
+                          <>
+                            <div>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#7c9fff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>💻 Postes bureau</p>
+                              {[
+                                ...(allSetup < 65 ? PRODUCTS_BY_ISSUE.setup_bureau : []),
+                                ...(allPain < 55 ? PRODUCTS_BY_ISSUE.douleurs_bureau : []),
+                              ].slice(0, 3).map((prod, i) => (
+                                <a key={i} href={prod.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 8 }}>
+                                    <span style={{ fontSize: 16, flexShrink: 0 }}>🛒</span>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: c.textPrimary, margin: "0 0 2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</p>
+                                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{prod.price}</p>
+                                    </div>
+                                  </div>
+                                </a>
+                              ))}
+                            </div>
+                            <div>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#f4a261", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>🏭 Postes debout</p>
+                              {[
+                                ...PRODUCTS_BY_ISSUE.setup_debout,
+                                ...PRODUCTS_BY_ISSUE.douleurs_debout,
+                              ].slice(0, 3).map((prod, i) => (
+                                <a key={i} href={prod.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 8 }}>
+                                    <span style={{ fontSize: 16, flexShrink: 0 }}>🛒</span>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: c.textPrimary, margin: "0 0 2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</p>
+                                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{prod.price}</p>
+                                    </div>
+                                  </div>
+                                </a>
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          [...PRODUCTS_BY_ISSUE.setup_bureau, ...PRODUCTS_BY_ISSUE.douleurs_bureau].slice(0, 4).map((prod, i) => (
+                            <a key={i} href={prod.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 8 }}>
+                                <span style={{ fontSize: 18, flexShrink: 0 }}>🛒</span>
+                                <div style={{ flex: 1 }}>
+                                  <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: "0 0 2px" }}>{prod.name}</p>
+                                  <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>{prod.reason}</p>
+                                </div>
+                                <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#2b5ce6", flexShrink: 0 }}>{prod.price}</span>
+                              </div>
+                            </a>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Programme exercices collectif */}
+                    <div style={{ padding: "20px 24px", background: c.bgCard }}>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}>🏋️ Programme d&apos;exercices collectif recommandé</p>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 16 }}>À animer 3x/semaine, 10 minutes. Peut être affiché en salle de pause.</p>
+                      <div style={{ display: "grid", gridTemplateColumns: hasGroups ? "1fr 1fr" : "1fr", gap: 12 }}>
+                        {hasGroups ? (
+                          <>
+                            <div>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#7c9fff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>💻 Équipe bureau</p>
+                              {EXERCISES_BY_ISSUE.nuque_cervicales.concat(EXERCISES_BY_ISSUE.epaules_poignets).slice(0, 3).map((ex, i) => (
+                                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 6 }}>
+                                  <span style={{ fontSize: 18, flexShrink: 0 }}>{ex.emoji}</span>
+                                  <div style={{ flex: 1 }}>
+                                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: c.textPrimary, margin: "0 0 1px" }}>{ex.name}</p>
+                                    <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{ex.duration}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            <div>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#f4a261", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>🏭 Équipe debout</p>
+                              {EXERCISES_BY_ISSUE.dos_lombaires.concat(EXERCISES_BY_ISSUE.jambes_pieds).slice(0, 3).map((ex, i) => (
+                                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 6 }}>
+                                  <span style={{ fontSize: 18, flexShrink: 0 }}>{ex.emoji}</span>
+                                  <div style={{ flex: 1 }}>
+                                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: c.textPrimary, margin: "0 0 1px" }}>{ex.name}</p>
+                                    <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{ex.duration}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          EXERCISES_BY_ISSUE.nuque_cervicales.concat(EXERCISES_BY_ISSUE.dos_lombaires).slice(0, 4).map((ex, i) => (
+                            <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 8 }}>
+                              <span style={{ fontSize: 22, flexShrink: 0 }}>{ex.emoji}</span>
+                              <div style={{ flex: 1 }}>
+                                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: "0 0 2px" }}>{ex.name}</p>
+                                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>{ex.desc}</p>
+                              </div>
+                              <span style={{ padding: "3px 10px", borderRadius: 100, background: "rgba(43,92,230,0.10)", fontFamily: T.b, fontSize: 11, color: "#7c9fff", flexShrink: 0 }}>{ex.duration}</span>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
 

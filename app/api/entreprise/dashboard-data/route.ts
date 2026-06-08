@@ -47,7 +47,7 @@ export async function GET() {
       (members ?? []).map(async (m) => {
         const { data: assessment } = await supabaseAdmin
           .from("assessments")
-          .select("global_score, scores, created_at")
+          .select("global_score, scores, created_at, job_type, answers")
           .eq("user_id", m.user_id)
           .eq("company_id", companyId)
           .order("created_at", { ascending: false })
@@ -60,6 +60,8 @@ export async function GET() {
           global_score: assessment?.global_score ?? null,
           scores: assessment?.scores ?? null,
           assessed_at: assessment?.created_at ?? null,
+          job_type: assessment?.job_type ?? null,
+          answers: assessment?.answers ?? null,
         };
       })
     );
