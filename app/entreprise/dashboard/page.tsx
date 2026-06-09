@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { Company } from "@/lib/supabase";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
@@ -252,11 +253,12 @@ export default function EntrepriseDashboard() {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [generatingCode, setGeneratingCode] = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "employees" | "exercises" | "resources" | "signals">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "employees" | "evolution" | "exercises" | "resources" | "signals">("overview");
   const [activeProfile, setActiveProfile] = useState<"bureau" | "debout">("bureau");
   const [expandedEmployee, setExpandedEmployee] = useState<string | null>(null);
   const [relanceSent, setRelanceSent] = useState(false);
   const [signals, setSignals] = useState<{ id: string; category: string; message: string; treated: boolean; created_at: string }[]>([]);
+  const [evolutionData, setEvolutionData] = useState<{ mois: string; global: number | null; bureau: number | null; debout: number | null; count: number }[]>([]);
 
   useEffect(() => {
     async function load() {
@@ -269,6 +271,7 @@ export default function EntrepriseDashboard() {
       const data = await res.json();
       setCompany(data.company);
       setEmployees(data.employees ?? []);
+      setEvolutionData(data.evolutionData ?? []);
 
       if (data.inviteCode) {
         setInviteCode(data.inviteCode);
@@ -500,6 +503,7 @@ export default function EntrepriseDashboard() {
           {([
             { key: "overview", label: "📊 Vue d'ensemble" },
             { key: "employees", label: "👥 Équipe" },
+            { key: "evolution", label: "📈 Évolution" },
             { key: "exercises", label: "🏋️ Exercices" },
             { key: "resources", label: "📚 Ressources" },
             { key: "signals", label: "💬 Signalements" },
@@ -1123,6 +1127,115 @@ export default function EntrepriseDashboard() {
                   </div>
                 )}
               </div>
+            </motion.div>
+          )}
+
+          {/* ── TAB ÉVOLUTION ── */}
+          {activeTab === "evolution" && (
+            <motion.div key="evolution" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+              {evolutionData.length < 2 ? (
+                <div style={{ borderRadius: 20, padding: "48px 24px", background: c.bgCard, border: `0.5px solid ${c.border}`, textAlign: "center" }}>
+                  <p style={{ fontSize: 36, marginBottom: 12 }}>📊</p>
+                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: c.textPrimary, marginBottom: 8 }}>
+                    Pas encore assez de données
+                  </p>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, maxWidth: 360, margin: "0 auto" }}>
+                    Le graphique d&apos;évolution s&apos;affiche à partir de 2 mois de données. Invitez vos équipes à compléter leur bilan.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Trend badge */}
+                  {(() => {
+                    const last = evolutionData[evolutionData.length - 1].global;
+                    const prev = evolutionData[evolutionData.length - 2].global;
+                    const diff = last !== null && prev !== null ? last - prev : null;
+                    return diff !== null ? (
+                      <div style={{
+                        display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 16px",
+                        borderRadius: 100, marginBottom: 16,
+                        background: diff >= 0 ? "rgba(29,158,117,0.10)" : "rgba(240,149,149,0.10)",
+                        border: `0.5px solid ${diff >= 0 ? "rgba(29,158,117,0.3)" : "rgba(240,149,149,0.3)"}`,
+                      }}>
+                        <span style={{ fontSize: 16 }}>{diff >= 0 ? "📈" : "📉"}</span>
+                        <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: diff >= 0 ? "#1d9e75" : "#f09595" }}>
+                          {diff >= 0 ? "+" : ""}{diff} pts vs mois précédent
+                        </span>
+                        <span style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted }}>
+                          Score global : {last}/100
+                        </span>
+                      </div>
+                    ) : null;
+                  })()}
+
+                  {/* LineChart */}
+                  <div style={{ borderRadius: 20, padding: "24px", background: c.bgCard, border: `0.5px solid ${c.border}`, marginBottom: 16 }}>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, marginBottom: 4 }}>
+                      Évolution mensuelle du score santé
+                    </p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 20 }}>
+                      Score global · Score bureau · Score postes debout
+                    </p>
+                    <ResponsiveContainer width="100%" height={260}>
+                      <LineChart data={evolutionData} margin={{ top: 4, right: 16, left: -16, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={c.border} />
+                        <XAxis dataKey="mois" tick={{ fontFamily: T.b, fontSize: 11, fill: c.textMuted }} />
+                        <YAxis domain={[0, 100]} tick={{ fontFamily: T.b, fontSize: 11, fill: c.textMuted }} />
+                        <Tooltip
+                          contentStyle={{ background: c.bgCard2, border: `0.5px solid ${c.border2}`, borderRadius: 12, fontFamily: T.b, fontSize: 12 }}
+                          labelStyle={{ color: c.textPrimary, fontWeight: 700, marginBottom: 4 }}
+                          itemStyle={{ color: c.textSecondary }}
+                        />
+                        <Legend wrapperStyle={{ fontFamily: T.b, fontSize: 12, paddingTop: 12 }} />
+                        <Line type="monotone" dataKey="global" name="Global" stroke="#2b5ce6" strokeWidth={2.5} dot={{ r: 4, fill: "#2b5ce6" }} activeDot={{ r: 6 }} connectNulls />
+                        <Line type="monotone" dataKey="bureau" name="Bureau" stroke="#7c9fff" strokeWidth={1.5} strokeDasharray="5 3" dot={{ r: 3 }} connectNulls />
+                        <Line type="monotone" dataKey="debout" name="Debout" stroke="#f4a261" strokeWidth={1.5} strokeDasharray="5 3" dot={{ r: 3 }} connectNulls />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Tableau mensuel */}
+                  <div style={{ borderRadius: 20, padding: "22px 24px", background: c.bgCard, border: `0.5px solid ${c.border}` }}>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, marginBottom: 16 }}>
+                      Détail mensuel
+                    </p>
+                    <div style={{ overflowX: "auto" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: T.b, fontSize: 13 }}>
+                        <thead>
+                          <tr style={{ borderBottom: `0.5px solid ${c.border}` }}>
+                            {["Mois", "Bilans", "Score global", "Bureau", "Debout"].map(h => (
+                              <th key={h} style={{ padding: "8px 12px", textAlign: "left", color: c.textMuted, fontWeight: 600, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[...evolutionData].reverse().map((row, i) => (
+                            <tr key={i} style={{ borderBottom: `0.5px solid ${c.border}` }}>
+                              <td style={{ padding: "10px 12px", color: c.textPrimary, fontWeight: 600 }}>{row.mois}</td>
+                              <td style={{ padding: "10px 12px", color: c.textSecondary }}>{row.count}</td>
+                              <td style={{ padding: "10px 12px" }}>
+                                {row.global !== null ? (
+                                  <span style={{ fontWeight: 700, color: scoreColor(row.global) }}>{row.global}/100</span>
+                                ) : <span style={{ color: c.textMuted }}>—</span>}
+                              </td>
+                              <td style={{ padding: "10px 12px" }}>
+                                {row.bureau !== null ? (
+                                  <span style={{ color: "#7c9fff" }}>{row.bureau}/100</span>
+                                ) : <span style={{ color: c.textMuted }}>—</span>}
+                              </td>
+                              <td style={{ padding: "10px 12px" }}>
+                                {row.debout !== null ? (
+                                  <span style={{ color: "#f4a261" }}>{row.debout}/100</span>
+                                ) : <span style={{ color: c.textMuted }}>—</span>}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </>
+              )}
             </motion.div>
           )}
 

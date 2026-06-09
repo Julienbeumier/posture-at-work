@@ -76,7 +76,31 @@ export async function GET() {
       .limit(1)
       .maybeSingle();
 
-    return NextResponse.json({ company, employees, inviteCode: invite?.code ?? null });
+    const { data: history } = await supabaseAdmin
+      .from("assessments")
+      .select("global_score, scores, created_at, job_type")
+      .eq("company_id", companyId)
+      .not("global_score", "is", null)
+      .order("created_at", { ascending: true });
+
+    const historyByMonth: Record<string, { scores: number[]; bureau: number[]; debout: number[] }> = {};
+    (history ?? []).forEach((a) => {
+      const mois = new Date(a.created_at).toLocaleDateString("fr-FR", { month: "short", year: "numeric" });
+      if (!historyByMonth[mois]) historyByMonth[mois] = { scores: [], bureau: [], debout: [] };
+      if (a.global_score) historyByMonth[mois].scores.push(a.global_score);
+      if (a.job_type === "bureau" && a.global_score) historyByMonth[mois].bureau.push(a.global_score);
+      if (a.job_type === "debout" && a.global_score) historyByMonth[mois].debout.push(a.global_score);
+    });
+
+    const evolutionData = Object.entries(historyByMonth).map(([mois, d]) => ({
+      mois,
+      global: d.scores.length ? Math.round(d.scores.reduce((a, b) => a + b, 0) / d.scores.length) : null,
+      bureau: d.bureau.length ? Math.round(d.bureau.reduce((a, b) => a + b, 0) / d.bureau.length) : null,
+      debout: d.debout.length ? Math.round(d.debout.reduce((a, b) => a + b, 0) / d.debout.length) : null,
+      count: d.scores.length,
+    }));
+
+    return NextResponse.json({ company, employees, inviteCode: invite?.code ?? null, evolutionData });
   } catch (err) {
     console.error("[dashboard-data]", err);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
