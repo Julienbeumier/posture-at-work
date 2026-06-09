@@ -39,7 +39,7 @@ function scoreBadge(score: number): { label: string; color: string; bg: string; 
 
 // ─── Animated score circle ────────────────────────────────────────────────────
 
-function ScoreCircle({ score }: { score: number }) {
+function ScoreCircle({ score, isPartial = false }: { score: number; isPartial?: boolean }) {
   const [displayed, setDisplayed] = useState(0);
 
   useEffect(() => {
@@ -82,6 +82,11 @@ function ScoreCircle({ score }: { score: number }) {
           {displayed}
         </span>
         <span style={{ fontSize: 11, color: "var(--t45)", marginTop: 2 }}>/100</span>
+        {isPartial && (
+          <span style={{ fontSize: 9, color: "#f4a261", marginTop: 1, fontFamily: T.b, fontWeight: 600 }}>
+            incomplet
+          </span>
+        )}
       </div>
     </div>
   );
@@ -279,9 +284,12 @@ export default function ResultsPage() {
   const [emailLoading, setEmailLoading] = useState(false);
 
   const [jobType, setJobType] = useState("bureau");
+  const [hasVideoAnalysis, setHasVideoAnalysis] = useState(false);
 
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
+    const videoData = sessionStorage.getItem("paw_analysis_personne");
+    setHasVideoAnalysis(!!videoData);
     const isExample = sessionStorage.getItem("paw_example_mode") === "true"
                    || localStorage.getItem("paw_example_mode") === "true";
     if (!isExample) {
@@ -471,7 +479,7 @@ export default function ResultsPage() {
           </div>
 
           {/* Circle */}
-          <ScoreCircle score={scores.global} />
+          <ScoreCircle score={scores.global} isPartial={!hasVideoAnalysis} />
 
           {/* Badge */}
           <div style={{
@@ -480,6 +488,93 @@ export default function ResultsPage() {
           }}>
             <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: badge.color }}>{badge.label}</span>
           </div>
+
+          {/* Bilan complet / incomplet */}
+          {hasVideoAnalysis ? (
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "5px 14px", borderRadius: 100, marginBottom: 16,
+              background: "rgba(29,158,117,0.12)", border: "0.5px solid rgba(29,158,117,0.3)",
+            }}>
+              <span style={{ fontSize: 12 }}>✅</span>
+              <span style={{ fontFamily: T.b, fontSize: 12, color: "#1d9e75", fontWeight: 600 }}>
+                Bilan complet — Analyse vidéo incluse
+              </span>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              style={{
+                borderRadius: 20, padding: "20px 24px", marginBottom: 20,
+                background: "rgba(124,58,237,0.08)",
+                border: "1.5px solid rgba(124,58,237,0.35)",
+                position: "relative", overflow: "hidden",
+                textAlign: "left", width: "100%",
+              }}
+            >
+              <div style={{
+                position: "absolute", top: -40, right: -40,
+                width: 160, height: 160, borderRadius: "50%",
+                background: "rgba(124,58,237,0.15)", filter: "blur(40px)",
+                pointerEvents: "none",
+              }} />
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                    background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.4)",
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
+                  }}>
+                    🎥
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 15, color: "#c4b5fd", margin: 0, lineHeight: 1.2 }}>
+                      Ton bilan est incomplet
+                    </p>
+                    <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(196,181,253,0.6)", margin: 0 }}>
+                      La partie la plus importante manque encore
+                    </p>
+                  </div>
+                </div>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.7, margin: "0 0 16px" }}>
+                  Le questionnaire analyse tes habitudes et ta douleur déclarée.
+                  Mais <strong style={{ color: "#c4b5fd" }}>personne n&apos;a encore vu ta posture réelle.</strong>
+                  {" "}L&apos;analyse vidéo IA est la seule façon de savoir exactement
+                  ce que ton corps fait au travail — en 40 secondes.
+                </p>
+                <div style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
+                  {[
+                    "Analyse posturale en temps réel",
+                    "Détection des déséquilibres",
+                    "Conseils ultra-personnalisés",
+                  ].map(f => (
+                    <span key={f} style={{
+                      padding: "4px 12px", borderRadius: 100,
+                      background: "rgba(124,58,237,0.12)", border: "0.5px solid rgba(124,58,237,0.25)",
+                      fontFamily: T.b, fontSize: 11, color: "#c4b5fd",
+                    }}>
+                      ✓ {f}
+                    </span>
+                  ))}
+                </div>
+                <Link href="/video-intro" style={{ textDecoration: "none" }}>
+                  <div style={{
+                    padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
+                    background: "linear-gradient(135deg, #7c3aed, #a78bfa)",
+                    boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
+                    fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
+                  }}>
+                    🎥 Compléter mon bilan avec l&apos;analyse vidéo →
+                  </div>
+                </Link>
+                <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", textAlign: "center", marginTop: 8 }}>
+                  40 secondes · Via ta caméra · Résultats immédiats
+                </p>
+              </div>
+            </motion.div>
+          )}
 
           <div>
             <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "var(--text-primary)", margin: 0, marginBottom: 8, lineHeight: 1.2 }}>
@@ -602,6 +697,43 @@ export default function ResultsPage() {
                 jobType={jobType}
               />
             ))}
+            {!hasVideoAnalysis && (
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+                style={{
+                  borderRadius: 20, padding: "20px 22px", marginTop: 8,
+                  background: "rgba(124,58,237,0.06)",
+                  border: "1px dashed rgba(124,58,237,0.35)",
+                  display: "flex", alignItems: "center", gap: 14,
+                }}
+              >
+                <div style={{ fontSize: 28, flexShrink: 0 }}>🎥</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#c4b5fd", margin: 0 }}>
+                      Analyse IA posturale
+                    </p>
+                    <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(124,58,237,0.2)", fontFamily: T.b, fontSize: 10, fontWeight: 700, color: "#c4b5fd" }}>
+                      NON ANALYSÉ
+                    </span>
+                  </div>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", margin: 0 }}>
+                    Claude Vision n&apos;a pas encore analysé ta posture réelle.
+                  </p>
+                </div>
+                <Link href="/video-intro" style={{ textDecoration: "none", flexShrink: 0 }}>
+                  <div style={{
+                    padding: "8px 16px", borderRadius: 100,
+                    background: "#7c3aed", color: "#fff",
+                    fontFamily: T.b, fontWeight: 700, fontSize: 12, cursor: "pointer",
+                  }}>
+                    Analyser →
+                  </div>
+                </Link>
+              </motion.div>
+            )}
           </div>
         </motion.div>
 
