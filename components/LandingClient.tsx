@@ -344,6 +344,42 @@ export default function LandingClient() {
         </motion.div>
       </section>
 
+      {/* ── VISION HOLISTIQUE ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 60px", padding: "0 24px" }}>
+        <motion.div {...fadeUp(0)} style={{
+          borderRadius: 20, padding: "40px",
+          background: "var(--bg-card)", border: "0.5px solid var(--border)",
+          display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40,
+        }}>
+          <div>
+            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#e24b4a", textTransform: "uppercase", marginBottom: 12 }}>Avant</p>
+            <h3 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)", marginBottom: 12, lineHeight: 1.3 }}>
+              L&apos;ergonomie mécanique
+            </h3>
+            <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)", lineHeight: 1.75, margin: "0 0 16px" }}>
+              Un ergonome venait en entreprise, adaptait le poste de travail, formait à la manutention. Hauteur d&apos;écran, position du clavier, technique de levage.
+            </p>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t40)", lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>
+              Utile. Mais insuffisant.
+            </p>
+          </div>
+          <div>
+            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>Maintenant</p>
+            <h3 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)", marginBottom: 12, lineHeight: 1.3 }}>
+              La vision biopsychosociale
+            </h3>
+            <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)", lineHeight: 1.75, margin: "0 0 16px" }}>
+              La recherche l&apos;a prouvé : les TMS viennent aussi du stress chronique, du manque de sommeil, de la nutrition et de l&apos;environnement de travail. Le cortisol élevé contracte tes muscles en permanence — indépendamment de ta chaise.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {["🧠 Psychosocial", "😴 Sommeil", "🥗 Nutrition", "🌡️ Environnement", "💪 Mode de vie"].map((tag) => (
+                <span key={tag} style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.2)", fontFamily: T.b, fontSize: 12, color: "#7c9fff" }}>{tag}</span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
       {/* ── B2B SECTION ── */}
       <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div {...fadeUp(0)} style={{ borderRadius: 20, overflow: "hidden", border: "0.5px solid rgba(124,58,237,0.25)" }}>
@@ -377,7 +413,12 @@ export default function LandingClient() {
               Dashboard RH anonymisé · Rapport collectif · Suivi trimestriel · Angle CSRD/ESG
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end" }}>
-              <Link href="/about" style={{ textDecoration: "none" }}>
+              <Link href="/entreprise" style={{ textDecoration: "none" }}>
+                <div style={{ padding: "13px 26px", borderRadius: 100, background: "transparent", border: "1.5px solid rgba(124,58,237,0.4)", color: "#a78bfa", fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
+                  Découvrir PAW Entreprise →
+                </div>
+              </Link>
+              <Link href="/entreprise#contact" style={{ textDecoration: "none" }}>
                 <div style={{ padding: "13px 26px", borderRadius: 100, background: "#7c3aed", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
                   Demander un devis →
                 </div>
