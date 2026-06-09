@@ -408,6 +408,15 @@ export default function EntrepriseDashboard() {
                   {copied ? "✓ Lien copié !" : "🔗 Inviter des employés"}
                 </button>
               )}
+              <a href="/entreprise/rapport-pdf" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                <button style={{
+                  padding: "9px 16px", borderRadius: 100, border: "none",
+                  background: "rgba(29,158,117,0.15)", color: "#1d9e75",
+                  fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer",
+                }}>
+                  📄 Exporter PDF
+                </button>
+              </a>
             </div>
           </div>
         </motion.div>
