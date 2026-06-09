@@ -369,7 +369,7 @@ export default function LandingClient() {
               La vision biopsychosociale
             </h3>
             <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)", lineHeight: 1.75, margin: "0 0 16px" }}>
-              La recherche l&apos;a prouvé : les TMS viennent aussi du stress chronique, du manque de sommeil, de la nutrition et de l&apos;environnement de travail. Le cortisol élevé contracte tes muscles en permanence — indépendamment de ta chaise.
+              La recherche l&apos;a prouvé : les TMS viennent aussi du stress chronique, du manque de sommeil, de la nutrition et de l&apos;environnement de travail. Le stress chronique maintient ton système nerveux en alerte permanente. Résultat : tes muscles restent contractés des heures, même au repos. Ton dos et ta nuque en paient le prix — indépendamment de ton setup.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {["🧠 Psychosocial", "😴 Sommeil", "🥗 Nutrition", "🌡️ Environnement", "💪 Mode de vie"].map((tag) => (
@@ -413,16 +413,18 @@ export default function LandingClient() {
               Dashboard RH anonymisé · Rapport collectif · Suivi trimestriel · Angle CSRD/ESG
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end" }}>
-              <Link href="/entreprise" style={{ textDecoration: "none" }}>
-                <div style={{ padding: "13px 26px", borderRadius: 100, background: "transparent", border: "1.5px solid rgba(124,58,237,0.4)", color: "#a78bfa", fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
-                  Découvrir PAW Entreprise →
-                </div>
-              </Link>
-              <Link href="/entreprise#contact" style={{ textDecoration: "none" }}>
-                <div style={{ padding: "13px 26px", borderRadius: 100, background: "#7c3aed", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
-                  Demander un devis →
-                </div>
-              </Link>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                <Link href="/entreprise" style={{ textDecoration: "none" }}>
+                  <div style={{ padding: "13px 22px", borderRadius: 100, background: "transparent", border: "1.5px solid rgba(124,58,237,0.5)", color: "#a78bfa", fontFamily: T.h, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+                    Découvrir PAW Entreprise →
+                  </div>
+                </Link>
+                <Link href="/entreprise#contact" style={{ textDecoration: "none" }}>
+                  <div style={{ padding: "13px 22px", borderRadius: 100, background: "#7c3aed", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+                    Demander un devis →
+                  </div>
+                </Link>
+              </div>
               <Link href="/entreprise/login" style={{ textDecoration: "none" }}>
                 <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t45)" }}>
                   Déjà client ?{" "}
