@@ -241,6 +241,154 @@ function generateReport(assessed: EmployeeRow[]) {
   };
 }
 
+function analyzeEmployee(emp: EmployeeRow): {
+  flags: { label: string; color: string; severity: "critical" | "warning" | "info" }[];
+  mainIssues: string[];
+  profile: string;
+  recommendations: string[];
+} {
+  const a = emp.answers ?? {};
+  const flags: { label: string; color: string; severity: "critical" | "warning" | "info" }[] = [];
+  const mainIssues: string[] = [];
+  const recommendations: string[] = [];
+
+  if (emp.job_type === "bureau") {
+    if (a.q1 === "laptop" && a.q_double_ecran === "laptop_seul") {
+      flags.push({ label: "Laptop seul sans rehausseur", color: "#f09595", severity: "critical" });
+      mainIssues.push("Laptop seul — charge cervicale +12kg en permanence");
+      recommendations.push("Rehausseur d'écran + clavier externe indispensable");
+    }
+    if (a.q3 === "no" || a.q_hauteur_bureau === "trop_bas") {
+      flags.push({ label: "Écran trop bas", color: "#f09595", severity: "critical" });
+    }
+    if (a.q5b === "couch" || a.q5b === "fixed") {
+      flags.push({ label: "Chaise inadaptée", color: "#f4a261", severity: "warning" });
+      mainIssues.push("Chaise sans soutien lombaire — posture effondrée en fin de journée");
+      recommendations.push("Coussin lombaire ou chaise ergonomique réglable");
+    }
+    const nuque = Number(a.q6 ?? 0);
+    const epaules = Number(a.q7 ?? 0);
+    const dos = Number(a.q8 ?? 0);
+    const poignets = Number(a.q9 ?? 0);
+    if (nuque >= 3) {
+      flags.push({ label: `Douleurs nuque ${nuque}/5`, color: "#f09595", severity: nuque >= 4 ? "critical" : "warning" });
+      mainIssues.push(`Douleurs cervicales significatives (${nuque}/5)`);
+    }
+    if (epaules >= 3) {
+      flags.push({ label: `Douleurs épaules ${epaules}/5`, color: "#f09595", severity: "warning" });
+      mainIssues.push(`Douleurs épaules (${epaules}/5) — enroulement postural probable`);
+    }
+    if (dos >= 3) {
+      flags.push({ label: `Douleurs lombaires ${dos}/5`, color: "#f4a261", severity: "warning" });
+      mainIssues.push(`Lombalgies (${dos}/5) — compression discale par position assise`);
+      recommendations.push("Pauses actives toutes les 45 min + coussin lombaire");
+    }
+    if (poignets >= 3) {
+      flags.push({ label: `Douleurs poignets ${poignets}/5`, color: "#f4a261", severity: "warning" });
+      recommendations.push("Souris verticale — risque syndrome canal carpien");
+    }
+    if (a.q_irradiation_bras === "coude" || a.q_irradiation_bras === "main") {
+      flags.push({ label: "Irradiation bras", color: "#e24b4a", severity: "critical" });
+      mainIssues.push("⚠️ Irradiation dans le bras — consultation kiné recommandée");
+    }
+    if (a.q_fourmillements === "permanent" || a.q_fourmillements === "travail") {
+      flags.push({ label: "Fourmillements", color: "#e24b4a", severity: "critical" });
+      mainIssues.push("Fourmillements — risque canal carpien ou compression nerveuse");
+    }
+    if (a.q_douleur_nuit === "reveille" || a.q_douleur_nuit === "souvent") {
+      flags.push({ label: "Douleurs nocturnes", color: "#e24b4a", severity: "critical" });
+      mainIssues.push("⚠️ Douleurs nocturnes — signe de pathologie évolutive");
+    }
+    const heures = Number(a.q13 ?? 0);
+    if (heures >= 9) {
+      flags.push({ label: `${heures}h/jour assis`, color: "#f4a261", severity: "warning" });
+      mainIssues.push(`${heures}h assis par jour — sédentarité excessive`);
+      recommendations.push("Alarme toutes les 45 min pour se lever");
+    }
+    if (a.q14 === "never") flags.push({ label: "Aucune pause active", color: "#f09595", severity: "critical" });
+    if (a.q14b === "none") {
+      flags.push({ label: "Aucune activité physique", color: "#f4a261", severity: "warning" });
+      recommendations.push("Encourager activité physique minimale 2x/semaine");
+    }
+    const stress = Number(a.q_stress_travail ?? 0);
+    if (stress >= 4) {
+      flags.push({ label: `Stress élevé ${stress}/5`, color: "#a78bfa", severity: "warning" });
+      mainIssues.push(`Stress chronique élevé (${stress}/5) — tension musculaire permanente via cortisol`);
+    }
+    const sommeil = Number(a.q17 ?? 7);
+    if (sommeil <= 5) {
+      flags.push({ label: `${sommeil}h de sommeil`, color: "#f09595", severity: "critical" });
+      mainIssues.push(`Manque de sommeil (${sommeil}h) — récupération musculaire insuffisante`);
+    }
+    if (a.qn1 === "screen") flags.push({ label: "Repas devant écran", color: "#f4a261", severity: "info" });
+    if (a.qn2 === "crash") {
+      flags.push({ label: "Crash post-repas", color: "#f4a261", severity: "warning" });
+      recommendations.push("Pause déjeuner loin de l'écran — repas protéiné");
+    }
+    const profileParts: string[] = [];
+    if (a.q1 === "laptop") profileParts.push("Laptop seul");
+    else if (a.q1 === "laptop_screen") profileParts.push("Laptop + écran");
+    else if (a.q1 === "desktop") profileParts.push("Desktop");
+    if (a.q2 === "remote") profileParts.push("Télétravail");
+    else if (a.q2 === "office") profileParts.push("Bureau fixe");
+    else if (a.q2 === "both") profileParts.push("Hybride");
+    if (a.q_anciennete_poste) {
+      const anc: Record<string, string> = { moins_6mois: "< 6 mois", "6m_2ans": "6m-2 ans", "2_5ans": "2-5 ans", "5_10ans": "5-10 ans", plus_10ans: "> 10 ans" };
+      profileParts.push(anc[a.q_anciennete_poste as string] ?? "");
+    }
+    return { flags, mainIssues, recommendations, profile: profileParts.filter(Boolean).join(" · ") };
+  } else {
+    const dos = Number(a.q_d_doul_dos ?? 0);
+    const jambes = Number(a.q_d_doul_jambes ?? 0);
+    const epaules = Number(a.q_d_doul_epaules ?? 0);
+    const pieds = Number(a.q_d_doul_pieds ?? 0);
+    if (dos >= 3) {
+      flags.push({ label: `Douleurs dos ${dos}/5`, color: "#f09595", severity: dos >= 4 ? "critical" : "warning" });
+      mainIssues.push(`Lombalgies significatives (${dos}/5) — manutention et station debout prolongée`);
+      recommendations.push("Formation gestes et postures de levage");
+    }
+    if (jambes >= 3) {
+      flags.push({ label: `Jambes lourdes ${jambes}/5`, color: "#f4a261", severity: "warning" });
+      mainIssues.push(`Fatigue des membres inférieurs (${jambes}/5) — insuffisance veineuse possible`);
+      recommendations.push("Chaussettes de compression + tapis anti-fatigue");
+    }
+    if (epaules >= 3) {
+      flags.push({ label: `Épaules ${epaules}/5`, color: "#f4a261", severity: "warning" });
+      mainIssues.push(`Douleurs épaules (${epaules}/5) — gestes répétitifs ou port de charges en hauteur`);
+    }
+    if (pieds >= 3) {
+      flags.push({ label: `Douleurs pieds ${pieds}/5`, color: "#f4a261", severity: "warning" });
+      recommendations.push("Semelles orthopédiques de travail");
+    }
+    if (a.q_d_posture_levage === "mauvaise") {
+      flags.push({ label: "Mauvaise technique levage", color: "#e24b4a", severity: "critical" });
+      mainIssues.push("⚠️ Technique de levage incorrecte — risque lombalgie aiguë");
+      recommendations.push("Formation urgente gestes et postures — risque arrêt de travail");
+    }
+    if (a.q_d_tapis === "non") {
+      flags.push({ label: "Pas de tapis anti-fatigue", color: "#f4a261", severity: "warning" });
+      recommendations.push("Tapis anti-fatigue au poste fixe — impact immédiat");
+    }
+    const sommeil = Number(a.q_d_sommeil ?? 7);
+    if (sommeil <= 5) {
+      flags.push({ label: `${sommeil}h de sommeil`, color: "#f09595", severity: "critical" });
+      mainIssues.push(`Manque de sommeil (${sommeil}h) — récupération insuffisante après journée physique`);
+    }
+    if (a.q_d_jambes_nuit === "souvent") {
+      flags.push({ label: "Jambes agitées la nuit", color: "#a78bfa", severity: "warning" });
+      mainIssues.push("Jambes agitées nocturnes — signe d'insuffisance veineuse");
+    }
+    const profileParts: string[] = ["Poste debout"];
+    if (a.q_d1 === "dur") profileParts.push("Sol dur");
+    if (a.q_d_gestes_repet === "toujours") profileParts.push("Gestes répétitifs");
+    if (a.q_d_anciennete) {
+      const anc: Record<string, string> = { moins_6mois: "< 6 mois", "6m_2ans": "6m-2 ans", "2_5ans": "2-5 ans", "5_10ans": "5-10 ans", plus_10ans: "> 10 ans" };
+      profileParts.push(anc[a.q_d_anciennete as string] ?? "");
+    }
+    return { flags, mainIssues, recommendations, profile: profileParts.filter(Boolean).join(" · ") };
+  }
+}
+
 export default function EntrepriseDashboard() {
   const { c } = useTheme();
   const router = useRouter();
@@ -1136,18 +1284,104 @@ export default function EntrepriseDashboard() {
                               initial={{ opacity: 0, height: 0 }}
                               animate={{ opacity: 1, height: "auto" }}
                               exit={{ opacity: 0, height: 0 }}
-                              style={{ padding: "16px", background: c.bgCard, borderRadius: "0 0 12px 12px", border: `0.5px solid ${c.border}`, borderTop: "none" }}
+                              style={{
+                                background: c.bgCard, borderRadius: "0 0 12px 12px",
+                                border: `0.5px solid ${c.border}`, borderTop: "none",
+                                overflow: "hidden",
+                              }}
                             >
-                              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
-                                {Object.entries(DIM_META).map(([key, meta]) => {
-                                  const score = emp.scores?.[key];
+                              <div style={{ padding: "16px 18px" }}>
+                                {(() => {
+                                  const analysis = analyzeEmployee(emp);
                                   return (
-                                    <div key={key} style={{ textAlign: "center" }}>
-                                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: "0 0 3px" }}>{meta.emoji} {meta.label}</p>
-                                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 16, color: score ? scoreColor(score) : c.textMuted, margin: 0 }}>{score ?? "—"}</p>
-                                    </div>
+                                    <>
+                                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, marginBottom: 12 }}>
+                                        {emp.job_type === "bureau" ? "💻" : "🏭"} {analysis.profile}
+                                      </p>
+
+                                      {/* Scores par dimension */}
+                                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 14 }}>
+                                        {Object.entries(DIM_META).map(([key, meta]) => {
+                                          const score = emp.scores?.[key];
+                                          return (
+                                            <div key={key} style={{
+                                              padding: "8px 10px", borderRadius: 10,
+                                              background: score ? `${scoreColor(score)}08` : c.bgCard2,
+                                              border: `0.5px solid ${score ? scoreColor(score) + "25" : c.border}`,
+                                              textAlign: "center",
+                                            }}>
+                                              <p style={{ fontFamily: T.b, fontSize: 10, color: c.textMuted, margin: "0 0 3px" }}>
+                                                {meta.emoji} {meta.label}
+                                              </p>
+                                              <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 16, color: score ? scoreColor(score) : c.textMuted, margin: 0 }}>
+                                                {score ?? "—"}
+                                              </p>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+
+                                      {/* Flags */}
+                                      {analysis.flags.length > 0 && (
+                                        <div style={{ marginBottom: 14 }}>
+                                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+                                            Signaux détectés
+                                          </p>
+                                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                                            {analysis.flags.map((flag, fi) => (
+                                              <span key={fi} style={{
+                                                padding: "3px 10px", borderRadius: 100,
+                                                background: `${flag.color}15`,
+                                                border: `0.5px solid ${flag.color}35`,
+                                                fontFamily: T.b, fontSize: 11, color: flag.color,
+                                                fontWeight: flag.severity === "critical" ? 700 : 400,
+                                              }}>
+                                                {flag.severity === "critical" ? "⚠️ " : ""}{flag.label}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {/* Problèmes principaux */}
+                                      {analysis.mainIssues.length > 0 && (
+                                        <div style={{ marginBottom: 14 }}>
+                                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+                                            Problèmes identifiés
+                                          </p>
+                                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                            {analysis.mainIssues.map((issue, ii) => (
+                                              <div key={ii} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                                                <span style={{ color: "#f09595", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
+                                                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textSecondary, margin: 0, lineHeight: 1.55 }}>{issue}</p>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {/* Recommandations */}
+                                      {analysis.recommendations.length > 0 && (
+                                        <div style={{
+                                          padding: "12px 14px", borderRadius: 10,
+                                          background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)",
+                                        }}>
+                                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#7c9fff", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+                                            Actions recommandées
+                                          </p>
+                                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                            {analysis.recommendations.map((rec, ri) => (
+                                              <div key={ri} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                                                <span style={{ color: "#7c9fff", fontSize: 12, flexShrink: 0, marginTop: 2 }}>✓</span>
+                                                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textSecondary, margin: 0, lineHeight: 1.55 }}>{rec}</p>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </>
                                   );
-                                })}
+                                })()}
                               </div>
                             </motion.div>
                           )}
