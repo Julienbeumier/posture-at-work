@@ -43,3 +43,4 @@ next-env.d.ts
 # seed scripts (test data only, not for production)
 scripts/seed-employees.ts
 scripts/seed-evolution.ts
+scripts/seed-demo-company.ts
