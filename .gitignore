@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# seed scripts (test data only, not for production)
+scripts/seed-employees.ts
+scripts/seed-evolution.ts
