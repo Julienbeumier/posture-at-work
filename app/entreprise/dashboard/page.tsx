@@ -171,6 +171,7 @@ interface EmployeeRow {
   assessed_at: string | null;
   job_type: "bureau" | "debout" | null;
   answers: Record<string, unknown> | null;
+  video_analysis: Record<string, unknown> | null;
 }
 
 function generateReport(assessed: EmployeeRow[]) {
@@ -1379,6 +1380,85 @@ export default function EntrepriseDashboard() {
                                           </div>
                                         </div>
                                       )}
+                                    {/* Analyse vidéo */}
+                                    {emp.video_analysis && (() => {
+                                      const va = emp.video_analysis;
+                                      const personne = (va.personne as Record<string, unknown>) ?? null;
+                                      const debout = (va.debout as Record<string, unknown>) ?? null;
+                                      const analyse = personne ?? debout;
+                                      if (!analyse) return null;
+
+                                      const posture = analyse.posture_analysis as Record<string, unknown> ?? {};
+                                      const postureScore = posture.score as number ?? null;
+                                      const overall = posture.overall_observation as string ?? null;
+                                      const actions = analyse.priority_actions as Record<string, unknown>[] ?? [];
+
+                                      return (
+                                        <div style={{ marginTop: 12 }}>
+                                          <div style={{
+                                            padding: "12px 14px", borderRadius: 10,
+                                            background: "rgba(124,58,237,0.08)", border: "0.5px solid rgba(124,58,237,0.25)",
+                                            marginBottom: 10,
+                                          }}>
+                                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                                              <span style={{ fontSize: 16 }}>🎥</span>
+                                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#c4b5fd" }}>
+                                                Analyse vidéo IA posturale
+                                              </span>
+                                              {postureScore && (
+                                                <span style={{
+                                                  marginLeft: "auto", padding: "2px 10px", borderRadius: 100,
+                                                  background: `${scoreColor(postureScore)}15`,
+                                                  border: `0.5px solid ${scoreColor(postureScore)}35`,
+                                                  fontFamily: T.h, fontWeight: 700, fontSize: 12,
+                                                  color: scoreColor(postureScore),
+                                                }}>
+                                                  {postureScore}/100
+                                                </span>
+                                              )}
+                                            </div>
+                                            {overall && (
+                                              <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t60)", lineHeight: 1.6, margin: "0 0 10px" }}>
+                                                {overall}
+                                              </p>
+                                            )}
+                                            {actions.length > 0 && (
+                                              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                                {actions.slice(0, 2).map((action, ai) => (
+                                                  <div key={ai} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                                                    <span style={{ color: "#c4b5fd", fontSize: 11, flexShrink: 0, marginTop: 2 }}>
+                                                      {ai + 1}.
+                                                    </span>
+                                                    <div>
+                                                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "#c4b5fd", margin: "0 0 2px" }}>
+                                                        {action.title as string}
+                                                      </p>
+                                                      <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0, lineHeight: 1.5 }}>
+                                                        {action.impact as string}
+                                                      </p>
+                                                    </div>
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                      );
+                                    })()}
+
+                                    {/* Badge si pas de vidéo */}
+                                    {!emp.video_analysis && emp.global_score && (
+                                      <div style={{
+                                        marginTop: 12, padding: "10px 14px", borderRadius: 10,
+                                        background: "rgba(124,58,237,0.04)", border: "0.5px dashed rgba(124,58,237,0.25)",
+                                        display: "flex", alignItems: "center", gap: 8,
+                                      }}>
+                                        <span style={{ fontSize: 14 }}>🎥</span>
+                                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)", margin: 0 }}>
+                                          Analyse vidéo non effectuée — inviter cet employé à compléter son bilan
+                                        </p>
+                                      </div>
+                                    )}
                                     </>
                                   );
                                 })()}
