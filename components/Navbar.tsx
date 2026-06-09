@@ -109,11 +109,13 @@ export default function Navbar() {
       >
         {/* Logo */}
         <Link href="/" style={{ textDecoration: "none" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
-              PAW
+          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            <span style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 900, fontSize: 20, color: "var(--text-primary)", letterSpacing: "-0.5px", lineHeight: 1 }}>
+              PAW<span style={{ color: "#2b5ce6" }}>.</span>
             </span>
-            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#7c9fff" }}>.</span>
+            <span style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 8, letterSpacing: "0.18em", color: "var(--t35)", textTransform: "uppercase", lineHeight: 1, marginTop: 2 }}>
+              Posture At Work
+            </span>
           </div>
         </Link>
 

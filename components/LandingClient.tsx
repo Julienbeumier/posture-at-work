@@ -152,7 +152,7 @@ export default function LandingClient() {
         }}>
           Nuque, dos, épaules.<br />
           <span style={{ color: "#2b5ce6" }}>Ton corps te donne des signaux.</span><br />
-          PAW t&apos;aide à les comprendre.
+          Posture At Work t&apos;aide à les comprendre.
         </motion.h1>
 
         <motion.p {...fadeUp(0.1)} style={{
