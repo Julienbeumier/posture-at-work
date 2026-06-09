@@ -356,7 +356,7 @@ export default function EntrepriseRapportPDF() {
                   color: "#15803d",
                   actions: [
                     "Refaire passer les bilans PAW pour mesurer l'évolution",
-                    "Intégrer les résultats dans votre rapport ESG Social / CSRD",
+                    "Intégrer les résultats dans votre reporting ESG Social (pilier S)",
                     "Planifier le call de restitution trimestriel avec le kinésithérapeute PAW",
                   ],
                   impact: "Suivi de l'évolution et valorisation ESG",

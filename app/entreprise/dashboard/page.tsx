@@ -259,6 +259,7 @@ export default function EntrepriseDashboard() {
   const [relanceSent, setRelanceSent] = useState(false);
   const [signals, setSignals] = useState<{ id: string; category: string; message: string; treated: boolean; created_at: string }[]>([]);
   const [evolutionData, setEvolutionData] = useState<{ mois: string; global: number | null; bureau: number | null; debout: number | null; count: number }[]>([]);
+  const [employeeFilter, setEmployeeFilter] = useState<"all" | "bureau" | "debout">("all");
 
   useEffect(() => {
     async function load() {
@@ -381,7 +382,7 @@ export default function EntrepriseDashboard() {
 
   return (
     <main style={{ minHeight: "100vh", paddingBottom: 80 }}>
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px 0" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "80px 24px 0" }}>
 
         {/* ── HEADER ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 28 }}>
@@ -1064,13 +1065,33 @@ export default function EntrepriseDashboard() {
                     </button>
                   </div>
                 )}
+                {employees.length > 0 && (
+                  <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+                    {([
+                      { key: "all", label: `Tous (${employees.length})` },
+                      { key: "bureau", label: `💻 Bureau (${employees.filter(e => e.job_type === "bureau").length})` },
+                      { key: "debout", label: `🏭 Debout (${employees.filter(e => e.job_type === "debout").length})` },
+                    ] as const).map(f => (
+                      <button key={f.key} onClick={() => setEmployeeFilter(f.key)} style={{
+                        padding: "7px 14px", borderRadius: 100,
+                        background: employeeFilter === f.key ? "#2b5ce6" : c.bgCard2,
+                        color: employeeFilter === f.key ? "#fff" : c.textMuted,
+                        fontFamily: T.b, fontWeight: 600, fontSize: 12,
+                        border: `0.5px solid ${employeeFilter === f.key ? "#2b5ce6" : c.border}`,
+                        cursor: "pointer",
+                      }}>
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {employees.length === 0 ? (
                   <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, textAlign: "center", padding: "20px 0" }}>
                     Aucun employé inscrit. Partagez le lien d&apos;invitation depuis l&apos;onglet Vue d&apos;ensemble.
                   </p>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {employees.map((emp, i) => (
+                    {employees.filter(e => employeeFilter === "all" || e.job_type === employeeFilter).map((emp, i) => (
                       <div key={i}>
                         <div
                           onClick={() => setExpandedEmployee(expandedEmployee === emp.anonymous_id ? null : emp.anonymous_id)}
