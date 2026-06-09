@@ -20,6 +20,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isEnterpriseAdmin, setIsEnterpriseAdmin] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,6 +30,22 @@ export default function Navbar() {
       (_, session) => setUser(session?.user ?? null)
     );
     return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    async function checkEnterprise() {
+      const supabase = createClient();
+      const { data: { user: u } } = await supabase.auth.getUser();
+      if (!u) return;
+      const { data } = await supabase
+        .from("company_memberships")
+        .select("company_id")
+        .eq("user_id", u.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      setIsEnterpriseAdmin(!!data);
+    }
+    checkEnterprise();
   }, []);
 
   useEffect(() => {
@@ -149,10 +166,10 @@ export default function Navbar() {
           </button>
 
           {/* Entreprise link (desktop) */}
-          <Link href="/entreprise" className="hidden md:block" style={{ textDecoration: "none" }}>
-            <div style={{ color: "var(--t55)", fontSize: 14, cursor: "pointer", fontFamily: T.h }}>
-              Entreprise
-            </div>
+          <Link href={isEnterpriseAdmin ? "/entreprise/dashboard" : "/entreprise"} className="hidden md:block" style={{ textDecoration: "none" }}>
+            <span style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "var(--t55)", cursor: "pointer" }}>
+              {isEnterpriseAdmin ? "Dashboard RH" : "Entreprise"}
+            </span>
           </Link>
 
           {/* Desktop nav links (hidden on mobile) */}
@@ -267,8 +284,8 @@ export default function Navbar() {
           <Link href="/exemple-rapport" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
             👁️ Voir un exemple
           </Link>
-          <Link href="/entreprise" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
-            🏢 Entreprise
+          <Link href={isEnterpriseAdmin ? "/entreprise/dashboard" : "/entreprise"} onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+            🏢 {isEnterpriseAdmin ? "Dashboard RH" : "Entreprise"}
           </Link>
           {!user && (
             <Link href="/auth" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
