@@ -18,6 +18,7 @@ export default function EntrepriseLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [resetSent, setResetSent] = useState(false);
 
   async function handleLogin() {
     if (!email || !password) return;
@@ -33,6 +34,23 @@ export default function EntrepriseLoginPage() {
     }
 
     router.push("/entreprise/dashboard");
+  }
+
+  async function handleGoogleLogin() {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/entreprise/dashboard`,
+      },
+    });
+  }
+
+  async function handleForgotPassword() {
+    if (!email) { setError("Entre ton email d'abord"); return; }
+    await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/entreprise/reset-password`,
+    });
+    setResetSent(true);
   }
 
   return (
@@ -62,6 +80,30 @@ export default function EntrepriseLoginPage() {
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <button
+              onClick={handleGoogleLogin}
+              style={{
+                width: "100%", padding: "13px 0", borderRadius: 12,
+                background: c.bgCard2, border: `1px solid ${c.border2}`,
+                color: c.textPrimary, fontFamily: T.b, fontWeight: 600, fontSize: 14,
+                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18">
+                <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+                <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.01a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/>
+                <path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/>
+                <path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/>
+              </svg>
+              Continuer avec Google
+            </button>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "4px 0" }}>
+              <div style={{ flex: 1, height: 1, background: c.border }} />
+              <span style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted }}>ou</span>
+              <div style={{ flex: 1, height: 1, background: c.border }} />
+            </div>
+
             <input
               type="email"
               placeholder="Email professionnel"
@@ -77,6 +119,14 @@ export default function EntrepriseLoginPage() {
               onKeyDown={e => e.key === "Enter" && handleLogin()}
               style={{ padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `1px solid ${c.border2}`, color: c.textPrimary, fontFamily: T.b, fontSize: 14, outline: "none" }}
             />
+            <div style={{ textAlign: "right", marginTop: -4 }}>
+              <span
+                onClick={handleForgotPassword}
+                style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff", cursor: "pointer" }}
+              >
+                Mot de passe oublié ?
+              </span>
+            </div>
             {error && (
               <p style={{ fontFamily: T.b, fontSize: 12, color: "#e24b4a" }}>{error}</p>
             )}
@@ -95,6 +145,11 @@ export default function EntrepriseLoginPage() {
             >
               {loading ? "Connexion…" : "Se connecter →"}
             </button>
+            {resetSent && (
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "#1d9e75", textAlign: "center" }}>
+                ✓ Email de réinitialisation envoyé — vérifie ta boîte mail
+              </p>
+            )}
           </div>
         </motion.div>
 

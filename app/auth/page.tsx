@@ -18,11 +18,22 @@ function AuthForm() {
   const [error, setError] = useState("");
   const [consented, setConsented] = useState(false);
 
-  // If already logged in, redirect
+  // If already logged in, redirect — admin goes to entreprise/dashboard
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) router.replace(redirect);
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      const { data: adminMembership } = await supabase
+        .from("company_memberships")
+        .select("company_id")
+        .eq("user_id", data.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (adminMembership) {
+        router.replace("/entreprise/dashboard");
+      } else {
+        router.replace(redirect);
+      }
     });
   }, [redirect, router]);
 
