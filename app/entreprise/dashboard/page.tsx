@@ -252,9 +252,11 @@ export default function EntrepriseDashboard() {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [generatingCode, setGeneratingCode] = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "employees" | "exercises" | "resources">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "employees" | "exercises" | "resources" | "signals">("overview");
   const [activeProfile, setActiveProfile] = useState<"bureau" | "debout">("bureau");
   const [expandedEmployee, setExpandedEmployee] = useState<string | null>(null);
+  const [relanceSent, setRelanceSent] = useState(false);
+  const [signals, setSignals] = useState<{ id: string; category: string; message: string; treated: boolean; created_at: string }[]>([]);
 
   useEffect(() => {
     async function load() {
@@ -273,6 +275,13 @@ export default function EntrepriseDashboard() {
         setInviteUrl(`https://postureatwork.com/join/${data.inviteCode}`);
       }
       setLoading(false);
+
+      // Charger les signalements
+      const signalsRes = await fetch("/api/entreprise/signals").catch(() => null);
+      if (signalsRes?.ok) {
+        const signalsData = await signalsRes.json();
+        if (signalsData?.data) setSignals(signalsData.data);
+      }
     }
     load();
   }, []);
@@ -295,6 +304,38 @@ export default function EntrepriseDashboard() {
     navigator.clipboard.writeText(inviteUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleRelance() {
+    if (inviteUrl) {
+      navigator.clipboard.writeText(
+        `Bonjour, votre employeur vous invite à compléter votre bilan santé au travail PAW. C'est gratuit, confidentiel et prend 5 minutes : ${inviteUrl}`
+      );
+      setRelanceSent(true);
+      setTimeout(() => setRelanceSent(false), 4000);
+    }
+  }
+
+  function getSocialHealthScore(avg: number | null, part: number): {
+    level: "Bronze" | "Silver" | "Gold" | "—";
+    color: string; bg: string; border: string; desc: string;
+  } {
+    if (!avg || part < 50) return {
+      level: "—", color: c.textMuted, bg: "transparent", border: "rgba(255,255,255,0.1)",
+      desc: "Complétez au moins 50% des bilans pour obtenir votre score.",
+    };
+    if (avg >= 70 && part >= 80) return {
+      level: "Gold", color: "#f59e0b", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.25)",
+      desc: "Excellence — vos équipes sont en très bonne santé ergonomique.",
+    };
+    if (avg >= 55 && part >= 60) return {
+      level: "Silver", color: "#94a3b8", bg: "rgba(148,163,184,0.08)", border: "rgba(148,163,184,0.25)",
+      desc: "Bon niveau — des améliorations ciblées peuvent vous faire passer Gold.",
+    };
+    return {
+      level: "Bronze", color: "#d4622a", bg: "rgba(212,98,42,0.08)", border: "rgba(212,98,42,0.25)",
+      desc: "Des actions prioritaires sont nécessaires pour améliorer le bien-être de vos équipes.",
+    };
   }
 
   const assessed = employees.filter(e => e.global_score !== null);
@@ -419,6 +460,34 @@ export default function EntrepriseDashboard() {
             <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#2b5ce6", margin: "0 0 4px" }}>{participation}%</p>
             <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>Participation</p>
           </div>
+
+          {(() => {
+            const shs = getSocialHealthScore(avgGlobal, participation);
+            return (
+              <div style={{
+                gridColumn: "1 / -1", borderRadius: 16, padding: "16px 20px",
+                background: shs.bg, border: `0.5px solid ${shs.border}`,
+                display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
+              }}>
+                <div>
+                  <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: shs.color, textTransform: "uppercase", margin: "0 0 4px" }}>
+                    Score Santé Sociale PAW
+                  </p>
+                  <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: shs.color }}>
+                    {shs.level === "Gold" ? "🥇" : shs.level === "Silver" ? "🥈" : shs.level === "Bronze" ? "🥉" : "—"} {shs.level}
+                  </span>
+                </div>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, margin: 0, flex: 1, lineHeight: 1.5 }}>
+                  {shs.desc}
+                </p>
+                {shs.level !== "—" && (
+                  <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0, flexShrink: 0 }}>
+                    Utilisable dans votre reporting RSE · Valorisable auprès de votre banque
+                  </p>
+                )}
+              </div>
+            );
+          })()}
         </motion.div>
 
         {/* ── TABS ── */}
@@ -433,6 +502,7 @@ export default function EntrepriseDashboard() {
             { key: "employees", label: "👥 Équipe" },
             { key: "exercises", label: "🏋️ Exercices" },
             { key: "resources", label: "📚 Ressources" },
+            { key: "signals", label: "💬 Signalements" },
           ] as const).map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
               flex: 1, padding: "10px 0", borderRadius: 10, border: "none",
@@ -962,6 +1032,25 @@ export default function EntrepriseDashboard() {
                     {assessed.length}/{employees.length} bilans complétés
                   </span>
                 </div>
+                {employees.filter(e => !e.global_score).length > 0 && (
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, padding: "14px 16px", borderRadius: 12, background: "rgba(244,162,97,0.08)", border: "0.5px solid rgba(244,162,97,0.2)" }}>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "#f4a261", margin: 0 }}>
+                      ⏳ {employees.filter(e => !e.global_score).length} employé{employees.filter(e => !e.global_score).length > 1 ? "s n'ont" : " n'a"} pas encore complété son bilan.
+                    </p>
+                    <button
+                      onClick={handleRelance}
+                      disabled={relanceSent}
+                      style={{
+                        padding: "8px 16px", borderRadius: 100, border: "none",
+                        background: relanceSent ? "#1d9e75" : "#f4a261",
+                        color: "#fff", fontFamily: T.b, fontWeight: 600, fontSize: 12,
+                        cursor: relanceSent ? "default" : "pointer",
+                      }}
+                    >
+                      {relanceSent ? "✓ Lien copié !" : "Relancer par lien →"}
+                    </button>
+                  </div>
+                )}
                 {employees.length === 0 ? (
                   <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, textAlign: "center", padding: "20px 0" }}>
                     Aucun employé inscrit. Partagez le lien d&apos;invitation depuis l&apos;onglet Vue d&apos;ensemble.
@@ -1063,17 +1152,24 @@ export default function EntrepriseDashboard() {
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   {EXERCISES_BY_PROFILE[activeProfile].map((ex, i) => (
-                    <div key={i} style={{ display: "flex", gap: 14, padding: "16px", borderRadius: 14, background: c.bgCard2, border: `0.5px solid ${c.border}` }}>
-                      <span style={{ fontSize: 28, flexShrink: 0 }}>{ex.emoji}</span>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-                          <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, margin: 0 }}>{ex.name}</p>
-                          <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.2)", fontFamily: T.b, fontSize: 11, color: "#7c9fff", flexShrink: 0, marginLeft: 8 }}>{ex.duration}</span>
+                    <a key={i} href={`/mobilite?exercise=${encodeURIComponent(ex.name)}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                      <div style={{ display: "flex", gap: 14, padding: "16px", borderRadius: 14, background: c.bgCard2, border: `0.5px solid ${c.border}`, cursor: "pointer", transition: "border-color 0.2s" }}>
+                        <span style={{ fontSize: 28, flexShrink: 0 }}>{ex.emoji}</span>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+                            <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, margin: 0 }}>{ex.name}</p>
+                            <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.2)", fontFamily: T.b, fontSize: 11, color: "#7c9fff", flexShrink: 0, marginLeft: 8 }}>{ex.duration}</span>
+                          </div>
+                          <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.55 }}>{ex.desc}</p>
                         </div>
-                        <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.55 }}>{ex.desc}</p>
                       </div>
-                    </div>
+                    </a>
                   ))}
+                  <a href={`/mobilite?program=${activeProfile === "bureau" ? "nuque" : "dos"}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                    <div style={{ marginTop: 8, padding: "14px 0", borderRadius: 100, textAlign: "center", background: "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 800, fontSize: 14, cursor: "pointer", boxShadow: "0 4px 16px rgba(43,92,230,0.3)" }}>
+                      Lancer le programme complet dans PAW →
+                    </div>
+                  </a>
                 </div>
               </div>
 
@@ -1133,6 +1229,83 @@ export default function EntrepriseDashboard() {
                     </button>
                   </a>
                 </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── TAB SIGNALEMENTS ── */}
+          {activeTab === "signals" && (
+            <motion.div key="signals" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+              <div style={{ borderRadius: 20, padding: "22px 24px", background: c.bgCard, border: `0.5px solid ${c.border}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: 0 }}>
+                    💬 Signalements de vos équipes
+                  </p>
+                  <span style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted }}>
+                    {signals.filter(s => !s.treated).length} non traité{signals.filter(s => !s.treated).length > 1 ? "s" : ""}
+                  </span>
+                </div>
+
+                {signals.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "32px 0" }}>
+                    <p style={{ fontSize: 32, marginBottom: 8 }}>📭</p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted }}>Aucun signalement pour l&apos;instant.</p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginTop: 4 }}>
+                      Vos employés peuvent signaler des problèmes ergonomiques après leur bilan.
+                    </p>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {signals.map((signal, i) => (
+                      <div key={i} style={{
+                        padding: "14px 16px", borderRadius: 12,
+                        background: signal.treated ? c.bgCard2 : "rgba(43,92,230,0.05)",
+                        border: `0.5px solid ${signal.treated ? c.border : "rgba(43,92,230,0.2)"}`,
+                        display: "flex", gap: 14, alignItems: "flex-start",
+                        opacity: signal.treated ? 0.6 : 1,
+                      }}>
+                        <span style={{ fontSize: 20, flexShrink: 0 }}>
+                          {signal.category === "eclairage" ? "💡"
+                            : signal.category === "temperature" ? "🌡️"
+                            : signal.category === "bruit" ? "🔊"
+                            : signal.category === "poste_travail" ? "🪑"
+                            : signal.category === "espace" ? "📐"
+                            : signal.category === "manutention" ? "📦"
+                            : "💬"}
+                        </span>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                            <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(43,92,230,0.10)", fontFamily: T.b, fontSize: 10, fontWeight: 600, color: "#7c9fff", textTransform: "capitalize" }}>
+                              {signal.category.replace("_", " ")}
+                            </span>
+                            <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>
+                              {new Date(signal.created_at).toLocaleDateString("fr-FR")}
+                            </span>
+                            {signal.treated && (
+                              <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(29,158,117,0.12)", fontFamily: T.b, fontSize: 10, color: "#1d9e75" }}>
+                                ✓ Traité
+                              </span>
+                            )}
+                          </div>
+                          <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.6 }}>
+                            {signal.message}
+                          </p>
+                        </div>
+                        {!signal.treated && (
+                          <button
+                            onClick={async () => {
+                              await fetch(`/api/entreprise/signals/${signal.id}`, { method: "PATCH" });
+                              setSignals(prev => prev.map(s => s.id === signal.id ? { ...s, treated: true } : s));
+                            }}
+                            style={{ padding: "6px 12px", borderRadius: 8, border: "none", background: "#1d9e75", color: "#fff", fontFamily: T.b, fontWeight: 600, fontSize: 11, cursor: "pointer", flexShrink: 0 }}
+                          >
+                            Marquer traité
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
