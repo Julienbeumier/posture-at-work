@@ -476,28 +476,6 @@ export default function EntrepriseDashboard() {
     }
   }
 
-  function getSocialHealthScore(avg: number | null, part: number): {
-    level: "Bronze" | "Silver" | "Gold" | "—";
-    color: string; bg: string; border: string; desc: string;
-  } {
-    if (!avg || part < 50) return {
-      level: "—", color: c.textMuted, bg: "transparent", border: "rgba(255,255,255,0.1)",
-      desc: "Complétez au moins 50% des bilans pour obtenir votre score.",
-    };
-    if (avg >= 70 && part >= 80) return {
-      level: "Gold", color: "#f59e0b", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.25)",
-      desc: "Excellence — vos équipes sont en très bonne santé ergonomique.",
-    };
-    if (avg >= 55 && part >= 60) return {
-      level: "Silver", color: "#94a3b8", bg: "rgba(148,163,184,0.08)", border: "rgba(148,163,184,0.25)",
-      desc: "Bon niveau — des améliorations ciblées peuvent vous faire passer Gold.",
-    };
-    return {
-      level: "Bronze", color: "#d4622a", bg: "rgba(212,98,42,0.08)", border: "rgba(212,98,42,0.25)",
-      desc: "Des actions prioritaires sont nécessaires pour améliorer le bien-être de vos équipes.",
-    };
-  }
-
   const assessed = employees.filter(e => e.global_score !== null);
   const participation = employees.length > 0 ? Math.round((assessed.length / employees.length) * 100) : 0;
   const avgGlobal = assessed.length
@@ -537,8 +515,8 @@ export default function EntrepriseDashboard() {
   }
 
   return (
-    <main style={{ minHeight: "100vh", paddingBottom: 80 }}>
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "70px 16px 0" : "80px 24px 0" }}>
+    <main style={{ minHeight: "100vh", paddingBottom: 80, overflowX: "hidden" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "70px 12px 0" : "80px 24px 0", overflowX: "hidden" }}>
 
         {/* ── HEADER ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 28 }}>
@@ -581,84 +559,58 @@ export default function EntrepriseDashboard() {
         {/* ── SCORE SANTÉ ENTREPRISE ── */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
           style={{
-            borderRadius: 20, padding: "28px", marginBottom: 20,
+            borderRadius: 20, padding: isMobile ? "16px" : "28px", marginBottom: 20,
             background: avgGlobal ? `${scoreColor(avgGlobal)}08` : c.bgCard,
             border: `0.5px solid ${avgGlobal ? scoreColor(avgGlobal) + "30" : c.border}`,
-            display: "flex", flexDirection: isMobile ? "column" : "row", flexWrap: "wrap", gap: isMobile ? 16 : 24, alignItems: isMobile ? "stretch" : "center",
           }}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{
-              width: 72, height: 72, borderRadius: "50%",
-              background: avgGlobal ? `${scoreColor(avgGlobal)}15` : c.bgCard2,
-              border: `3px solid ${avgGlobal ? scoreColor(avgGlobal) : c.border}`,
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            }}>
-              <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: avgGlobal ? scoreColor(avgGlobal) : c.textMuted, lineHeight: 1 }}>
-                {avgGlobal ?? "—"}
-              </span>
-              <span style={{ fontFamily: T.b, fontSize: 9, color: c.textMuted }}>/ 100</span>
+
+          {/* Ligne du haut : cercle score + texte */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+            <div style={{ textAlign: "center", flexShrink: 0 }}>
+              <div style={{
+                width: isMobile ? 56 : 72, height: isMobile ? 56 : 72, borderRadius: "50%",
+                background: avgGlobal ? `${scoreColor(avgGlobal)}15` : c.bgCard2,
+                border: `3px solid ${avgGlobal ? scoreColor(avgGlobal) : c.border}`,
+                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              }}>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 18 : 22, color: avgGlobal ? scoreColor(avgGlobal) : c.textMuted, lineHeight: 1 }}>
+                  {avgGlobal ?? "—"}
+                </span>
+                <span style={{ fontFamily: T.b, fontSize: 8, color: c.textMuted }}>/ 100</span>
+              </div>
             </div>
-            <p style={{ fontFamily: T.b, fontSize: 10, color: c.textMuted, margin: "6px 0 0", textAlign: "center" }}>Score santé</p>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: isMobile ? 13 : 16, color: c.textPrimary, margin: "0 0 4px" }}>
+                Score santé entreprise
+              </p>
+              <p style={{ fontFamily: T.b, fontSize: isMobile ? 11 : 13, color: c.textMuted, margin: 0, lineHeight: 1.5 }}>
+                {avgGlobal
+                  ? avgGlobal >= 70 ? "Vos équipes sont en bonne santé ergonomique."
+                  : avgGlobal >= 50 ? "Des améliorations sont possibles."
+                  : "Plusieurs dimensions nécessitent une action rapide."
+                  : "Aucun bilan complété pour l'instant."}
+              </p>
+            </div>
           </div>
 
-          <div style={{ flex: 1, minWidth: 200 }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: c.textPrimary, margin: "0 0 4px" }}>
-              Score santé entreprise
-            </p>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.5 }}>
-              {avgGlobal
-                ? avgGlobal >= 70 ? "Vos équipes sont en bonne santé ergonomique. Continuez le suivi."
-                : avgGlobal >= 50 ? "Des améliorations sont possibles. Consultez les actions prioritaires ci-dessous."
-                : "Attention — plusieurs dimensions nécessitent une action rapide."
-                : "Aucun bilan complété pour l'instant."}
-            </p>
-          </div>
-
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: isMobile ? "space-between" : "flex-end" }}>
+          {/* KPIs en grid 2x2 sur mobile, row sur desktop */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
+            gap: 8,
+          }}>
             {[
               { label: "Zone critique", value: zoneCounts.critique, color: "#f09595", bg: "rgba(240,149,149,0.10)" },
               { label: "À améliorer", value: zoneCounts.ameliorer, color: "#f4a261", bg: "rgba(244,162,97,0.10)" },
               { label: "Bon niveau", value: zoneCounts.bon, color: "#74c69d", bg: "rgba(116,198,157,0.10)" },
+              { label: "Participation", value: `${participation}%`, color: "#2b5ce6", bg: c.bgCard2 },
             ].map((z, i) => (
-              <div key={i} style={{ textAlign: "center", padding: "12px 16px", borderRadius: 14, background: z.bg }}>
-                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: z.color, margin: "0 0 4px" }}>{z.value}</p>
-                <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{z.label}</p>
+              <div key={i} style={{ textAlign: "center", padding: isMobile ? "10px 8px" : "12px 16px", borderRadius: 14, background: z.bg }}>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 20 : 24, color: z.color, margin: "0 0 4px" }}>{z.value}</p>
+                <p style={{ fontFamily: T.b, fontSize: isMobile ? 10 : 11, color: c.textMuted, margin: 0 }}>{z.label}</p>
               </div>
             ))}
-
-            <div style={{ textAlign: "center", padding: "12px 16px", borderRadius: 14, background: c.bgCard2 }}>
-              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#2b5ce6", margin: "0 0 4px" }}>{participation}%</p>
-              <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>Participation</p>
-            </div>
           </div>
-
-          {(() => {
-            const shs = getSocialHealthScore(avgGlobal, participation);
-            return (
-              <div style={{
-                width: "100%", borderRadius: 16, padding: "16px 20px",
-                background: shs.bg, border: `0.5px solid ${shs.border}`,
-                display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
-              }}>
-                <div>
-                  <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: shs.color, textTransform: "uppercase", margin: "0 0 4px" }}>
-                    Score Santé Sociale PAW
-                  </p>
-                  <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: shs.color }}>
-                    {shs.level === "Gold" ? "🥇" : shs.level === "Silver" ? "🥈" : shs.level === "Bronze" ? "🥉" : "—"} {shs.level}
-                  </span>
-                </div>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, margin: 0, flex: 1, lineHeight: 1.5 }}>
-                  {shs.desc}
-                </p>
-                {shs.level !== "—" && (
-                  <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0, flexShrink: 0 }}>
-                    Utilisable dans votre reporting RSE · Valorisable auprès de votre banque
-                  </p>
-                )}
-              </div>
-            );
-          })()}
         </motion.div>
 
         {/* ── TABS ── */}

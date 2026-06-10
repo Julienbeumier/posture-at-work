@@ -165,10 +165,10 @@ export default function EntrepriseClient() {
 
   return (
     <main style={{ minHeight: "100vh", paddingBottom: 80 }}>
-      <div style={{ maxWidth: 940, margin: "0 auto", padding: "0 24px" }}>
+      <div style={{ maxWidth: 940, margin: "0 auto", padding: isMobile ? "0 16px" : "0 24px", overflowX: "hidden" }}>
 
         {/* ── HERO ── */}
-        <motion.div {...fadeUp(0)} style={{ textAlign: "center", padding: "72px 0 56px" }}>
+        <motion.div {...fadeUp(0)} style={{ textAlign: "center", padding: isMobile ? "100px 0 40px" : "72px 0 56px" }}>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "6px 16px", borderRadius: 100, marginBottom: 20,
@@ -229,24 +229,48 @@ export default function EntrepriseClient() {
           <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 28, lineHeight: 1.65 }}>
             L&apos;ergonome reste indispensable pour des cas complexes. PAW le complète — ou le précède — en couvrant l&apos;ensemble de vos équipes en continu.
           </p>
-          <div style={{ borderRadius: 16, overflow: "hidden", border: `0.5px solid ${c.border}` }}>
-            {VS_ERGO.map((row, i) => (
-              <div key={i} style={{
-                display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
-                borderBottom: i < VS_ERGO.length - 1 ? `0.5px solid ${c.border}` : "none",
-              }}>
-                <div style={{ padding: "14px 18px", background: c.bgCard2, borderRight: `0.5px solid ${c.border}` }}>
-                  <span style={{ fontFamily: T.b, fontSize: 13, fontWeight: 600, color: c.textSecondary }}>{row.critere}</span>
+          {isMobile ? (
+            // Version mobile — cards empilées
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {VS_ERGO.map((row, i) => (
+                <div key={i} style={{ borderRadius: 12, overflow: "hidden", border: `0.5px solid ${c.border}` }}>
+                  <div style={{ padding: "8px 12px", background: c.bgCard2 }}>
+                    <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: c.textSecondary }}>{row.critere}</span>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+                    <div style={{ padding: "10px 12px", borderRight: `0.5px solid ${c.border}` }}>
+                      <p style={{ fontFamily: T.b, fontSize: 10, color: c.textMuted, margin: "0 0 3px" }}>Ergonome</p>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.4 }}>{row.ergo}</p>
+                    </div>
+                    <div style={{ padding: "10px 12px", background: "rgba(43,92,230,0.04)" }}>
+                      <p style={{ fontFamily: T.b, fontSize: 10, color: "#7c9fff", margin: "0 0 3px" }}>PAW</p>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: "#2b5ce6", fontWeight: 600, margin: 0, lineHeight: 1.4 }}>✓ {row.paw}</p>
+                    </div>
+                  </div>
                 </div>
-                <div style={{ padding: "14px 18px", borderRight: `0.5px solid ${c.border}` }}>
-                  <span style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted }}>{row.ergo}</span>
+              ))}
+            </div>
+          ) : (
+            // Version desktop — tableau existant
+            <div style={{ borderRadius: 16, overflow: "hidden", border: `0.5px solid ${c.border}` }}>
+              {VS_ERGO.map((row, i) => (
+                <div key={i} style={{
+                  display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
+                  borderBottom: i < VS_ERGO.length - 1 ? `0.5px solid ${c.border}` : "none",
+                }}>
+                  <div style={{ padding: "14px 18px", background: c.bgCard2, borderRight: `0.5px solid ${c.border}` }}>
+                    <span style={{ fontFamily: T.b, fontSize: 13, fontWeight: 600, color: c.textSecondary }}>{row.critere}</span>
+                  </div>
+                  <div style={{ padding: "14px 18px", borderRight: `0.5px solid ${c.border}` }}>
+                    <span style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted }}>{row.ergo}</span>
+                  </div>
+                  <div style={{ padding: "14px 18px", background: "rgba(43,92,230,0.04)" }}>
+                    <span style={{ fontFamily: T.b, fontSize: 13, color: "#2b5ce6", fontWeight: 600 }}>✓ {row.paw}</span>
+                  </div>
                 </div>
-                <div style={{ padding: "14px 18px", background: "rgba(43,92,230,0.04)" }}>
-                  <span style={{ fontFamily: T.b, fontSize: 13, color: "#2b5ce6", fontWeight: 600 }}>✓ {row.paw}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </motion.div>
 
         {/* ── FEATURES ── */}

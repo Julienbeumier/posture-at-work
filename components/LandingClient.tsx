@@ -338,7 +338,7 @@ export default function LandingClient() {
 
       {/* ── BOTTOM CTA ── */}
       <section style={{ position: "relative", zIndex: 1, maxWidth: 700, margin: "0 auto 32px", padding: "0 24px" }}>
-        <motion.div {...fadeUp(0)} style={{ padding: "56px 40px", borderRadius: 22, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)", textAlign: "center" }}>
+        <motion.div {...fadeUp(0)} style={{ padding: isMobile ? "36px 20px" : "56px 40px", borderRadius: 22, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)", textAlign: "center" }}>
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 12 }}>
             5 minutes. Un rapport.<br />Des actions concrètes sur ce qui te fait vraiment mal.
           </h2>
@@ -356,7 +356,7 @@ export default function LandingClient() {
       {/* ── VISION HOLISTIQUE ── */}
       <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 60px", padding: "0 24px" }}>
         <motion.div {...fadeUp(0)} style={{
-          borderRadius: 20, padding: "40px",
+          borderRadius: 20, padding: isMobile ? "20px 16px" : "40px",
           background: "var(--bg-card)", border: "0.5px solid var(--border)",
           display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 24 : 40,
         }}>
@@ -393,7 +393,7 @@ export default function LandingClient() {
       <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div {...fadeUp(0)} style={{ borderRadius: 20, overflow: "hidden", border: "0.5px solid rgba(124,58,237,0.25)" }}>
           {/* Top */}
-          <div style={{ padding: "40px 40px 32px", background: "rgba(124,58,237,0.07)", borderBottom: "0.5px solid rgba(124,58,237,0.15)" }}>
+          <div style={{ padding: isMobile ? "24px 20px" : "40px 40px 32px", background: "rgba(124,58,237,0.07)", borderBottom: "0.5px solid rgba(124,58,237,0.15)" }}>
             <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#a78bfa", textTransform: "uppercase", marginBottom: 12 }}>PostureAtWork Entreprise</p>
             <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "var(--text-primary)", margin: "0 0 12px", lineHeight: 1.15 }}>
               Vos équipes travaillent dur.<br />Leurs douleurs s&apos;accumulent en silence.
@@ -403,13 +403,17 @@ export default function LandingClient() {
             </p>
           </div>
           {/* Stats */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderBottom: "0.5px solid rgba(124,58,237,0.15)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", borderBottom: "0.5px solid rgba(124,58,237,0.15)" }}>
             {[
               { value: "88%", label: "des maladies professionnelles reconnues sont des TMS", source: "Ameli, 2024" },
               { value: "73 jours", label: "d'arrêt de travail en moyenne par cas de TMS", source: "StopTMS, 2025" },
               { value: "10,4M", label: "de journées de travail perdues chaque année en France", source: "Assurance Maladie, 2024" },
             ].map((s, i) => (
-              <div key={i} style={{ padding: "28px 24px", borderRight: i < 2 ? "0.5px solid rgba(124,58,237,0.15)" : "none" }}>
+              <div key={i} style={{
+                padding: "28px 24px",
+                borderRight: isMobile ? "none" : (i < 2 ? "0.5px solid rgba(124,58,237,0.15)" : "none"),
+                borderBottom: isMobile && i < 2 ? "0.5px solid rgba(124,58,237,0.15)" : "none",
+              }}>
                 <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#a78bfa", margin: "0 0 6px" }}>{s.value}</p>
                 <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t45)", lineHeight: 1.5, margin: "0 0 4px" }}>{s.label}</p>
                 <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t30)", margin: 0 }}>Source : {s.source}</p>
@@ -417,7 +421,7 @@ export default function LandingClient() {
             ))}
           </div>
           {/* Bottom CTA */}
-          <div style={{ padding: "24px 40px", background: "rgba(124,58,237,0.04)", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+          <div style={{ padding: isMobile ? "20px 16px" : "24px 40px", background: "rgba(124,58,237,0.04)", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
             <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t45)", margin: 0, lineHeight: 1.6 }}>
               Dashboard RH anonymisé · Rapport collectif · Suivi trimestriel · Angle CSRD/ESG
             </p>
