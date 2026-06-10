@@ -409,6 +409,13 @@ export default function EntrepriseDashboard() {
   const [signals, setSignals] = useState<{ id: string; category: string; message: string; treated: boolean; created_at: string }[]>([]);
   const [evolutionData, setEvolutionData] = useState<{ mois: string; global: number | null; bureau: number | null; debout: number | null; count: number }[]>([]);
   const [employeeFilter, setEmployeeFilter] = useState<"all" | "bureau" | "debout">("all");
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -531,11 +538,11 @@ export default function EntrepriseDashboard() {
 
   return (
     <main style={{ minHeight: "100vh", paddingBottom: 80 }}>
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "80px 24px 0" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "70px 16px 0" : "80px 24px 0" }}>
 
         {/* ── HEADER ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 28 }}>
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+          <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "stretch" : "flex-start", justifyContent: "space-between", gap: 12 }}>
             <div>
               <p style={{ fontFamily: T.b, fontSize: 11, color: "#7c9fff", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>
                 🏢 Dashboard RH
@@ -547,7 +554,7 @@ export default function EntrepriseDashboard() {
                 Plan {company?.plan} · {employees.length} employé{employees.length > 1 ? "s" : ""} inscrit{employees.length > 1 ? "s" : ""} · {assessed.length} bilan{assessed.length > 1 ? "s" : ""} complété{assessed.length > 1 ? "s" : ""}
               </p>
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               {inviteUrl && (
                 <button onClick={copyInviteUrl} style={{
                   padding: "9px 16px", borderRadius: 100, border: "none",
@@ -577,7 +584,7 @@ export default function EntrepriseDashboard() {
             borderRadius: 20, padding: "28px", marginBottom: 20,
             background: avgGlobal ? `${scoreColor(avgGlobal)}08` : c.bgCard,
             border: `0.5px solid ${avgGlobal ? scoreColor(avgGlobal) + "30" : c.border}`,
-            display: "grid", gridTemplateColumns: "auto 1fr auto auto auto", gap: 24, alignItems: "center",
+            display: "flex", flexDirection: isMobile ? "column" : "row", flexWrap: "wrap", gap: isMobile ? 16 : 24, alignItems: isMobile ? "stretch" : "center",
           }}>
           <div style={{ textAlign: "center" }}>
             <div style={{
@@ -594,7 +601,7 @@ export default function EntrepriseDashboard() {
             <p style={{ fontFamily: T.b, fontSize: 10, color: c.textMuted, margin: "6px 0 0", textAlign: "center" }}>Score santé</p>
           </div>
 
-          <div>
+          <div style={{ flex: 1, minWidth: 200 }}>
             <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: c.textPrimary, margin: "0 0 4px" }}>
               Score santé entreprise
             </p>
@@ -607,27 +614,29 @@ export default function EntrepriseDashboard() {
             </p>
           </div>
 
-          {[
-            { label: "Zone critique", value: zoneCounts.critique, color: "#f09595", bg: "rgba(240,149,149,0.10)" },
-            { label: "À améliorer", value: zoneCounts.ameliorer, color: "#f4a261", bg: "rgba(244,162,97,0.10)" },
-            { label: "Bon niveau", value: zoneCounts.bon, color: "#74c69d", bg: "rgba(116,198,157,0.10)" },
-          ].map((z, i) => (
-            <div key={i} style={{ textAlign: "center", padding: "12px 16px", borderRadius: 14, background: z.bg }}>
-              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: z.color, margin: "0 0 4px" }}>{z.value}</p>
-              <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{z.label}</p>
-            </div>
-          ))}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: isMobile ? "space-between" : "flex-end" }}>
+            {[
+              { label: "Zone critique", value: zoneCounts.critique, color: "#f09595", bg: "rgba(240,149,149,0.10)" },
+              { label: "À améliorer", value: zoneCounts.ameliorer, color: "#f4a261", bg: "rgba(244,162,97,0.10)" },
+              { label: "Bon niveau", value: zoneCounts.bon, color: "#74c69d", bg: "rgba(116,198,157,0.10)" },
+            ].map((z, i) => (
+              <div key={i} style={{ textAlign: "center", padding: "12px 16px", borderRadius: 14, background: z.bg }}>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: z.color, margin: "0 0 4px" }}>{z.value}</p>
+                <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{z.label}</p>
+              </div>
+            ))}
 
-          <div style={{ textAlign: "center", padding: "12px 16px", borderRadius: 14, background: c.bgCard2 }}>
-            <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#2b5ce6", margin: "0 0 4px" }}>{participation}%</p>
-            <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>Participation</p>
+            <div style={{ textAlign: "center", padding: "12px 16px", borderRadius: 14, background: c.bgCard2 }}>
+              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#2b5ce6", margin: "0 0 4px" }}>{participation}%</p>
+              <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>Participation</p>
+            </div>
           </div>
 
           {(() => {
             const shs = getSocialHealthScore(avgGlobal, participation);
             return (
               <div style={{
-                gridColumn: "1 / -1", borderRadius: 16, padding: "16px 20px",
+                width: "100%", borderRadius: 16, padding: "16px 20px",
                 background: shs.bg, border: `0.5px solid ${shs.border}`,
                 display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
               }}>
@@ -660,12 +669,12 @@ export default function EntrepriseDashboard() {
             marginBottom: 20,
           }}>
           {([
-            { key: "overview", label: "📊 Vue d'ensemble" },
-            { key: "employees", label: "👥 Équipe" },
-            { key: "evolution", label: "📈 Évolution" },
-            { key: "exercises", label: "🏋️ Exercices" },
-            { key: "resources", label: "📚 Ressources" },
-            { key: "signals", label: "💬 Signalements" },
+            { key: "overview", label: isMobile ? "📊" : "📊 Vue d'ensemble" },
+            { key: "employees", label: isMobile ? "👥" : "👥 Équipe" },
+            { key: "evolution", label: isMobile ? "📈" : "📈 Évolution" },
+            { key: "exercises", label: isMobile ? "🏋️" : "🏋️ Exercices" },
+            { key: "resources", label: isMobile ? "📚" : "📚 Ressources" },
+            { key: "signals", label: isMobile ? "💬" : "💬 Signalements" },
           ] as const).map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
               flex: 1, padding: "10px 0", borderRadius: 10, border: "none",
@@ -723,7 +732,7 @@ export default function EntrepriseDashboard() {
               )}
 
               {/* Split employeur / employé */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 16 }}>
 
                 {/* Côté employeur */}
                 <div style={{ borderRadius: 20, padding: "22px", background: c.bgCard, border: `0.5px solid ${c.border}` }}>
@@ -831,7 +840,7 @@ export default function EntrepriseDashboard() {
                     {hasGroups && (
                       <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.bgCard }}>
                         <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 14 }}>📊 Comparaison bureau vs entrepôt</p>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
                           {/* Bureau */}
                           <div style={{ padding: "16px", borderRadius: 14, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>

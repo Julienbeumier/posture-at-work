@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -139,6 +139,13 @@ export default function EntrepriseClient() {
   const [contactSent, setContactSent] = useState(false);
   const [contactLoading, setContactLoading] = useState(false);
   const [form, setForm] = useState({ nom: "", email: "", societe: "", effectif: "", message: "" });
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   async function handleContact() {
     if (!form.nom || !form.email || !form.societe) return;
@@ -195,7 +202,7 @@ export default function EntrepriseClient() {
 
         {/* ── FACTS ── */}
         <motion.div {...fadeUp(0.05)} style={{
-          display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
+          display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
           borderRadius: 20, overflow: "hidden",
           border: `0.5px solid ${c.border}`,
           background: c.bgCard,
@@ -204,7 +211,7 @@ export default function EntrepriseClient() {
           {FACTS.map((f, i) => (
             <div key={i} style={{
               padding: "28px 20px", textAlign: "center",
-              borderRight: i < 2 ? `0.5px solid ${c.border}` : "none",
+              borderRight: !isMobile && i < 2 ? `0.5px solid ${c.border}` : "none",
             }}>
               <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "#2b5ce6", margin: "0 0 6px" }}>{f.value}</p>
               <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.5, margin: "0 0 4px" }}>{f.label}</p>
@@ -251,7 +258,7 @@ export default function EntrepriseClient() {
           <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 32, lineHeight: 1.65 }}>
             Pas juste un logiciel. Un accompagnement complet avec un kinésithérapeute derrière.
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
             {FEATURES.map((f, i) => (
               <motion.div key={i} {...fadeUp(i * 0.05)} style={{
                 padding: "22px", borderRadius: 16,
@@ -285,7 +292,7 @@ export default function EntrepriseClient() {
           <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 32 }}>
             Tous les plans incluent l&apos;accès premium PAW pour chaque employé et le call de restitution avec le kiné.
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
             {PLANS.map((plan, i) => (
               <div key={i} style={{
                 borderRadius: 20, padding: "28px 24px",
@@ -363,11 +370,11 @@ export default function EntrepriseClient() {
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
                 <input placeholder="Votre nom *" value={form.nom} onChange={e => setForm(f => ({ ...f, nom: e.target.value }))} style={{ padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `1px solid ${c.border2}`, color: c.textPrimary, fontFamily: T.b, fontSize: 13, outline: "none" }} />
                 <input placeholder="Email professionnel *" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} style={{ padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `1px solid ${c.border2}`, color: c.textPrimary, fontFamily: T.b, fontSize: 13, outline: "none" }} />
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
                 <input placeholder="Société *" value={form.societe} onChange={e => setForm(f => ({ ...f, societe: e.target.value }))} style={{ padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `1px solid ${c.border2}`, color: c.textPrimary, fontFamily: T.b, fontSize: 13, outline: "none" }} />
                 <select value={form.effectif} onChange={e => setForm(f => ({ ...f, effectif: e.target.value }))} style={{ padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `1px solid ${c.border2}`, color: form.effectif ? c.textPrimary : c.textMuted, fontFamily: T.b, fontSize: 13, outline: "none" }}>
                   <option value="">Effectif</option>
@@ -408,7 +415,7 @@ export default function EntrepriseClient() {
         </motion.div>
 
         {/* ── FOOTER LINK ── */}
-        <div style={{ textAlign: "center", paddingBottom: 20, display: "flex", gap: 24, justifyContent: "center" }}>
+        <div style={{ textAlign: "center", paddingBottom: 20, display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "center" : "center", justifyContent: "center", flexWrap: "wrap", gap: isMobile ? 12 : 24 }}>
           <Link href="/" style={{ textDecoration: "none" }}>
             <span style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted }}>← Retour à PostureAtWork</span>
           </Link>

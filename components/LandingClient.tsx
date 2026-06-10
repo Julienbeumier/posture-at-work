@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
@@ -124,6 +125,14 @@ const schemaOrg = {
 };
 
 export default function LandingClient() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   return (
     <main style={{ minHeight: "100vh", overflowX: "hidden" }}>
       <script
@@ -133,7 +142,7 @@ export default function LandingClient() {
       <BackgroundBlobs />
 
       {/* ── HERO ── */}
-      <section style={{ position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: "140px 24px 80px", textAlign: "center" }}>
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: isMobile ? "100px 16px 60px" : "140px 24px 80px", textAlign: "center" }}>
         <motion.div {...fadeUp(0)} style={{ marginBottom: 28 }}>
           <span style={{
             display: "inline-flex", alignItems: "center", gap: 8,
@@ -147,7 +156,7 @@ export default function LandingClient() {
         </motion.div>
 
         <motion.h1 {...fadeUp(0.05)} style={{
-          fontFamily: T.h, fontWeight: 900, fontSize: "clamp(36px, 5vw, 52px)",
+          fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? "28px" : "clamp(36px, 5vw, 52px)",
           lineHeight: 1.1, color: "var(--text-primary)", margin: "0 0 20px", letterSpacing: "-1px",
         }}>
           Nuque, dos, épaules.<br />
@@ -187,7 +196,7 @@ export default function LandingClient() {
       {/* ── STATS ── */}
       <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
         <motion.div {...fadeUp(0)} style={{
-          display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
+          display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
           borderRadius: 20, overflow: "hidden",
           border: "0.5px solid var(--border)",
           background: "var(--bg-card)",
@@ -200,7 +209,7 @@ export default function LandingClient() {
           ].map((s, i) => (
             <div key={i} style={{
               padding: "32px 24px", textAlign: "center",
-              borderRight: i < 2 ? "0.5px solid var(--border)" : "none",
+              borderRight: !isMobile && i < 2 ? "0.5px solid var(--border)" : "none",
             }}>
               <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 34, color: "#2b5ce6", margin: "0 0 6px" }}>{s.value}</p>
               <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t45)", lineHeight: 1.5, margin: 0 }}>{s.label}</p>
@@ -280,7 +289,7 @@ export default function LandingClient() {
             Parce que les douleurs au travail ont rarement une seule cause.
           </p>
         </motion.div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
           {pillars.map((p, i) => (
             <motion.div key={i} {...fadeUp(i * 0.07)} style={{ padding: "24px", borderRadius: 20, background: p.bg, border: `0.5px solid ${p.border}`, position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: -30, right: -30, width: 100, height: 100, borderRadius: "50%", background: p.blob, filter: "blur(30px)", opacity: 0.6 }} />
@@ -303,7 +312,7 @@ export default function LandingClient() {
           </h2>
           <p style={{ color: "var(--t50)", fontFamily: T.b, fontSize: 14 }}>Des résultats concrets, en quelques semaines.</p>
         </motion.div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
           {TESTIMONIALS.map((t, i) => (
             <motion.div key={i} {...fadeUp(i * 0.1)} style={{ padding: "24px", borderRadius: 18, background: "var(--bg-card)", border: "0.5px solid var(--border)", display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ position: "relative" }}>
@@ -349,7 +358,7 @@ export default function LandingClient() {
         <motion.div {...fadeUp(0)} style={{
           borderRadius: 20, padding: "40px",
           background: "var(--bg-card)", border: "0.5px solid var(--border)",
-          display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40,
+          display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 24 : 40,
         }}>
           <div>
             <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#e24b4a", textTransform: "uppercase", marginBottom: 12 }}>Avant</p>
@@ -408,7 +417,7 @@ export default function LandingClient() {
             ))}
           </div>
           {/* Bottom CTA */}
-          <div style={{ padding: "24px 40px", background: "rgba(124,58,237,0.04)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+          <div style={{ padding: "24px 40px", background: "rgba(124,58,237,0.04)", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
             <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t45)", margin: 0, lineHeight: 1.6 }}>
               Dashboard RH anonymisé · Rapport collectif · Suivi trimestriel · Angle CSRD/ESG
             </p>
