@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { QRCodeSVG } from "qrcode.react";
 
 const BUREAU_PHASES = [
   {
@@ -65,6 +66,10 @@ const DEBOUT_ANALYSES = [
 export default function VideoIntroPage() {
   const router = useRouter();
   const [jobType, setJobType] = useState<string>("bureau");
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [qrToken, setQrToken] = useState<string | null>(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const lsType = localStorage.getItem("paw_job_type");
@@ -78,6 +83,31 @@ export default function VideoIntroPage() {
     const effective = scoresType ?? lsType ?? "bureau";
     setJobType(effective);
   }, []);
+
+  useEffect(() => {
+    // Détecter desktop
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768 && !navigator.maxTouchPoints);
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
+
+  async function generateQRCode() {
+    setQrLoading(true);
+    const scores = JSON.parse(sessionStorage.getItem("postureatwork_scores") || "{}");
+    const answers = JSON.parse(sessionStorage.getItem("postureatwork_answers") || "{}");
+
+    const res = await fetch("/api/video-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ scores, answers, jobType }),
+    });
+    const data = await res.json();
+    const url = `${window.location.origin}/video-capture?token=${data.token}`;
+    setQrToken(data.token);
+    setQrUrl(url);
+    setQrLoading(false);
+  }
 
   const isBureau = jobType === "bureau";
 
@@ -267,6 +297,61 @@ export default function VideoIntroPage() {
           </motion.div>
         )}
 
+        {/* QR code desktop → mobile */}
+        {isDesktop && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            style={{
+              borderRadius: 20, padding: "20px 24px", marginBottom: 16,
+              background: "rgba(43,92,230,0.08)", border: "1px solid rgba(43,92,230,0.25)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 6 }}>
+                  📱 Tu es sur ordinateur ?
+                </p>
+                <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "rgba(220,220,245,0.6)", lineHeight: 1.65, marginBottom: 14 }}>
+                  Pour une analyse posturale précise, filme-toi avec ton téléphone.
+                  La caméra mobile donne de meilleurs résultats.
+                </p>
+                {!qrUrl ? (
+                  <button
+                    onClick={generateQRCode}
+                    disabled={qrLoading}
+                    style={{
+                      padding: "10px 20px", borderRadius: 100, border: "none",
+                      background: "#2b5ce6", color: "#fff",
+                      fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600, fontSize: 13,
+                      cursor: "pointer", opacity: qrLoading ? 0.7 : 1,
+                    }}
+                  >
+                    {qrLoading ? "Génération…" : "📷 Générer le QR code →"}
+                  </button>
+                ) : (
+                  <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+                    <div style={{ padding: 12, background: "#fff", borderRadius: 12 }}>
+                      <QRCodeSVG value={qrUrl} size={120} />
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "rgba(220,220,245,0.8)", marginBottom: 8, lineHeight: 1.6 }}>
+                        1. Scanne avec ton téléphone<br />
+                        2. Tes données sont transférées automatiquement<br />
+                        3. Filme depuis le mobile
+                      </p>
+                      <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 11, color: "rgba(220,220,245,0.35)" }}>
+                        ⏱️ Valable 1 heure
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -281,10 +366,17 @@ export default function VideoIntroPage() {
             className="w-full py-4 rounded-2xl font-bold text-white text-base"
             style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)", boxShadow: "0 0 40px rgba(124,58,237,0.4)" }}
           >
-            Commencer l&apos;analyse →
+            {isDesktop ? "Continuer avec la webcam →" : "Commencer l'analyse →"}
           </motion.button>
           <p className="text-center text-slate-600 text-xs mt-3">
-            {isBureau ? "Phase 1 sur 2 — Analyse posture" : "Caméra requise · 40 secondes · Résultats immédiats"}
+            {isBureau
+              ? isDesktop
+                ? "Recommandé : utiliser le QR code ci-dessus pour filmer avec votre téléphone"
+                : "Phase 1 sur 2 — Analyse posture"
+              : isDesktop
+                ? "Recommandé : utiliser le QR code ci-dessus pour de meilleurs résultats"
+                : "Caméra requise · 40 secondes · Résultats immédiats"
+            }
           </p>
         </motion.div>
 

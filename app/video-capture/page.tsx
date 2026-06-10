@@ -121,6 +121,23 @@ export default function VideoCapturePage() {
   const [isBureau, setIsBureau] = useState(false);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    if (token) {
+      // Charger les données depuis la session
+      fetch(`/api/video-session?token=${token}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.scores) sessionStorage.setItem("postureatwork_scores", JSON.stringify(data.scores));
+          if (data.answers) sessionStorage.setItem("postureatwork_answers", JSON.stringify(data.answers));
+          if (data.job_type) localStorage.setItem("paw_job_type", data.job_type);
+          console.log("Session mobile chargée depuis token");
+        })
+        .catch(err => console.error("Erreur chargement session:", err));
+    }
+  }, []);
+
+  useEffect(() => {
     const jt = sessionStorage.getItem("paw_video_job_type")
       ?? localStorage.getItem("paw_job_type")
       ?? "bureau";
