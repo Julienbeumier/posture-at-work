@@ -220,8 +220,15 @@ function PainScale({
   value, onChange, cat,
 }: { value: number | null; onChange: (v: number) => void; cat: typeof CATEGORIES[number]; }) {
   const { theme } = useTheme();
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6 }}>
+    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(6, 1fr)", gap: 6 }}>
       {[0, 1, 2, 3, 4, 5].map((v) => {
         const sel = value === v;
         return (
@@ -268,8 +275,15 @@ function WellbeingScale({
   value, onChange, cat,
 }: { value: number | null; onChange: (v: number) => void; cat: typeof CATEGORIES[number]; }) {
   const { theme } = useTheme();
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 6 }}>
+    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(5, 1fr)", gap: 6 }}>
       {WELLBEING_OPTIONS.map((opt) => {
         const sel = value === opt.value;
         return (
@@ -503,6 +517,13 @@ function BureauQuestionnaire() {
   const [toast, setToast] = useState<string | null>(null);
   const catRefs = useRef<(HTMLElement | null)[]>(Array(CATEGORIES.length).fill(null));
   const scrolledCats = useRef<Set<number>>(new Set());
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
@@ -652,7 +673,7 @@ function BureauQuestionnaire() {
       </AnimatePresence>
 
       {/* Questions */}
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 20px 40px" }}>
+      <div style={{ maxWidth: 680, margin: "0 auto", padding: isMobile ? "20px 16px 40px" : "20px 20px 40px" }}>
 
         {/* Greeting */}
         {firstname && (

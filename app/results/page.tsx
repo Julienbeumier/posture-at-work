@@ -285,6 +285,13 @@ export default function ResultsPage() {
 
   const [jobType, setJobType] = useState("bureau");
   const [hasVideoAnalysis, setHasVideoAnalysis] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
@@ -459,7 +466,7 @@ export default function ResultsPage() {
         { bottom: "-10%", right: "10%", color: "rgba(244,162,97,0.07)", size: 420 },
       ]} />
 
-      <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: isMobile ? "0 16px" : "0 24px" }}>
 
         {/* ── HEADER ── */}
         <motion.div
@@ -868,7 +875,7 @@ export default function ResultsPage() {
           {(() => {
             const lowestDim = SUB_SCORES.reduce((a, b) => (scores[a.key] ?? 100) <= (scores[b.key] ?? 100) ? a : b);
             return (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>
                   <div style={{ borderRadius: 18, padding: "16px 14px", background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)", textAlign: "center", cursor: "pointer" }}>
                     <div style={{ fontSize: 24, marginBottom: 8 }}>🧘</div>

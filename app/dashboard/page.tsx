@@ -227,6 +227,13 @@ export default function DashboardPage() {
   const [showIosBanner, setShowIosBanner] = useState(false);
   const [premiumToast, setPremiumToast] = useState(false);
   const [showFeedbackBanner, setShowFeedbackBanner] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -456,7 +463,7 @@ export default function DashboardPage() {
     return (
       <main style={{ minHeight: "100vh", background: c.mainBg, paddingTop: 56, paddingBottom: 80, position: "relative" }}>
         <BackgroundBlobs blobs={[{ top: "-5%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 400 }]} />
-        <div style={{ maxWidth: 660, margin: "0 auto", padding: "20px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ maxWidth: 660, margin: "0 auto", padding: isMobile ? "20px 16px" : "20px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
           {[1, 2, 3, 4].map((i) => <Skeleton key={i} />)}
         </div>
       </main>
@@ -470,7 +477,7 @@ export default function DashboardPage() {
         { top: "40%", left: "-8%", color: "rgba(45,106,79,0.08)", size: 380 },
       ]} />
 
-      <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "20px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: isMobile ? "20px 16px" : "20px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
 
         {/* ── PREMIUM TOAST ── */}
         <AnimatePresence>
@@ -663,7 +670,7 @@ export default function DashboardPage() {
           <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", marginBottom: 10 }}>
             Ton espace santé
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
             {SHORTCUTS.map((s) => {
               const score = s.scoreKey && latest ? (latest.scores[s.scoreKey as keyof typeof latest.scores] ?? null) : null;
               const noAssessment = !latest;
@@ -927,7 +934,7 @@ export default function DashboardPage() {
             background: "var(--bg-card)", border: "0.5px solid var(--border)",
           }}>
             <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 14 }}>Ta semaine PAW</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
               {[
                 { icon: "😴", label: "Douleur moy.", value: `${weekSummary.avgPain}/5`, color: weekSummary.avgPain < 2 ? "#74c69d" : weekSummary.avgPain <= 3 ? "#f4a261" : "#f09595" },
                 { icon: "🧘", label: "Jours exercices", value: `${weekSummary.exerciseDays}/7`, color: "#5dcaa5" },

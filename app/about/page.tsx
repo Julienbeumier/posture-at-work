@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -24,6 +24,13 @@ export default function AboutPage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [formState, setFormState] = useState<FormState>("idle");
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -112,7 +119,7 @@ export default function AboutPage() {
         <motion.div {...fadeUp(0.2)} style={{
           borderRadius: 20, padding: "28px 28px", marginBottom: 48,
           background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.20)",
-          display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap",
+          display: "flex", flexDirection: isMobile ? "column" : "row", gap: isMobile ? 16 : 20, alignItems: "flex-start", flexWrap: "wrap",
         }}>
           <div style={{
             width: 60, height: 60, borderRadius: "50%", flexShrink: 0,
@@ -162,7 +169,7 @@ export default function AboutPage() {
             </motion.div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }} className="contact-grid">
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
                 <input
                   type="text"
                   placeholder="Prénom & Nom"
@@ -225,12 +232,6 @@ export default function AboutPage() {
         </motion.div>
 
       </div>
-
-      <style>{`
-        @media (max-width: 560px) {
-          .contact-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </main>
   );
 }
