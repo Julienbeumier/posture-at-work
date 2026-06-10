@@ -44,3 +44,4 @@ next-env.d.ts
 scripts/seed-employees.ts
 scripts/seed-evolution.ts
 scripts/seed-demo-company.ts
+scripts/seed-video-analysis.ts

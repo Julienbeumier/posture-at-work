@@ -229,6 +229,279 @@ const SEGMENT_EXERCISE: Record<string, { name: string; instruction: string; link
   membres_inferieurs: { name: "Étirement ischio-jambiers", instruction: "Jambe tendue posée, penche-toi vers ton pied, 30s", link: "/mobilite" },
 };
 
+// ─── Crossed synthesis (questionnaire + vidéo) ────────────────────────────────
+
+function buildCrossedSynthesis(
+  personne: PersonneAnalysis | null,
+  poste: PosteAnalysis | null,
+  debout: DeboutAnalysis | null,
+  scores: Record<string, number> | null,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  answers: Record<string, unknown> | null
+): {
+  globalScore: number;
+  scoreLabel: string;
+  scoreColor: string;
+  narrative: string;
+  confirmations: Array<{ text: string; type: "confirm" | "new" | "good" }>;
+  weekPlan: Array<{ week: string; color: string; actions: string[] }>;
+  positivePoints: string[];
+  dailyChecklist: string[];
+} {
+  const videoScore = personne?.globalPostureScore ?? debout?.globalPostureScore ?? null;
+  const questionScore = scores?.global ?? null;
+  const globalScore = videoScore && questionScore
+    ? Math.round((videoScore * 0.4 + questionScore * 0.6))
+    : videoScore ?? questionScore ?? 50;
+
+  const scoreLabel = globalScore >= 70 ? "Bon niveau" : globalScore >= 50 ? "À améliorer" : "Attention requise";
+  const scoreColor = globalScore >= 70 ? "#74c69d" : globalScore >= 50 ? "#f4a261" : "#f09595";
+
+  // Synthèse narrative croisée
+  const painScore = scores?.pain ?? 50;
+  const setupScore = scores?.setup ?? 50;
+  const hasVideoPosture = !!personne || !!debout;
+
+  let narrative = "";
+  if (hasVideoPosture && personne) {
+    const headIssue = personne.segments.tete_cou.score < 60;
+    const shoulderIssue = personne.segments.epaules_dos_haut.score < 60;
+    if (headIssue && painScore < 55) {
+      narrative = `L'analyse vidéo confirme ce que tu as déclaré dans le questionnaire : une projection de tête importante génère une charge cervicale excessive. Cette combinaison explique directement tes douleurs de nuque.`;
+    } else if (shoulderIssue && painScore < 60) {
+      narrative = `Le questionnaire signale des douleurs aux épaules, et l'analyse vidéo en identifie la cause : un enroulement des épaules vers l'avant lié à ta posture de travail.`;
+    } else if (setupScore < 55 && poste) {
+      narrative = `Ton setup de bureau est la principale source de tes tensions. L'analyse vidéo et le questionnaire convergent : corriger ton poste aura un impact immédiat sur ta posture et tes douleurs.`;
+    } else {
+      narrative = `Ton bilan croisé montre une posture globalement ${globalScore >= 60 ? "satisfaisante" : "à améliorer"} avec quelques points d'attention spécifiques à corriger.`;
+    }
+  } else if (debout) {
+    narrative = `L'analyse vidéo identifie les contraintes posturales de ton poste debout. Combinées aux informations du questionnaire, elles permettent de cibler précisément les zones à travailler.`;
+  } else {
+    narrative = `Basé sur tes réponses au questionnaire, voici un plan d'action personnalisé pour améliorer ta santé au travail.`;
+  }
+
+  // Confirmations croisées
+  const confirmations: Array<{ text: string; type: "confirm" | "new" | "good" }> = [];
+  if (personne) {
+    if (personne.segments.tete_cou.score < 60 && painScore < 60) {
+      confirmations.push({ text: "Douleurs cervicales confirmées par l'analyse vidéo — projection de tête mesurée", type: "confirm" });
+    }
+    if (personne.segments.epaules_dos_haut.score < 60) {
+      confirmations.push({ text: "Enroulement des épaules détecté à la vidéo — non signalé dans le questionnaire", type: "new" });
+    }
+    if (personne.positivePoints?.length) {
+      confirmations.push({ text: personne.positivePoints[0], type: "good" });
+    }
+  }
+  if (poste?.mainIssues?.[0]) {
+    confirmations.push({ text: `Setup : ${poste.mainIssues[0].issue} → ${poste.mainIssues[0].fix}`, type: "confirm" });
+  }
+
+  // Points positifs
+  const positivePoints: string[] = [
+    ...(personne?.positivePoints ?? []),
+    ...(debout?.positivePoints ?? []),
+    ...(poste?.positivePoints ?? []),
+  ].slice(0, 3);
+  if (positivePoints.length === 0) {
+    if (scores?.lifestyle && scores.lifestyle >= 60) positivePoints.push("Bonne activité physique — atout majeur pour ta récupération musculaire");
+    if (scores?.sleep_energy && scores.sleep_energy >= 65) positivePoints.push("Sommeil satisfaisant — récupération correcte");
+    if (scores?.nutrition && scores.nutrition >= 60) positivePoints.push("Habitudes alimentaires correctes");
+  }
+
+  // Plan semaine
+  const allRecs = [
+    ...(personne?.recommendations ?? []),
+    ...(poste?.recommendations ?? []),
+    ...(debout?.recommendations ?? []),
+  ].sort((a, b) => a.priority - b.priority);
+
+  const weekPlan = [
+    {
+      week: "Cette semaine",
+      color: "#f09595",
+      actions: allRecs
+        .filter(r => r.priority <= 1 || (r as { immediat?: boolean }).immediat)
+        .map(r => r.action)
+        .slice(0, 3),
+    },
+    {
+      week: "Dans 2 semaines",
+      color: "#f4a261",
+      actions: allRecs
+        .filter(r => r.priority === 2)
+        .map(r => r.action)
+        .slice(0, 3),
+    },
+    {
+      week: "Dans le mois",
+      color: "#74c69d",
+      actions: allRecs
+        .filter(r => r.priority >= 3)
+        .map(r => r.action)
+        .slice(0, 3),
+    },
+  ].filter(w => w.actions.length > 0);
+
+  // Checklist quotidienne
+  const dailyChecklist: string[] = [];
+  if ((personne?.segments.tete_cou.score ?? 100) < 65) {
+    dailyChecklist.push("Rétraction cervicale — 10 rép. avant de commencer à travailler");
+  }
+  if (setupScore < 60) dailyChecklist.push("Vérifier la hauteur de l'écran avant de s'asseoir");
+  dailyChecklist.push("Pause active toutes les 45 min — se lever 2 minutes");
+  if (scores?.nutrition && scores.nutrition < 60) dailyChecklist.push("Déjeuner loin de l'écran — 20 min minimum");
+  if (scores?.sleep_energy && scores.sleep_energy < 60) dailyChecklist.push("Écrans off 1h avant de dormir");
+  dailyChecklist.push("3 respirations profondes en cas de tension dans la nuque");
+
+  return { globalScore, scoreLabel, scoreColor, narrative, confirmations, weekPlan, positivePoints, dailyChecklist };
+}
+
+type CrossedSynthesis = ReturnType<typeof buildCrossedSynthesis>;
+
+function CrossedSynthesisHeader({ synthesis }: { synthesis: CrossedSynthesis }) {
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+      style={{ borderRadius: 24, padding: "24px", marginBottom: 16, background: `${synthesis.scoreColor}08`, border: `1px solid ${synthesis.scoreColor}25` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 52, fontFamily: T.h, fontWeight: 900, color: synthesis.scoreColor, lineHeight: 1 }}>
+            {synthesis.globalScore}
+          </div>
+          <div style={{ fontSize: 11, color: "var(--t40)", fontFamily: T.b }}>Score global</div>
+        </div>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", margin: "0 0 8px" }}>
+            {synthesis.scoreLabel}
+          </p>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.7, margin: 0 }}>
+            {synthesis.narrative}
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function ConfirmationsBlock({ confirmations }: { confirmations: CrossedSynthesis["confirmations"] }) {
+  if (confirmations.length === 0) return null;
+  return (
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+      style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)", marginBottom: 12 }}>
+        🔍 Questionnaire + Vidéo — ce qu&apos;on a trouvé
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {confirmations.map((c, i) => (
+          <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+            <span style={{ fontSize: 14, flexShrink: 0 }}>
+              {c.type === "confirm" ? "⚠️" : c.type === "new" ? "🔴" : "✅"}
+            </span>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t70)", margin: 0, lineHeight: 1.55 }}>{c.text}</p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+function PositivePointsBlock({ points }: { points: string[] }) {
+  if (points.length === 0) return null;
+  return (
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+      style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.2)" }}>
+      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#74c69d", marginBottom: 12 }}>
+        ✅ Ce que tu fais bien
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {points.map((point, i) => (
+          <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+            <span style={{ color: "#74c69d", fontSize: 14, flexShrink: 0 }}>→</span>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t70)", margin: 0, lineHeight: 1.55 }}>{point}</p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+function WeekPlanBlock({ weekPlan }: { weekPlan: CrossedSynthesis["weekPlan"] }) {
+  if (weekPlan.length === 0) return null;
+  return (
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
+      style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)", marginBottom: 16 }}>
+        🗓️ Ton plan d&apos;action progressif
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {weekPlan.map((week, i) => (
+          <div key={i} style={{ padding: "14px 16px", borderRadius: 14, background: `${week.color}08`, border: `0.5px solid ${week.color}30` }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: week.color, flexShrink: 0 }} />
+              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: week.color }}>{week.week}</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {week.actions.map((action, j) => (
+                <div key={j} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                  <span style={{ color: week.color, fontSize: 12, flexShrink: 0, marginTop: 2 }}>✓</span>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t70)", margin: 0, lineHeight: 1.5 }}>{action}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+function DailyChecklist({ items }: { items: string[] }) {
+  const [checked, setChecked] = useState<Record<number, boolean>>({});
+  const allDone = items.every((_, i) => checked[i]);
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+      style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+        <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)", margin: 0 }}>
+          ☑️ Ta routine quotidienne
+        </p>
+        {allDone && (
+          <span style={{ fontFamily: T.b, fontSize: 12, color: "#74c69d", fontWeight: 600 }}>
+            🎉 Journée parfaite !
+          </span>
+        )}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {items.map((item, i) => (
+          <div key={i}
+            onClick={() => setChecked(prev => ({ ...prev, [i]: !prev[i] }))}
+            style={{ display: "flex", gap: 12, alignItems: "center", cursor: "pointer",
+              padding: "10px 12px", borderRadius: 10,
+              background: checked[i] ? "rgba(116,198,157,0.08)" : "var(--bg-card2)",
+              border: `0.5px solid ${checked[i] ? "rgba(116,198,157,0.25)" : "var(--border)"}`,
+              transition: "all 0.2s",
+            }}>
+            <div style={{
+              width: 20, height: 20, borderRadius: 6, flexShrink: 0,
+              background: checked[i] ? "#74c69d" : "transparent",
+              border: `1.5px solid ${checked[i] ? "#74c69d" : "var(--border-3)"}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              {checked[i] && <span style={{ color: "#fff", fontSize: 11 }}>✓</span>}
+            </div>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: checked[i] ? "var(--t50)" : "var(--t75)", margin: 0, lineHeight: 1.5,
+              textDecoration: checked[i] ? "line-through" : "none", transition: "all 0.2s" }}>
+              {item}
+            </p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function FinalReportPage() {
@@ -242,6 +515,7 @@ export default function FinalReportPage() {
   const [deboutAnalysis, setDeboutAnalysis] = useState<DeboutAnalysis | null>(null);
 
   const [questionnaireScore, setQuestionnaireScore] = useState<number | null>(null);
+  const [synthesis, setSynthesis] = useState<ReturnType<typeof buildCrossedSynthesis> | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [firstname, setFirstname] = useState("");
@@ -252,13 +526,19 @@ export default function FinalReportPage() {
 
     const personneRaw = sessionStorage.getItem("paw_analysis_personne");
     const posteRaw = sessionStorage.getItem("paw_analysis_poste");
+    let analysisPersonne: PersonneAnalysis | null = null;
+    let analysisPoste: PosteAnalysis | null = null;
+    let analysisDebout: DeboutAnalysis | null = null;
     if (personneRaw) {
       const parsed = JSON.parse(personneRaw);
       if (parsed.analysisType === "debout") {
+        analysisDebout = parsed;
         setDeboutAnalysis(parsed);
       } else if (posteRaw) {
-        setPersonneAnalysis(parsed);
-        setPosteAnalysis(JSON.parse(posteRaw));
+        analysisPersonne = parsed;
+        analysisPoste = JSON.parse(posteRaw);
+        setPersonneAnalysis(analysisPersonne);
+        setPosteAnalysis(analysisPoste);
       }
     } else {
       const raw = sessionStorage.getItem("postureatwork_report");
@@ -266,10 +546,19 @@ export default function FinalReportPage() {
     }
 
     const scoresRaw = sessionStorage.getItem("postureatwork_scores");
-    if (scoresRaw) {
-      const s = JSON.parse(scoresRaw);
-      setQuestionnaireScore(s.global ?? null);
-    }
+    const answersRaw = sessionStorage.getItem("postureatwork_answers");
+    const questionScores = scoresRaw ? JSON.parse(scoresRaw) : null;
+    const questionAnswers = answersRaw ? JSON.parse(answersRaw) : null;
+    if (questionScores) setQuestionnaireScore(questionScores.global ?? null);
+
+    setSynthesis(buildCrossedSynthesis(
+      analysisPersonne,
+      analysisPoste,
+      analysisDebout,
+      questionScores,
+      questionAnswers,
+    ));
+
     createClient().auth.getUser().then(({ data }) => setUser(data.user ?? null));
   }, []);
 
@@ -393,6 +682,15 @@ export default function FinalReportPage() {
             </div>
           </motion.div>
 
+          {/* Synthèse croisée questionnaire + vidéo */}
+          {synthesis && (
+            <>
+              <CrossedSynthesisHeader synthesis={synthesis} />
+              <ConfirmationsBlock confirmations={synthesis.confirmations} />
+              <PositivePointsBlock points={synthesis.positivePoints} />
+            </>
+          )}
+
           {/* Posture section */}
           <section style={{ marginBottom: 20 }}>
             <div style={{ borderRadius: 22, padding: "20px 20px 16px", background: "rgba(167,139,250,0.05)", border: "0.5px solid rgba(167,139,250,0.15)" }}>
@@ -510,6 +808,14 @@ export default function FinalReportPage() {
                 ))}
               </div>
             </section>
+          )}
+
+          {/* Plan progressif + checklist */}
+          {synthesis && (
+            <>
+              <WeekPlanBlock weekPlan={synthesis.weekPlan} />
+              {synthesis.dailyChecklist.length > 0 && <DailyChecklist items={synthesis.dailyChecklist} />}
+            </>
           )}
 
           {/* Save */}
@@ -648,6 +954,15 @@ export default function FinalReportPage() {
             </div>
           </motion.div>
 
+          {/* Synthèse croisée questionnaire + vidéo */}
+          {synthesis && (
+            <>
+              <CrossedSynthesisHeader synthesis={synthesis} />
+              <ConfirmationsBlock confirmations={synthesis.confirmations} />
+              <PositivePointsBlock points={synthesis.positivePoints} />
+            </>
+          )}
+
           {/* ── SECTION 1 — POSTURE ── */}
           <section style={{ marginBottom: 12 }}>
             <div style={{ borderRadius: 22, padding: "20px 20px 16px", background: "rgba(167,139,250,0.05)", border: "0.5px solid rgba(167,139,250,0.15)", marginBottom: 20 }}>
@@ -785,6 +1100,14 @@ export default function FinalReportPage() {
               })}
             </div>
           </section>
+
+          {/* Plan progressif + checklist */}
+          {synthesis && (
+            <>
+              <WeekPlanBlock weekPlan={synthesis.weekPlan} />
+              {synthesis.dailyChecklist.length > 0 && <DailyChecklist items={synthesis.dailyChecklist} />}
+            </>
+          )}
 
           {/* ── SECTION 4 — PRODUCTS ── */}
           {products.length > 0 && (
