@@ -390,6 +390,117 @@ function analyzeEmployee(emp: EmployeeRow): {
   }
 }
 
+function analyzeCollectiveVideo(employees: EmployeeRow[]) {
+  const withVideo = employees.filter(e => e.video_analysis !== null);
+  if (withVideo.length === 0) return null;
+
+  const bureauWithVideo = withVideo.filter(e => e.job_type === "bureau");
+  const deboutWithVideo = withVideo.filter(e => e.job_type === "debout");
+
+  function getStatus(emp: EmployeeRow, zone: string): string | null {
+    const va = emp.video_analysis as Record<string, unknown>;
+    if (!va) return null;
+    // Bureau : personne.posture_analysis.{zone}.status
+    // Debout : debout.posture_analysis.{zone}.status
+    const source = (va.personne as Record<string, unknown>) ?? (va.debout as Record<string, unknown>);
+    if (!source) return null;
+    const posture = source.posture_analysis as Record<string, unknown>;
+    if (!posture) return null;
+    const item = posture[zone] as Record<string, unknown>;
+    return item?.status as string ?? null;
+  }
+
+  function getPostureScore(emp: EmployeeRow): number | null {
+    const va = emp.video_analysis as Record<string, unknown>;
+    if (!va) return null;
+    const source = (va.personne as Record<string, unknown>) ?? (va.debout as Record<string, unknown>);
+    const posture = source?.posture_analysis as Record<string, unknown>;
+    return posture?.score as number ?? null;
+  }
+
+  function countStatus(group: EmployeeRow[], zone: string, status: string): number {
+    return group.filter(e => getStatus(e, zone) === status).length;
+  }
+
+  function avgPostureScore(group: EmployeeRow[]): number | null {
+    const scores = group.map(getPostureScore).filter((s): s is number => s !== null);
+    return scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null;
+  }
+
+  // Tendances bureau
+  const bureauTrends = bureauWithVideo.length > 0 ? [
+    {
+      zone: "Projection de tête",
+      emoji: "🦆",
+      critique: countStatus(bureauWithVideo, "head_position", "critique"),
+      attention: countStatus(bureauWithVideo, "head_position", "attention"),
+      bon: countStatus(bureauWithVideo, "head_position", "bon"),
+      total: bureauWithVideo.length,
+      consequence: "Charge cervicale +8-12kg en permanence",
+    },
+    {
+      zone: "Épaules enroulées",
+      emoji: "🦅",
+      critique: countStatus(bureauWithVideo, "shoulders", "critique"),
+      attention: countStatus(bureauWithVideo, "shoulders", "attention"),
+      bon: countStatus(bureauWithVideo, "shoulders", "bon"),
+      total: bureauWithVideo.length,
+      consequence: "Tensions trapèzes et risque tendinopathie",
+    },
+    {
+      zone: "Posture tronc",
+      emoji: "🌿",
+      critique: countStatus(bureauWithVideo, "trunk", "critique"),
+      attention: countStatus(bureauWithVideo, "trunk", "attention"),
+      bon: countStatus(bureauWithVideo, "trunk", "bon"),
+      total: bureauWithVideo.length,
+      consequence: "Compression discale et lombalgies chroniques",
+    },
+  ] : [];
+
+  // Tendances debout
+  const deboutTrends = deboutWithVideo.length > 0 ? [
+    {
+      zone: "Position tronc",
+      emoji: "🌿",
+      critique: countStatus(deboutWithVideo, "trunk", "critique"),
+      attention: countStatus(deboutWithVideo, "trunk", "attention"),
+      bon: countStatus(deboutWithVideo, "trunk", "bon"),
+      total: deboutWithVideo.length,
+      consequence: "Lombalgies par flexion répétée lors de la manutention",
+    },
+    {
+      zone: "Position épaules",
+      emoji: "🦅",
+      critique: countStatus(deboutWithVideo, "shoulders", "critique"),
+      attention: countStatus(deboutWithVideo, "shoulders", "attention"),
+      bon: countStatus(deboutWithVideo, "shoulders", "bon"),
+      total: deboutWithVideo.length,
+      consequence: "Risque tendinopathie par gestes répétitifs",
+    },
+    {
+      zone: "Position tête/cou",
+      emoji: "🦆",
+      critique: countStatus(deboutWithVideo, "head_position", "critique"),
+      attention: countStatus(deboutWithVideo, "head_position", "attention"),
+      bon: countStatus(deboutWithVideo, "head_position", "bon"),
+      total: deboutWithVideo.length,
+      consequence: "Tensions cervicales lors des tâches à hauteur inadaptée",
+    },
+  ] : [];
+
+  return {
+    total: withVideo.length,
+    bureauCount: bureauWithVideo.length,
+    deboutCount: deboutWithVideo.length,
+    avgScoreBureau: avgPostureScore(bureauWithVideo),
+    avgScoreDebout: avgPostureScore(deboutWithVideo),
+    bureauTrends,
+    deboutTrends,
+    notFilmed: employees.filter(e => e.video_analysis === null && e.global_score !== null).length,
+  };
+}
+
 export default function EntrepriseDashboard() {
   const { c } = useTheme();
   const router = useRouter();
@@ -747,6 +858,186 @@ export default function EntrepriseDashboard() {
                   </div>
                 </div>
               </div>
+
+              {/* ── ANALYSE VIDÉO COLLECTIVE ── */}
+              {(() => {
+                const collective = analyzeCollectiveVideo(employees);
+                if (!collective) return (
+                  <div style={{ borderRadius: 20, padding: "20px 24px", marginBottom: 16, background: "rgba(124,58,237,0.05)", border: "0.5px dashed rgba(124,58,237,0.25)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <span style={{ fontSize: 24 }}>🎥</span>
+                      <div>
+                        <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#c4b5fd", margin: "0 0 4px" }}>
+                          Analyse posturale collective
+                        </p>
+                        <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0 }}>
+                          Aucun employé n&apos;a encore effectué l&apos;analyse vidéo. Invitez vos équipes à compléter leur bilan pour obtenir les tendances posturales collectives.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+
+                return (
+                  <div style={{ borderRadius: 20, overflow: "hidden", border: "0.5px solid rgba(124,58,237,0.25)", marginBottom: 16 }}>
+
+                    {/* Header */}
+                    <div style={{ padding: "18px 20px", background: "rgba(124,58,237,0.07)", borderBottom: "0.5px solid rgba(124,58,237,0.15)" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <span style={{ fontSize: 20 }}>🎥</span>
+                          <div>
+                            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#c4b5fd", margin: 0 }}>
+                              Analyse posturale collective
+                            </p>
+                            <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>
+                              {collective.total} employé{collective.total > 1 ? "s" : ""} filmé{collective.total > 1 ? "s" : ""} sur {assessed.length} bilans complétés
+                              {collective.notFilmed > 0 && ` · ${collective.notFilmed} non filmé${collective.notFilmed > 1 ? "s" : ""}`}
+                            </p>
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", gap: 8 }}>
+                          {collective.avgScoreBureau && (
+                            <div style={{ textAlign: "center", padding: "6px 12px", borderRadius: 10, background: "rgba(124,58,237,0.12)" }}>
+                              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#c4b5fd", margin: 0 }}>{collective.avgScoreBureau}</p>
+                              <p style={{ fontFamily: T.b, fontSize: 10, color: c.textMuted, margin: 0 }}>Score bureau</p>
+                            </div>
+                          )}
+                          {collective.avgScoreDebout && (
+                            <div style={{ textAlign: "center", padding: "6px 12px", borderRadius: 10, background: "rgba(124,58,237,0.12)" }}>
+                              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#c4b5fd", margin: 0 }}>{collective.avgScoreDebout}</p>
+                              <p style={{ fontFamily: T.b, fontSize: 10, color: c.textMuted, margin: 0 }}>Score debout</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Tendances */}
+                    <div style={{ padding: "18px 20px", background: c.bgCard }}>
+                      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : collective.bureauTrends.length > 0 && collective.deboutTrends.length > 0 ? "1fr 1fr" : "1fr", gap: 16 }}>
+
+                        {/* Bureau */}
+                        {collective.bureauTrends.length > 0 && (
+                          <div>
+                            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#7c9fff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
+                              💻 Équipe bureau ({collective.bureauCount} filmés)
+                            </p>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                              {collective.bureauTrends.map((trend, i) => {
+                                const critiquePct = Math.round((trend.critique / trend.total) * 100);
+                                const attentionPct = Math.round((trend.attention / trend.total) * 100);
+                                const bonPct = Math.round((trend.bon / trend.total) * 100);
+                                const mainColor = trend.critique > trend.bon ? "#f09595" : trend.attention > trend.bon ? "#f4a261" : "#74c69d";
+
+                                return (
+                                  <div key={i} style={{ padding: "12px 14px", borderRadius: 12, background: `${mainColor}06`, border: `0.5px solid ${mainColor}25` }}>
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                                      <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: mainColor }}>
+                                        {trend.emoji} {trend.zone}
+                                      </span>
+                                      <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>
+                                        {trend.total} filmés
+                                      </span>
+                                    </div>
+
+                                    {/* Barre de répartition */}
+                                    <div style={{ height: 8, borderRadius: 100, overflow: "hidden", display: "flex", marginBottom: 8 }}>
+                                      {trend.critique > 0 && <div style={{ width: `${critiquePct}%`, background: "#f09595" }} />}
+                                      {trend.attention > 0 && <div style={{ width: `${attentionPct}%`, background: "#f4a261" }} />}
+                                      {trend.bon > 0 && <div style={{ width: `${bonPct}%`, background: "#74c69d" }} />}
+                                    </div>
+
+                                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
+                                      {trend.critique > 0 && (
+                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#f09595" }}>
+                                          ⚠️ {trend.critique} critique{trend.critique > 1 ? "s" : ""}
+                                        </span>
+                                      )}
+                                      {trend.attention > 0 && (
+                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#f4a261" }}>
+                                          🟠 {trend.attention} à surveiller
+                                        </span>
+                                      )}
+                                      {trend.bon > 0 && (
+                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#74c69d" }}>
+                                          ✅ {trend.bon} correct{trend.bon > 1 ? "s" : ""}
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0, fontStyle: "italic" }}>
+                                      {trend.consequence}
+                                    </p>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Debout */}
+                        {collective.deboutTrends.length > 0 && (
+                          <div>
+                            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#f4a261", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
+                              🏭 Équipe debout ({collective.deboutCount} filmés)
+                            </p>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                              {collective.deboutTrends.map((trend, i) => {
+                                const critiquePct = Math.round((trend.critique / trend.total) * 100);
+                                const attentionPct = Math.round((trend.attention / trend.total) * 100);
+                                const bonPct = Math.round((trend.bon / trend.total) * 100);
+                                const mainColor = trend.critique > trend.bon ? "#f09595" : trend.attention > trend.bon ? "#f4a261" : "#74c69d";
+
+                                return (
+                                  <div key={i} style={{ padding: "12px 14px", borderRadius: 12, background: `${mainColor}06`, border: `0.5px solid ${mainColor}25` }}>
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                                      <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: mainColor }}>
+                                        {trend.emoji} {trend.zone}
+                                      </span>
+                                      <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>
+                                        {trend.total} filmés
+                                      </span>
+                                    </div>
+                                    <div style={{ height: 8, borderRadius: 100, overflow: "hidden", display: "flex", marginBottom: 8 }}>
+                                      {trend.critique > 0 && <div style={{ width: `${critiquePct}%`, background: "#f09595" }} />}
+                                      {trend.attention > 0 && <div style={{ width: `${attentionPct}%`, background: "#f4a261" }} />}
+                                      {trend.bon > 0 && <div style={{ width: `${bonPct}%`, background: "#74c69d" }} />}
+                                    </div>
+                                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
+                                      {trend.critique > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#f09595" }}>⚠️ {trend.critique} critique{trend.critique > 1 ? "s" : ""}</span>}
+                                      {trend.attention > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#f4a261" }}>🟠 {trend.attention} à surveiller</span>}
+                                      {trend.bon > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#74c69d" }}>✅ {trend.bon} correct{trend.bon > 1 ? "s" : ""}</span>}
+                                    </div>
+                                    <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0, fontStyle: "italic" }}>
+                                      {trend.consequence}
+                                    </p>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* CTA si des employés n'ont pas filmé */}
+                      {collective.notFilmed > 0 && (
+                        <div style={{ marginTop: 14, padding: "12px 14px", borderRadius: 10, background: "rgba(124,58,237,0.06)", border: "0.5px solid rgba(124,58,237,0.18)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+                          <p style={{ fontFamily: T.b, fontSize: 13, color: "#c4b5fd", margin: 0 }}>
+                            📢 {collective.notFilmed} employé{collective.notFilmed > 1 ? "s n'ont " : " n'a "}pas encore effectué l&apos;analyse vidéo.
+                          </p>
+                          <button
+                            onClick={copyInviteUrl}
+                            style={{ padding: "7px 14px", borderRadius: 100, border: "none", background: "#7c3aed", color: "#fff", fontFamily: T.b, fontWeight: 600, fontSize: 12, cursor: "pointer" }}
+                          >
+                            Partager le lien →
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* ── RAPPORT DE SYNTHÈSE ── */}
               {assessed.length > 0 && (() => {
