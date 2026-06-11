@@ -197,10 +197,12 @@ export default function LandingClient() {
       <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
         <motion.div {...fadeUp(0)} style={{
           display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-          borderRadius: 20, overflow: "hidden",
+          borderRadius: 20,
+          overflow: isMobile ? "visible" : "hidden",
           border: "0.5px solid var(--border)",
           background: "var(--bg-card)",
-          marginBottom: 80,
+          marginBottom: isMobile ? 48 : 80,
+          gap: isMobile ? 1 : 0,
         }}>
           {[
             { value: "88%", label: "des maladies professionnelles sont des TMS", source: "Ameli, 2024" },
@@ -208,11 +210,15 @@ export default function LandingClient() {
             { value: "360°", label: "posture, douleurs, sommeil, nutrition, habitudes", source: null },
           ].map((s, i) => (
             <div key={i} style={{
-              padding: "32px 24px", textAlign: "center",
+              padding: isMobile ? "20px 16px" : "32px 24px",
+              textAlign: "center",
               borderRight: !isMobile && i < 2 ? "0.5px solid var(--border)" : "none",
+              borderBottom: isMobile && i < 2 ? "0.5px solid var(--border)" : "none",
+              minWidth: 0,
+              wordBreak: "break-word" as const,
             }}>
-              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 34, color: "#2b5ce6", margin: "0 0 6px" }}>{s.value}</p>
-              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t45)", lineHeight: 1.5, margin: 0 }}>{s.label}</p>
+              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 28 : 34, color: "#2b5ce6", margin: "0 0 6px" }}>{s.value}</p>
+              <p style={{ fontFamily: T.b, fontSize: isMobile ? 12 : 13, color: "var(--t45)", lineHeight: 1.5, margin: 0 }}>{s.label}</p>
               {s.source && <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t30)", margin: "4px 0 0" }}>Source : {s.source}</p>}
             </div>
           ))}
