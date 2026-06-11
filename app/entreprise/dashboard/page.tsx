@@ -489,6 +489,30 @@ function analyzeCollectiveVideo(employees: EmployeeRow[]) {
     },
   ] : [];
 
+  // Générer la conclusion narrative
+  let narrative = "";
+  const bureauCriticalHead = bureauTrends.find(t => t.zone === "Projection de tête");
+  const bureauCriticalCount = bureauCriticalHead?.critique ?? 0;
+  const bureauTotal = bureauWithVideo.length;
+  const deboutCriticalTrunk = deboutTrends.find(t => t.zone === "Position tronc");
+  const deboutAtRisk = (deboutCriticalTrunk?.critique ?? 0) + (deboutCriticalTrunk?.attention ?? 0);
+
+  if (bureauCriticalCount >= Math.ceil(bureauTotal * 0.5) && bureauTotal > 0) {
+    narrative = `⚠️ Problème majeur identifié : ${bureauCriticalCount} de vos ${bureauTotal} employés bureau ont une projection de tête critique. C'est la conséquence directe des laptops sans rehausseur d'écran. Action prioritaire cette semaine : équiper ces postes.`;
+  } else if (deboutAtRisk >= Math.ceil(deboutWithVideo.length * 0.5) && deboutWithVideo.length > 0) {
+    narrative = `⚠️ Attention équipe debout : ${deboutAtRisk} employés sur ${deboutWithVideo.length} présentent des contraintes lombaires à la vidéo. Formation gestes et postures recommandée en priorité.`;
+  } else if (withVideo.length > 0) {
+    const avgBureau = avgPostureScore(bureauWithVideo);
+    const avgDebout = avgPostureScore(deboutWithVideo);
+    if (avgBureau && avgDebout) {
+      narrative = avgBureau < avgDebout
+        ? `L'équipe bureau présente des scores posturaux inférieurs à l'équipe debout (${avgBureau} vs ${avgDebout}/100). Les postes bureau nécessitent une attention particulière sur le setup ergonomique.`
+        : `L'équipe debout présente plus de contraintes posturales que l'équipe bureau (${avgDebout} vs ${avgBureau}/100). Priorité aux gestes et postures en manutention.`;
+    } else {
+      narrative = "Les analyses vidéo révèlent des points d'attention à corriger. Consultez les tendances par zone ci-dessous.";
+    }
+  }
+
   return {
     total: withVideo.length,
     bureauCount: bureauWithVideo.length,
@@ -498,6 +522,7 @@ function analyzeCollectiveVideo(employees: EmployeeRow[]) {
     bureauTrends,
     deboutTrends,
     notFilmed: employees.filter(e => e.video_analysis === null && e.global_score !== null).length,
+    narrative,
   };
 }
 
@@ -911,6 +936,14 @@ export default function EntrepriseDashboard() {
                           )}
                         </div>
                       </div>
+
+                      {collective.narrative && (
+                        <div style={{ marginTop: 12, padding: "12px 14px", borderRadius: 10, background: "rgba(124,58,237,0.08)", border: "0.5px solid rgba(124,58,237,0.2)" }}>
+                          <p style={{ fontFamily: T.b, fontSize: 13, color: "#c4b5fd", margin: 0, lineHeight: 1.65 }}>
+                            {collective.narrative}
+                          </p>
+                        </div>
+                      )}
                     </div>
 
                     {/* Tendances */}
@@ -1022,16 +1055,28 @@ export default function EntrepriseDashboard() {
 
                       {/* CTA si des employés n'ont pas filmé */}
                       {collective.notFilmed > 0 && (
-                        <div style={{ marginTop: 14, padding: "12px 14px", borderRadius: 10, background: "rgba(124,58,237,0.06)", border: "0.5px solid rgba(124,58,237,0.18)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-                          <p style={{ fontFamily: T.b, fontSize: 13, color: "#c4b5fd", margin: 0 }}>
+                        <div style={{ marginTop: 14, padding: "12px 14px", borderRadius: 10, background: "rgba(124,58,237,0.06)", border: "0.5px solid rgba(124,58,237,0.18)" }}>
+                          <p style={{ fontFamily: T.b, fontSize: 13, color: "#c4b5fd", margin: "0 0 10px" }}>
                             📢 {collective.notFilmed} employé{collective.notFilmed > 1 ? "s n'ont " : " n'a "}pas encore effectué l&apos;analyse vidéo.
                           </p>
-                          <button
-                            onClick={copyInviteUrl}
-                            style={{ padding: "7px 14px", borderRadius: 100, border: "none", background: "#7c3aed", color: "#fff", fontFamily: T.b, fontWeight: 600, fontSize: 12, cursor: "pointer" }}
-                          >
-                            Partager le lien →
-                          </button>
+                          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(`${window.location.origin}/video-intro`);
+                                setCopied(true);
+                                setTimeout(() => setCopied(false), 2000);
+                              }}
+                              style={{ padding: "7px 14px", borderRadius: 100, border: "none", background: "#7c3aed", color: "#fff", fontFamily: T.b, fontWeight: 600, fontSize: 12, cursor: "pointer" }}
+                            >
+                              {copied ? "✓ Copié !" : "📋 Copier le lien vidéo →"}
+                            </button>
+                            <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, alignSelf: "center" }}>
+                              postureatwork.com/video-intro
+                            </span>
+                          </div>
+                          <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: "8px 0 0" }}>
+                            À envoyer aux employés qui ont déjà fait leur bilan questionnaire.
+                          </p>
                         </div>
                       )}
                     </div>
