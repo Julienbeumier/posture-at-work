@@ -1004,7 +1004,7 @@ export default function EntrepriseDashboard() {
                     <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.bgCard }}>
                       <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}>🛒 Équipements recommandés</p>
                       <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 16 }}>Sélection basée sur les scores de vos équipes — par profil de poste.</p>
-                      <div style={{ display: "grid", gridTemplateColumns: hasGroups ? "1fr 1fr" : "1fr", gap: 12 }}>
+                      <div style={{ display: "grid", gridTemplateColumns: hasGroups && !isMobile ? "1fr 1fr" : "1fr", gap: 12 }}>
                         {hasGroups ? (
                           <>
                             <div>
@@ -1063,13 +1063,13 @@ export default function EntrepriseDashboard() {
                     <div style={{ padding: "20px 24px", background: c.bgCard }}>
                       <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}>🏋️ Programme d&apos;exercices collectif recommandé</p>
                       <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 16 }}>À animer 3x/semaine, 10 minutes. Peut être affiché en salle de pause.</p>
-                      <div style={{ display: "grid", gridTemplateColumns: hasGroups ? "1fr 1fr" : "1fr", gap: 12 }}>
+                      <div style={{ display: "grid", gridTemplateColumns: hasGroups && !isMobile ? "1fr 1fr" : "1fr", gap: 12, alignItems: "start" }}>
                         {hasGroups ? (
                           <>
                             <div>
                               <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#7c9fff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>💻 Équipe bureau</p>
                               {EXERCISES_BY_ISSUE.nuque_cervicales.concat(EXERCISES_BY_ISSUE.epaules_poignets).slice(0, 3).map((ex, i) => (
-                                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 6 }}>
+                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 6, minHeight: 56 }}>
                                   <span style={{ fontSize: 18, flexShrink: 0 }}>{ex.emoji}</span>
                                   <div style={{ flex: 1 }}>
                                     <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: c.textPrimary, margin: "0 0 1px" }}>{ex.name}</p>
@@ -1081,7 +1081,7 @@ export default function EntrepriseDashboard() {
                             <div>
                               <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#f4a261", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>🏭 Équipe debout</p>
                               {EXERCISES_BY_ISSUE.dos_lombaires.concat(EXERCISES_BY_ISSUE.jambes_pieds).slice(0, 3).map((ex, i) => (
-                                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 6 }}>
+                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 6, minHeight: 56 }}>
                                   <span style={{ fontSize: 18, flexShrink: 0 }}>{ex.emoji}</span>
                                   <div style={{ flex: 1 }}>
                                     <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: c.textPrimary, margin: "0 0 1px" }}>{ex.name}</p>
