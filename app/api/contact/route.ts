@@ -23,6 +23,26 @@ export async function POST(req: Request) {
       `,
     });
 
+    // Si la demande mentionne une démo, envoyer une confirmation avec le lien démo
+    if (message?.toLowerCase().includes("démo")) {
+      await resend.emails.send({
+        from: "PostureAtWork <onboarding@resend.dev>",
+        to: email,
+        subject: "Votre demande de démo PAW Entreprise",
+        html: `
+          <div style="font-family: sans-serif; max-width: 500px;">
+            <h2>Merci pour votre intérêt pour PAW Entreprise !</h2>
+            <p>Nous revenons vers vous sous 24h pour organiser votre démo personnalisée.</p>
+            <p>En attendant, vous pouvez explorer un dashboard de démonstration complet :</p>
+            <a href="https://postureatwork.com/entreprise/demo" style="display:inline-block; padding:12px 24px; background:#7c3aed; color:#fff; border-radius:100px; text-decoration:none; font-weight:600;">
+              Voir le dashboard de démo →
+            </a>
+            <p style="margin-top: 24px; color: #666; font-size: 13px;">— L'équipe PostureAtWork</p>
+          </div>
+        `,
+      });
+    }
+
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[contact]", err);

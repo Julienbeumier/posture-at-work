@@ -188,16 +188,27 @@ export default function EntrepriseClient() {
           <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, lineHeight: 1.65, maxWidth: 560, margin: "0 auto 36px" }}>
             Dashboard RH anonymisé · Rapport kiné trimestriel · Accès premium pour chaque employé · Angle CSRD/ESG
           </p>
-          <a href="#contact" style={{ textDecoration: "none" }}>
-            <button style={{
-              padding: "15px 32px", borderRadius: 100, border: "none",
-              background: "#2b5ce6", color: "#fff",
-              fontFamily: T.h, fontWeight: 800, fontSize: 15,
-              boxShadow: "0 4px 24px rgba(43,92,230,0.35)", cursor: "pointer",
-            }}>
-              Demander une démo →
-            </button>
-          </a>
+          <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, justifyContent: "center", alignItems: "center" }}>
+            <a href="#contact" style={{ textDecoration: "none" }}>
+              <button style={{
+                padding: "15px 32px", borderRadius: 100, border: "none",
+                background: "#2b5ce6", color: "#fff",
+                fontFamily: T.h, fontWeight: 800, fontSize: 15,
+                boxShadow: "0 4px 24px rgba(43,92,230,0.35)", cursor: "pointer",
+              }}>
+                Demander une démo →
+              </button>
+            </a>
+            <Link href="/entreprise/demo" target="_blank" style={{ textDecoration: "none" }}>
+              <button style={{
+                padding: "15px 32px", borderRadius: 100, border: "1.5px solid rgba(124,58,237,0.4)",
+                background: "transparent", color: "#a78bfa",
+                fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer",
+              }}>
+                👀 Voir un dashboard de démo
+              </button>
+            </Link>
+          </div>
         </motion.div>
 
         {/* ── FACTS ── */}
