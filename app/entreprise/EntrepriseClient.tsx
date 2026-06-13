@@ -220,6 +220,72 @@ export default function EntrepriseClient() {
           ))}
         </motion.div>
 
+        {/* ── DOUBLE VALEUR : ENTREPRISE + EMPLOYÉ ── */}
+        <motion.div {...fadeUp(0.08)} style={{ marginBottom: 72 }}>
+          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>
+            Une double valeur, un seul abonnement
+          </p>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
+            Un ergonome vous laisse un rapport.<br />PAW laisse un outil à chacun.
+          </h2>
+          <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 28, lineHeight: 1.65, maxWidth: 640 }}>
+            Avec un ergonome classique, les recommandations remontent uniquement vers vous.
+            Avec PAW, chaque collaborateur reçoit en plus son propre bilan de santé au travail —
+            et les clés pour améliorer sa situation au quotidien.
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
+            {/* Côté entreprise */}
+            <div style={{ padding: "24px", borderRadius: 20, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                <span style={{ fontSize: 24 }}>🏢</span>
+                <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#7c9fff" }}>Pour vous, employeur</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {[
+                  "Dashboard RH anonymisé avec tendances collectives",
+                  "Rapport de synthèse ergonomique trimestriel",
+                  "Plan d'action priorisé par impact",
+                  "Score Santé Sociale valorisable en ESG",
+                ].map((item, i) => (
+                  <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                    <span style={{ color: "#7c9fff", fontSize: 13, flexShrink: 0, marginTop: 2 }}>✓</span>
+                    <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.5 }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Côté employé */}
+            <div style={{ padding: "24px", borderRadius: 20, background: "rgba(29,158,117,0.06)", border: "0.5px solid rgba(29,158,117,0.2)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                <span style={{ fontSize: 24 }}>🙋</span>
+                <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#1d9e75" }}>Pour chacun de vos employés</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {[
+                  "Bilan personnel complet (6 dimensions analysées)",
+                  "Analyse vidéo IA de sa propre posture",
+                  "Conseils et exercices 100% personnalisés",
+                  "Un outil de santé qui lui appartient — même s'il change d'entreprise",
+                ].map((item, i) => (
+                  <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                    <span style={{ color: "#1d9e75", fontSize: 13, flexShrink: 0, marginTop: 2 }}>✓</span>
+                    <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.5 }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 16, padding: "14px 18px", borderRadius: 14, background: c.bgCard, border: `0.5px solid ${c.border}`, textAlign: "center" }}>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.6 }}>
+              💡 Pour 30 employés, l&apos;accès individuel seul vaudrait <strong style={{ color: c.textPrimary }}>450€</strong> (15€/personne).
+              Inclus dans votre abonnement PAW Entreprise.
+            </p>
+          </div>
+        </motion.div>
+
         {/* ── VS ERGONOME ── */}
         <motion.div {...fadeUp(0.1)} style={{ marginBottom: 72 }}>
           <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>PAW vs Ergonome</p>
