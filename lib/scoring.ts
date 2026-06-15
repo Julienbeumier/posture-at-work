@@ -2,15 +2,11 @@
 
 export interface QuestionnaireAnswers {
   // Cat 1 — Setup
-  q1: string;   // laptop | laptop_screen | desktop | mixed
-  q2: string;   // office | remote | both | open
-  q3: string;   // yes | approx | no | dunno
+  q1: string;   // laptop_seul | laptop_ecran | desktop | double_ecran
+  q3: string;   // oui | approx | non_bas | non_haut
   q4: string;   // close | ideal | far | dunno
   q5: string;   // good | bad | trackpad
   q5b: string;  // adjustable | fixed | couch | ball
-  q5c: string;  // adapted | not_adapted | none_needed
-  q_hauteur_bureau: string;    // correct | trop_haut | trop_bas | sais_pas | reglable
-  q_double_ecran: string;      // laptop_seul | ecran_externe | deux_ecrans | laptop_plus_ecran
   q_eclairage: string;         // bon | fenetre_dos | contre_jour | artificiel | reflets
 
   // Cat 2 — Pain
@@ -22,28 +18,23 @@ export interface QuestionnaireAnswers {
   q11: string;  // none | days | weeks | months | year
   q12: string;  // none | morning | day | end | always
   q12b: string; // yes | partial | no | none
-  q_irradiation_bras: string;  // non | epaule | coude | main
-  q_fourmillements: string;    // jamais | nuit_reveil | travail | permanent
-  q_maux_tete_nuque: string;   // non | parfois | semaine | quotidien
-  q_perte_force: string;       // normal | parfois | regulier
+  q_irradiation: string;       // non | bras | jambe | les_deux
+  q_maux_tete_nuque: string;   // non | maux_fin_journee | tete_lourde | quotidien
   q_douleur_nuit: string;      // non | inconfortable | reveille | souvent
-  q_vertiges: string;          // non | parfois | souvent
 
   // Cat 3 — Work habits
   q13: number;  // 1-12 slider
   q14: string;  // never | 1x | 2h | 1h
-  q14b: string; // cardio | strength | yoga | team | mixed | none
-  q15: string;  // headset | hand | speaker | rarely
-  q_posture_visio: string;     // bureau | canape | allonge | debout | telephone
-  q_laptop_hors_bureau: string; // jamais | parfois | souvent | principale
+  q14b: string; // cardio | yoga | musculation | team | marche | etirements | mixed | none
+  q_laptop_hors_bureau: string; // jamais | visio_canape | souvent | principale
   q_stress_travail: number;    // 0-5 slider
-  q_anciennete_poste: string;  // moins_6mois | 6m_2ans | 2_5ans | 5_10ans | plus_10ans
 
   // Cat 4 — Sleep & energy
   q17: number;  // 4-10 slider
   q18: string;  // fresh | tired | exhausted
   q19: number;  // 0-3 liters slider (step 0.25)
   q20: string;  // never | sometimes | often | always
+  q_ecrans_soir: string;       // jamais | parfois | souvent | toujours
 
   // Cat 5 — Nutrition
   qn1: string;  // screen | cafeteria | outside | home
@@ -54,8 +45,6 @@ export interface QuestionnaireAnswers {
   // Cat 6 — Body (formerly Cat 5)
   q21: string[];   // none | back | cervical | tendinite | burnout | sleep_disorder | autre
   q21_other: string;
-  q22: string;  // never | 1x | 2-3x | daily
-  q23: string;  // never | sometimes | regularly
   q24: string;  // good | bad | dunno | depends
 
   // Cat 7 — Global feeling (formerly Cat 6)
@@ -63,19 +52,20 @@ export interface QuestionnaireAnswers {
 }
 
 export const DEFAULT_ANSWERS: QuestionnaireAnswers = {
-  q1: "", q2: "", q3: "", q4: "", q5: "", q5b: "", q5c: "",
-  q_hauteur_bureau: "", q_double_ecran: "", q_eclairage: "",
+  q1: "", q3: "", q4: "", q5: "", q5b: "",
+  q_eclairage: "",
   q6: null, q7: null, q8: null, q9: null, q10: null,
   q11: "", q12: "", q12b: "",
-  q_irradiation_bras: "", q_fourmillements: "", q_maux_tete_nuque: "",
-  q_perte_force: "", q_douleur_nuit: "", q_vertiges: "",
-  q13: 7, q14: "", q14b: "", q15: "",
-  q_posture_visio: "", q_laptop_hors_bureau: "", q_stress_travail: 2, q_anciennete_poste: "",
+  q_irradiation: "",
+  q_maux_tete_nuque: "",
+  q_douleur_nuit: "",
+  q13: 7, q14: "", q14b: "",
+  q_laptop_hors_bureau: "",
+  q_stress_travail: 2,
   q17: 7, q18: "", q19: 1.5, q20: "",
+  q_ecrans_soir: "",
   qn1: "", qn2: "", qn3: "", qn4: "",
-  q21: [], q21_other: "",
-  q22: "", q23: "", q24: "",
-  q25: null,
+  q21: [], q21_other: "", q24: "", q25: null,
 };
 
 // ─── Score types ─────────────────────────────────────────────────────────────
@@ -105,19 +95,27 @@ function lookup(map: Record<string, number>, key: string, fallback = 50): number
 
 function calcSetup(a: QuestionnaireAnswers): number {
   let raw = 0;
-  raw += lookup({ laptop: -15, laptop_screen: 5, desktop: 10, mixed: 0 }, a.q1, 0);
-  raw += lookup({ yes: 20, approx: 10, no: -20, dunno: 0 }, a.q3, 0);
+  // Q1 intègre maintenant le type d'écran (ex-Q9)
+  raw += lookup({
+    laptop_seul: -25,      // laptop seul = pire cas
+    laptop_ecran: 10,      // laptop + écran externe = bon
+    desktop: 15,           // desktop = bon
+    double_ecran: 5,       // double écran = ok mais rotations
+  }, a.q1, 0);
+  // Q3 intègre maintenant la hauteur du bureau (ex-Q8)
+  raw += lookup({
+    oui: 25,               // écran ET bureau bien réglés
+    approx: 10,            // à peu près
+    non_bas: -22,          // trop bas = charge cervicale
+    non_haut: -10,         // trop haut = épaules surélevées
+  }, a.q3, 0);
   raw += lookup({ close: -10, ideal: 20, far: -5, dunno: 0 }, a.q4, 0);
   raw += lookup({ good: 20, bad: -15, trackpad: -5 }, a.q5, 0);
   raw += lookup({ adjustable: 20, fixed: -10, couch: -25, ball: 10 }, a.q5b, 0);
-  raw += lookup({ adapted: 10, not_adapted: -5, none_needed: 5 }, a.q5c, 0);
-  // New setup questions
-  raw += lookup({ correct: 12, reglable: 12, sais_pas: 0, trop_haut: -8, trop_bas: -10 }, a.q_hauteur_bureau, 0);
-  raw += lookup({ ecran_externe: 10, laptop_plus_ecran: 8, deux_ecrans: 4, laptop_seul: -10 }, a.q_double_ecran, 0);
   raw += lookup({ bon: 10, fenetre_dos: 5, artificiel: 4, contre_jour: -12, reflets: -15 }, a.q_eclairage, 0);
-  raw += lookup({ jamais: 10, parfois: 0, souvent: -15, principale: -25 }, a.q_laptop_hors_bureau, 0);
-  // min=-107, max=122, range=229 → normalise
-  return clamp(Math.round(((raw + 107) / 229) * 100));
+  raw += lookup({ jamais: 10, visio_canape: -5, souvent: -15, principale: -25 }, a.q_laptop_hors_bureau, 0);
+  // min=-102, max=125, range=227
+  return clamp(Math.round(((raw + 102) / 227) * 100));
 }
 
 function scaleToScore(v: number | null): number {
@@ -129,18 +127,26 @@ function calcPain(a: QuestionnaireAnswers): number {
   const q11Score = lookup({ none: 100, days: 80, weeks: 60, months: 40, year: 20 }, a.q11, 80);
   const q12Score = lookup({ none: 100, morning: 60, day: 70, end: 75, always: 30 }, a.q12, 80);
   const q12bScore = lookup({ yes: 90, partial: 70, no: 15, none: 100 }, a.q12b, 80);
-  // Neurological / qualitative pain signals (default 90 = not answered → neutral)
-  const qIrrad  = lookup({ non: 100, epaule: 80, coude: 40, main: 20 }, a.q_irradiation_bras, 90);
-  const qFourm  = lookup({ jamais: 100, nuit_reveil: 65, travail: 40, permanent: 15 }, a.q_fourmillements, 90);
-  const qMaux   = lookup({ non: 100, parfois: 75, semaine: 50, quotidien: 20 }, a.q_maux_tete_nuque, 90);
-  const qForce  = lookup({ normal: 100, parfois: 60, regulier: 30 }, a.q_perte_force, 90);
-  const qNuit   = lookup({ non: 100, inconfortable: 75, reveille: 40, souvent: 15 }, a.q_douleur_nuit, 90);
-  const qVert   = lookup({ non: 100, parfois: 75, souvent: 45 }, a.q_vertiges, 90);
+  // Question fusionnée irradiation + fourmillements + perte de force
+  const qIrrad = lookup({
+    non: 100,
+    bras: 35,       // compression cervicale / plexus brachial
+    jambe: 30,      // sciatique / crural
+    les_deux: 10,   // signe neurologique sévère
+  }, a.q_irradiation, 90);
+  // Maux de tête + vertiges fusionnés
+  const qMaux = lookup({
+    non: 100,
+    maux_fin_journee: 70,
+    tete_lourde: 50,
+    quotidien: 20,
+  }, a.q_maux_tete_nuque, 90);
+  const qNuit = lookup({ non: 100, inconfortable: 75, reveille: 40, souvent: 15 }, a.q_douleur_nuit, 90);
   const all = [
     scaleToScore(a.q6), scaleToScore(a.q7), scaleToScore(a.q8),
     scaleToScore(a.q9), scaleToScore(a.q10),
     q11Score, q12Score, q12bScore,
-    qIrrad, qFourm, qMaux, qForce, qNuit, qVert,
+    qIrrad, qMaux, qNuit,
   ];
   return clamp(all.reduce((s, v) => s + v, 0) / all.length);
 }
@@ -150,13 +156,21 @@ function calcHabits(a: QuestionnaireAnswers): number {
   const q13 =
     h <= 4 ? 100 : h <= 5 ? 85 : h <= 6 ? 70 : h <= 7 ? 55 : h <= 8 ? 40 : h <= 9 ? 25 : 10;
   const q14 = lookup({ never: 0, "1x": 30, "2h": 70, "1h": 100 }, a.q14, 50);
-  const q14b = lookup({ yoga: 100, mixed: 90, cardio: 75, team: 70, strength: 65, none: 15 }, a.q14b, 50);
-  const q15 = lookup({ headset: 100, rarely: 90, speaker: 80, hand: 20 }, a.q15, 50);
-  // New habits questions (default 75 = neutral when not answered)
-  const qVisio  = lookup({ debout: 100, bureau: 90, telephone: 70, canape: 40, allonge: 20 }, a.q_posture_visio, 75);
-  const qLaptop = lookup({ jamais: 100, parfois: 75, souvent: 35, principale: 10 }, a.q_laptop_hors_bureau, 75);
+  // q14b intègre maintenant sport + étirements
+  const q14b = lookup({
+    yoga: 100, etirements: 90, mixed: 90,
+    cardio: 80, marche: 75, team: 70,
+    musculation: 65, none: 15,
+  }, a.q14b, 50);
+  // q_laptop_hors_bureau intègre posture_visio
+  const qLaptop = lookup({
+    jamais: 100,
+    visio_canape: 60,   // visio depuis canapé = modéré
+    souvent: 35,
+    principale: 10,
+  }, a.q_laptop_hors_bureau, 75);
   const qStress = Math.max(0, 100 - (a.q_stress_travail ?? 2) * 20);
-  const all = [q13, q14, q14b, q15, qVisio, qLaptop, qStress];
+  const all = [q13, q14, q14b, qLaptop, qStress];
   return clamp(all.reduce((s, v) => s + v, 0) / all.length);
 }
 
@@ -168,7 +182,9 @@ function calcSleepEnergy(a: QuestionnaireAnswers): number {
   const w = a.q19; // liters (0-3)
   const q19 = w >= 2 ? 100 : w >= 1.5 ? 85 : w >= 1 ? 60 : w >= 0.5 ? 30 : 10;
   const q20 = lookup({ never: 100, sometimes: 70, often: 40, always: 10 }, a.q20, 50);
-  return clamp((q17 + q18 + q19 + q20) / 4);
+  // Nouvelle question écrans le soir
+  const qEcrans = lookup({ jamais: 100, parfois: 75, souvent: 40, toujours: 15 }, a.q_ecrans_soir, 75);
+  return clamp((q17 + q18 + q19 + q20 + qEcrans) / 5);
 }
 
 function calcLifestyle(a: QuestionnaireAnswers): number {
@@ -179,10 +195,10 @@ function calcLifestyle(a: QuestionnaireAnswers): number {
   const q21Arr = Array.isArray(a.q21) ? a.q21 : [];
   const q21 =
     q21Arr.length === 0 ? 80 : Math.min(...q21Arr.map((v) => diagMap[v] ?? 70));
-  const q22 = lookup({ never: 20, "1x": 60, "2-3x": 85, daily: 100 }, a.q22, 50);
-  const q23 = lookup({ never: 20, sometimes: 60, regularly: 100 }, a.q23, 50);
   const q24 = lookup({ good: 100, depends: 70, dunno: 50, bad: 20 }, a.q24, 50);
-  return clamp((q21 + q22 + q23 + q24) / 4);
+  // q14b déjà utilisé dans habits — ici on utilise juste q21 + q24 + irradiation comme bonus/malus
+  const qIrrad = lookup({ non: 100, bras: 60, jambe: 55, les_deux: 30 }, a.q_irradiation, 90);
+  return clamp((q21 + q24 + qIrrad) / 3);
 }
 
 function calcNutrition(a: QuestionnaireAnswers): number {
@@ -240,33 +256,25 @@ export function getRecommendations(
 ): Recommendation[] {
   const candidates: Recommendation[] = [];
 
-  // Priority 0a — irradiation / neurological alarm signs
-  if (a.q_irradiation_bras === "main" || a.q_irradiation_bras === "coude") {
+  // Priority 0a — irradiation bras (neurologique)
+  if (a.q_irradiation === "bras" || a.q_irradiation === "les_deux") {
     candidates.push({
-      title: "⚠️ Douleur qui descend dans le bras — consulte un professionnel",
+      title: "⚠️ Douleurs qui descendent dans le bras — consulte un professionnel",
       description:
-        "Une douleur ou fourmillement qui part du cou et descend dans le bras jusqu'au coude ou à la main peut indiquer une compression nerveuse cervicale (hernie ou défilé thoracobrachial). Ce signe neurologique mérite un bilan avec un médecin ou kinésithérapeute avant tout exercice.",
+        "Des douleurs, fourmillements ou une sensation de faiblesse qui partent du cou et descendent dans le bras ou la main peuvent indiquer une compression nerveuse cervicale (hernie ou défilé thoracobrachial). Ce signe neurologique mérite un bilan avec un médecin ou kinésithérapeute avant tout exercice cervical intensif. En attendant : mobilisation neurale douce du membre supérieur (ULNT), 5 répétitions sans douleur — évite les rétractions cervicales forcées et les tractions.",
       priority: "urgent",
       score: 0,
     });
   }
 
-  // Priority 0b — possible canal carpien
-  if (a.q_fourmillements === "permanent" || a.q_fourmillements === "travail") {
+  // Priority 0b — irradiation jambe (neurologique)
+  if (a.q_irradiation === "jambe" || a.q_irradiation === "les_deux") {
     candidates.push({
-      title: "🤲 Fourmillements fréquents — syndrome du canal carpien possible",
+      title: "⚠️ Douleurs qui descendent dans la jambe — consulte un professionnel",
       description:
-        "Des fourmillements dans les doigts pendant ou après le travail sont le signe classique du canal carpien. Test rapide : secoue les mains vers le bas 1 minute — si ça soulage, c'est évocateur. Évite les flexions excessives du poignet. Consulte pour confirmation, c'est traitable facilement si pris tôt.",
-      priority: a.q_fourmillements === "permanent" ? "urgent" : "important",
-      score: 5,
-    });
-  } else if (a.q_fourmillements === "nuit_reveil") {
-    candidates.push({
-      title: "🤲 Fourmillements nocturnes — surveille le canal carpien",
-      description:
-        "Les fourmillements au réveil dans le pouce, l'index et le majeur sont le signe précoce du syndrome du canal carpien. Évite de dormir poignet fléchi. Si ça s'aggrave, consulte rapidement — un traitement précoce évite l'opération.",
-      priority: "important",
-      score: 10,
+        "Des douleurs, fourmillements ou une sensation de faiblesse qui descendent dans la fesse, la jambe ou le pied peuvent indiquer une sciatique ou une névralgie crurale. Consultation kiné recommandée. En attendant : slump assis doux (neural flossing), mobilisation progressive sans forcer — évite les flexions lombaires forcées et le port de charges.",
+      priority: "urgent",
+      score: 2,
     });
   }
 
@@ -297,14 +305,14 @@ export function getRecommendations(
     let desc = "🖥️ Un écran mal placé génère jusqu'à 4x plus de tension cervicale. ";
     if (a.q5b === "couch")
       desc += "🛋️ Travailler depuis le canapé est la cause #1 des lombalgies en télétravail — investis dans une chaise de bureau même basique. ";
-    if (a.q1 === "laptop")
+    if (a.q1 === "laptop_seul")
       desc += "Laptop seul = combo catastrophique. Investis dans un support + clavier/souris externes (moins de 40€). ";
-    if (a.q3 === "no")
-      desc += "Ton écran est trop bas : remonte-le exactement à hauteur des yeux. ";
+    if (a.q3 === "non_bas")
+      desc += "Ton écran ou ton bureau est trop bas : remonte l'écran à hauteur des yeux et règle ton bureau pour des coudes à 90°. ";
+    if (a.q3 === "non_haut")
+      desc += "Ton bureau est trop haut : tes épaules sont surélevées en permanence — abaisse-le ou ajuste ta chaise. ";
     if (a.q4 === "close")
       desc += "Tu es trop proche de ton écran — recule à 50-70cm. ";
-    if (a.q5c === "not_adapted")
-      desc += "👓 Des lunettes non adaptées à l'écran forcent ton corps à compenser — consulte un opticien.";
     candidates.push({
       title: "Ton setup est ton problème #1",
       description: desc.trim(),
@@ -318,14 +326,6 @@ export function getRecommendations(
         "Travailler depuis le canapé est la cause #1 des lombalgies en télétravail. Même une chaise de bureau basique à 50€ fera une différence immédiate.",
       priority: "important",
       score: scores.setup,
-    });
-  } else if (a.q5c === "not_adapted") {
-    candidates.push({
-      title: "👓 Tes lunettes ne sont pas adaptées à l'écran",
-      description:
-        "Des lunettes non adaptées obligent ton corps à se rapprocher de l'écran ou à incliner la tête, créant des tensions cervicales. Consulte un opticien pour des verres anti-reflet ou progressifs.",
-      priority: "important",
-      score: scores.setup + 5,
     });
   }
 
@@ -359,8 +359,6 @@ export function getRecommendations(
       desc += "Programme une alarme toutes les 45min pour te lever 2 minutes. ";
     else if (a.q14 === "1x")
       desc += "1 pause/jour c'est insuffisant. Vise minimum toutes les 2h. ";
-    if (a.q15 === "hand")
-      desc += "Tenir le téléphone à la main tête baissée est destructeur pour la nuque — passe en mains-libres.";
     if (a.q14b === "none")
       desc += "Aucune activité physique avec la sédentarité du bureau = risque élevé. Commence par 20min de marche 3x/semaine.";
     candidates.push({
@@ -410,10 +408,8 @@ export function getRecommendations(
   // Lifestyle recommendations
   if (scores.lifestyle < 50) {
     let desc = "Ton corps manque de mouvement pour compenser la sédentarité. ";
-    if (a.q22 === "never")
-      desc += "Même 20min de marche rapide 3x/semaine réduit significativement les douleurs chroniques. ";
-    if (a.q23 === "never")
-      desc += "5min d'étirements matin et soir peuvent transformer ton confort en 2 semaines. ";
+    if (a.q14b === "none")
+      desc += "Même 20min de marche rapide 3x/semaine et 5min d'étirements matin et soir peuvent transformer ton confort en 2 semaines. ";
     if (a.q24 === "bad")
       desc += "Rappel visuel : '3 points de contact : pieds au sol, bassin en arrière, dos contre le dossier'.";
     if ((a.q21 ?? []).includes("back") || (a.q21 ?? []).includes("cervical"))
@@ -449,7 +445,7 @@ export function getRecommendations(
   }
 
   // Céphalées cervicogènes
-  if (a.q_maux_tete_nuque === "quotidien" || a.q_maux_tete_nuque === "semaine") {
+  if (a.q_maux_tete_nuque === "quotidien" || a.q_maux_tete_nuque === "tete_lourde") {
     candidates.push({
       title: "🧠 Maux de tête cervicogènes fréquents",
       description:
@@ -489,7 +485,7 @@ export function getExercises(
 ): Exercise[] {
   const ex: Exercise[] = [];
 
-  if ((a.q6 ?? 0) >= 2 || (a.q7 ?? 0) >= 2 || a.q1 === "laptop") {
+  if ((a.q6 ?? 0) >= 2 || (a.q7 ?? 0) >= 2 || a.q1 === "laptop_seul") {
     ex.push({
       name: "Rotations cervicales lentes",
       duration: "2 min — toutes les heures",
@@ -511,7 +507,7 @@ export function getExercises(
     });
   }
 
-  if ((a.q7 ?? 0) >= 2 || (a.q9 ?? 0) >= 2 || a.q1 === "laptop") {
+  if ((a.q7 ?? 0) >= 2 || (a.q9 ?? 0) >= 2 || a.q1 === "laptop_seul") {
     ex.push({
       name: "Ouverture pectorale au coin",
       duration: "30 sec — chaque pause",

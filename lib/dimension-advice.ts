@@ -34,15 +34,18 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
   const tipIds: string[] = [];
   const productKeys: string[] = [];
 
-  if (answers.q1 === "laptop") {
+  if (answers.q1 === "laptop_seul") {
     detected.push("Tu travailles sur laptop sans écran externe. C'est la configuration la plus risquée pour la posture cervicale.");
     tipIds.push("s4");
     productKeys.push("support_laptop");
   }
-  if (answers.q3 === "non" || answers.q3 === "no") {
-    detected.push("Ton écran est en dessous de la hauteur des yeux. Ta tête s'incline en permanence, ce qui charge ta nuque de 12 à 22 kg.");
+  if (answers.q3 === "non_bas") {
+    detected.push("Ton écran ou ton bureau est trop bas. Ta tête s'incline en permanence, ce qui charge ta nuque de 12 à 22 kg.");
     tipIds.push("s2");
     if (!productKeys.includes("rehausseur_ecran")) productKeys.push("rehausseur_ecran");
+  } else if (answers.q3 === "non_haut") {
+    detected.push("Ton bureau est trop haut : tes épaules restent surélevées en permanence, ce qui crée des tensions dans les trapèzes.");
+    tipIds.push("s2");
   }
   if (answers.q5b === "couch" || answers.q5b === "canapé") {
     detected.push("Tu travailles parfois depuis le canapé. 1h dans cette position = 3h de tension musculaire à récupérer.");
@@ -111,7 +114,7 @@ function douleursAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensio
     tipIds.push("d6");
     exerciseKeys.push("lumbar_flexion", "thoracic_rotation");
     productKeys.push("coussin_lombaire", "foam_roller");
-    if (answers.q22 === "never") productKeys.push("coussin_equilibre");
+    if (answers.q14b === "none") productKeys.push("coussin_equilibre");
   } else if (q8 >= 1) {
     detected.push(`Tu as des tensions lombaires légères (${q8}/5). Les longues sessions assises sans soutien en sont souvent la cause.`);
     exerciseKeys.push("lumbar_flexion");
@@ -174,11 +177,6 @@ function habitudesAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
   } else if (answers.q14 === "1x") {
     detected.push("Tu ne fais qu'une pause active par jour. C'est insuffisant — le corps a besoin de se lever plusieurs fois.");
     tipIds.push("h2");
-  }
-
-  if (answers.q15 === "hand") {
-    detected.push("Tu tiens ton téléphone en main pendant les appels. Cela force une posture asymétrique et comprime les cervicales.");
-    tipIds.push("h7");
   }
 
   if (detected.length === 0) {
@@ -314,20 +312,17 @@ function lifestyleAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
   const tipIds: string[] = [];
 
   if (answers.q14b === "none") {
-    detected.push("Tu ne pratiques pas d'activité physique régulière. Le mouvement est le meilleur antidote à la sédentarité du bureau.");
-    tipIds.push("l1", "l4");
-  } else if (answers.q14b === "cardio" || answers.q14b === "strength") {
-    detected.push("Tu as une activité sportive régulière — c'est excellent. Assure-toi de compenser les tensions spécifiques au bureau.");
+    detected.push("Tu ne pratiques pas d'activité physique régulière ni d'étirements. Le mouvement est le meilleur antidote à la sédentarité du bureau.");
+    tipIds.push("l1", "l4", "l5");
+  } else if (answers.q14b === "cardio" || answers.q14b === "musculation") {
+    detected.push("Tu as une activité sportive régulière — c'est excellent. Assure-toi de compenser les tensions spécifiques au bureau avec des étirements ciblés.");
+  } else if (answers.q14b === "etirements" || answers.q14b === "yoga" || answers.q14b === "mixed") {
+    detected.push("Tu pratiques des étirements ou du yoga régulièrement — excellent pour relâcher les tensions accumulées au bureau.");
   }
 
   if (answers.q24 === "bad") {
     detected.push("Tu perçois ton bien-être général comme mauvais. Le stress chronique génère des tensions musculaires réelles et mesurables.");
     tipIds.push("l1", "l2");
-  }
-
-  if (answers.q22 === "never") {
-    detected.push("Tu ne fais pas d'étirements ou de stretching. C'est pourtant la façon la plus rapide de soulager les tensions accumulées.");
-    tipIds.push("l5");
   }
 
   if (detected.length === 0) {
