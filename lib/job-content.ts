@@ -605,7 +605,9 @@ function getDeboutDimensionContent(
         detected.push("Ton plan de travail est trop bas. Tu te courbes en permanence, ce qui surcharge le bas du dos et les épaules.");
       }
       if (a("q_d_position_var") === "non") {
-        detected.push("Tu ne peux pas t'asseoir ou varier ta position. La variation posturale assis/debout est le meilleur rempart contre les TMS du travail debout.");
+        detected.push("Tu n'as pas accès à un siège ou une position alternative. La variation posturale assis/debout est le meilleur rempart contre les TMS du travail debout.");
+      } else if (a("q_d_position_var") === "oui_siège_pas_ose") {
+        detected.push("Tu as accès à un siège mais tu ne l'utilises pas. S'asseoir 5 minutes toutes les heures n'est pas de la paresse — c'est de la prévention TMS.");
       }
       if (detected.length === 0) {
         detected.push("Ton environnement debout est globalement bien adapté — continue à surveiller l'état de tes semelles et de ton tapis anti-fatigue.");
@@ -806,6 +808,9 @@ function getDeboutDimensionContent(
       const q_d_charges_h = String(a("q_d_charges") ?? "");
       const q_d_repetitif_h = String(a("q_d_repetitif") ?? "");
 
+      if (a("q_d_position_var") === "non") {
+        detected.push("Tu restes en poste fixe sans possibilité de varier. Le mouvement continu protège infiniment mieux que rester debout statique.");
+      }
       if (q_d16 === "jamais" || q_d16 === "rarement") {
         detected.push("Tu ne fais pas de pauses assises. Rester debout immobile sans variation est plus nocif que marcher — les muscles se contractent sans jamais se relâcher.");
       }
@@ -855,14 +860,14 @@ function getDeboutDimensionContent(
       const detected: string[] = [];
       const q_d11 = n("q_d11");
       const q_d_jambes_soir_s = String(a("q_d_jambes_soir") ?? "bien");
-      const q_d_crampes = String(a("q_d_crampes_global") ?? "");
+      const q_d_crampes_global = String(a("q_d_crampes_global") ?? "");
       const q_d_jambes_nuit = String(a("q_d_jambes_nuit") ?? "");
       const q_d_recuperation_s = String(a("q_d_recuperation") ?? "");
 
-      const flagCrampes = q_d_crampes === "service_et_nuit" || q_d_crampes === "nocturnes";
+      const flagCrampes = q_d_crampes_global === "service_et_nuit" || q_d_crampes_global === "nocturnes";
       const flagJambesSansRepos = q_d_jambes_nuit === "souvent_agitees" || q_d_jambes_nuit === "perturbe_sommeil";
       const flagMauvaiseRecup = q_d_recuperation_s === "mal" || q_d_recuperation_s === "pas_du_tout";
-      const flagConsultSommeil = q_d_crampes === "service_et_nuit" || q_d_jambes_nuit === "perturbe_sommeil" || q_d_recuperation_s === "pas_du_tout";
+      const flagConsultSommeil = q_d_crampes_global === "service_et_nuit" || q_d_jambes_nuit === "perturbe_sommeil" || q_d_recuperation_s === "pas_du_tout";
 
       if (flagCrampes) {
         detected.push("Tes crampes nocturnes de mollets ont une cause identifiable : déshydratation + carence en magnésium + muscles épuisés non étirés après le service. Ces 3 facteurs se corrigent facilement.");
@@ -936,7 +941,7 @@ function getDeboutDimensionContent(
       const q_d_crampes_global = String(a("q_d_crampes_global") ?? "");
       const flagPetitDej = q_d_petit_dej === "juste_cafe" || q_d_petit_dej === "saute";
       const flagCrampesMusculaires = q_d_crampes_global === "service_et_nuit" || q_d_crampes_global === "nocturnes" || q_d_crampes_global === "service_seulement";
-      const flagCarenceMineraux = q_d_crampes_global === "service_et_nuit";
+      const flagCarenceMineraux = q_d_crampes_global === "nocturnes" || q_d_crampes_global === "service_et_nuit";
       const flagDependanceEnergie = q_d_energie_boisson === "souvent_energisantes" || q_d_energie_boisson === "seul_moyen";
       const flagPauseRepas = q_d_repas_service === "debout_travaillant" || q_d_repas_service === "saute_pause";
 
@@ -944,7 +949,7 @@ function getDeboutDimensionContent(
         detected.push("Sans petit-déjeuner ou avec juste un café, tes muscles démarrent en déficit. Pour un travailleur debout, ça se traduit par une posture qui s'effondre dès 10h et une fatigue 2h plus tôt.");
       }
       if (flagCrampesMusculaires) {
-        detected.push(`Tes crampes musculaires fréquentes (${q_d_crampes_global === "service_et_nuit" ? "nocturnes ET en service" : "souvent"}) indiquent presque toujours une combinaison déshydratation + carence magnésium/potassium + muscles surmenés.`);
+        detected.push(`Tes crampes musculaires fréquentes (${q_d_crampes_global === "service_et_nuit" ? "nocturnes ET en service" : q_d_crampes_global === "nocturnes" ? "surtout la nuit" : "pendant le service"}) indiquent presque toujours une combinaison déshydratation + carence magnésium/potassium + muscles surmenés.`);
       }
       if (flagDependanceEnergie) {
         detected.push("Tu dépends des boissons énergisantes pour tenir. Ce cycle pic → crash épuise les surrénales et aggrave les douleurs musculaires à long terme.");
@@ -1016,16 +1021,17 @@ function getDeboutDimensionContent(
 
     case "lifestyle": {
       const detected: string[] = [];
-      const q_d_act = Array.isArray(a("q_d_activite_lifestyle")) ? (a("q_d_activite_lifestyle") as string[]) : [];
+      const q_d_act_life = Array.isArray(a("q_d_activite_lifestyle")) ? (a("q_d_activite_lifestyle") as string[]) : [];
       const q_d_consult = String(a("q_d_consultation") ?? "");
       const q_d8_l = n("q_d8");
       const q_d_crampes_l = String(a("q_d_crampes_global") ?? "");
 
-      const flagPasEtir = q_d_act.includes("aucune") || q_d_act.length === 0;
-      const flagSedentaire = q_d_act.includes("aucune") || q_d_act.length === 0;
-      const flagSportImpact = q_d_act.includes("course");
+      const flagPasEtir = q_d_act_life.length === 0
+        || (q_d_act_life.includes("aucune") && !q_d_act_life.some(v => ["yoga_pilates_etirements", "natation_velo_marche"].includes(v)));
+      const flagSedentaire = q_d_act_life.includes("aucune") || q_d_act_life.length === 0;
+      const flagSportImpact = q_d_act_life.includes("course");
       const flagJamaisConsulte = q_d_consult === "jamais" || q_d_consult === "pas_eu_temps";
-      const flagCrampesL = q_d_crampes_l === "service_et_nuit" || q_d_crampes_l === "nocturnes";
+      const flagCrampesL = q_d_crampes_l === "service_seulement" || q_d_crampes_l === "nocturnes" || q_d_crampes_l === "service_et_nuit";
 
       if (flagPasEtir) {
         detected.push("Tes muscles et tendons ne récupèrent pas correctement sans étirements post-service. Ces tensions se cristallisent la nuit et deviennent des douleurs chroniques en quelques mois.");
@@ -1057,8 +1063,8 @@ function getDeboutDimensionContent(
         lifeTips.push({ id: "dl8", icon: "👟", text: "Reprends la course avec de bonnes chaussures de running (différentes des chaussures de travail)" });
         lifeTips.push({ id: "dl9", icon: "🔄", text: "Alterne : 1 jour course, 1 jour faible impact" });
       } else {
-        if (q_d_act.includes("natation_velo_marche")) lifeTips.push({ id: "dl10", icon: "🏊", text: "Continue la natation/vélo/marche — idéal pour récupérer d'une journée debout" });
-        if (q_d_act.includes("yoga_pilates_etirements")) lifeTips.push({ id: "dl11", icon: "🧘", text: "Yoga, Pilates et étirements sont d'excellents compléments pour un travailleur debout — continue" });
+        if (q_d_act_life.includes("natation_velo_marche")) lifeTips.push({ id: "dl10", icon: "🏊", text: "Continue la natation/vélo/marche — idéal pour récupérer d'une journée debout" });
+        if (q_d_act_life.includes("yoga_pilates_etirements")) lifeTips.push({ id: "dl11", icon: "🧘", text: "Yoga, Pilates et étirements sont d'excellents compléments pour un travailleur debout — continue" });
         lifeTips.push({ id: "dl12", icon: "🔄", text: "Alterne course et faible impact si douleurs aux pieds — pas d'arrêt total du sport" });
       }
       if (flagCrampesL) {

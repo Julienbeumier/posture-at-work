@@ -175,10 +175,43 @@ const THOMAS_SCORES = {
   sleep_energy: 45, nutrition: 30, lifestyle: 60,
 };
 const THOMAS_ANSWERS = {
-  q1: "laptop_seul", q2: "teletravail", q3: "non_trop_bas",
-  q4: "moins_50cm", q5: "trackpad", q5b: "chaise_fixe",
-  q13: 9, q14: "jamais", q14b: "cardio", q15: "tete_baissee",
-  q17: 6, q18: "fatigue", q6: 3, q7: 2, q8: 2,
+  // Setup
+  q1: "laptop_seul",
+  q3: "non_bas",
+  q4: "close",
+  q5: "trackpad",
+  q5b: "fixed",
+  q_eclairage: "artificiel",
+  q_laptop_hors_bureau: "visio_canape",
+  // Douleurs
+  q6: 3, q7: 2, q8: 2, q9: 1, q10: 0,
+  q11: "months",
+  q12: "end",
+  q12b: "partial",
+  q_irradiation: "non",
+  q_maux_tete_nuque: "maux_fin_journee",
+  q_douleur_nuit: "non",
+  // Habitudes
+  q13: 9,
+  q14: "never",
+  q14b: "cardio",
+  q_stress_travail: 3,
+  // Sommeil
+  q17: 6,
+  q18: "tired",
+  q19: 1.5,
+  q20: "often",
+  q_ecrans_soir: "souvent",
+  // Nutrition
+  qn1: "screen",
+  qn2: "crash",
+  qn3: "afternoon",
+  qn4: "sandwich",
+  // Lifestyle
+  q21: ["cervical"],
+  q21_other: "",
+  q24: "bad",
+  q25: 2,
 };
 
 export default function DimensionPage() {
