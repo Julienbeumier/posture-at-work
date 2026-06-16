@@ -34,7 +34,7 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
   const tipIds: string[] = [];
   const productKeys: string[] = [];
 
-  if (answers.q1 === "laptop_seul") {
+  if (answers.q1 === "laptop_seul" || answers.q1 === "laptop") {
     detected.push("Tu travailles sur laptop sans écran externe. C'est la configuration la plus risquée pour la posture cervicale.");
     tipIds.push("s4");
     productKeys.push("support_laptop");
@@ -121,6 +121,25 @@ function douleursAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensio
     productKeys.push("coussin_lombaire");
   }
 
+  if (answers.q_irradiation === "bras" || answers.q_irradiation === "les_deux") {
+    detected.push("⚠️ Tu as des fourmillements ou douleurs qui descendent dans le bras. Cela peut indiquer une compression cervicale — consulte un kiné avant tout exercice cervical intensif.");
+    tipIds.push("d2");
+    exerciseKeys.push("ulnt_soft");
+  }
+  if (answers.q_irradiation === "jambe" || answers.q_irradiation === "les_deux") {
+    detected.push("⚠️ Tu as des douleurs ou fourmillements qui descendent dans la jambe. Possible sciatique ou névralgie crurale — évite les flexions lombaires forcées.");
+    tipIds.push("d2");
+    exerciseKeys.push("slump_soft");
+  }
+  if (answers.q_maux_tete_nuque === "quotidien" || answers.q_maux_tete_nuque === "tete_lourde") {
+    detected.push("Tu as des maux de tête ou une nuque lourde fréquents. C'est souvent lié à une tension cervicale chronique ou à la fatigue visuelle.");
+    tipIds.push("d3", "d9");
+    exerciseKeys.push("chin_tuck", "trapeze_stretch");
+  }
+  if ((answers.q9 ?? 0) >= 2 || answers.q_irradiation === "bras") {
+    productKeys.push("repose_poignets");
+  }
+
   if (answers.q12b === "no") {
     detected.push("⚠️ Tes douleurs persistent même au repos. C'est un signal important — consulte un professionnel de santé.");
     tipIds.push("d2");
@@ -179,6 +198,17 @@ function habitudesAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
     tipIds.push("h2");
   }
 
+  if ((answers.q_stress_travail ?? 0) >= 3) {
+    detected.push("Ton niveau de stress au travail est élevé. Le cortisol maintient les muscles en tension permanente — c'est une cause directe de douleurs chroniques.");
+    tipIds.push("h11");
+  }
+  if (answers.q_laptop_hors_bureau === "souvent" || answers.q_laptop_hors_bureau === "principale") {
+    if (!detected.some((d) => d.includes("canapé"))) {
+      detected.push("Tu travailles souvent dans une position non ergonomique. Chaque heure dans le canapé génère des tensions cervicales équivalentes à 3h de mauvaise posture.");
+      tipIds.push("h10");
+    }
+  }
+
   if (detected.length === 0) {
     detected.push("Tes habitudes de travail sont correctes. Quelques optimisations peuvent encore améliorer ton confort quotidien.");
   }
@@ -230,7 +260,10 @@ function sommeilAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimension
 
   if (needsBlueLightGlasses) productKeys.push("lunettes_horus");
   if (answers.q6 !== null && (answers.q6 ?? 0) >= 2) productKeys.push("oreiller_cervical");
-  if (scores.sleep_energy < 50) productKeys.push("luminette");
+  if (scores.sleep_energy < 50) {
+    productKeys.push("luminette");
+    productKeys.push("magnesium");
+  }
   if (productKeys.length === 0) productKeys.push("lunettes_horus");
 
   if (detected.length === 0) {
@@ -312,12 +345,12 @@ function lifestyleAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
   const tipIds: string[] = [];
 
   if (answers.q14b === "none") {
-    detected.push("Tu ne pratiques pas d'activité physique régulière ni d'étirements. Le mouvement est le meilleur antidote à la sédentarité du bureau.");
-    tipIds.push("l1", "l4", "l5");
+    detected.push("Tu ne pratiques pas d'activité physique régulière. Le mouvement est le meilleur antidote à la sédentarité du bureau.");
+    tipIds.push("l1", "l4");
+  } else if (answers.q14b === "yoga" || answers.q14b === "etirements" || answers.q14b === "mixed") {
+    detected.push("Yoga, Pilates ou étirements réguliers — excellente base pour compenser les tensions du bureau.");
   } else if (answers.q14b === "cardio" || answers.q14b === "musculation") {
     detected.push("Tu as une activité sportive régulière — c'est excellent. Assure-toi de compenser les tensions spécifiques au bureau avec des étirements ciblés.");
-  } else if (answers.q14b === "etirements" || answers.q14b === "yoga" || answers.q14b === "mixed") {
-    detected.push("Tu pratiques des étirements ou du yoga régulièrement — excellent pour relâcher les tensions accumulées au bureau.");
   }
 
   if (answers.q24 === "bad") {
