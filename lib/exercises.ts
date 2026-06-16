@@ -348,6 +348,86 @@ export const EXERCISES: Record<string, Exercise> = {
     benefit: "Relâche les tensions du fascia et réduit l'inflammation",
     jobTypes: ["debout"],
   },
+
+  // ── Mobilisation neurale ──
+  ulnt_soft: {
+    id: "ulnt_soft", name: "Mobilisation neurale bras", subtitle: "ULNT doux",
+    zone: "Bras & nerfs cervicaux", zoneColor: "#a78bfa", duration: 40,
+    reps: "5 répétitions lentes par côté", frequency: "2× par jour — sans douleur",
+    location: ["bureau", "maison", "voyage"],
+    difficulty: "facile", discreet: true, emoji: "💫",
+    instruction: "Bras tendu sur le côté à l'horizontale, paume vers le haut. Penche doucement la tête vers l'épaule OPPOSÉE. Sens l'étirement dans le bras. Si douleur électrique ou choc, arrête immédiatement. Tiens 3 secondes, relâche.",
+    benefit: "Mobilise le nerf médian — soulage les compressions cervicales",
+    jobTypes: ["bureau"],
+  },
+  slump_soft: {
+    id: "slump_soft", name: "Mobilisation neurale jambe", subtitle: "Slump doux",
+    zone: "Jambe & nerf sciatique", zoneColor: "#a78bfa", duration: 40,
+    reps: "5 répétitions par jambe", frequency: "2× par jour — douceur absolue",
+    location: ["bureau", "maison"],
+    difficulty: "facile", discreet: false, emoji: "🦵",
+    instruction: "Assis au bord de ta chaise, dos légèrement arrondi. Tends une jambe vers l'avant, orteil vers toi (pied en flexion). Sens l'étirement dans l'arrière de la jambe. Maintiens 3 secondes. Relâche et plie le genou. Change de jambe. STOP si douleur électrique.",
+    benefit: "Libère le nerf sciatique — réduit les douleurs de jambe",
+    jobTypes: ["bureau", "debout"],
+  },
+
+  // ── Poignets & mains ──
+  wrist_stretch: {
+    id: "wrist_stretch", name: "Étirement poignets", subtitle: "Prévention canal carpien",
+    zone: "Poignets & mains", zoneColor: "#f4a261", duration: 60,
+    reps: "30 sec par côté × 2", frequency: "Après chaque heure de clavier",
+    location: ["bureau", "maison", "voyage"],
+    difficulty: "facile", discreet: true, emoji: "🖐️",
+    instruction: "Tends le bras devant toi, paume vers le bas. Avec l'autre main, tire doucement les doigts vers toi (paume en flexion) pendant 15 sec. Puis retourne la paume vers le haut et tire les doigts vers le bas pendant 15 sec. Change de bras.",
+    benefit: "Prévient le syndrome du canal carpien",
+    jobTypes: ["bureau"],
+  },
+
+  // ── Yeux ──
+  eye_rest: {
+    id: "eye_rest", name: "Repos oculaire 20-20-20", subtitle: "Fatigue visuelle",
+    zone: "Yeux & vision", zoneColor: "#74c69d", duration: 20,
+    reps: "20 secondes toutes les 20 min", frequency: "Toutes les 20 minutes",
+    location: ["bureau", "maison", "voyage"],
+    difficulty: "facile", discreet: true, emoji: "👁️",
+    instruction: "Toutes les 20 minutes, détourne le regard de l'écran. Fixe un point à au moins 6 mètres (fenêtre, mur lointain). Garde ce point fixé pendant 20 secondes. Cligne des yeux lentement 5 fois pour hydrater.",
+    benefit: "Réduit la fatigue oculaire et les maux de tête de 35%",
+    jobTypes: ["bureau"],
+  },
+
+  // ── Activité générale ──
+  active_walk: {
+    id: "active_walk", name: "Marche active", subtitle: null,
+    zone: "Corps entier", zoneColor: "#1d9e75", duration: 300,
+    reps: "5 à 10 minutes", frequency: "Après chaque heure de travail",
+    location: ["bureau", "maison", "deplacement"],
+    difficulty: "facile", discreet: false, emoji: "🚶",
+    instruction: "Lève-toi et marche à rythme soutenu — couloir, escalier, dehors peu importe. Bras qui balancent naturellement, regard droit devant. L'objectif est d'augmenter légèrement ton rythme cardiaque et de sortir de la position assise.",
+    benefit: "Relance la circulation, décompresse les disques lombaires",
+    jobTypes: ["bureau"],
+  },
+  abdo_breathing: {
+    id: "abdo_breathing", name: "Respiration abdominale", subtitle: "Anti-stress",
+    zone: "Respiration & système nerveux", zoneColor: "#a78bfa", duration: 120,
+    reps: "2 minutes", frequency: "En pause ou en cas de tension",
+    location: ["bureau", "maison", "voiture", "voyage"],
+    difficulty: "facile", discreet: true, emoji: "🌬️",
+    instruction: "Pose une main à plat sur le ventre, une autre sur la poitrine. Inspire lentement par le nez en 4 secondes — seul le ventre doit se soulever, la main sur la poitrine reste immobile. Expire doucement par la bouche en 6 secondes. La main sur la poitrine ne doit pas bouger.",
+    benefit: "Active le système parasympathique — réduit cortisol et tensions musculaires",
+    jobTypes: ["bureau", "debout"],
+  },
+
+  // ── Rétraction scapulaire (alias) ──
+  shoulder_blade: {
+    id: "shoulder_blade", name: "Pincement d'omoplates", subtitle: "Posture épaules",
+    zone: "Épaules & dos haut", zoneColor: "#d4622a", duration: 45,
+    reps: "15 répétitions × 3 sec", frequency: "3× par jour",
+    location: ["bureau", "maison", "voyage"],
+    difficulty: "facile", discreet: true, emoji: "🏹",
+    instruction: "Assis bien droit, bras naturellement le long du corps. Rapproche lentement les deux omoplates vers la colonne vertébrale, comme si tu voulais tenir un crayon entre elles. Tiens 3 secondes en respirant normalement. Relâche complètement. Sens la différence entre contracté et relâché.",
+    benefit: "Renforce les rhomboïdes et corrige l'enroulement postural",
+    jobTypes: ["bureau"],
+  },
 };
 
 // ─── Programs ─────────────────────────────────────────────────────────────────
@@ -373,7 +453,7 @@ export const PROGRAMS: Program[] = [
     id: "bureau_pause",
     label: "Pause active", icon: "🎯", duration: "8 min", tab: "bureau",
     description: "6 exercices pour une vraie coupure musculaire",
-    exerciseIds: ["chin_tuck", "thoracic_rotation", "lumbar_extension", "wrist_flexor", "rule_20_20_20", "coherence_cardiaque"],
+    exerciseIds: ["chin_tuck", "thoracic_rotation", "lumbar_extension", "wrist_flexor", "rule_20_20_20", "coherence_cardiaque", "wrist_stretch", "eye_rest"],
   },
   {
     id: "maison_reveil",
@@ -385,7 +465,7 @@ export const PROGRAMS: Program[] = [
     id: "maison_recup",
     label: "Récupération soir", icon: "🌙", duration: "12 min", tab: "maison",
     description: "8 exercices pour relâcher toutes les tensions",
-    exerciseIds: ["neck_tilt", "trap_stretch", "lumbar_flexion", "piriformis_stretch", "wrist_flexor", "forearm_massage", "neck_massage", "coherence_cardiaque"],
+    exerciseIds: ["neck_tilt", "trap_stretch", "lumbar_flexion", "piriformis_stretch", "wrist_flexor", "forearm_massage", "neck_massage", "coherence_cardiaque", "abdo_breathing"],
   },
   {
     id: "deplacement_voiture",
@@ -418,7 +498,7 @@ export const TARGETED_PROGRAMS: Program[] = [
     id: "cible_cervicales",
     label: "Nuque & cervicales", icon: "🔴", duration: "~6 min", tab: "pour_moi",
     description: "Programme ciblé pour tes douleurs cervicales",
-    exerciseIds: ["chin_tuck", "neck_rotation", "neck_tilt", "trap_stretch"],
+    exerciseIds: ["chin_tuck", "neck_rotation", "neck_tilt", "trap_stretch", "ulnt_soft"],
   },
   {
     id: "cible_lombaires",
