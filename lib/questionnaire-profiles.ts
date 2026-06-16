@@ -63,7 +63,7 @@ export function shouldShow(questionId: string, answers: GenericAnswers): boolean
     case "q_d_protection":
       return ["lourdes", "tres_lourdes"].includes(answers["q_d_charges"] as string);
     case "q_d_activite_intensite": {
-      const act = answers["q_d_activite"];
+      const act = answers["q_d_activite_lifestyle"];
       return Array.isArray(act) && act.length > 0 && !(act as string[]).includes("aucune");
     }
     default:
@@ -78,7 +78,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d1", title: "Ton poste debout", subtitle: "Sol, chaussures, ergonomie et ancienneté", emoji: "🏭",
     color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
     selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
-    requiredQ: ["q_d_anciennete", "q_d1", "q_d2", "q_d3", "q_d_endurance", "q_d5", "q_d6", "q_d7"],
+    requiredQ: ["q_d_anciennete", "q_d1", "q_d2", "q_d3", "q_d_endurance", "q_d_position_var", "q_d7"],
     questions: [
       { id: "q_d_anciennete", type: "choice", label: "Depuis combien de temps travailles-tu dans ce métier debout ?", options: [
         { value: "moins_1an", label: "🌱 Moins d'1 an" },
@@ -125,16 +125,16 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "deux_4h", label: "🔸 Entre 2h et 4h" },
         { value: "plus_4h", label: "✅ Plus de 4h sans problème" },
       ]},
-      { id: "q_d5", type: "choice", label: "Peux-tu varier ta position dans la journée ?", options: [
-        { value: "oui", label: "✅ Oui librement (assis/debout)" },
-        { value: "un_peu", label: "🔸 Un peu, rarement" },
-        { value: "non", label: "❌ Non, position fixe imposée" },
-      ]},
-      { id: "q_d6", type: "choice", label: "As-tu accès à un siège dans la journée ?", options: [
-        { value: "oui_utilise", label: "✅ Oui et je l'utilise" },
-        { value: "oui_nose_pas", label: "🔸 Oui mais je n'ose pas l'utiliser" },
-        { value: "non", label: "❌ Non, pas de siège disponible" },
-      ]},
+      { id: "q_d_position_var", type: "choice",
+        label: "Peux-tu t'asseoir ou changer de position pendant ta journée ?",
+        note: "Les pauses assises réduisent de 40% la charge lombaire cumulée sur une journée debout.",
+        options: [
+          { value: "oui_siège_utilise", label: "✅ Oui, j'ai un siège et je l'utilise" },
+          { value: "oui_siège_pas_ose", label: "🔸 Oui, j'ai un siège mais j'ose pas l'utiliser" },
+          { value: "un_peu", label: "🔸 Un peu, je varie parfois" },
+          { value: "non", label: "❌ Non, position fixe imposée" },
+        ]
+      },
       { id: "q_d7", type: "choice", label: "La hauteur de ton plan de travail est ?", options: [
         { value: "adapte", label: "✅ Adaptée (coudes légèrement fléchis)" },
         { value: "trop_bas", label: "⬇️ Trop basse (je me courbe)" },
@@ -186,7 +186,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d3", title: "Habitudes & contraintes", subtitle: "Pauses, charges, gestes répétitifs", emoji: "⏱️",
     color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
     selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
-    requiredQ: ["q_d_repetitif", "q_d_charges", "q_d16", "q_d17", "q_d19"],
+    requiredQ: ["q_d_repetitif", "q_d_charges", "q_d16", "q_d19"],
     questions: [
       { id: "q_d_repetitif", type: "choice", label: "Fais-tu des gestes répétitifs dans ton travail ?", options: [
         { value: "non", label: "✅ Non, gestes variés" },
@@ -224,11 +224,6 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "rarement", label: "⚠️ Rarement" },
         { value: "jamais", label: "🚫 Jamais — pas le temps ou pas autorisé" },
       ]},
-      { id: "q_d17", type: "choice", label: "Bouges-tu pendant ton service ?", options: [
-        { value: "beaucoup", label: "✅ Oui, je circule beaucoup" },
-        { value: "parfois", label: "🔸 Parfois mais souvent immobile" },
-        { value: "fixe", label: "❌ Non, poste fixe immobile" },
-      ]},
       { id: "q_d19", type: "choice", label: "Hydratation pendant le service ?", options: [
         { value: "reguliere", label: "✅ Je bois régulièrement (>1.5L)" },
         { value: "parfois", label: "🔸 Parfois, pas assez" },
@@ -263,7 +258,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d5", title: "Sommeil & nuits", subtitle: "Qualité du sommeil et récupération nocturne", emoji: "😴",
     color: "#7dd3fc", colorBg: "rgba(14,165,233,0.08)", colorBorder: "rgba(14,165,233,0.18)",
     selectedBg: "rgba(14,165,233,0.18)", selectedColor: "#7dd3fc",
-    requiredQ: ["q_d_sommeil_qualite", "q_d_crampes", "q_d_jambes_nuit"],
+    requiredQ: ["q_d_sommeil_qualite", "q_d_jambes_nuit", "q_d_ecrans_soir"],
     questions: [
       { id: "q_d_sommeil_heures", type: "slider", label: "Combien d'heures dors-tu par nuit en moyenne ?", min: 5, max: 10, step: 0.5, unit: "h", reference: "⚠️ Moins de 7h = récupération musculaire incomplète pour un métier debout", alwaysAnswered: true },
       { id: "q_d_sommeil_qualite", type: "choice", label: "Quelle est la qualité de ton sommeil ?", options: [
@@ -272,37 +267,45 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "leger", label: "😐 Léger / fragmenté / réveils fréquents" },
         { value: "tres_mauvais", label: "😫 Très mauvais" },
       ]},
-      { id: "q_d_crampes", type: "choice", label: "As-tu des crampes dans les jambes la nuit ?", note: "Les crampes nocturnes chez les travailleurs debout sont souvent liées à la déshydratation et aux carences en magnésium", options: [
-        { value: "non", label: "✅ Non, jamais" },
-        { value: "parfois", label: "🔸 Parfois (1-2×/mois)" },
-        { value: "souvent", label: "😟 Souvent (plusieurs fois/semaine)" },
-        { value: "toutes_les_nuits", label: "😫 Presque toutes les nuits" },
-      ]},
       { id: "q_d_jambes_nuit", type: "choice", label: "La nuit, tes jambes sont-elles agitées ou inconfortables ?", options: [
         { value: "non", label: "✅ Non, aucun problème" },
         { value: "parfois", label: "🔸 Parfois une sensation d'inconfort" },
         { value: "souvent_agitees", label: "😟 Souvent agitées, difficile de rester immobile" },
         { value: "perturbe_sommeil", label: "😫 Oui, ça perturbe mon sommeil régulièrement" },
       ]},
+      { id: "q_d_ecrans_soir", type: "choice",
+        label: "Utilises-tu des écrans dans l'heure avant de dormir ?",
+        note: "La lumière bleue retarde la production de mélatonine de 1 à 2h — particulièrement important pour les travailleurs debout qui ont besoin d'une récupération musculaire optimale.",
+        options: [
+          { value: "jamais", label: "✅ Non — j'évite les écrans le soir" },
+          { value: "parfois", label: "🔸 Parfois — 30 min max" },
+          { value: "souvent", label: "😟 Souvent — 1h ou plus" },
+          { value: "toujours", label: "😫 Toujours — jusqu'à m'endormir" },
+        ]
+      },
     ],
   },
   {
     id: "cat-d6", title: "Nutrition & énergie", subtitle: "Petit-déjeuner, crampes, boissons, pause repas", emoji: "🍽️",
     color: "#a78bfa", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
     selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
-    requiredQ: ["q_d_petit_dej", "q_d_crampes_alim", "q_d_energie_boisson", "q_d_repas_service"],
+    requiredQ: ["q_d_petit_dej", "q_d_crampes_global", "q_d_energie_boisson", "q_d_repas_service"],
     questions: [
+      { id: "q_d_crampes_global", type: "choice",
+        label: "As-tu des crampes musculaires ?",
+        note: "Les crampes chez les travailleurs debout sont souvent liées à la déshydratation, au manque de magnésium et à la fatigue musculaire.",
+        options: [
+          { value: "non", label: "✅ Non, jamais" },
+          { value: "service_seulement", label: "🔸 Parfois pendant ou juste après le travail" },
+          { value: "nocturnes", label: "😟 Surtout la nuit (crampes nocturnes)" },
+          { value: "service_et_nuit", label: "😫 Les deux — en service ET la nuit" },
+        ]
+      },
       { id: "q_d_petit_dej", type: "choice", label: "Prends-tu un vrai petit-déjeuner avant le travail ?", note: "Sans carburant le matin, tes muscles se relâchent et ta posture s'effondre dès 10h", options: [
         { value: "complet", label: "✅ Oui, complet (protéines + glucides complexes)" },
         { value: "leger", label: "🔸 Léger (café + toast)" },
         { value: "juste_cafe", label: "☕ Juste un café" },
         { value: "saute", label: "🚫 Je saute souvent le petit-déjeuner" },
-      ]},
-      { id: "q_d_crampes_alim", type: "choice", label: "Ressens-tu des crampes musculaires régulièrement ?", options: [
-        { value: "non", label: "✅ Non, jamais" },
-        { value: "parfois", label: "🔸 Parfois pendant ou après le travail" },
-        { value: "souvent", label: "😟 Souvent — pieds, mollets, cuisses" },
-        { value: "nocturnes_service", label: "😫 Crampes nocturnes et en service" },
       ]},
       { id: "q_d_energie_boisson", type: "choice", label: "Bois-tu des boissons sucrées ou énergisantes pour tenir pendant le service ?", options: [
         { value: "eau", label: "✅ Non, eau principalement" },
@@ -322,22 +325,20 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d7", title: "Mode de vie actif", subtitle: "Étirements, sport, auto-évaluation et suivi médical", emoji: "🏃",
     color: "#5dcaa5", colorBg: "rgba(93,202,165,0.08)", colorBorder: "rgba(93,202,165,0.18)",
     selectedBg: "rgba(93,202,165,0.18)", selectedColor: "#5dcaa5",
-    requiredQ: ["q_d_etirements", "q_d_activite", "q_d_autoevaluation", "q_d_consultation"],
+    requiredQ: ["q_d_activite_lifestyle", "q_d_autoevaluation", "q_d_consultation"],
     questions: [
-      { id: "q_d_etirements", type: "choice", label: "Fais-tu des étirements avant ou après le travail ?", options: [
-        { value: "quotidienne", label: "✅ Oui, routine quotidienne (> 10 min)" },
-        { value: "parfois", label: "🔸 Parfois, quelques étirements" },
-        { value: "rarement", label: "❌ Rarement" },
-        { value: "jamais", label: "🚫 Jamais — je ne sais pas quoi faire" },
-      ]},
-      { id: "q_d_activite", type: "multiselect", label: "Quelle activité physique pratiques-tu en dehors du travail ?", options: [
-        { value: "natation_velo_marche", label: "🏊 Natation / vélo / marche (faible impact)" },
-        { value: "yoga_pilates", label: "🧘 Yoga / Pilates / étirements" },
-        { value: "musculation", label: "🏋️ Musculation / renforcement" },
-        { value: "sport_collectif", label: "⚽ Sport collectif" },
-        { value: "course", label: "🏃 Course à pied / sport intensif" },
-        { value: "aucune", label: "❌ Aucune activité en dehors du travail", exclusive: true },
-      ]},
+      { id: "q_d_activite_lifestyle", type: "multiselect",
+        label: "Quelle activité physique ou récupération pratiques-tu en dehors du travail ?",
+        note: "Après une journée debout, les activités à faible impact (natation, vélo, yoga) récupèrent mieux que la course à pied.",
+        options: [
+          { value: "natation_velo_marche", label: "🏊 Natation / vélo / marche (faible impact)" },
+          { value: "yoga_pilates_etirements", label: "🧘 Yoga / Pilates / étirements réguliers" },
+          { value: "musculation", label: "🏋️ Musculation / renforcement musculaire" },
+          { value: "sport_collectif", label: "⚽ Sport collectif" },
+          { value: "course", label: "🏃 Course à pied / sport intensif" },
+          { value: "aucune", label: "❌ Aucune activité en dehors du travail", exclusive: true },
+        ]
+      },
       { id: "q_d_activite_intensite", type: "choice", label: "Quelle est l'intensité de ton activité physique hors travail ?", conditional: true, options: [
         { value: "legere", label: "🚶 Légère (marche, vélo tranquille)" },
         { value: "moderee", label: "🏃 Modérée (cardio régulier, natation)" },

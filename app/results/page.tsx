@@ -448,11 +448,11 @@ export default function ResultsPage() {
   // ── Debout flags (computed from raw answers) ─────────────────────────────
   const rawA = answers as unknown as Record<string, unknown>;
   const deboutFlags = jobType === "debout" ? {
-    consultRecommandee: rawA["q_d_crampes"] === "toutes_les_nuits"
+    consultRecommandee: rawA["q_d_crampes_global"] === "service_et_nuit"
       || rawA["q_d_jambes_nuit"] === "perturbe_sommeil"
       || rawA["q_d_varices"] === "importantes"
       || rawA["q_d_jambes_soir"] === "douloureuses",
-    crampes: rawA["q_d_crampes"] === "souvent" || rawA["q_d_crampes"] === "toutes_les_nuits",
+    crampes: rawA["q_d_crampes_global"] === "nocturnes" || rawA["q_d_crampes_global"] === "service_et_nuit",
     dependanceEnergie: rawA["q_d_energie_boisson"] === "souvent_energisantes" || rawA["q_d_energie_boisson"] === "seul_moyen",
     petitDejInsuffisant: rawA["q_d_petit_dej"] === "juste_cafe" || rawA["q_d_petit_dej"] === "saute",
     autoEval: rawA["q_d_autoevaluation"] as number | null ?? null,

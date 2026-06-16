@@ -587,8 +587,6 @@ function calcDeboutScores(a: GenericAnswers): Scores {
 
   const tapisScore: Record<string, number> = { oui_ergo: 100, oui_fin: 50, non: 0, inconnu: 30 };
   const chaussuresScore: Record<string, number> = { semelles_pro: 100, baskets: 75, plates: 20, ville: 10 };
-  const variationScore: Record<string, number> = { oui: 100, un_peu: 50, non: 0 };
-  const siegeScore: Record<string, number> = { oui_utilise: 100, oui_nose_pas: 40, non: 0 };
   const planScore: Record<string, number> = { adapte: 100, trop_bas: 20, trop_haut: 30, pas_plan: 60 };
 
   const enduranceScore: Record<string, number> = { plus_4h: 100, deux_4h: 70, un_2h: 40, moins_1h: 10 };
@@ -598,8 +596,12 @@ function calcDeboutScores(a: GenericAnswers): Scores {
     solScoreVal,
     tapisScore[a["q_d2"] as string] ?? 30,
     chaussuresScore[a["q_d3"] as string] ?? 50,
-    variationScore[a["q_d5"] as string] ?? 50,
-    siegeScore[a["q_d6"] as string] ?? 50,
+    lookup({
+      oui_siège_utilise: 100,
+      oui_siège_pas_ose: 40,
+      un_peu: 50,
+      non: 0,
+    }, a["q_d_position_var"] as string, 50),
     planScore[a["q_d7"] as string] ?? 60,
     enduranceScore[a["q_d_endurance"] as string] ?? 60,
   ];
@@ -642,9 +644,11 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   else if (a["q_d_irradiation"] === "jusqu_genou") rawPain -= 10;
   else if (a["q_d_irradiation"] === "jusqu_pied") rawPain -= 20;
 
-  // Crampes nocturnes (q_d_crampes) — valeurs: non / parfois / souvent / toutes_les_nuits
-  if (a["q_d_crampes"] === "souvent") rawPain -= 8;
-  else if (a["q_d_crampes"] === "toutes_les_nuits") rawPain -= 15;
+  // Crampes (q_d_crampes_global)
+  const crampesGlobal = a["q_d_crampes_global"] as string;
+  if (crampesGlobal === "service_et_nuit") rawPain -= 15;
+  else if (crampesGlobal === "nocturnes") rawPain -= 10;
+  else if (crampesGlobal === "service_seulement") rawPain -= 5;
 
   // Jambes agitées nuit (q_d_jambes_nuit) — valeurs: non / parfois / souvent_agitees / perturbe_sommeil
   if (a["q_d_jambes_nuit"] === "souvent_agitees") rawPain -= 8;
@@ -660,15 +664,13 @@ function calcDeboutScores(a: GenericAnswers): Scores {
 
   // ── habits_debout (20%) ──────────────────────────────────────────────────
   const pauseMap: Record<string, number> = { regulier: 100, parfois: 60, rarement: 20, jamais: 0 };
-  const mvtMap: Record<string, number> = { beaucoup: 100, parfois: 60, fixe: 10 };
   const chargeMap: Record<string, number> = { legeres: 100, moyennes: 70, lourdes: 30, tres_lourdes: 0 };
   const hydraMap: Record<string, number> = { reguliere: 100, parfois: 60, rarement: 20, interdit: 10 };
   let habits = clamp(Math.round((
     (pauseMap[a["q_d16"] as string] ?? 50) +
-    (mvtMap[a["q_d17"] as string] ?? 50) +
     (chargeMap[a["q_d_charges"] as string] ?? 70) +
     (hydraMap[a["q_d19"] as string] ?? 50)
-  ) / 4));
+  ) / 3));
 
   // Gestes répétitifs toute la journée — surcharge tendineuse cumulée
   if (a["q_d_repetitif"] === "toute_la_journee") habits = clamp(habits - 10);
@@ -692,24 +694,35 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   if (qualite === "epuise" || qualite === "courbature") sleep_energy -= 30;
   else if (qualite === "fatigue") sleep_energy -= 15;
 
-  const crampes = a["q_d_crampes"] as string;
-  if (crampes === "souvent") sleep_energy -= 20;
-  else if (crampes === "parfois") sleep_energy -= 8;
+  const crampes = a["q_d_crampes_global"] as string;
+  if (crampes === "service_et_nuit") sleep_energy -= 20;
+  else if (crampes === "nocturnes") sleep_energy -= 15;
+  else if (crampes === "service_seulement") sleep_energy -= 5;
 
   const jambesnuit = a["q_d_jambes_nuit"] as string;
   if (jambesnuit === "souvent") sleep_energy -= 15;
   else if (jambesnuit === "parfois") sleep_energy -= 5;
 
+  // Écrans le soir — impact qualité sommeil
+  const ecransSoir = a["q_d_ecrans_soir"] as string;
+  if (ecransSoir === "toujours") sleep_energy -= 15;
+  else if (ecransSoir === "souvent") sleep_energy -= 8;
+  else if (ecransSoir === "jamais") sleep_energy += 5;
   sleep_energy = clamp(sleep_energy);
 
   // ── nutrition_debout (12%) ───────────────────────────────────────────────
   const petitDejMap: Record<string, number> = { complet: 100, leger: 65, juste_cafe: 30, saute: 0 };
-  const crampesAlimMap: Record<string, number> = { non: 100, parfois: 70, souvent: 30, nocturnes_service: 0 };
+  const crampesAlimMap: Record<string, number> = {
+    non: 100,
+    service_seulement: 65,
+    nocturnes: 55,
+    service_et_nuit: 20,
+  };
   const energieMap: Record<string, number> = { eau: 100, parfois_soda: 75, souvent_energisantes: 25, seul_moyen: 0 };
   const repasMap: Record<string, number> = { repas_chaud: 100, sandwich_assis: 70, debout_travaillant: 30, saute_pause: 0 };
   const nutrition = clamp(Math.round((
     (petitDejMap[a["q_d_petit_dej"] as string] ?? 60) +
-    (crampesAlimMap[a["q_d_crampes_alim"] as string] ?? 70) +
+    (crampesAlimMap[a["q_d_crampes_global"] as string] ?? 70) +
     (energieMap[a["q_d_energie_boisson"] as string] ?? 70) +
     (repasMap[a["q_d_repas_service"] as string] ?? 60)
   ) / 4));
@@ -722,16 +735,19 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   if (recup.includes("surelever")) lifestyleBase += 15;
   if (recup.includes("compression")) lifestyleBase += 10;
 
-  const etirMap: Record<string, number> = { quotidienne: 100, parfois: 60, rarement: 20, jamais: 0 };
   const consultMap: Record<string, number> = { suivi_regulier: 100, consulte_une_fois: 75, jamais: 40, pas_eu_temps: 30 };
-  const activite = Array.isArray(a["q_d_activite"]) ? (a["q_d_activite"] as string[]) : [];
-  let activiteScore = 30;
-  if (activite.includes("natation_velo_marche")) activiteScore = 100;
-  else if (activite.includes("yoga_pilates")) activiteScore = 90;
-  else if (activite.includes("sport_collectif")) activiteScore = 70;
-  else if (activite.includes("musculation")) activiteScore = 70;
-  else if (activite.includes("course")) activiteScore = 55;
-  else if (activite.includes("aucune")) activiteScore = 10;
+
+  // q_d_activite_lifestyle intègre étirements + activité
+  const activiteLifestyle = Array.isArray(a["q_d_activite_lifestyle"])
+    ? (a["q_d_activite_lifestyle"] as string[])
+    : [];
+  let activiteScore = 20;
+  if (activiteLifestyle.includes("natation_velo_marche")) activiteScore = Math.max(activiteScore, 100);
+  if (activiteLifestyle.includes("yoga_pilates_etirements")) activiteScore = Math.max(activiteScore, 90);
+  if (activiteLifestyle.includes("musculation")) activiteScore = Math.max(activiteScore, 70);
+  if (activiteLifestyle.includes("sport_collectif")) activiteScore = Math.max(activiteScore, 70);
+  if (activiteLifestyle.includes("course")) activiteScore = Math.max(activiteScore, 55);
+  if (activiteLifestyle.includes("aucune")) activiteScore = 10;
 
   // Intensity bonus: intense activity = +10 on activiteScore
   const intensiteMap: Record<string, number> = { legere: -5, moderee: 0, intense: 10 };
@@ -742,12 +758,11 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const autoEvalScore = autoEval !== null ? Math.round(((autoEval - 1) / 4) * 100) : 50;
 
   const lifestyle = clamp(Math.round((
-    (etirMap[a["q_d_etirements"] as string] ?? 30) +
     activiteScore +
     (consultMap[a["q_d_consultation"] as string] ?? 45) +
     lifestyleBase +
     autoEvalScore
-  ) / 5));
+  ) / 4));
 
   // ── global (setup 20% · pain 30% · habits 18% · sleep 12% · nutrition 12% · lifestyle 8%) ──
   const global = clamp(Math.round(
