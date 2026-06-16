@@ -5,231 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
+import { Turnstile } from "@marsidev/react-turnstile";
 
-function AuthForm() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const redirect = searchParams.get("redirect") ?? "/dashboard";
-
-  const [email, setEmail] = useState("");
-  const [magicSent, setMagicSent] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [oauthLoading, setOauthLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [consented, setConsented] = useState(false);
-
-  // If already logged in, redirect — admin goes to entreprise/dashboard
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) return;
-      const { data: adminMembership } = await supabase
-        .from("company_memberships")
-        .select("company_id")
-        .eq("user_id", data.user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-      if (adminMembership) {
-        router.replace("/entreprise/dashboard");
-      } else {
-        router.replace(redirect);
-      }
-    });
-  }, [redirect, router]);
-
-  async function handleMagicLink(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email) return;
-    setLoading(true);
-    setError("");
-    const supabase = createClient();
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000");
-    const { error: err } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${appUrl}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
-      },
-    });
-    if (err) {
-      setError(err.message);
-    } else {
-      setMagicSent(true);
-    }
-    setLoading(false);
-  }
-
-  async function handleGoogle() {
-    setOauthLoading(true);
-    setError("");
-    const supabase = createClient();
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000");
-    const { error: err } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${appUrl}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
-      },
-    });
-    if (err) {
-      setError(err.message);
-      setOauthLoading(false);
-    }
-  }
-
-  return (
-    <main className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-6 pt-16 pb-16">
-      {/* Ambient */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div
-          className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] opacity-15"
-          style={{ background: "radial-gradient(ellipse, rgba(34,197,94,0.4) 0%, transparent 70%)" }}
-        />
-      </div>
-
-      <div className="relative z-10 w-full max-w-sm">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
-          <div className="text-4xl mb-4">🔐</div>
-          <h1 className="text-2xl font-extrabold text-white mb-2">
-            Sauvegarde ton bilan
-          </h1>
-          <p className="text-slate-400 text-sm leading-relaxed">
-            Crée un compte gratuit pour suivre ton évolution dans le temps
-          </p>
-        </motion.div>
-
-        <AnimatePresence mode="wait">
-          {magicSent ? (
-            <motion.div
-              key="sent"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="rounded-3xl p-8 text-center"
-              style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)" }}
-            >
-              <div className="text-5xl mb-4">📬</div>
-              <h2 className="text-white font-bold text-lg mb-2">Vérifie ta boîte mail !</h2>
-              <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                Un lien de connexion a été envoyé à <strong className="text-white">{email}</strong>. Clique dessus pour accéder à ton compte.
-              </p>
-              <button
-                onClick={() => setMagicSent(false)}
-                className="text-slate-500 text-xs hover:text-slate-300 transition-colors"
-              >
-                Renvoyer un lien
-              </button>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="form"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="space-y-4"
-            >
-              {/* Google OAuth */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={handleGoogle}
-                disabled={oauthLoading}
-                className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-bold text-white text-sm disabled:opacity-60 transition-all"
-                style={{
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                }}
-              >
-                {oauthLoading ? (
-                  <span className="animate-pulse">Redirection…</span>
-                ) : (
-                  <>
-                    <GoogleIcon />
-                    Continuer avec Google
-                  </>
-                )}
-              </motion.button>
-
-              {/* Divider */}
-              <div className="flex items-center gap-3">
-                <div className="flex-1 h-px bg-white/8" />
-                <span className="text-slate-600 text-xs">ou</span>
-                <div className="flex-1 h-px bg-white/8" />
-              </div>
-
-              {/* Consent */}
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={consented}
-                  onChange={(e) => setConsented(e.target.checked)}
-                  className="mt-0.5 flex-shrink-0 accent-green-500"
-                />
-                <span className="text-slate-400 text-xs leading-relaxed">
-                  J&apos;accepte de recevoir mon rapport et des conseils ergonomiques par email.{" "}
-                  <a href="/politique-confidentialite" className="text-slate-300 underline">Voir notre politique de confidentialité.</a>
-                </span>
-              </label>
-
-              {/* Magic link */}
-              <form onSubmit={handleMagicLink} className="space-y-3">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="ton@email.com"
-                  required
-                  className="w-full px-4 py-3.5 rounded-xl text-white text-sm outline-none placeholder-slate-500 transition-colors"
-                  style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.09)",
-                  }}
-                  onFocus={(e) => (e.target.style.borderColor = "rgba(34,197,94,0.4)")}
-                  onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.09)")}
-                />
-                <motion.button
-                  whileHover={{ scale: consented ? 1.01 : 1 }}
-                  whileTap={{ scale: consented ? 0.98 : 1 }}
-                  type="submit"
-                  disabled={loading || !consented}
-                  className="w-full py-3.5 rounded-xl font-bold text-white text-sm disabled:opacity-40"
-                  style={{
-                    background: "linear-gradient(135deg, #22c55e, #16a34a)",
-                    boxShadow: consented ? "0 0 24px rgba(34,197,94,0.3)" : "none",
-                  }}
-                >
-                  {loading ? "Envoi…" : "Recevoir un lien magique →"}
-                </motion.button>
-              </form>
-
-              {error && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-400 text-xs text-center"
-                >
-                  {error}
-                </motion.p>
-              )}
-
-              {/* Skip */}
-              <div className="text-center pt-2">
-                <Link
-                  href={redirect.startsWith("/") ? redirect : "/dashboard"}
-                  className="text-slate-500 text-xs hover:text-slate-300 transition-colors"
-                >
-                  Continuer sans compte →
-                </Link>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </main>
-  );
-}
+const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
 function GoogleIcon() {
   return (
@@ -242,9 +20,332 @@ function GoogleIcon() {
   );
 }
 
+async function redirectAfterAuth(
+  router: ReturnType<typeof useRouter>,
+  supabase: ReturnType<typeof createClient>,
+  redirect: string
+) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  const { data: adminMembership } = await supabase
+    .from("company_memberships")
+    .select("company_id")
+    .eq("user_id", user.id)
+    .eq("role", "admin")
+    .maybeSingle();
+  if (adminMembership) {
+    router.replace("/entreprise/dashboard");
+  } else {
+    router.replace(redirect.startsWith("/") ? redirect : "/dashboard");
+  }
+}
+
+function AuthForm() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const supabase = createClient();
+  const redirect = searchParams.get("redirect") ?? "/dashboard";
+
+  const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [consented, setConsented] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (data.user) await redirectAfterAuth(router, supabase, redirect);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function handleGoogle() {
+    setOauthLoading(true);
+    setError("");
+    const appUrl = window.location.origin;
+    const { error: err } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${appUrl}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
+      },
+    });
+    if (err) { setError(err.message); setOauthLoading(false); }
+  }
+
+  async function handleLogin() {
+    if (!email || !password) { setError("Email et mot de passe requis"); return; }
+    setLoading(true);
+    setError("");
+    const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+    if (err) {
+      setError(err.message === "Invalid login credentials"
+        ? "Email ou mot de passe incorrect"
+        : err.message);
+      setLoading(false);
+      return;
+    }
+    await redirectAfterAuth(router, supabase, redirect);
+    setLoading(false);
+  }
+
+  async function handleSignup() {
+    if (!email || !password || !passwordConfirm) { setError("Tous les champs sont requis"); return; }
+    if (password !== passwordConfirm) { setError("Les mots de passe ne correspondent pas"); return; }
+    if (password.length < 8) { setError("Mot de passe minimum 8 caractères"); return; }
+    if (!consented) { setError("Accepte les conditions pour continuer"); return; }
+    if (!turnstileToken) { setError("Validation CAPTCHA requise"); return; }
+
+    const captchaRes = await fetch("/api/verify-turnstile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: turnstileToken }),
+    });
+    const captchaData = await captchaRes.json();
+    if (!captchaData.success) { setError("Validation échouée — réessaie"); return; }
+
+    setLoading(true);
+    setError("");
+    const appUrl = window.location.origin;
+    const { error: err } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${appUrl}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
+      },
+    });
+    if (err) {
+      setError(err.message === "User already registered"
+        ? "Un compte existe déjà avec cet email — connecte-toi"
+        : err.message);
+      setLoading(false);
+      return;
+    }
+    setSuccess("Vérifie ta boîte mail pour confirmer ton compte !");
+    setLoading(false);
+  }
+
+  async function handleReset() {
+    if (!email) { setError("Entre ton email d'abord"); return; }
+    setLoading(true);
+    setError("");
+    await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
+    setSuccess("Email de réinitialisation envoyé — vérifie ta boîte mail");
+    setLoading(false);
+  }
+
+  const isLogin = mode === "login";
+  const isSignup = mode === "signup";
+  const isReset = mode === "reset";
+
+  return (
+    <main style={{
+      minHeight: "100vh", background: "var(--main-bg)",
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      padding: "80px 24px 40px", position: "relative",
+    }}>
+      <div style={{ position: "fixed", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+        <div style={{
+          position: "absolute", top: "-15%", left: "50%", transform: "translateX(-50%)",
+          width: 600, height: 400, opacity: 0.12,
+          background: "radial-gradient(ellipse, rgba(43,92,230,0.5) 0%, transparent 70%)",
+        }} />
+      </div>
+
+      <div style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: 400 }}>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          style={{ textAlign: "center", marginBottom: 32 }}>
+          <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "var(--text-primary)", margin: "0 0 4px" }}>
+            PAW<span style={{ color: "#2b5ce6" }}>.</span>
+          </p>
+          <p style={{ fontFamily: T.b, fontSize: 9, letterSpacing: "0.18em", color: "var(--t35)", textTransform: "uppercase", margin: "0 0 20px" }}>
+            Posture At Work
+          </p>
+          <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", margin: "0 0 6px" }}>
+            {isLogin ? "Bon retour 👋" : isSignup ? "Créer mon compte" : "Mot de passe oublié"}
+          </h1>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", margin: 0 }}>
+            {isLogin ? "Connecte-toi pour accéder à ton bilan"
+            : isSignup ? "Crée ton compte pour sauvegarder ton bilan"
+            : "Reçois un lien pour réinitialiser ton mot de passe"}
+          </p>
+        </motion.div>
+
+        {!isReset && (
+          <div style={{
+            display: "flex", gap: 4, padding: 4, borderRadius: 14,
+            background: "var(--bg-card2)", border: "0.5px solid var(--border)",
+            marginBottom: 20,
+          }}>
+            {(["login", "signup"] as const).map(tab => (
+              <button key={tab} onClick={() => { setMode(tab); setError(""); setSuccess(""); }}
+                style={{
+                  flex: 1, padding: "9px 0", borderRadius: 10, border: "none",
+                  background: mode === tab ? "#2b5ce6" : "transparent",
+                  color: mode === tab ? "#fff" : "var(--t50)",
+                  fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer",
+                  transition: "all 0.2s",
+                }}>
+                {tab === "login" ? "Se connecter" : "S'inscrire"}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <AnimatePresence mode="wait">
+          {success ? (
+            <motion.div key="success"
+              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+              style={{ borderRadius: 20, padding: "28px", textAlign: "center",
+                background: "rgba(29,158,117,0.08)", border: "0.5px solid rgba(29,158,117,0.25)" }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>✅</div>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#1d9e75", marginBottom: 8 }}>
+                {isReset ? "Email envoyé !" : "Compte créé !"}
+              </p>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.6 }}>{success}</p>
+              <button onClick={() => { setSuccess(""); setMode("login"); }}
+                style={{ marginTop: 16, fontFamily: T.b, fontSize: 12, color: "var(--t40)", background: "none", border: "none", cursor: "pointer" }}>
+                ← Retour à la connexion
+              </button>
+            </motion.div>
+          ) : (
+            <motion.div key={mode}
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+              style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+
+              {!isReset && (
+                <button onClick={handleGoogle} disabled={oauthLoading}
+                  style={{
+                    width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                    padding: "13px 0", borderRadius: 12, cursor: "pointer",
+                    background: "var(--bg-card2)", border: "1px solid var(--border2)",
+                    fontFamily: T.b, fontWeight: 600, fontSize: 14, color: "var(--text-primary)",
+                    opacity: oauthLoading ? 0.7 : 1, transition: "all 0.2s",
+                  }}>
+                  {oauthLoading ? "Redirection…" : <><GoogleIcon /> Continuer avec Google</>}
+                </button>
+              )}
+
+              {!isReset && (
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
+                  <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)" }}>ou</span>
+                  <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
+                </div>
+              )}
+
+              <input type="email" placeholder="ton@email.com" value={email}
+                onChange={e => setEmail(e.target.value)}
+                style={{ padding: "12px 14px", borderRadius: 12, outline: "none",
+                  background: "var(--bg-card2)", border: "1px solid var(--border2)",
+                  color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }} />
+
+              {!isReset && (
+                <input type="password" placeholder="Mot de passe (min. 8 caractères)" value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  style={{ padding: "12px 14px", borderRadius: 12, outline: "none",
+                    background: "var(--bg-card2)", border: "1px solid var(--border2)",
+                    color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }} />
+              )}
+
+              {isSignup && (
+                <input type="password" placeholder="Confirmer le mot de passe" value={passwordConfirm}
+                  onChange={e => setPasswordConfirm(e.target.value)}
+                  style={{ padding: "12px 14px", borderRadius: 12, outline: "none",
+                    background: "var(--bg-card2)", border: "1px solid var(--border2)",
+                    color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }} />
+              )}
+
+              {isSignup && (
+                <>
+                  <label style={{ display: "flex", alignItems: "flex-start", gap: 10, cursor: "pointer" }}>
+                    <input type="checkbox" checked={consented} onChange={e => setConsented(e.target.checked)}
+                      style={{ marginTop: 2, flexShrink: 0, accentColor: "#2b5ce6" }} />
+                    <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", lineHeight: 1.55 }}>
+                      J&apos;accepte de recevoir mon rapport et des conseils ergonomiques par email.{" "}
+                      <a href="/politique-confidentialite" style={{ color: "var(--t70)", textDecoration: "underline" }}>
+                        Politique de confidentialité
+                      </a>
+                    </span>
+                  </label>
+
+                  <Turnstile
+                    siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                    onSuccess={setTurnstileToken}
+                    onError={() => setTurnstileToken(null)}
+                    options={{ theme: "dark", language: "fr" }}
+                  />
+                </>
+              )}
+
+              {isLogin && (
+                <div style={{ textAlign: "right", marginTop: -4 }}>
+                  <span onClick={() => { setMode("reset"); setError(""); }}
+                    style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff", cursor: "pointer" }}>
+                    Mot de passe oublié ?
+                  </span>
+                </div>
+              )}
+
+              {error && (
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595", textAlign: "center", margin: 0 }}>
+                  {error}
+                </p>
+              )}
+
+              <button
+                onClick={isLogin ? handleLogin : isSignup ? handleSignup : handleReset}
+                disabled={loading || (isSignup && !turnstileToken)}
+                style={{
+                  padding: "14px 0", borderRadius: 100, border: "none",
+                  background: loading || (isSignup && !turnstileToken) ? "var(--bg-card2)" : "#2b5ce6",
+                  color: loading || (isSignup && !turnstileToken) ? "var(--t40)" : "#fff",
+                  fontFamily: T.h, fontWeight: 800, fontSize: 15,
+                  cursor: loading ? "default" : "pointer",
+                  boxShadow: !loading && !(isSignup && !turnstileToken) ? "0 4px 24px rgba(43,92,230,0.35)" : "none",
+                  transition: "all 0.2s", opacity: loading ? 0.7 : 1,
+                }}>
+                {loading ? "Chargement…"
+                  : isLogin ? "Se connecter →"
+                  : isSignup ? "Créer mon compte →"
+                  : "Envoyer le lien →"}
+              </button>
+
+              {isLogin && (
+                <div style={{ textAlign: "center" }}>
+                  <Link href={redirect.startsWith("/") ? redirect : "/dashboard"}
+                    style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", textDecoration: "none" }}>
+                    Continuer sans compte →
+                  </Link>
+                </div>
+              )}
+
+              {isReset && (
+                <button onClick={() => { setMode("login"); setError(""); }}
+                  style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)", background: "none", border: "none", cursor: "pointer", textAlign: "center" }}>
+                  ← Retour à la connexion
+                </button>
+              )}
+
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </main>
+  );
+}
+
 export default function AuthPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a]" />}>
+    <Suspense fallback={<div style={{ minHeight: "100vh", background: "var(--main-bg)" }} />}>
       <AuthForm />
     </Suspense>
   );
