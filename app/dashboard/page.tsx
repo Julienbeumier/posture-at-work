@@ -227,6 +227,10 @@ export default function DashboardPage() {
   const [showIosBanner, setShowIosBanner] = useState(false);
   const [premiumToast, setPremiumToast] = useState(false);
   const [showFeedbackBanner, setShowFeedbackBanner] = useState(false);
+  const [membership, setMembership] = useState<{
+    role: "admin" | "employee";
+    company_name: string;
+  } | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -312,6 +316,20 @@ export default function DashboardPage() {
         setStreak(s);
       }
 
+      // Vérifier si l'user a un membership entreprise
+      const { data: membershipData } = await supabase
+        .from("company_memberships")
+        .select("role, companies(name)")
+        .eq("user_id", u.id)
+        .maybeSingle();
+
+      if (membershipData) {
+        setMembership({
+          role: membershipData.role as "admin" | "employee",
+          company_name: (membershipData.companies as unknown as { name: string })?.name ?? "votre entreprise",
+        });
+      }
+
       setLoading(false);
 
       // Show premium activation toast if redirected from /premium
@@ -348,13 +366,20 @@ export default function DashboardPage() {
   }, [user]);
 
   async function deleteAccount() {
-    if (!user) return;
-    setDeleteLoading(true);
     const supabase = createClient();
-    await supabase.from("assessments").delete().eq("user_id", user.id);
-    await supabase.from("daily_checkins").delete().eq("user_id", user.id);
+    const { data: { user: u } } = await supabase.auth.getUser();
+    if (!u) return;
+    setDeleteLoading(true);
+
+    const res = await fetch("/api/delete-account", { method: "DELETE" });
+    if (!res.ok) {
+      setDeleteLoading(false);
+      alert("Erreur lors de la suppression. Contacte hello@postureatwork.com");
+      return;
+    }
+
     await supabase.auth.signOut();
-    router.replace("/");
+    window.location.href = "/";
   }
 
   async function requestNotificationPermission() {
@@ -1136,48 +1161,96 @@ export default function DashboardPage() {
       </div>
 
       {/* Delete Account Modal */}
-      <AnimatePresence>
-        {showDeleteModal && (
+      {showDeleteModal && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 1000,
+          background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
+        }} onClick={() => setShowDeleteModal(false)}>
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(8px)" }}
-            onClick={() => setShowDeleteModal(false)}
+            initial={{ opacity: 0, scale: 0.95, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            onClick={e => e.stopPropagation()}
+            style={{
+              borderRadius: 24, padding: "28px", maxWidth: 420, width: "100%",
+              background: "var(--bg-secondary)", border: "0.5px solid var(--border)",
+              boxShadow: "0 24px 64px rgba(0,0,0,0.4)",
+            }}
           >
-            <motion.div
-              initial={{ scale: 0.92, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.92, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              style={{ borderRadius: 24, padding: 28, width: "100%", maxWidth: 360, background: "#141422", border: "0.5px solid rgba(240,149,149,0.25)" }}
-            >
-              <div style={{ fontSize: 36, textAlign: "center", marginBottom: 14 }}>⚠️</div>
-              <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 17, color: "var(--text-primary)", textAlign: "center", marginBottom: 10 }}>
+            <div style={{ textAlign: "center", marginBottom: 20 }}>
+              <span style={{ fontSize: 40 }}>⚠️</span>
+              <h2 style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 900, fontSize: 20, color: "var(--text-primary)", margin: "12px 0 6px" }}>
                 Supprimer mon compte
+              </h2>
+              <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "var(--t55)", lineHeight: 1.6 }}>
+                Cette action est <strong style={{ color: "#f09595" }}>irréversible</strong>. Voici ce qui sera supprimé définitivement :
               </p>
-              <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "var(--t55)", textAlign: "center", lineHeight: 1.65, marginBottom: 24 }}>
-                Es-tu sûr ? Toutes tes données seront supprimées définitivement (bilans, check-ins, scores). Cette action est irréversible.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <button
-                  onClick={deleteAccount}
-                  disabled={deleteLoading}
-                  style={{ padding: "13px 0", borderRadius: 100, background: "#e24b4a", border: "none", color: "#fff", fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 14, cursor: deleteLoading ? "default" : "pointer", opacity: deleteLoading ? 0.6 : 1 }}
-                >
-                  {deleteLoading ? "Suppression…" : "Oui, supprimer définitivement"}
-                </button>
-                <button
-                  onClick={() => setShowDeleteModal(false)}
-                  style={{ padding: "12px 0", borderRadius: 100, background: "var(--bg-card-3)", border: "0.5px solid var(--border-3)", color: "var(--t50)", fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer" }}
-                >
-                  Annuler
-                </button>
-              </div>
-            </motion.div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+              {[
+                { emoji: "📊", text: "Tous tes bilans et scores PAW" },
+                { emoji: "🎥", text: "Tes analyses vidéo posturales" },
+                { emoji: "📈", text: "Ton historique et ton évolution" },
+                { emoji: "🏅", text: "Tes badges et ta progression" },
+              ].map((item, i) => (
+                <div key={i} style={{ display: "flex", gap: 10, alignItems: "center", padding: "8px 12px", borderRadius: 10, background: "rgba(226,75,74,0.06)", border: "0.5px solid rgba(226,75,74,0.15)" }}>
+                  <span style={{ fontSize: 16 }}>{item.emoji}</span>
+                  <span style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "var(--t70)" }}>{item.text}</span>
+                </div>
+              ))}
+
+              {membership?.role === "admin" && (
+                <div style={{ padding: "12px 14px", borderRadius: 12, background: "rgba(226,75,74,0.1)", border: "1px solid rgba(226,75,74,0.3)", marginTop: 4 }}>
+                  <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "#f09595", margin: "0 0 6px", fontWeight: 700 }}>
+                    🏢 Attention — Compte administrateur entreprise
+                  </p>
+                  <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "var(--t60)", margin: 0, lineHeight: 1.6 }}>
+                    Tu es admin de <strong style={{ color: "var(--text-primary)" }}>{membership.company_name}</strong>.
+                    En supprimant ton compte, <strong style={{ color: "#f09595" }}>l&apos;ensemble du dashboard RH, les données de tes employés et l&apos;historique de l&apos;entreprise seront supprimés définitivement</strong> si tu es le seul administrateur.
+                  </p>
+                </div>
+              )}
+
+              {membership?.role === "employee" && (
+                <div style={{ padding: "12px 14px", borderRadius: 12, background: "rgba(244,162,97,0.08)", border: "0.5px solid rgba(244,162,97,0.25)", marginTop: 4 }}>
+                  <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "#f4a261", margin: "0 0 4px", fontWeight: 600 }}>
+                    🏢 Compte lié à {membership.company_name}
+                  </p>
+                  <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "var(--t55)", margin: 0, lineHeight: 1.6 }}>
+                    Ton bilan sera retiré du dashboard RH de ton entreprise.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <button
+                onClick={deleteAccount}
+                disabled={deleteLoading}
+                style={{
+                  padding: "14px 0", borderRadius: 100, border: "none",
+                  background: "#e24b4a", color: "#fff",
+                  fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 14,
+                  cursor: deleteLoading ? "default" : "pointer",
+                  opacity: deleteLoading ? 0.6 : 1,
+                }}>
+                {deleteLoading ? "Suppression en cours…" : "Oui, supprimer définitivement"}
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                style={{
+                  padding: "13px 0", borderRadius: 100, border: "0.5px solid var(--border)",
+                  background: "transparent", color: "var(--t55)",
+                  fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600, fontSize: 14,
+                  cursor: "pointer",
+                }}>
+                Annuler — garder mon compte
+              </button>
+            </div>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </main>
   );
 }
