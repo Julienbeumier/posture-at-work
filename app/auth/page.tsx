@@ -27,12 +27,35 @@ async function redirectAfterAuth(
 ) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
+
+  // Si la redirection demandée est le dashboard entreprise,
+  // vérifier d'abord si l'user est bien admin
+  if (redirect === "/entreprise/dashboard") {
+    const { data: adminMembership } = await supabase
+      .from("company_memberships")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+
+    if (adminMembership) {
+      router.replace("/entreprise/dashboard");
+    } else {
+      // Pas admin → rediriger vers /dashboard B2C avec message
+      router.replace("/dashboard?error=not_admin");
+    }
+    return;
+  }
+
+  // Pour toutes les autres redirections, vérifier si admin
+  // pour rediriger automatiquement vers le bon dashboard
   const { data: adminMembership } = await supabase
     .from("company_memberships")
     .select("company_id")
     .eq("user_id", user.id)
     .eq("role", "admin")
     .maybeSingle();
+
   if (adminMembership) {
     router.replace("/entreprise/dashboard");
   } else {

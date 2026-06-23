@@ -227,6 +227,7 @@ export default function DashboardPage() {
   const [showIosBanner, setShowIosBanner] = useState(false);
   const [premiumToast, setPremiumToast] = useState(false);
   const [showFeedbackBanner, setShowFeedbackBanner] = useState(false);
+  const [notAdminError, setNotAdminError] = useState(false);
   const [membership, setMembership] = useState<{
     role: "admin" | "employee";
     company_name: string;
@@ -346,6 +347,15 @@ export default function DashboardPage() {
         setPremiumToast(true);
         setTimeout(() => setPremiumToast(false), 5000);
         window.history.replaceState({}, "", "/dashboard");
+      }
+
+      // Vérifier si redirection depuis entreprise sans droits admin
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("error") === "not_admin") {
+          setNotAdminError(true);
+          window.history.replaceState({}, "", "/dashboard");
+        }
       }
 
       // Service worker + push notifications
@@ -684,6 +694,19 @@ export default function DashboardPage() {
               </div>
             </Link>
           </motion.div>
+        )}
+
+        {notAdminError && (
+          <div style={{
+            padding: "12px 16px", borderRadius: 12, marginBottom: 16,
+            background: "rgba(244,162,97,0.1)", border: "0.5px solid rgba(244,162,97,0.3)",
+            display: "flex", alignItems: "center", gap: 10,
+          }}>
+            <span style={{ fontSize: 16 }}>⚠️</span>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "#f4a261", margin: 0 }}>
+              Tu n&apos;as pas accès au dashboard entreprise. Contacte ton administrateur PAW.
+            </p>
+          </div>
         )}
 
         {/* ── S2 : TIP DU JOUR ── */}
