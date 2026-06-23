@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { Company } from "@/lib/supabase";
@@ -615,7 +614,6 @@ function analyzeCollectiveVideo(employees: EmployeeRow[], assessed: EmployeeRow[
 
 export default function EntrepriseDashboard() {
   const { c } = useTheme();
-  const router = useRouter();
   const supabase = createClient();
 
   const [company, setCompany] = useState<Company | null>(null);
@@ -643,10 +641,17 @@ export default function EntrepriseDashboard() {
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/entreprise/login"); return; }
+      if (!user) {
+        // Eviter la boucle — rediriger vers auth seulement si vraiment pas connecté
+        window.location.href = "/auth?redirect=/entreprise/dashboard";
+        return;
+      }
 
       const res = await fetch("/api/entreprise/dashboard-data");
-      if (!res.ok) { router.push("/entreprise/login"); return; }
+      if (!res.ok) {
+        window.location.href = "/auth?redirect=/entreprise/dashboard";
+        return;
+      }
 
       const data = await res.json();
       setCompany(data.company);
