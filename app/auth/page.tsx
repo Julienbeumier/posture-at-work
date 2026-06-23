@@ -56,10 +56,15 @@ function AuthForm() {
   const [success, setSuccess] = useState("");
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [consented, setConsented] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
-      if (data.user) await redirectAfterAuth(router, supabase, redirect);
+      if (data.user) {
+        await redirectAfterAuth(router, supabase, redirect);
+      } else {
+        setChecking(false);
+      }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -115,7 +120,7 @@ function AuthForm() {
       email,
       password,
       options: {
-        emailRedirectTo: `${appUrl}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
+        emailRedirectTo: `${appUrl}/auth/confirm`,
       },
     });
     if (err) {
@@ -143,6 +148,14 @@ function AuthForm() {
   const isLogin = mode === "login";
   const isSignup = mode === "signup";
   const isReset = mode === "reset";
+
+  if (checking) return (
+    <main style={{ minHeight: "100vh", background: "var(--main-bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 14, color: "var(--t40)" }}>
+        Connexion au dashboard…
+      </p>
+    </main>
+  );
 
   return (
     <main style={{

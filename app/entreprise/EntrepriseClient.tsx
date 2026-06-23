@@ -509,7 +509,7 @@ export default function EntrepriseClient() {
           <Link href="/" style={{ textDecoration: "none" }}>
             <span style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted }}>← Retour à PostureAtWork</span>
           </Link>
-          <Link href="/entreprise/login" style={{ textDecoration: "none" }}>
+          <Link href="/entreprise/dashboard" style={{ textDecoration: "none" }}>
             <span style={{ fontFamily: T.b, fontSize: 13, color: "#7c9fff" }}>Déjà client ? Accéder au dashboard →</span>
           </Link>
         </div>
