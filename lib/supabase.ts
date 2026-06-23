@@ -160,7 +160,6 @@ export async function validateInviteCode(code: string): Promise<{ company: Compa
     .from("company_invites")
     .select("*, companies(*)")
     .eq("code", code.toUpperCase())
-    .is("used_at", null)
     .gt("expires_at", new Date().toISOString())
     .maybeSingle();
   if (!data) return null;
@@ -184,11 +183,8 @@ export async function useInviteCode(
 
   const anonymousId = `Employé #${(count ?? 0) + 1}`;
 
-  await client
-    .from("company_invites")
-    .update({ used_at: new Date().toISOString(), used_by: userId })
-    .eq("code", code.toUpperCase());
-
+  // Ne pas marquer le code comme utilisé — multi-usage
+  // Juste créer le membership
   const { error } = await client
     .from("company_memberships")
     .insert({
