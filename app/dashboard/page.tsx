@@ -254,13 +254,22 @@ export default function DashboardPage() {
       }
 
       setUser(u);
-      const firstName =
+      // Priorité : metadata Google OAuth → onboarding lié à cet user → email
+      const metaName =
         (u.user_metadata?.full_name as string | undefined)?.split(' ')[0] ||
         (u.user_metadata?.name as string | undefined)?.split(' ')[0] ||
-        localStorage.getItem('paw_firstname') ||
-        u.email?.split('@')[0] ||
-        '';
+        null;
+
+      // localStorage seulement si l'email correspond au compte courant
+      const storedEmail = localStorage.getItem('paw_user_email');
+      const storedFirstname = localStorage.getItem('paw_firstname');
+      const localName = storedEmail === u.email ? storedFirstname : null;
+
+      const firstName = metaName || localName || u.email?.split('@')[0] || "";
       setFirstname(firstName);
+
+      // Mettre à jour le localStorage avec l'email courant
+      localStorage.setItem('paw_user_email', u.email ?? "");
 
       const { data: assessmentsData, error } = await supabase
         .from('assessments')
