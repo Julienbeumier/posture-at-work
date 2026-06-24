@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
+import { createClient } from "@/lib/supabase";
 
 const BUREAU_PHASES = [
   {
@@ -70,6 +71,7 @@ export default function VideoIntroPage() {
   const [qrToken, setQrToken] = useState<string | null>(null);
   const [qrLoading, setQrLoading] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     const lsType = localStorage.getItem("paw_job_type");
@@ -91,6 +93,33 @@ export default function VideoIntroPage() {
     window.addEventListener("resize", checkDesktop);
     return () => window.removeEventListener("resize", checkDesktop);
   }, []);
+
+  useEffect(() => {
+    if (!qrUrl || !isDesktop) return;
+
+    // Polling toutes les 10 secondes pour détecter si l'analyse est terminée
+    const interval = setInterval(async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from("assessments")
+        .select("video_analysis, created_at")
+        .eq("user_id", user.id)
+        .not("video_analysis", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (data?.video_analysis) {
+        setVideoReady(true);
+        clearInterval(interval);
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [qrUrl, isDesktop]);
 
   async function generateQRCode() {
     setQrLoading(true);
@@ -346,6 +375,63 @@ export default function VideoIntroPage() {
                       </p>
                     </div>
                   </div>
+                )}
+
+                {qrUrl && isDesktop && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{
+                      marginTop: 16, padding: "14px 16px", borderRadius: 12,
+                      background: videoReady
+                        ? "rgba(29,158,117,0.1)"
+                        : "rgba(43,92,230,0.06)",
+                      border: `0.5px solid ${videoReady
+                        ? "rgba(29,158,117,0.3)"
+                        : "rgba(43,92,230,0.2)"}`,
+                      display: "flex", alignItems: "center", gap: 12,
+                    }}>
+                    {videoReady ? (
+                      <>
+                        <span style={{ fontSize: 20 }}>✅</span>
+                        <div style={{ flex: 1 }}>
+                          <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 700, fontSize: 14, color: "#1d9e75", margin: "0 0 4px" }}>
+                            Analyse terminée !
+                          </p>
+                          <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "var(--t55)", margin: 0 }}>
+                            Tes résultats vidéo sont prêts.
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => window.location.reload()}
+                          style={{
+                            padding: "8px 16px", borderRadius: 100, border: "none",
+                            background: "#1d9e75", color: "#fff",
+                            fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600, fontSize: 12,
+                            cursor: "pointer", flexShrink: 0,
+                          }}>
+                          Rafraîchir →
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{
+                          width: 16, height: 16, borderRadius: "50%", flexShrink: 0,
+                          border: "2px solid rgba(43,92,230,0.4)",
+                          borderTopColor: "#2b5ce6",
+                          animation: "spin 1s linear infinite",
+                        }} />
+                        <div>
+                          <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "var(--t65)", margin: "0 0 2px" }}>
+                            En attente de l&apos;analyse mobile…
+                          </p>
+                          <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 11, color: "var(--t40)", margin: 0 }}>
+                            Scanne le QR code avec ton téléphone pour filmer
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </motion.div>
                 )}
               </div>
             </div>
