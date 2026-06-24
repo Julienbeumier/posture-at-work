@@ -67,18 +67,26 @@ export default function JoinPage() {
   }, [code, joinCompany, supabase.auth]);
 
   async function handleGoogle() {
-    if (!company) return;
+    console.log("[Join] handleGoogle clicked, company:", company, "code:", code);
+    if (!company) {
+      setError("Erreur: company non chargée — recharge la page");
+      return;
+    }
     setLoading(true);
     setError("");
     // Stocker le code d'invitation pour après le callback OAuth
     sessionStorage.setItem("paw_join_code", code);
+    const redirectTo = `${window.location.origin}/join/${code}/callback`;
+    console.log("[Join] redirectTo:", redirectTo);
     const { error: err } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/join/${code}/callback`,
-      },
+      options: { redirectTo },
     });
-    if (err) { setError(err.message); setLoading(false); }
+    if (err) {
+      console.error("[Join] OAuth error:", err);
+      setError(err.message);
+      setLoading(false);
+    }
   }
 
   async function handleAuth() {
