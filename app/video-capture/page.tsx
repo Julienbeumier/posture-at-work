@@ -124,6 +124,9 @@ export default function VideoCapturePage() {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
     if (token) {
+      // Conserver le token pour le retrouver jusqu'à final-report (les redirections
+      // intermédiaires ne le propagent pas dans l'URL)
+      sessionStorage.setItem("paw_video_session_token", token);
       // Charger les données depuis la session
       fetch(`/api/video-session?token=${token}`)
         .then(r => r.json())

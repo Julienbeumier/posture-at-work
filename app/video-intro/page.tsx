@@ -95,41 +95,34 @@ export default function VideoIntroPage() {
   }, []);
 
   useEffect(() => {
-    if (!qrUrl || !isDesktop) return;
+    if (!qrToken || !isDesktop) return;
 
-    // Polling toutes les 10 secondes pour détecter si l'analyse est terminée
+    // Polling toutes les 8 secondes pour détecter si l'analyse mobile est terminée
     const interval = setInterval(async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const data = await fetch(`/api/video-session?token=${qrToken}`).then(r => r.json());
 
-      const { data } = await supabase
-        .from("assessments")
-        .select("video_analysis, created_at")
-        .eq("user_id", user.id)
-        .not("video_analysis", "is", null)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (data?.video_analysis) {
+      if (data?.analyzed_at) {
         setVideoReady(true);
         clearInterval(interval);
       }
-    }, 10000);
+    }, 8000);
 
     return () => clearInterval(interval);
-  }, [qrUrl, isDesktop]);
+  }, [qrToken, isDesktop]);
 
   async function generateQRCode() {
     setQrLoading(true);
     const scores = JSON.parse(sessionStorage.getItem("postureatwork_scores") || "{}");
     const answers = JSON.parse(sessionStorage.getItem("postureatwork_answers") || "{}");
 
+    // Récupérer l'user_id de la session PC
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
     const res = await fetch("/api/video-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ scores, answers, jobType }),
+      body: JSON.stringify({ scores, answers, jobType, userId: user?.id ?? null }),
     });
     const data = await res.json();
     const url = `${window.location.origin}/video-capture?token=${data.token}`;

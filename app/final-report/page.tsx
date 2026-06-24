@@ -600,6 +600,30 @@ export default function FinalReportPage() {
       .catch(() => setSaveStatus("error"));
   }, [user, report, personneAnalysis, deboutAnalysis]);
 
+  // Sauvegarde via le token de session QR code — fonctionne même sans session
+  // active sur l'appareil mobile (le desktop est connecté, pas forcément le mobile)
+  const savedViaTokenRef = useRef(false);
+  useEffect(() => {
+    if (savedViaTokenRef.current) return;
+    const sessionToken = sessionStorage.getItem("paw_video_session_token");
+    if (!sessionToken) return;
+    const analysisPersonne = JSON.parse(sessionStorage.getItem("paw_analysis_personne") || "null");
+    const analysisPoste = JSON.parse(sessionStorage.getItem("paw_analysis_poste") || "null");
+    if (!analysisPersonne && !analysisPoste) return;
+
+    savedViaTokenRef.current = true;
+    const videoData = {
+      personne: analysisPersonne,
+      poste: analysisPoste,
+      analyzed_at: new Date().toISOString(),
+    };
+    fetch("/api/video-session", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: sessionToken, videoAnalysis: videoData }),
+    }).catch(() => {});
+  }, [report, personneAnalysis, deboutAnalysis]);
+
   const isDual = !!(personneAnalysis && posteAnalysis);
 
   // ── No report ──────────────────────────────────────────────────────────────
