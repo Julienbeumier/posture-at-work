@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { createClient, validateInviteCode } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { Company } from "@/lib/supabase";
 
@@ -49,8 +49,13 @@ export default function JoinPage() {
 
   useEffect(() => {
     async function checkCode() {
-      const result = await validateInviteCode(code);
-      if (!result) {
+      const res = await fetch(`/api/entreprise/validate-invite?code=${code}`);
+      if (!res.ok) {
+        setStep("invalid");
+        return;
+      }
+      const result = await res.json();
+      if (!result.company) {
         setStep("invalid");
         return;
       }
