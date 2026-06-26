@@ -9,7 +9,7 @@ const supabaseAdmin = createClient(
 
 export async function POST(req: Request) {
   try {
-    const { scores, answers, jobType, userId } = await req.json();
+    const { scores, answers, jobType, userId, assessmentId } = await req.json();
 
     // Générer un token unique
     const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -21,6 +21,7 @@ export async function POST(req: Request) {
       answers,
       job_type: jobType,
       user_id: userId ?? null,
+      assessment_id: assessmentId ?? null,
       expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
       created_at: new Date().toISOString(),
     });
@@ -39,10 +40,10 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Token et analyse requis" }, { status: 400 });
     }
 
-    // Récupérer la session pour avoir l'user_id
+    // Récupérer la session pour avoir l'assessment_id ciblé
     const { data: session } = await supabaseAdmin
       .from("video_sessions")
-      .select("user_id")
+      .select("user_id, assessment_id")
       .eq("token", token)
       .gt("expires_at", new Date().toISOString())
       .maybeSingle();
@@ -51,20 +52,13 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Session invalide ou expirée" }, { status: 404 });
     }
 
-    // Sauvegarder dans assessments
-    const { data: assessment } = await supabaseAdmin
-      .from("assessments")
-      .select("id")
-      .eq("user_id", session.user_id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (assessment) {
+    // Sauvegarder dans le bon assessment (ciblé à la création du token)
+    const assessmentId = session.assessment_id;
+    if (assessmentId) {
       await supabaseAdmin
         .from("assessments")
         .update({ video_analysis: videoAnalysis })
-        .eq("id", assessment.id);
+        .eq("id", assessmentId);
     }
 
     // Marquer la session comme analysée

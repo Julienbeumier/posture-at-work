@@ -119,10 +119,23 @@ export default function VideoIntroPage() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    // Récupérer le dernier assessment de l'user pour être sûr de mettre à jour le bon
+    let assessmentId = null;
+    if (user) {
+      const { data: latest } = await supabase
+        .from("assessments")
+        .select("id")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      assessmentId = latest?.id ?? null;
+    }
+
     const res = await fetch("/api/video-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ scores, answers, jobType, userId: user?.id ?? null }),
+      body: JSON.stringify({ scores, answers, jobType, userId: user?.id ?? null, assessmentId }),
     });
     const data = await res.json();
     const url = `${window.location.origin}/video-capture?token=${data.token}`;
@@ -396,7 +409,7 @@ export default function VideoIntroPage() {
                           </p>
                         </div>
                         <button
-                          onClick={() => window.location.reload()}
+                          onClick={() => window.location.href = "/dashboard"}
                           style={{
                             padding: "8px 16px", borderRadius: 100, border: "none",
                             background: "#1d9e75", color: "#fff",
