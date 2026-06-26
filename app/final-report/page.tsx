@@ -545,8 +545,13 @@ export default function FinalReportPage() {
       if (raw) setReport(JSON.parse(raw));
     }
 
-    const scoresRaw = sessionStorage.getItem("postureatwork_scores");
-    const answersRaw = sessionStorage.getItem("postureatwork_answers");
+    const isExample = sessionStorage.getItem("paw_example_mode") === "true";
+    const scoresRaw = isExample
+      ? sessionStorage.getItem("paw_example_scores")
+      : sessionStorage.getItem("postureatwork_scores");
+    const answersRaw = isExample
+      ? sessionStorage.getItem("paw_example_answers")
+      : sessionStorage.getItem("postureatwork_answers");
     const questionScores = scoresRaw ? JSON.parse(scoresRaw) : null;
     const questionAnswers = answersRaw ? JSON.parse(answersRaw) : null;
     if (questionScores) setQuestionnaireScore(questionScores.global ?? null);
@@ -568,8 +573,13 @@ export default function FinalReportPage() {
     if (!target) return;
     savedRef.current = true;
     setSaveStatus("saving");
-    const scoresRaw = sessionStorage.getItem("postureatwork_scores");
-    const answersRaw = sessionStorage.getItem("postureatwork_answers");
+    const isExample = sessionStorage.getItem("paw_example_mode") === "true";
+    const scoresRaw = isExample
+      ? sessionStorage.getItem("paw_example_scores")
+      : sessionStorage.getItem("postureatwork_scores");
+    const answersRaw = isExample
+      ? sessionStorage.getItem("paw_example_answers")
+      : sessionStorage.getItem("postureatwork_answers");
     const scores = scoresRaw ? JSON.parse(scoresRaw) : {};
     const answers = answersRaw ? JSON.parse(answersRaw) : {};
 

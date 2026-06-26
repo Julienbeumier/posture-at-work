@@ -238,14 +238,16 @@ export default function DimensionPage() {
                    || localStorage.getItem("paw_example_mode") === "true";
 
       // ── 1b. Si mode exemple mais scores absents (cleanup exemple-rapport a tourné en premier),
-      //        repopuler les données de Thomas pour que la suite fonctionne normalement ──────
-      if (isExample && !sessionStorage.getItem("postureatwork_scores")) {
-        sessionStorage.setItem("postureatwork_scores", JSON.stringify(THOMAS_SCORES));
-        sessionStorage.setItem("postureatwork_answers", JSON.stringify(THOMAS_ANSWERS));
+      //        repopuler les données de Thomas dans leurs clés dédiées ──────
+      if (isExample && !sessionStorage.getItem("paw_example_scores")) {
+        sessionStorage.setItem("paw_example_scores", JSON.stringify(THOMAS_SCORES));
+        sessionStorage.setItem("paw_example_answers", JSON.stringify(THOMAS_ANSWERS));
       }
 
       // ── 2. Source of truth: scores from sessionStorage (set by questionnaire submit) ──
-      const scoresRaw = sessionStorage.getItem("postureatwork_scores");
+      const scoresRaw = isExample
+        ? sessionStorage.getItem("paw_example_scores")
+        : sessionStorage.getItem("postureatwork_scores");
       const parsedScores: Scores | null = scoresRaw ? JSON.parse(scoresRaw) : null;
 
       // If real scores exist and clearly don't belong to the example user → clear example mode
@@ -268,8 +270,10 @@ export default function DimensionPage() {
       const answersKey = (effectiveJobType === "debout" && !isExample)
         ? "postureatwork_answers_debout"
         : "postureatwork_answers";
-      const answersRaw = sessionStorage.getItem(answersKey)
-        || (!isExample && effectiveJobType !== "debout" ? localStorage.getItem("paw_answers") : null);
+      const answersRaw = isExample
+        ? sessionStorage.getItem("paw_example_answers")
+        : sessionStorage.getItem(answersKey)
+          || (effectiveJobType !== "debout" ? localStorage.getItem("paw_answers") : null);
 
 
       // ── 5. No session data at all → Supabase or no-bilan ─────────────────

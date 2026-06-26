@@ -262,8 +262,8 @@ function clearExampleMode() {
   sessionStorage.removeItem("paw_example_mode");
   localStorage.removeItem("paw_example_mode");
   // Effacer aussi les scores de Thomas pour ne pas polluer /results
-  sessionStorage.removeItem("postureatwork_scores");
-  sessionStorage.removeItem("postureatwork_answers");
+  sessionStorage.removeItem("paw_example_scores");
+  sessionStorage.removeItem("paw_example_answers");
 }
 
 export default function ExempleRapportPage() {
@@ -278,14 +278,14 @@ export default function ExempleRapportPage() {
     localStorage.setItem("paw_hours_week", "35-40h");
 
     sessionStorage.setItem("paw_example_mode", "true");
-    sessionStorage.setItem("postureatwork_scores", JSON.stringify(THOMAS_SCORES));
-    sessionStorage.setItem("postureatwork_answers", JSON.stringify(THOMAS_ANSWERS));
+    sessionStorage.setItem("paw_example_scores", JSON.stringify(THOMAS_SCORES));
+    sessionStorage.setItem("paw_example_answers", JSON.stringify(THOMAS_ANSWERS));
 
     return () => {
       // Nettoyage des scores de Thomas au départ — mais on garde paw_example_mode pour que
       // /conseils/[dimension] puisse détecter le mode et repopuler les données si besoin
-      sessionStorage.removeItem("postureatwork_scores");
-      sessionStorage.removeItem("postureatwork_answers");
+      sessionStorage.removeItem("paw_example_scores");
+      sessionStorage.removeItem("paw_example_answers");
     };
   }, []);
 
