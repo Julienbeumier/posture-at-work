@@ -24,9 +24,15 @@ export default function AnalyzingPage() {
   const [posteDone, setPosteDone] = useState(false);
   const [generating, setGenerating] = useState(false);
   const called = useRef(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => setMsgIndex(i => (i + 1) % SINGLE_MESSAGES.length), 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => setElapsedSeconds(s => s + 1), 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -55,17 +61,25 @@ export default function AnalyzingPage() {
       // ── Debout analysis mode ─────────────────────────────────────────────
       if (framesPersonneRaw && !framesPosteRaw && jobType === "debout") {
         const framesPersonne: string[] = JSON.parse(framesPersonneRaw);
-        const res = await fetch("/api/analyze-video", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            frames: framesPersonne,
-            analysisType: "debout",
-            job_type: "debout",
-            questionnaire_scores,
-            questionnaire_answers,
-          }),
-        });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 55000);
+        let res: Response;
+        try {
+          res = await fetch("/api/analyze-video", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              frames: framesPersonne,
+              analysisType: "debout",
+              job_type: "debout",
+              questionnaire_scores,
+              questionnaire_answers,
+            }),
+            signal: controller.signal,
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
         const data = await res.json();
         sessionStorage.setItem("paw_analysis_personne", JSON.stringify(data));
         setTimeout(() => router.push("/final-report"), 1200);
@@ -79,35 +93,41 @@ export default function AnalyzingPage() {
         const framesPoste: string[] = JSON.parse(framesPosteRaw);
 
         await Promise.all([
-          fetch("/api/analyze-video", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              frames: framesPersonne,
-              analysisType: "personne",
-              questionnaire_scores,
-              questionnaire_answers,
-            }),
-          }).then(async r => {
-            const data = await r.json();
-            sessionStorage.setItem("paw_analysis_personne", JSON.stringify(data));
-            setPersonneDone(true);
-          }),
+          (async () => {
+            const c1 = new AbortController();
+            const t1 = setTimeout(() => c1.abort(), 55000);
+            try {
+              const r = await fetch("/api/analyze-video", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ frames: framesPersonne, analysisType: "personne", questionnaire_scores, questionnaire_answers }),
+                signal: c1.signal,
+              });
+              const data = await r.json();
+              sessionStorage.setItem("paw_analysis_personne", JSON.stringify(data));
+              setPersonneDone(true);
+            } finally {
+              clearTimeout(t1);
+            }
+          })(),
 
-          fetch("/api/analyze-video", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              frames: framesPoste,
-              analysisType: "poste",
-              questionnaire_scores,
-              questionnaire_answers,
-            }),
-          }).then(async r => {
-            const data = await r.json();
-            sessionStorage.setItem("paw_analysis_poste", JSON.stringify(data));
-            setPosteDone(true);
-          }),
+          (async () => {
+            const c2 = new AbortController();
+            const t2 = setTimeout(() => c2.abort(), 55000);
+            try {
+              const r = await fetch("/api/analyze-video", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ frames: framesPoste, analysisType: "poste", questionnaire_scores, questionnaire_answers }),
+                signal: c2.signal,
+              });
+              const data = await r.json();
+              sessionStorage.setItem("paw_analysis_poste", JSON.stringify(data));
+              setPosteDone(true);
+            } finally {
+              clearTimeout(t2);
+            }
+          })(),
         ]);
 
         setGenerating(true);
@@ -124,16 +144,24 @@ export default function AnalyzingPage() {
         throw new Error("Frames incomplètes. Refais la capture vidéo.");
       }
 
-      const res = await fetch("/api/analyze-video", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          frames_posture: frames.posture,
-          frames_bureau: frames.bureau,
-          questionnaire_scores,
-          questionnaire_answers,
-        }),
-      });
+      const c3 = new AbortController();
+      const t3 = setTimeout(() => c3.abort(), 55000);
+      let res: Response;
+      try {
+        res = await fetch("/api/analyze-video", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            frames_posture: frames.posture,
+            frames_bureau: frames.bureau,
+            questionnaire_scores,
+            questionnaire_answers,
+          }),
+          signal: c3.signal,
+        });
+      } finally {
+        clearTimeout(t3);
+      }
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -144,7 +172,12 @@ export default function AnalyzingPage() {
       sessionStorage.setItem("postureatwork_report", JSON.stringify(report));
       router.push("/final-report");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur est survenue.");
+      const msg = err instanceof Error ? err.message : "Une erreur est survenue.";
+      const isAbort = msg.includes("abort") || msg.includes("AbortError") || (err instanceof Error && err.name === "AbortError");
+      setError(isAbort
+        ? "L'analyse a pris trop de temps. Vérifie ta connexion et réessaie."
+        : msg
+      );
     }
   }
 
@@ -161,7 +194,11 @@ export default function AnalyzingPage() {
               style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)" }}>
               Refaire la capture
             </button>
-            <button onClick={() => { setError(null); called.current = false; runAnalysis(); }}
+            <button onClick={() => {
+              called.current = false;
+              setError(null);
+              setTimeout(() => runAnalysis(), 100);
+            }}
               className="flex-1 py-3 rounded-xl text-sm font-bold text-white"
               style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)" }}>
               Réessayer
@@ -264,6 +301,14 @@ export default function AnalyzingPage() {
               </motion.p>
             </AnimatePresence>
           </div>
+        )}
+
+        {elapsedSeconds > 15 && (
+          <p style={{ color: "rgba(148,163,184,0.5)", fontSize: 11, textAlign: "center" }}>
+            {elapsedSeconds > 40
+              ? "Presque terminé…"
+              : "L'analyse IA prend 20-40 secondes…"}
+          </p>
         )}
 
         {/* Dots */}

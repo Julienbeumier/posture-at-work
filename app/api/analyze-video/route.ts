@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import type { AnalysisReport, PersonneAnalysis, PosteAnalysis, DeboutAnalysis } from "@/lib/analysis-types";
 
+export const maxDuration = 60;
+
 // ─── System prompt ────────────────────────────────────────────────────────────
 
 const SYSTEM_PROMPT = `Tu es un kinésithérapeute expert en ergonomie du travail.
