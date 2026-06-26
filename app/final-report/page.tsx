@@ -520,6 +520,7 @@ export default function FinalReportPage() {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [firstname, setFirstname] = useState("");
   const savedRef = useRef(false);
+  const loadedFromRemoteRef = useRef(false);
 
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
@@ -529,7 +530,9 @@ export default function FinalReportPage() {
     let analysisPersonne: PersonneAnalysis | null = null;
     let analysisPoste: PosteAnalysis | null = null;
     let analysisDebout: DeboutAnalysis | null = null;
+    let foundLocal = false;
     if (personneRaw) {
+      foundLocal = true;
       const parsed = JSON.parse(personneRaw);
       if (parsed.analysisType === "debout") {
         analysisDebout = parsed;
@@ -542,7 +545,7 @@ export default function FinalReportPage() {
       }
     } else {
       const raw = sessionStorage.getItem("postureatwork_report");
-      if (raw) setReport(JSON.parse(raw));
+      if (raw) { foundLocal = true; setReport(JSON.parse(raw)); }
     }
 
     const isExample = sessionStorage.getItem("paw_example_mode") === "true";
@@ -564,11 +567,54 @@ export default function FinalReportPage() {
       questionAnswers,
     ));
 
-    createClient().auth.getUser().then(({ data }) => setUser(data.user ?? null));
+    createClient().auth.getUser().then(async ({ data }) => {
+      setUser(data.user ?? null);
+      if (foundLocal || !data.user) return;
+
+      // Rien en sessionStorage (ex: analyse vidéo faite sur un autre appareil via
+      // le QR code) → charger la dernière analyse depuis Supabase
+      const supabase = createClient();
+      const { data: latest } = await supabase
+        .from("assessments")
+        .select("video_analysis")
+        .eq("user_id", data.user.id)
+        .not("video_analysis", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      const va = latest?.video_analysis as { personne?: PersonneAnalysis | DeboutAnalysis; poste?: PosteAnalysis } | null;
+      if (!va?.personne) return;
+
+      // Déjà sauvegardé en base — ne pas redéclencher la sauvegarde auto
+      loadedFromRemoteRef.current = true;
+
+      let remotePersonne: PersonneAnalysis | null = null;
+      let remotePoste: PosteAnalysis | null = null;
+      let remoteDebout: DeboutAnalysis | null = null;
+
+      if ((va.personne as DeboutAnalysis).analysisType === "debout") {
+        remoteDebout = va.personne as DeboutAnalysis;
+        setDeboutAnalysis(remoteDebout);
+      } else if (va.poste) {
+        remotePersonne = va.personne as PersonneAnalysis;
+        remotePoste = va.poste;
+        setPersonneAnalysis(remotePersonne);
+        setPosteAnalysis(remotePoste);
+      }
+
+      setSynthesis(buildCrossedSynthesis(
+        remotePersonne,
+        remotePoste,
+        remoteDebout,
+        questionScores,
+        questionAnswers,
+      ));
+    });
   }, []);
 
   useEffect(() => {
-    if (!user || savedRef.current) return;
+    if (!user || savedRef.current || loadedFromRemoteRef.current) return;
     const target = report ?? personneAnalysis ?? deboutAnalysis ?? null;
     if (!target) return;
     savedRef.current = true;

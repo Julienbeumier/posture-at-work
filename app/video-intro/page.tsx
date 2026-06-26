@@ -409,7 +409,7 @@ export default function VideoIntroPage() {
                           </p>
                         </div>
                         <button
-                          onClick={() => window.location.href = "/dashboard"}
+                          onClick={() => window.location.href = "/final-report"}
                           style={{
                             padding: "8px 16px", borderRadius: 100, border: "none",
                             background: "#1d9e75", color: "#fff",
