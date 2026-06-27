@@ -329,38 +329,6 @@ test('Conseils debout — toutes les dimensions', async ({ page }) => {
   }
 })
 
-// ━━━ EXEMPLE RAPPORT THOMAS ━━━
-test('Exemple rapport — cohérence bureau', async ({ page }) => {
-  await page.goto(BASE + '/exemple-rapport')
-  await page.waitForLoadState('networkidle')
-  await page.waitForTimeout(2000)
-  await page.screenshot({
-    path: 'audit/11_exemple_rapport.png',
-    fullPage: true
-  })
-
-  const body = await page.textContent('body')
-  console.log('=== EXEMPLE RAPPORT THOMAS ===')
-  console.log('Score global affiché (doit être 45):',
-    body?.match(/\b45\b/)?.[0])
-  console.log('Contient Thomas:', body?.includes('Thomas'))
-  console.log('Contient bureau keywords:',
-    body?.includes('laptop') || body?.includes('écran'))
-  console.log('Contient debout keywords (ERREUR):',
-    body?.includes('tapis anti-fatigue') || body?.includes('semelles'))
-
-  const amazonLinks = await page.$$eval(
-    'a[href*="amazon"], a[href*="amzn"]',
-    (links: any[]) => links.map(l => l.href)
-  )
-  console.log('Liens Amazon count:', amazonLinks.length)
-
-  const badTag = amazonLinks.some((l: string) => l.includes('ergocheck-21'))
-  const goodTag = amazonLinks.some((l: string) => l.includes('postureatwork-21'))
-  console.log('ERREUR - Tag ergocheck-21 présent:', badTag)
-  console.log('Tag postureatwork-21 présent:', goodTag)
-})
-
 // ━━━ MOBILITÉ ━━━
 test('Mobilité — programmes et exercices', async ({ page }) => {
   await page.goto(BASE + '/mobilite')

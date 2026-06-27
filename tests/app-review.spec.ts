@@ -237,11 +237,6 @@ test('Profil debout manutention — douleurs sévères', async ({ page }) => {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 test('Pages statiques', async ({ page }) => {
 
-  await page.goto(BASE_URL + '/exemple-rapport')
-  await page.waitForLoadState('networkidle')
-  await page.waitForTimeout(1200)
-  await page.screenshot({ path: 'tests/screenshots/19_exemple_rapport.png', fullPage: true })
-
   await page.goto(BASE_URL + '/mobilite')
   await page.waitForLoadState('networkidle')
   await page.waitForTimeout(800)

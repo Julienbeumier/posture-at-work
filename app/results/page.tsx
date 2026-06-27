@@ -334,14 +334,6 @@ export default function ResultsPage() {
     }
 
     async function load() {
-      // 0. Guard — si mode exemple actif, renvoyer sur /exemple-rapport
-      const isExampleMode = sessionStorage.getItem("paw_example_mode") === "true"
-                         || localStorage.getItem("paw_example_mode") === "true";
-      if (isExampleMode) {
-        router.replace("/exemple-rapport");
-        return;
-      }
-
       // 1. sessionStorage (fastest — set immediately after questionnaire)
       const ssScores = sessionStorage.getItem("postureatwork_scores");
       const ssAnswers = sessionStorage.getItem("postureatwork_answers")

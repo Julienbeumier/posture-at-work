@@ -61,16 +61,6 @@ const pillars = [
     blob: "rgba(124,58,237,0.25)",
     iconBg: "rgba(124,58,237,0.18)",
   },
-  {
-    icon: "🤖",
-    title: "Analyse IA posturale",
-    desc: "Claude Vision analyse ta posture réelle en temps réel via ta caméra.",
-    bg: "rgba(29,158,117,0.07)",
-    border: "rgba(29,158,117,0.15)",
-    titleColor: "#5dcaa5",
-    blob: "rgba(29,158,117,0.25)",
-    iconBg: "rgba(29,158,117,0.18)",
-  },
 ];
 
 const TESTIMONIALS = [
@@ -181,15 +171,6 @@ export default function LandingClient() {
               Faire mon bilan →
             </div>
           </Link>
-          <Link href="/exemple-rapport" style={{ textDecoration: "none" }}>
-            <div style={{
-              padding: "14px 24px", borderRadius: 100,
-              background: "transparent", border: "0.5px solid var(--border-3)",
-              color: "var(--text-primary)", fontFamily: T.b, fontSize: 14, cursor: "pointer",
-            }}>
-              Voir un exemple de rapport
-            </div>
-          </Link>
         </motion.div>
       </section>
 
@@ -222,6 +203,134 @@ export default function LandingClient() {
               {s.source && <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t30)", margin: "4px 0 0" }}>Source : {s.source}</p>}
             </div>
           ))}
+        </motion.div>
+      </section>
+
+      {/* ── SECTION VIDÉO IA ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          style={{ marginBottom: 80 }}
+        >
+          <div style={{
+            borderRadius: 28, overflow: "hidden",
+            border: "1px solid rgba(124,58,237,0.3)",
+            background: "linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(43,92,230,0.06) 100%)",
+          }}>
+            {/* Header */}
+            <div style={{ padding: isMobile ? "28px 24px 20px" : "40px 48px 32px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <div style={{
+                  padding: "6px 14px", borderRadius: 100,
+                  background: "rgba(124,58,237,0.15)", border: "0.5px solid rgba(124,58,237,0.3)",
+                }}>
+                  <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, color: "#c4b5fd", letterSpacing: "0.06em" }}>
+                    🎥 EXCLUSIF — ANALYSE IA POSTURALE
+                  </span>
+                </div>
+              </div>
+
+              <h2 style={{
+                fontFamily: T.h, fontWeight: 900,
+                fontSize: isMobile ? "26px" : "36px",
+                color: "var(--text-primary)", margin: "0 0 16px",
+                letterSpacing: "-0.5px", lineHeight: 1.2,
+              }}>
+                Un ergonome ne peut pas<br />
+                filmer 30 personnes en même temps.<br />
+                <span style={{ color: "#a78bfa" }}>PAW le fait.</span>
+              </h2>
+
+              <p style={{
+                fontFamily: T.b, fontSize: isMobile ? 14 : 16,
+                color: "var(--t60)", lineHeight: 1.7,
+                maxWidth: 560, margin: "0 0 28px",
+              }}>
+                En 40 secondes, notre IA analyse ta posture réelle via ta caméra.
+                Projection de tête, épaules enroulées, position lombaire —
+                ce que le questionnaire seul ne peut pas voir.
+              </p>
+
+              {/* Features grid */}
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+                gap: 12, marginBottom: 28,
+              }}>
+                {[
+                  { emoji: "🧠", title: "Claude Vision IA", desc: "Analyse posturale par intelligence artificielle" },
+                  { emoji: "⚡", title: "40 secondes", desc: "Résultats immédiats, rapport complet" },
+                  { emoji: "📱", title: "Sur ton téléphone", desc: "QR code depuis le PC, caméra mobile pour filmer" },
+                ].map((f, i) => (
+                  <div key={i} style={{
+                    padding: "16px", borderRadius: 16,
+                    background: "rgba(124,58,237,0.06)",
+                    border: "0.5px solid rgba(124,58,237,0.2)",
+                  }}>
+                    <span style={{ fontSize: 24, display: "block", marginBottom: 8 }}>{f.emoji}</span>
+                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#c4b5fd", margin: "0 0 4px" }}>
+                      {f.title}
+                    </p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", margin: 0, lineHeight: 1.5 }}>
+                      {f.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Ce que l'IA détecte */}
+              <div style={{
+                padding: "16px 20px", borderRadius: 16,
+                background: "rgba(0,0,0,0.2)", border: "0.5px solid rgba(124,58,237,0.15)",
+                marginBottom: 28,
+              }}>
+                <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, color: "var(--t40)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>
+                  Ce que l&apos;IA analyse concrètement
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {[
+                    "Projection de tête",
+                    "Enroulement des épaules",
+                    "Cyphose dorsale",
+                    "Position lombaire",
+                    "Hauteur écran",
+                    "Setup bureau",
+                    "Distance écran",
+                    "Position clavier/souris",
+                  ].map((item, i) => (
+                    <span key={i} style={{
+                      padding: "4px 12px", borderRadius: 100,
+                      background: "rgba(124,58,237,0.1)", border: "0.5px solid rgba(124,58,237,0.2)",
+                      fontFamily: T.b, fontSize: 12, color: "#c4b5fd",
+                    }}>
+                      ✓ {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                <Link href="/onboarding" style={{ textDecoration: "none" }}>
+                  <div style={{
+                    padding: "14px 28px", borderRadius: 100,
+                    background: "linear-gradient(135deg, #7c3aed, #2b5ce6)",
+                    boxShadow: "0 4px 24px rgba(124,58,237,0.4)",
+                    fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
+                    cursor: "pointer",
+                  }}>
+                    🎥 Analyser ma posture →
+                  </div>
+                </Link>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", margin: 0 }}>
+                  Gratuit · 40 secondes · Résultats immédiats
+                </p>
+              </div>
+            </div>
+          </div>
         </motion.div>
       </section>
 
@@ -472,7 +581,6 @@ export default function LandingClient() {
           </p>
           <div style={{ display: "flex", gap: 24, flexWrap: "wrap", justifyContent: "center" }}>
             {[
-              { label: "Exemple de rapport", href: "/exemple-rapport" },
               { label: "Questionnaire", href: "/questionnaire" },
               { label: "Exercices", href: "/mobilite" },
               { label: "Entreprise", href: "/entreprise" },

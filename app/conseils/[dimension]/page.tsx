@@ -169,7 +169,7 @@ function ProductCard({ p }: { p: Product }) {
   );
 }
 
-// Données de Thomas utilisées comme fallback depuis /exemple-rapport
+// Données de Thomas utilisées comme fallback en mode exemple
 const THOMAS_SCORES = {
   global: 45, setup: 32, pain: 48, habits: 55,
   sleep_energy: 45, nutrition: 30, lifestyle: 60,
@@ -237,7 +237,7 @@ export default function DimensionPage() {
       let isExample = sessionStorage.getItem("paw_example_mode") === "true"
                    || localStorage.getItem("paw_example_mode") === "true";
 
-      // ── 1b. Si mode exemple mais scores absents (cleanup exemple-rapport a tourné en premier),
+      // ── 1b. Si mode exemple mais scores absents (cleanup a tourné en premier),
       //        repopuler les données de Thomas dans leurs clés dédiées ──────
       if (isExample && !sessionStorage.getItem("paw_example_scores")) {
         sessionStorage.setItem("paw_example_scores", JSON.stringify(THOMAS_SCORES));
@@ -399,10 +399,10 @@ export default function DimensionPage() {
       <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
 
         {/* Nav */}
-        <div style={{ paddingTop: 80, paddingBottom: isExampleMode ? 16 : 32 }}>
-          <Link href={isExampleMode ? "/exemple-rapport" : "/results"} style={{ textDecoration: "none" }}>
+        <div style={{ paddingTop: 80, paddingBottom: 32 }}>
+          <Link href="/results" style={{ textDecoration: "none" }}>
             <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t40)", cursor: "pointer" }}>
-              {isExampleMode ? "← Exemple de rapport" : "← Mes résultats"}
+              ← Mes résultats
             </span>
           </Link>
         </div>

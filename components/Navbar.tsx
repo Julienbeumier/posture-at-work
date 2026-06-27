@@ -281,9 +281,6 @@ export default function Navbar() {
           <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
             📊 Dashboard
           </Link>
-          <Link href="/exemple-rapport" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
-            👁️ Voir un exemple
-          </Link>
           <Link href={isEnterpriseAdmin ? "/entreprise/dashboard" : "/entreprise"} onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
             🏢 {isEnterpriseAdmin ? "Dashboard RH" : "Entreprise"}
           </Link>
