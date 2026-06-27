@@ -63,36 +63,6 @@ const pillars = [
   },
 ];
 
-const TESTIMONIALS = [
-  {
-    initials: "MA",
-    color: "#2b5ce6",
-    nom: "Marie A.",
-    role: "UX Designer · Paris",
-    emoji: "💻",
-    texte: "En 3 semaines j'ai arrêté d'avoir mal au cou. Juste en suivant les reco PAW — sans rien acheter de plus.",
-    score: "38 → 71 pts",
-  },
-  {
-    initials: "MV",
-    color: "#7c3aed",
-    nom: "Marc V.",
-    role: "Technicien de surface · Bruxelles",
-    emoji: "🧹",
-    texte: "Je pensais que mes douleurs aux épaules c'était normal après 10 ans de boulot. PAW m'a montré que c'était surtout ma façon de pousser le chariot et mon manque de pauses. J'ai changé 2-3 trucs et ça va déjà mieux.",
-    score: "38 → 64 pts",
-  },
-  {
-    initials: "RD",
-    color: "#2d6a4f",
-    nom: "Romain D.",
-    role: "Responsable RH · Bordeaux",
-    emoji: "🏢",
-    texte: "J'ai fait faire le bilan PAW à toute mon équipe. En un mois, les plaintes de dos ont diminué de moitié.",
-    score: "Équipe de 12",
-  },
-];
-
 function fadeUp(delay = 0) {
   return {
     initial: { opacity: 0, y: 24 },
@@ -113,6 +83,80 @@ const schemaOrg = {
   inLanguage: "fr",
   author: { "@type": "Organization", name: "PostureAtWork" },
 };
+
+function FAQ({ isMobile }: { isMobile: boolean }) {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const faqs = [
+    {
+      q: "C'est quoi exactement l'analyse vidéo IA ?",
+      a: "Tu te filmes pendant 40 secondes avec ta caméra (téléphone ou webcam). Notre IA analyse ta posture réelle — projection de tête, enroulement des épaules, position lombaire — et croise ces données avec les réponses de ton questionnaire. Le résultat : un diagnostic postural précis, comme si un kiné t'observait travailler."
+    },
+    {
+      q: "Mes données de santé sont-elles confidentielles ?",
+      a: "Oui. Tes données sont chiffrées, hébergées en Europe (Supabase EU) et ne sont jamais vendues ni partagées. Tu peux supprimer ton compte et toutes tes données à tout moment depuis ton dashboard. PAW est conforme RGPD."
+    },
+    {
+      q: "C'est gratuit ?",
+      a: "Le bilan de base est gratuit — questionnaire complet et scores par dimension. L'analyse vidéo IA, le rapport PDF complet, les conseils détaillés et le suivi dans le temps sont disponibles en version premium."
+    },
+    {
+      q: "Ça fonctionne aussi si je travaille debout ?",
+      a: "Oui — PAW est conçu pour les deux profils. Profil Bureau pour les sédentaires et télétravail, Profil Debout pour les métiers actifs (caissiers, soignants, magasiniers, serveurs...). Les questions, les conseils et les exercices sont complètement différents selon ton poste."
+    },
+    {
+      q: "Est-ce que PAW remplace un médecin ou un kinésithérapeute ?",
+      a: "Non. PAW est un outil de prévention et d'information — pas un diagnostic médical. Si tu as des douleurs importantes, des fourmillements ou des douleurs nocturnes, consulte un professionnel de santé. PAW t'aide à identifier les causes probables et à agir avant que ça empire."
+    },
+  ];
+
+  return (
+    <motion.div {...fadeUp(0.05)} style={{ marginBottom: 80 }}>
+      <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>
+        Questions fréquentes
+      </p>
+      <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 24 : 30, color: "var(--text-primary)", marginBottom: 24, letterSpacing: "-0.5px" }}>
+        Tout ce que tu veux savoir
+      </h2>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {faqs.map((faq, i) => (
+          <div key={i} style={{
+            borderRadius: 16, overflow: "hidden",
+            border: `0.5px solid ${openFaq === i ? "rgba(43,92,230,0.3)" : "var(--border)"}`,
+            background: openFaq === i ? "rgba(43,92,230,0.04)" : "var(--bg-card)",
+            transition: "all 0.2s",
+          }}>
+            <button
+              onClick={() => setOpenFaq(openFaq === i ? null : i)}
+              style={{
+                width: "100%", padding: "18px 20px",
+                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
+                background: "none", border: "none", cursor: "pointer", textAlign: "left",
+              }}
+            >
+              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: isMobile ? 14 : 15, color: "var(--text-primary)", lineHeight: 1.4 }}>
+                {faq.q}
+              </span>
+              <span style={{
+                fontSize: 18, color: "#2b5ce6", flexShrink: 0,
+                transform: openFaq === i ? "rotate(45deg)" : "rotate(0deg)",
+                transition: "transform 0.2s",
+              }}>
+                +
+              </span>
+            </button>
+            {openFaq === i && (
+              <div style={{ padding: "0 20px 18px" }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t60)", lineHeight: 1.75, margin: 0 }}>
+                  {faq.a}
+                </p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
 
 export default function LandingClient() {
   const [isMobile, setIsMobile] = useState(false);
@@ -418,37 +462,46 @@ export default function LandingClient() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ── */}
-      <section style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto 80px", padding: "0 24px" }}>
-        <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 40 }}>
-          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 14 }}>Ils l&apos;ont testé</p>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 10 }}>
-            Ce que ça change, concrètement.
-          </h2>
-          <p style={{ color: "var(--t50)", fontFamily: T.b, fontSize: 14 }}>Des résultats concrets, en quelques semaines.</p>
+      {/* ── CRÉÉ PAR UN KINÉ ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
+        <motion.div {...fadeUp(0.05)} style={{ marginBottom: 80 }}>
+          <div style={{
+            borderRadius: 20, padding: isMobile ? "24px 20px" : "32px 40px",
+            background: "var(--bg-card)", border: "0.5px solid var(--border)",
+            display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap",
+          }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: 16, flexShrink: 0,
+              background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)",
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28,
+            }}>
+              🩺
+            </div>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", margin: "0 0 6px" }}>
+                Créé par un kinésithérapeute diplômé
+              </p>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.65, margin: 0 }}>
+                PAW est conçu par un kiné spécialisé en troubles musculosquelettiques du travail.
+                Chaque question, chaque conseil et chaque exercice est validé cliniquement —
+                pas généré par une IA sans supervision médicale.
+              </p>
+            </div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {["Validé cliniquement", "Modèle biopsychosocial", "Données RGPD"].map((badge, i) => (
+                <span key={i} style={{
+                  padding: "5px 12px", borderRadius: 100,
+                  background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)",
+                  fontFamily: T.b, fontSize: 11, color: "#7c9fff", fontWeight: 600,
+                }}>
+                  ✓ {badge}
+                </span>
+              ))}
+            </div>
+          </div>
         </motion.div>
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
-          {TESTIMONIALS.map((t, i) => (
-            <motion.div key={i} {...fadeUp(i * 0.1)} style={{ padding: "24px", borderRadius: 18, background: "var(--bg-card)", border: "0.5px solid var(--border)", display: "flex", flexDirection: "column", gap: 16 }}>
-              <div style={{ position: "relative" }}>
-                <span style={{ fontFamily: "Georgia, serif", fontSize: 48, color: t.color, lineHeight: 1, opacity: 0.7, display: "block", marginBottom: 4 }}>&ldquo;</span>
-                <p style={{ fontFamily: T.b, fontSize: 14, lineHeight: 1.7, color: "var(--t82)", fontStyle: "italic" }}>{t.texte}</p>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 38, height: 38, borderRadius: "50%", flexShrink: 0, background: `${t.color}22`, border: `1.5px solid ${t.color}55`, display: "flex", alignItems: "center", justifyContent: "center", color: t.color, fontFamily: T.h, fontWeight: 800, fontSize: 12 }}>
-                  {t.initials}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <p style={{ color: "var(--text-primary)", fontFamily: T.h, fontWeight: 700, fontSize: 13 }}>{t.nom} <span style={{ fontSize: 14 }}>{t.emoji}</span></p>
-                  <p style={{ color: "var(--t38)", fontFamily: T.b, fontSize: 11 }}>{t.role}</p>
-                </div>
-              </div>
-              <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 100, background: `${t.color}18`, border: `1px solid ${t.color}35`, color: t.color, fontFamily: T.h, fontWeight: 700, fontSize: 11 }}>
-                Score : {t.score}
-              </span>
-            </motion.div>
-          ))}
-        </div>
+
+        <FAQ isMobile={isMobile} />
       </section>
 
       {/* ── BOTTOM CTA ── */}
@@ -561,6 +614,38 @@ export default function LandingClient() {
               </Link>
             </div>
           </div>
+        </motion.div>
+      </section>
+
+      {/* ── CTA FINAL ── */}
+      <section style={{ position: "relative", zIndex: 1, maxWidth: 700, margin: "0 auto", padding: "0 24px" }}>
+        <motion.div {...fadeUp(0.05)} style={{
+          textAlign: "center", padding: isMobile ? "48px 20px" : "72px 40px",
+          marginBottom: 40,
+        }}>
+          <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 16 }}>
+            Prêt à comprendre tes douleurs ?
+          </p>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 26 : 36, color: "var(--text-primary)", marginBottom: 16, letterSpacing: "-0.5px" }}>
+            Ton bilan prend 5 minutes.<br />
+            <span style={{ color: "#2b5ce6" }}>Les résultats durent.</span>
+          </h2>
+          <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)", lineHeight: 1.65, marginBottom: 28, maxWidth: 480, margin: "0 auto 28px" }}>
+            Des milliers de travailleurs ont déjà compris pourquoi ils avaient mal. Toi aussi.
+          </p>
+          <Link href="/questionnaire" style={{ textDecoration: "none" }}>
+            <div style={{
+              display: "inline-block", padding: "16px 36px", borderRadius: 100,
+              background: "#2b5ce6", color: "#fff",
+              fontFamily: T.h, fontWeight: 800, fontSize: 16, cursor: "pointer",
+              boxShadow: "0 4px 32px rgba(43,92,230,0.4)",
+            }}>
+              Commencer mon bilan gratuit →
+            </div>
+          </Link>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", marginTop: 12 }}>
+            Gratuit · Sans carte bancaire · Résultats immédiats
+          </p>
         </motion.div>
       </section>
 
