@@ -31,6 +31,64 @@ export type JobType = "bureau" | "debout" | "artisan" | "transport" | "medical" 
 
 export type GenericAnswers = Record<string, string | number | string[] | null>;
 
+// ─── Express mode ─────────────────────────────────────────────────────────────
+
+export const DEBOUT_EXPRESS_IDS = [
+  "q_d1", "q_d7", "q_d_express_zones", "q_d_express_intensity",
+  "q_d4", "q_d16", "q_d19", "q_d_recuperation",
+] as const;
+
+export function mapDeboutExpressToStandard(
+  zones: string[],
+  intensity: number,
+  base: GenericAnswers
+): GenericAnswers {
+  const noPain = zones.includes("aucune") || zones.length === 0;
+  return {
+    q_d_anciennete: base.q_d_anciennete || "entre1et5",
+    q_d1: base.q_d1 || ["souple"],
+    q_d2: "oui_fin",
+    q_d3: "baskets",
+    q_d3b: "",
+    q_d_endurance: "deux_4h",
+    q_d_position_var: "non",
+    q_d7: base.q_d7 || "adapte",
+    q_d4: base.q_d4 || 8,
+    q_d_temperature: "normale",
+    q_d8:  !noPain && zones.includes("pieds")  ? intensity : 0,
+    q_d9:  0,
+    q_d10: !noPain && zones.includes("dos")    ? intensity : 0,
+    q_d11: !noPain && zones.includes("jambes") ? intensity : 0,
+    q_d12: !noPain && (zones.includes("epaules") || zones.includes("nuque")) ? intensity : 0,
+    q_d_coude: 0,
+    q_d_poignet: 0,
+    q_d13: noPain ? "pas" : "fin_journee",
+    q_d16: base.q_d16 || "parfois",
+    q_d19: base.q_d19 || "parfois",
+    q_d_recuperation: base.q_d_recuperation || "rien_non",
+    q_d_charges: "legeres",
+    q_d_repetitif: "parfois",
+    q_d_repetitif_zone: "",
+    q_d_protection: [],
+    q_d_sommeil_heures: 7,
+    q_d_sommeil_qualite: "normal",
+    q_d_jambes_soir: "bien",
+    q_d_varices: "non",
+    q_d_jambes_nuit: "non",
+    q_d_crampes_global: "jamais",
+    q_d_irradiation: "non",
+    q_d_ecrans_soir: "parfois",
+    q_d_petit_dej: "leger",
+    q_d_energie_boisson: "eau",
+    q_d_repas_service: "sandwich_assis",
+    q_d20: [],
+    q_d_consultation: "jamais",
+    q_d_activite_lifestyle: ["aucune"],
+    q_d_activite_intensite: "moderee",
+    q_d_autoevaluation: 3,
+  };
+}
+
 // ─── Profile defaults ──────────────────────────────────────────────────────
 
 export function defaultAnswers(categories: CategoryDef[]): GenericAnswers {

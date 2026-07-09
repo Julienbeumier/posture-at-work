@@ -112,6 +112,33 @@ const DIM_INLINE_PRODUCTS_DEBOUT: Record<string, { name: string; url: string; re
   "/conseils/nutrition": { name: "Gourde 1.5L graduée",              url: "https://amzn.to/4dVZNJl",                                                                 reason: "Hydratation critique pour les métiers debout — boire sans y penser",          price: "~15€" },
 };
 
+// ─── Locked sub-score (express mode) ─────────────────────────────────────────
+
+function LockedSubScoreBar({ label, emoji }: { label: string; emoji: string }) {
+  return (
+    <Link href="/premium" style={{ textDecoration: "none" }}>
+      <div style={{ cursor: "pointer", opacity: 0.75 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: T.b, fontSize: 13, color: "var(--t55)" }}>
+            <span>{emoji}</span>
+            <span>{label}</span>
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color: "var(--t25)" }}>?</span>
+            <span style={{ fontSize: 13 }}>🔒</span>
+          </div>
+        </div>
+        <div style={{ height: 5, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden", marginBottom: 4, filter: "blur(3px)" }}>
+          <div style={{ height: "100%", borderRadius: 100, background: "var(--t20)", width: "55%" }} />
+        </div>
+        <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600, color: "var(--t30)" }}>
+          🔒 Analyse complète requise →
+        </span>
+      </div>
+    </Link>
+  );
+}
+
 // ─── Sub-score bar ────────────────────────────────────────────────────────────
 
 function SubScoreBar({
@@ -285,6 +312,7 @@ export default function ResultsPage() {
 
   const [jobType, setJobType] = useState("bureau");
   const [hasVideoAnalysis, setHasVideoAnalysis] = useState(false);
+  const [isExpress, setIsExpress] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -297,6 +325,8 @@ export default function ResultsPage() {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
     const videoData = sessionStorage.getItem("paw_analysis_personne");
     setHasVideoAnalysis(!!videoData);
+    const expressMode = sessionStorage.getItem("postureatwork_mode") === "express";
+    setIsExpress(expressMode);
     const isExample = sessionStorage.getItem("paw_example_mode") === "true"
                    || localStorage.getItem("paw_example_mode") === "true";
     if (!isExample) {
@@ -423,6 +453,7 @@ export default function ResultsPage() {
     );
   }
 
+  const isExpressMode = isExpress && !premium;
   const bureauRecs = getRecommendations(scores, answers);
   const deboutRecs: { title: string; description: string; priority: "urgent" | "important" | "good" }[] = [];
   if (jobType === "debout") {
@@ -471,10 +502,13 @@ export default function ResultsPage() {
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 6,
             padding: "6px 14px", borderRadius: 100,
-            background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)",
+            background: isExpressMode ? "rgba(212,162,42,0.12)" : "rgba(116,198,157,0.12)",
+            border: `0.5px solid ${isExpressMode ? "rgba(212,162,42,0.3)" : "rgba(116,198,157,0.3)"}`,
           }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#74c69d" }} />
-            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#74c69d" }}>Rapport complet</span>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: isExpressMode ? "#d4a22a" : "#74c69d" }} />
+            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: isExpressMode ? "#d4a22a" : "#74c69d" }}>
+              {isExpressMode ? "⚡ Bilan express" : "Rapport complet"}
+            </span>
           </div>
 
           {/* Circle */}
@@ -487,6 +521,42 @@ export default function ResultsPage() {
           }}>
             <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: badge.color }}>{badge.label}</span>
           </div>
+
+          {/* Bloc conversion express */}
+          {isExpressMode && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              style={{
+                borderRadius: 20, padding: "20px 24px", marginBottom: 20,
+                background: "rgba(212,162,42,0.08)", border: "1.5px solid rgba(212,162,42,0.35)",
+                textAlign: "left", width: "100%",
+              }}
+            >
+              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 15, color: "#d4a22a", marginBottom: 8 }}>
+                🔍 Ton bilan express révèle une partie du problème
+              </p>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.7, marginBottom: 14 }}>
+                Ton poste et tes habitudes expliquent une partie de tes douleurs.
+                Mais chez 7 personnes sur 10, le <strong>sommeil</strong>, le <strong>stress</strong> et
+                la <strong>nutrition</strong> aggravent les TMS sans qu&apos;elles le sachent.
+                Le bilan complet analyse les 6 dimensions + ta posture réelle en vidéo.
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
+                {["22 questions approfondies", "6 dimensions complètes", "Analyse vidéo IA", "Rapport PDF"].map(f => (
+                  <span key={f} style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(212,162,42,0.12)", fontFamily: T.b, fontSize: 11, color: "#d4a22a" }}>
+                    ✓ {f}
+                  </span>
+                ))}
+              </div>
+              <Link href="/premium" style={{ textDecoration: "none" }}>
+                <div style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", background: "linear-gradient(135deg,#d4a22a,#f4a261)", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff", cursor: "pointer" }}>
+                  Débloquer mon bilan complet →
+                </div>
+              </Link>
+            </motion.div>
+          )}
 
           {/* Bilan complet / incomplet */}
           {hasVideoAnalysis ? (
@@ -558,14 +628,14 @@ export default function ResultsPage() {
                     </span>
                   ))}
                 </div>
-                <Link href="/video-intro" style={{ textDecoration: "none" }}>
+                <Link href={isExpressMode ? "/premium" : "/video-intro"} style={{ textDecoration: "none" }}>
                   <div style={{
                     padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-                    background: "linear-gradient(135deg, #7c3aed, #a78bfa)",
-                    boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
+                    background: isExpressMode ? "linear-gradient(135deg,#d4a22a,#f4a261)" : "linear-gradient(135deg,#7c3aed,#a78bfa)",
+                    boxShadow: isExpressMode ? "0 4px 20px rgba(212,162,42,0.4)" : "0 4px 20px rgba(124,58,237,0.4)",
                     fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
                   }}>
-                    🎥 Compléter mon bilan avec l&apos;analyse vidéo →
+                    {isExpressMode ? "🔒 Inclus dans le bilan complet — Débloquer →" : "🎥 Compléter mon bilan avec l'analyse vidéo →"}
                   </div>
                 </Link>
                 <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", textAlign: "center", marginTop: 8 }}>
@@ -683,19 +753,23 @@ export default function ResultsPage() {
             <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)" }}>Clique pour détails</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-            {SUB_SCORES.map(({ key, label, emoji, dimensionPath, dimensionColor }, i) => (
-              <SubScoreBar
-                key={key}
-                label={label}
-                emoji={emoji}
-                score={scores[key]}
-                interpretation={scoreInterpretation(key, scores[key], answers)}
-                dimensionPath={dimensionPath}
-                dimensionColor={dimensionColor}
-                delay={i * 0.15}
-                jobType={jobType}
-              />
-            ))}
+            {SUB_SCORES.map(({ key, label, emoji, dimensionPath, dimensionColor }, i) => {
+              const isLocked = isExpressMode && ["sleep_energy", "lifestyle", "nutrition"].includes(key);
+              if (isLocked) return <LockedSubScoreBar key={key} label={label} emoji={emoji} />;
+              return (
+                <SubScoreBar
+                  key={key}
+                  label={label}
+                  emoji={emoji}
+                  score={scores[key]}
+                  interpretation={scoreInterpretation(key, scores[key], answers)}
+                  dimensionPath={dimensionPath}
+                  dimensionColor={dimensionColor}
+                  delay={i * 0.15}
+                  jobType={jobType}
+                />
+              );
+            })}
             {!hasVideoAnalysis && (
               <motion.div
                 initial={{ opacity: 0, y: 14 }}

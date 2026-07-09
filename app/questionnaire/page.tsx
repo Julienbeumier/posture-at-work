@@ -4,9 +4,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { calculateScores, DEFAULT_ANSWERS, type QuestionnaireAnswers } from "@/lib/scoring";
+import { calculateScores, calculateJobScores, DEFAULT_ANSWERS, type QuestionnaireAnswers } from "@/lib/scoring";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { useTheme } from "@/contexts/ThemeContext";
+import { usePremium } from "@/hooks/usePremium";
+import { mapDeboutExpressToStandard, type GenericAnswers } from "@/lib/questionnaire-profiles";
 
 const T = {
   h: "var(--font-nunito), sans-serif",
@@ -498,6 +500,452 @@ function CategorySection({
   );
 }
 
+// ─── Express helpers ──────────────────────────────────────────────────────────
+
+const EXPRESS_CAT = {
+  color: "#2b5ce6", colorBg: "rgba(43,92,230,0.08)",
+  colorBorder: "rgba(43,92,230,0.20)", selectedBg: "rgba(43,92,230,0.18)",
+  selectedColor: "#a8c0ff", blob: "", iconBg: "",
+  index: 0 as const, id: "cat-express" as const, title: "" as const,
+  subtitle: "" as const, emoji: "" as const, requiredQ: [] as const,
+} as unknown as typeof CATEGORIES[number];
+
+function mapExpressToStandard(
+  a: QuestionnaireAnswers,
+  zones: string[],
+  intensity: number,
+): QuestionnaireAnswers {
+  const noPain = zones.includes("aucune") || zones.length === 0;
+  return {
+    ...DEFAULT_ANSWERS,
+    ...a,
+    q6: !noPain && zones.includes("nuque")     ? intensity : 0,
+    q7: !noPain && zones.includes("epaules")   ? intensity : 0,
+    q8: !noPain && zones.includes("dos")       ? intensity : 0,
+    q9: !noPain && zones.includes("poignets")  ? intensity : 0,
+    q10: !noPain && zones.includes("jambes")   ? intensity : 0,
+    q11: noPain ? "none" : (a.q11 || "weeks"),
+    q12: noPain ? "none" : "day",
+    q12b: noPain ? "none" : "partial",
+    q_irradiation: "non",
+    q_maux_tete_nuque: "non",
+    q_douleur_nuit: "non",
+    q_eclairage: a.q_eclairage || "bon",
+    q4: a.q4 || "ideal",
+    q5: a.q5 || "good",
+    q5b: a.q5b || "adjustable",
+    q_laptop_hors_bureau: "jamais",
+    q14b: "none",
+    q18: "tired",
+    q20: "sometimes",
+    q_ecrans_soir: "parfois",
+    qn1: "outside",
+    qn2: "slight_dip",
+    qn3: "never",
+    qn4: "balanced",
+    q21: ["none"],
+    q24: "dunno",
+    q25: 3,
+  };
+}
+
+// ─── Bureau express questionnaire (gratuit) ────────────────────────────────────
+
+function ExpressBureauQuestionnaire() {
+  const router = useRouter();
+  const { theme } = useTheme();
+  const [answers, setAnswers] = useState<QuestionnaireAnswers>(DEFAULT_ANSWERS);
+  const [expressZones, setExpressZones] = useState<string[]>([]);
+  const [expressIntensity, setExpressIntensity] = useState<number>(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const update = useCallback(<K extends keyof QuestionnaireAnswers>(key: K, value: QuestionnaireAnswers[K]) => {
+    setAnswers((prev) => ({ ...prev, [key]: value }));
+  }, []);
+
+  const hasPain = expressZones.length > 0 && !expressZones.includes("aucune");
+
+  const answeredCount = [
+    !!answers.q1,
+    !!answers.q3,
+    expressZones.length > 0,
+    !hasPain || true,        // intensity: slider with default
+    !hasPain || !!answers.q11,
+    true,                    // q13 slider
+    !!answers.q14,
+    true,                    // q_stress_travail slider
+  ].filter(Boolean).length;
+
+  const isReady = !!answers.q1 && !!answers.q3 && expressZones.length > 0
+    && (!hasPain || !!answers.q11) && !!answers.q14;
+
+  function handleSubmitExpress() {
+    const mapped = mapExpressToStandard(answers, expressZones, expressIntensity);
+    const scores = calculateScores(mapped);
+    sessionStorage.removeItem("postureatwork_answers_debout");
+    sessionStorage.setItem("postureatwork_answers", JSON.stringify(mapped));
+    sessionStorage.setItem("postureatwork_scores", JSON.stringify(scores));
+    sessionStorage.setItem("postureatwork_mode", "express");
+    localStorage.setItem("paw_answers", JSON.stringify(mapped));
+    router.push("/results");
+  }
+
+  const bg = theme === "light" ? "#F3F7FF" : "#0f0f1a";
+  const headerBg = theme === "light" ? "rgba(255,255,255,0.95)" : "rgba(15,15,26,0.95)";
+  const ctaBg = theme === "light" ? "linear-gradient(to top,#F3F7FF 60%,transparent)" : "linear-gradient(to top,#0f0f1a 60%,transparent)";
+
+  return (
+    <main style={{ minHeight: "100vh", paddingBottom: 80, background: bg }}>
+      {/* Sticky header */}
+      <div style={{ position: "sticky", top: 0, zIndex: 30, background: headerBg, backdropFilter: "blur(20px)", borderBottom: "0.5px solid var(--border)" }}>
+        <div style={{ maxWidth: 680, margin: "0 auto", padding: "12px 20px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "var(--t40)", fontSize: 13, fontFamily: T.b, cursor: "pointer", padding: 0 }}>
+                ← Retour
+              </button>
+              <Link href="/" style={{ textDecoration: "none" }}>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)" }}>PAW<span style={{ color: "#7c9fff" }}>.</span></span>
+              </Link>
+            </div>
+            <span style={{ color: "var(--t40)", fontSize: 13, fontFamily: T.b }}>{answeredCount} / 8</span>
+          </div>
+          <div style={{ height: 3, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden", marginBottom: 8 }}>
+            <motion.div
+              style={{ height: "100%", borderRadius: 100, background: "#2b5ce6" }}
+              animate={{ width: `${(answeredCount / 8) * 100}%` }}
+              transition={{ duration: 0.4 }}
+            />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ padding: "3px 10px", borderRadius: 100, background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)", fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#7c9fff" }}>
+              ⚡ Bilan express — 8 questions
+            </span>
+            <Link href="/premium" style={{ textDecoration: "none" }}>
+              <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)", cursor: "pointer" }}>Bilan complet →</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 680, margin: "0 auto", padding: isMobile ? "20px 16px 40px" : "20px 20px 40px" }}>
+        <div style={{ marginBottom: 24 }}>
+          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase" as const, marginBottom: 6 }}>
+            Ton bilan express
+          </p>
+          <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 22 : 26, color: "var(--text-primary)", margin: "0 0 6px", letterSpacing: "-0.5px" }}>
+            8 questions · 3 minutes · Diagnostic immédiat
+          </h1>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", lineHeight: 1.6, margin: 0 }}>
+            Gratuit. Bilan complet (30 questions + analyse IA) disponible en premium.
+          </p>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <QBlock number="1" question="Quel est ton équipement de travail ?" answered={!!answers.q1} cat={EXPRESS_CAT}>
+            <ChoiceGrid cat={EXPRESS_CAT} value={answers.q1} onChange={(v) => update("q1", v)} options={[
+              { value: "laptop_seul", label: "💻 Laptop seul — sans écran externe" },
+              { value: "laptop_ecran", label: "💻🖥️ Laptop + écran externe" },
+              { value: "desktop", label: "🖥️ Écran fixe (desktop)" },
+              { value: "double_ecran", label: "🖥️🖥️ Double écran" },
+            ]} />
+          </QBlock>
+
+          <QBlock number="2" question="Ton écran et ton bureau sont-ils bien réglés ?" answered={!!answers.q3} cat={EXPRESS_CAT}>
+            <ChoiceGrid cat={EXPRESS_CAT} value={answers.q3} onChange={(v) => update("q3", v)} options={[
+              { value: "oui", label: "✅ Oui — écran à hauteur des yeux, coudes à 90°" },
+              { value: "approx", label: "🔸 À peu près — quelques ajustements à faire" },
+              { value: "non_bas", label: "❌ Non — écran ou bureau trop bas" },
+              { value: "non_haut", label: "❌ Non — bureau trop haut, épaules surélevées" },
+            ]} />
+          </QBlock>
+
+          <QBlock number="3" question="Où ressens-tu des douleurs ou tensions ?" answered={expressZones.length > 0} cat={EXPRESS_CAT}>
+            <MultiSelectGrid
+              cat={EXPRESS_CAT}
+              value={expressZones}
+              onChange={setExpressZones}
+              options={[
+                { value: "nuque", label: "🔴 Nuque / cou" },
+                { value: "epaules", label: "🔴 Épaules / haut du dos" },
+                { value: "dos", label: "🔴 Bas du dos" },
+                { value: "poignets", label: "🔴 Poignets / avant-bras" },
+                { value: "jambes", label: "🔴 Jambes" },
+                { value: "aucune", label: "✅ Aucune douleur pour l'instant" },
+              ]}
+            />
+          </QBlock>
+
+          {hasPain && (
+            <QBlock number="4" question="Quelle est l'intensité de ta douleur principale ?" answered={true} cat={EXPRESS_CAT}>
+              <PainScale value={expressIntensity} onChange={setExpressIntensity} cat={EXPRESS_CAT} />
+            </QBlock>
+          )}
+
+          {hasPain && (
+            <QBlock number="5" question="Depuis combien de temps as-tu ces douleurs ?" answered={!!answers.q11} cat={EXPRESS_CAT}>
+              <ChoiceGrid cat={EXPRESS_CAT} value={answers.q11} onChange={(v) => update("q11", v)} options={[
+                { value: "days", label: "📅 Quelques jours" },
+                { value: "weeks", label: "📅 Quelques semaines" },
+                { value: "months", label: "📅 Plusieurs mois" },
+                { value: "year", label: "⏳ Plus d'un an" },
+              ]} />
+            </QBlock>
+          )}
+
+          <QBlock number={hasPain ? "6" : "4"} question="Combien d'heures par jour restes-tu assis ?" answered={true} cat={EXPRESS_CAT}>
+            <SliderInput value={answers.q13} min={1} max={12} step={0.5} unit="h" reference="⏱ Heures assis par jour" onChange={(v) => update("q13", v)} cat={EXPRESS_CAT} />
+          </QBlock>
+
+          <QBlock number={hasPain ? "7" : "5"} question="Fais-tu des pauses pour te lever ?" answered={!!answers.q14} cat={EXPRESS_CAT}>
+            <ChoiceGrid cat={EXPRESS_CAT} value={answers.q14} onChange={(v) => update("q14", v)} options={[
+              { value: "never", label: "❌ Jamais" },
+              { value: "1x", label: "1️⃣ 1 fois par jour" },
+              { value: "2h", label: "🔸 Toutes les 2h" },
+              { value: "1h", label: "✅ Toutes les heures ou plus" },
+            ]} />
+          </QBlock>
+
+          <QBlock number={hasPain ? "8" : "6"} question="Comment évalues-tu ton niveau de stress au travail ?" answered={true} cat={EXPRESS_CAT}>
+            <SliderInput value={answers.q_stress_travail} min={0} max={5} step={1} unit="" reference="0 = aucun stress · 5 = très important" onChange={(v) => update("q_stress_travail", v)} cat={EXPRESS_CAT} />
+          </QBlock>
+        </div>
+
+        <div style={{ marginTop: 20, padding: "12px 16px", borderRadius: 14, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)" }}>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", margin: 0, lineHeight: 1.6 }}>
+            💡 Le bilan complet analyse 6 dimensions + posture IA vidéo.{" "}
+            <Link href="/premium" style={{ color: "#7c9fff", textDecoration: "none", fontWeight: 600 }}>Débloquer →</Link>
+          </p>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {isReady && (
+          <motion.div
+            initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}
+            transition={{ type: "spring", damping: 20 }}
+            style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 40, padding: "16px 20px 24px", background: ctaBg }}
+          >
+            <div style={{ maxWidth: 680, margin: "0 auto" }}>
+              <div
+                onClick={handleSubmitExpress}
+                style={{ display: "block", width: "100%", padding: "18px 24px", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 800, fontSize: 16, textAlign: "center", cursor: "pointer", boxShadow: "0 0 40px rgba(43,92,230,0.5)" }}
+              >
+                Voir mes résultats →
+              </div>
+              <p style={{ textAlign: "center", color: "var(--t30)", fontSize: 12, fontFamily: T.b, marginTop: 8 }}>
+                Toutes les questions sont répondues ✓
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </main>
+  );
+}
+
+// ─── Debout express questionnaire (gratuit) ────────────────────────────────────
+
+function DeboutExpressQuestionnaire() {
+  const router = useRouter();
+  const { theme } = useTheme();
+  const [q_d1, setQ_d1] = useState<string[]>([]);
+  const [q_d7, setQ_d7] = useState("");
+  const [expressZones, setExpressZones] = useState<string[]>([]);
+  const [expressIntensity, setExpressIntensity] = useState<number>(0);
+  const [q_d4, setQ_d4] = useState(8);
+  const [q_d16, setQ_d16] = useState("");
+  const [q_d19, setQ_d19] = useState("");
+  const [q_d_recuperation, setQ_d_recuperation] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const hasPain = expressZones.length > 0 && !expressZones.includes("aucune");
+
+  const answeredCount = [
+    q_d1.length > 0,
+    !!q_d7,
+    expressZones.length > 0,
+    !hasPain || true,
+    true, // q_d4 slider
+    !!q_d16,
+    !!q_d19,
+    !!q_d_recuperation,
+  ].filter(Boolean).length;
+
+  const isReady = q_d1.length > 0 && !!q_d7 && expressZones.length > 0 && !!q_d16 && !!q_d19 && !!q_d_recuperation;
+
+  const CAT_D = {
+    color: "#d4622a", colorBg: "rgba(212,98,42,0.08)",
+    colorBorder: "rgba(212,98,42,0.18)", selectedBg: "rgba(212,98,42,0.18)",
+    selectedColor: "#f4a261", blob: "", iconBg: "",
+    index: 0 as const, id: "cat-debout-express" as const, title: "" as const,
+    subtitle: "" as const, emoji: "" as const, requiredQ: [] as const,
+  } as unknown as typeof CATEGORIES[number];
+
+  function handleSubmitDeboutExpress() {
+    const baseAnswers: GenericAnswers = { q_d1, q_d7, q_d4, q_d16, q_d19, q_d_recuperation };
+    const mapped = mapDeboutExpressToStandard(expressZones, expressIntensity, baseAnswers);
+    const scores = calculateJobScores("debout", mapped);
+    sessionStorage.removeItem("postureatwork_answers");
+    sessionStorage.setItem("postureatwork_answers_debout", JSON.stringify(mapped));
+    sessionStorage.setItem("postureatwork_scores", JSON.stringify(scores));
+    sessionStorage.setItem("postureatwork_mode", "express");
+    sessionStorage.setItem("paw_job_type_active", "debout");
+    router.push("/results");
+  }
+
+  const bg = theme === "light" ? "#F3F7FF" : "#0f0f1a";
+  const headerBg = theme === "light" ? "rgba(255,255,255,0.95)" : "rgba(15,15,26,0.95)";
+  const ctaBg = theme === "light" ? "linear-gradient(to top,#F3F7FF 60%,transparent)" : "linear-gradient(to top,#0f0f1a 60%,transparent)";
+
+  const SOL_CAT_OPTIONS = [
+    { value: "souple", label: "🟢 Sol souple (moquette, dalle vinyle)" },
+    { value: "dur", label: "🔴 Sol dur (béton, carrelage)" },
+    { value: "semi_dur", label: "🟡 Sol semi-dur (lino, parquet)" },
+    { value: "exterieur", label: "🌧️ Extérieur (asphalte, gravier)" },
+  ];
+
+  return (
+    <main style={{ minHeight: "100vh", paddingBottom: 80, background: bg }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 30, background: headerBg, backdropFilter: "blur(20px)", borderBottom: "0.5px solid var(--border)" }}>
+        <div style={{ maxWidth: 680, margin: "0 auto", padding: "12px 20px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "var(--t40)", fontSize: 13, fontFamily: T.b, cursor: "pointer", padding: 0 }}>
+                ← Retour
+              </button>
+              <Link href="/" style={{ textDecoration: "none" }}>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)" }}>PAW<span style={{ color: "#7c9fff" }}>.</span></span>
+              </Link>
+            </div>
+            <span style={{ color: "var(--t40)", fontSize: 13, fontFamily: T.b }}>{answeredCount} / 8</span>
+          </div>
+          <div style={{ height: 3, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden", marginBottom: 8 }}>
+            <motion.div style={{ height: "100%", borderRadius: 100, background: "#d4622a" }} animate={{ width: `${(answeredCount / 8) * 100}%` }} transition={{ duration: 0.4 }} />
+          </div>
+          <span style={{ padding: "3px 10px", borderRadius: 100, background: "rgba(212,98,42,0.12)", border: "0.5px solid rgba(212,98,42,0.25)", fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#f4a261" }}>
+            ⚡ Bilan express Debout — 8 questions
+          </span>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 680, margin: "0 auto", padding: isMobile ? "20px 16px 40px" : "20px 20px 40px" }}>
+        <div style={{ marginBottom: 24 }}>
+          <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 22 : 26, color: "var(--text-primary)", margin: "0 0 6px" }}>
+            Bilan express — Métier debout
+          </h1>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", lineHeight: 1.6, margin: 0 }}>
+            8 questions ciblées pour un premier diagnostic rapide.
+          </p>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <QBlock number="1" question="Sur quel(s) type(s) de sol travailles-tu ?" answered={q_d1.length > 0} cat={CAT_D}>
+            <MultiSelectGrid cat={CAT_D} value={q_d1} onChange={setQ_d1} options={SOL_CAT_OPTIONS} />
+          </QBlock>
+
+          <QBlock number="2" question="La hauteur de ton plan de travail est ?" answered={!!q_d7} cat={CAT_D}>
+            <ChoiceGrid cat={CAT_D} value={q_d7} onChange={setQ_d7} options={[
+              { value: "adapte", label: "✅ Adaptée — bras détendus, coudes à 90°" },
+              { value: "trop_bas", label: "❌ Trop basse — dos courbé" },
+              { value: "trop_haut", label: "❌ Trop haute — épaules surélevées" },
+              { value: "pas_plan", label: "🤷 Pas de plan de travail fixe" },
+            ]} />
+          </QBlock>
+
+          <QBlock number="3" question="Où ressens-tu des douleurs ou tensions ?" answered={expressZones.length > 0} cat={CAT_D}>
+            <MultiSelectGrid cat={CAT_D} value={expressZones} onChange={setExpressZones} options={[
+              { value: "dos", label: "🔴 Dos" },
+              { value: "epaules", label: "🔴 Épaules" },
+              { value: "jambes", label: "🔴 Jambes / mollets" },
+              { value: "pieds", label: "🔴 Pieds / talons" },
+              { value: "nuque", label: "🔴 Nuque" },
+              { value: "aucune", label: "✅ Aucune douleur" },
+            ]} />
+          </QBlock>
+
+          {hasPain && (
+            <QBlock number="4" question="Quelle est l'intensité de ta douleur principale ?" answered={true} cat={CAT_D}>
+              <PainScale value={expressIntensity} onChange={setExpressIntensity} cat={CAT_D} />
+            </QBlock>
+          )}
+
+          <QBlock number={hasPain ? "5" : "4"} question="Combien d'heures restes-tu debout par jour ?" answered={true} cat={CAT_D}>
+            <SliderInput value={q_d4} min={4} max={12} step={0.5} unit="h" reference="⚠️ Au-delà de 6h debout sans pause = risque élevé" onChange={setQ_d4} cat={CAT_D} />
+          </QBlock>
+
+          <QBlock number={hasPain ? "6" : "5"} question="Fais-tu des pauses assises dans la journée ?" answered={!!q_d16} cat={CAT_D}>
+            <ChoiceGrid cat={CAT_D} value={q_d16} onChange={setQ_d16} options={[
+              { value: "regulier", label: "✅ Oui, régulièrement" },
+              { value: "parfois", label: "🔸 Parfois, quand c'est possible" },
+              { value: "rarement", label: "😟 Rarement" },
+              { value: "jamais", label: "❌ Jamais — impossible dans mon poste" },
+            ]} />
+          </QBlock>
+
+          <QBlock number={hasPain ? "7" : "6"} question="Hydratation pendant le service ?" answered={!!q_d19} cat={CAT_D}>
+            <ChoiceGrid cat={CAT_D} value={q_d19} onChange={setQ_d19} options={[
+              { value: "reguliere", label: "✅ Je bois régulièrement" },
+              { value: "parfois", label: "🔸 Parfois, quand j'y pense" },
+              { value: "rarement", label: "😟 Rarement — pas le temps" },
+              { value: "interdit", label: "❌ C'est interdit / pas accès" },
+            ]} />
+          </QBlock>
+
+          <QBlock number={hasPain ? "8" : "7"} question="Comment récupères-tu physiquement après ta journée ?" answered={!!q_d_recuperation} cat={CAT_D}>
+            <ChoiceGrid cat={CAT_D} value={q_d_recuperation} onChange={setQ_d_recuperation} options={[
+              { value: "bien_recup", label: "✅ Bien — je récupère complètement" },
+              { value: "fatigue_reste", label: "🔸 La fatigue reste un peu le soir" },
+              { value: "douleurs_soir", label: "😟 Douleurs ou fatigue importante le soir" },
+              { value: "rien_non", label: "❌ Pas de vraie récupération" },
+            ]} />
+          </QBlock>
+        </div>
+
+        <div style={{ marginTop: 20, padding: "12px 16px", borderRadius: 14, background: "rgba(212,98,42,0.06)", border: "0.5px solid rgba(212,98,42,0.18)" }}>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", margin: 0, lineHeight: 1.6 }}>
+            💡 Le bilan complet analyse 6 dimensions + posture IA vidéo.{" "}
+            <Link href="/premium" style={{ color: "#f4a261", textDecoration: "none", fontWeight: 600 }}>Débloquer →</Link>
+          </p>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {isReady && (
+          <motion.div
+            initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}
+            transition={{ type: "spring", damping: 20 }}
+            style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 40, padding: "16px 20px 24px", background: ctaBg }}
+          >
+            <div style={{ maxWidth: 680, margin: "0 auto" }}>
+              <div onClick={handleSubmitDeboutExpress} style={{ display: "block", width: "100%", padding: "18px 24px", borderRadius: 100, background: "#d4622a", color: "#fff", fontFamily: T.h, fontWeight: 800, fontSize: 16, textAlign: "center", cursor: "pointer", boxShadow: "0 0 40px rgba(212,98,42,0.5)" }}>
+                Voir mes résultats →
+              </div>
+              <p style={{ textAlign: "center", color: "var(--t30)", fontSize: 12, fontFamily: T.b, marginTop: 8 }}>
+                Toutes les questions sont répondues ✓
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </main>
+  );
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 const TOAST_MESSAGES = [
@@ -509,7 +957,7 @@ const TOAST_MESSAGES = [
   "🏃 Dernière ligne droite !",
 ];
 
-function BureauQuestionnaire() {
+function BureauQuestionnaire({ isContinue = false }: { isContinue?: boolean }) {
   const router = useRouter();
   const { c, theme } = useTheme();
   const [answers, setAnswers] = useState<QuestionnaireAnswers>(DEFAULT_ANSWERS);
@@ -528,6 +976,24 @@ function BureauQuestionnaire() {
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
   }, []);
+
+  // Preload express answers when continuing from express mode
+  useEffect(() => {
+    if (!isContinue) return;
+    const stored = sessionStorage.getItem("postureatwork_answers");
+    if (!stored) return;
+    try {
+      const parsed = JSON.parse(stored) as Partial<QuestionnaireAnswers>;
+      const preloaded = { ...DEFAULT_ANSWERS, ...parsed };
+      setAnswers(preloaded);
+      setTimeout(() => {
+        const firstIncomplete = CATEGORIES.findIndex((_, i) => !isCategoryDone(i, preloaded));
+        if (firstIncomplete >= 0) {
+          catRefs.current[firstIncomplete]?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 600);
+    } catch { /* ignore parse error */ }
+  }, [isContinue]);
 
   const update = useCallback(<K extends keyof QuestionnaireAnswers>(key: K, value: QuestionnaireAnswers[K]) => {
     setAnswers((prev) => ({ ...prev, [key]: value }));
@@ -556,12 +1022,10 @@ function BureauQuestionnaire() {
 
   function handleSubmit() {
     const scores = calculateScores(answers);
-    // Clear any stale debout session data
     sessionStorage.removeItem("postureatwork_answers_debout");
-    // Save bureau data to sessionStorage (authoritative source for all pages)
     sessionStorage.setItem("postureatwork_answers", JSON.stringify(answers));
     sessionStorage.setItem("postureatwork_scores", JSON.stringify(scores));
-    // Also persist to localStorage for cross-session fallback
+    sessionStorage.setItem("postureatwork_mode", "complet");
     localStorage.setItem("paw_answers", JSON.stringify(answers));
     router.push("/results");
   }
@@ -1002,19 +1466,28 @@ import { PROFILE_CATEGORIES, type JobType } from "@/lib/questionnaire-profiles";
 export default function QuestionnairePage() {
   const [jobType, setJobType] = useState<string>("");
   const [firstname, setFirstname] = useState<string>("");
+  const [isContinue, setIsContinue] = useState(false);
+  const { premium: isPremiumUser, loading: premiumLoading } = usePremium();
 
   useEffect(() => {
     localStorage.removeItem("paw_example_mode");
     sessionStorage.removeItem("paw_example_mode");
     setJobType(localStorage.getItem("paw_job_type") ?? "bureau");
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
+    const params = new URLSearchParams(window.location.search);
+    setIsContinue(params.get("continue") === "true");
   }, []);
 
-  if (!jobType) return null; // loading
+  if (!jobType || premiumLoading) return null;
+
+  const isExpress = !isPremiumUser && !isContinue;
 
   if (jobType === "bureau" || !PROFILE_CATEGORIES[jobType as Exclude<JobType, "bureau">]) {
-    return <BureauQuestionnaire />;
+    if (isExpress) return <ExpressBureauQuestionnaire />;
+    return <BureauQuestionnaire isContinue={isContinue} />;
   }
+
+  if (isExpress && jobType === "debout") return <DeboutExpressQuestionnaire />;
 
   return (
     <ProfileQuestionnaire

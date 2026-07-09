@@ -129,6 +129,8 @@ export default function PremiumPage() {
     localStorage.setItem("paw_premium", "true");
     localStorage.setItem("paw_premium_activated_at", new Date().toISOString());
 
+    const isExpress = typeof window !== "undefined" && sessionStorage.getItem("postureatwork_mode") === "express";
+
     if (user) {
       const supabase = createClient();
       await supabase.from("profiles").upsert({
@@ -136,9 +138,13 @@ export default function PremiumPage() {
         is_premium: true,
         premium_activated_at: new Date().toISOString(),
       }, { onConflict: "user_id" });
-      router.push("/dashboard?premium=activated");
+      router.push(isExpress ? "/questionnaire?continue=true" : "/dashboard?premium=activated");
     } else {
-      router.push(hasBilan ? "/auth?next=/dashboard?premium=activated" : "/onboarding");
+      if (isExpress) {
+        router.push("/auth?next=/questionnaire?continue=true");
+      } else {
+        router.push(hasBilan ? "/auth?next=/dashboard?premium=activated" : "/onboarding");
+      }
     }
   };
 

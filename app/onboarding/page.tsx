@@ -589,8 +589,11 @@ export default function OnboardingPage() {
                       boxSizing: "border-box",
                     }}
                   >
-                    Commencer mon bilan →
+                    Commencer mon bilan express — 3 minutes
                   </div>
+                  <p style={{ textAlign: "center", fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "var(--t35)", marginTop: 10 }}>
+                    8 questions gratuites · Bilan complet 30 questions en premium
+                  </p>
                 </div>
               </motion.div>
             )}
