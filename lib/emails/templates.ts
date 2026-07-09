@@ -1,4 +1,4 @@
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://posture-at-work.vercel.app";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://postureatwork.com";
 
 function scoreColor(s: number) {
   return s >= 70 ? "#74c69d" : s >= 50 ? "#f4a261" : "#f09595";

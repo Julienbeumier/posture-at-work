@@ -15,7 +15,7 @@ export async function GET() {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     if (!rows?.length) return NextResponse.json({ processed: 0 });
 
-    const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://posture-at-work.vercel.app";
+    const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://postureatwork.com";
 
     const results = await Promise.allSettled(
       rows.map((row) =>

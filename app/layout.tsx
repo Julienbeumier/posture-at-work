@@ -22,7 +22,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://posture-at-work.vercel.app"),
+  metadataBase: new URL("https://postureatwork.com"),
   title: {
     default: "PostureAtWork — Bilan ergonomique gratuit en 5 minutes",
     template: "%s | PostureAtWork",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    url: "https://posture-at-work.vercel.app",
+    url: "https://postureatwork.com",
     siteName: "PostureAtWork",
     title: "PostureAtWork — Bilan ergonomique gratuit en 5 minutes",
     description: "Analyse ta posture, tes douleurs et tes habitudes au travail en 5 minutes. Conseils personnalisés et analyse IA.",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://posture-at-work.vercel.app",
+    canonical: "https://postureatwork.com",
   },
   verification: {
     google: "Ba6UTM-ePEuvCQTZGVpTAZx2Ao3aqacFw1_q7tpTu38",

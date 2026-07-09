@@ -76,7 +76,7 @@ const schemaOrg = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "PostureAtWork",
-  url: "https://posture-at-work.vercel.app",
+  url: "https://postureatwork.com",
   description: "Bilan ergonomique complet en 5 minutes pour les travailleurs sédentaires et debout.",
   applicationCategory: "HealthApplication",
   offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },

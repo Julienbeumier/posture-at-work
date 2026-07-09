@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/", "/dashboard", "/analyzing", "/rapport-pdf"],
     },
-    sitemap: "https://posture-at-work.vercel.app/sitemap.xml",
+    sitemap: "https://postureatwork.com/sitemap.xml",
   };
 }

@@ -90,7 +90,7 @@ export default function PartagePage() {
         await navigator.share({
           title: `Mon score PostureAtWork : ${scores.global}/100`,
           text: `J'ai analysé ma santé au travail avec PAW. Mon score : ${scores.global}/100. Fais le tien !`,
-          url: "https://posture-at-work.vercel.app",
+          url: "https://postureatwork.com",
           files: [file],
         });
       } else {
@@ -117,7 +117,7 @@ export default function PartagePage() {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText("https://posture-at-work.vercel.app");
+      await navigator.clipboard.writeText("https://postureatwork.com");
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch { /* no clipboard */ }
@@ -201,7 +201,7 @@ export default function PartagePage() {
 
           {/* Footer */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
-            <span style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.25)" }}>posture-at-work.vercel.app</span>
+            <span style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.25)" }}>postureatwork.com</span>
             <div style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(43,92,230,0.20)", border: "0.5px solid rgba(43,92,230,0.35)" }}>
               <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#7c9fff" }}>Fais ton bilan gratuit →</span>
             </div>

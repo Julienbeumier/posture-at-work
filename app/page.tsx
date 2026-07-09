@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Mal de dos, nuque tendue, fatigue ? Obtiens un bilan complet de ta santé au travail en 5 minutes. Posture, douleurs, sommeil, nutrition — conseils actionnables gratuits.",
   alternates: {
-    canonical: "https://posture-at-work.vercel.app",
+    canonical: "https://postureatwork.com",
   },
 };
 
