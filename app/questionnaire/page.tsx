@@ -1480,22 +1480,6 @@ export default function QuestionnairePage() {
 
   if (!jobType) return null;
 
-  if (premiumLoading) return (
-    <main style={{ minHeight: "100vh", background: "var(--main-bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ textAlign: "center" }}>
-        <div style={{
-          width: 32, height: 32, borderRadius: "50%", margin: "0 auto 16px",
-          border: "2px solid rgba(43,92,230,0.2)", borderTopColor: "#2b5ce6",
-          animation: "spin 0.8s linear infinite",
-        }} />
-        <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "var(--t40)" }}>
-          Chargement…
-        </p>
-      </div>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </main>
-  );
-
   const isExpress = !isPremiumUser && !isContinue;
 
   if (jobType === "bureau" || !PROFILE_CATEGORIES[jobType as Exclude<JobType, "bureau">]) {
