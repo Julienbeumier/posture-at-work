@@ -112,29 +112,54 @@ const DIM_INLINE_PRODUCTS_DEBOUT: Record<string, { name: string; url: string; re
   "/conseils/nutrition": { name: "Gourde 1.5L graduée",              url: "https://amzn.to/4dVZNJl",                                                                 reason: "Hydratation critique pour les métiers debout — boire sans y penser",          price: "~15€" },
 };
 
-// ─── Locked sub-score (express mode) ─────────────────────────────────────────
+// ─── Locked sub-score (non-premium) ──────────────────────────────────────────
 
 function LockedSubScoreBar({ label, emoji }: { label: string; emoji: string }) {
   return (
     <Link href="/premium" style={{ textDecoration: "none" }}>
-      <div style={{ cursor: "pointer", opacity: 0.75 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: T.b, fontSize: 13, color: "var(--t55)" }}>
-            <span>{emoji}</span>
-            <span>{label}</span>
-          </span>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color: "var(--t25)" }}>?</span>
-            <span style={{ fontSize: 13 }}>🔒</span>
+      <motion.div
+        whileHover={{ scale: 1.005 }}
+        style={{ position: "relative", overflow: "hidden", borderRadius: 14,
+          padding: "16px 18px", cursor: "pointer",
+          background: "rgba(212,162,42,0.04)",
+          border: "0.5px solid rgba(212,162,42,0.2)" }}>
+
+        <div style={{ position: "absolute", inset: 0, zIndex: 2,
+          background: "linear-gradient(to bottom, transparent 30%, rgba(15,15,26,0.85) 100%)" }} />
+
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 18 }}>{emoji}</span>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "var(--t55)" }}>{label}</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6,
+            padding: "3px 10px", borderRadius: 100,
+            background: "rgba(212,162,42,0.12)", border: "0.5px solid rgba(212,162,42,0.25)" }}>
+            <span style={{ fontSize: 10 }}>🔒</span>
+            <span style={{ fontFamily: T.b, fontSize: 10, color: "#d4a22a", fontWeight: 700 }}>Premium</span>
           </div>
         </div>
-        <div style={{ height: 5, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden", marginBottom: 4, filter: "blur(3px)" }}>
-          <div style={{ height: "100%", borderRadius: 100, background: "var(--t20)", width: "55%" }} />
+
+        <div style={{ height: 5, borderRadius: 100, background: "var(--bg-card-2)",
+          marginBottom: 6, overflow: "hidden", position: "relative" }}>
+          <div style={{ position: "absolute", top: 0, left: 0, height: "100%",
+            width: "65%", borderRadius: 100, filter: "blur(3px)",
+            background: "linear-gradient(90deg, #d4a22a, #f4a261)" }} />
         </div>
-        <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600, color: "var(--t30)" }}>
-          🔒 Analyse complète requise →
-        </span>
-      </div>
+
+        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", margin: 0,
+          filter: "blur(4px)", userSelect: "none" as const, lineHeight: 1.5 }}>
+          Analyse disponible dans le bilan complet — score et recommandations personnalisées
+        </p>
+
+        <div style={{ position: "absolute", bottom: 12, left: "50%",
+          transform: "translateX(-50%)", zIndex: 3,
+          padding: "5px 14px", borderRadius: 100,
+          background: "rgba(43,92,230,0.9)",
+          boxShadow: "0 2px 12px rgba(43,92,230,0.4)" }}>
+          <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 11, color: "#fff" }}>Débloquer →</span>
+        </div>
+      </motion.div>
     </Link>
   );
 }
@@ -312,7 +337,6 @@ export default function ResultsPage() {
 
   const [jobType, setJobType] = useState("bureau");
   const [hasVideoAnalysis, setHasVideoAnalysis] = useState(false);
-  const [isExpress, setIsExpress] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -325,8 +349,6 @@ export default function ResultsPage() {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
     const videoData = sessionStorage.getItem("paw_analysis_personne");
     setHasVideoAnalysis(!!videoData);
-    const expressMode = sessionStorage.getItem("postureatwork_mode") === "express";
-    setIsExpress(expressMode);
     const isExample = sessionStorage.getItem("paw_example_mode") === "true"
                    || localStorage.getItem("paw_example_mode") === "true";
     if (!isExample) {
@@ -453,7 +475,7 @@ export default function ResultsPage() {
     );
   }
 
-  const isExpressMode = isExpress && !premium;
+  const isLocked = !premium;
   const bureauRecs = getRecommendations(scores, answers);
   const deboutRecs: { title: string; description: string; priority: "urgent" | "important" | "good" }[] = [];
   if (jobType === "debout") {
@@ -502,12 +524,12 @@ export default function ResultsPage() {
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 6,
             padding: "6px 14px", borderRadius: 100,
-            background: isExpressMode ? "rgba(212,162,42,0.12)" : "rgba(116,198,157,0.12)",
-            border: `0.5px solid ${isExpressMode ? "rgba(212,162,42,0.3)" : "rgba(116,198,157,0.3)"}`,
+            background: isLocked ? "rgba(212,162,42,0.12)" : "rgba(116,198,157,0.12)",
+            border: `0.5px solid ${isLocked ? "rgba(212,162,42,0.3)" : "rgba(116,198,157,0.3)"}`,
           }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: isExpressMode ? "#d4a22a" : "#74c69d" }} />
-            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: isExpressMode ? "#d4a22a" : "#74c69d" }}>
-              {isExpressMode ? "⚡ Bilan express" : "Rapport complet"}
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: isLocked ? "#d4a22a" : "#74c69d" }} />
+            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: isLocked ? "#d4a22a" : "#74c69d" }}>
+              {isLocked ? "🔒 Analyse partielle — 3 dimensions sur 6" : "✅ Analyse complète"}
             </span>
           </div>
 
@@ -522,41 +544,108 @@ export default function ResultsPage() {
             <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: badge.color }}>{badge.label}</span>
           </div>
 
-          {/* Bloc conversion express */}
-          {isExpressMode && (
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              style={{
-                borderRadius: 20, padding: "20px 24px", marginBottom: 20,
-                background: "rgba(212,162,42,0.08)", border: "1.5px solid rgba(212,162,42,0.35)",
-                textAlign: "left", width: "100%",
-              }}
-            >
-              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 15, color: "#d4a22a", marginBottom: 8 }}>
-                🔍 Ton bilan express révèle une partie du problème
-              </p>
-              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.7, marginBottom: 14 }}>
-                Ton poste et tes habitudes expliquent une partie de tes douleurs.
-                Mais chez 7 personnes sur 10, le <strong>sommeil</strong>, le <strong>stress</strong> et
-                la <strong>nutrition</strong> aggravent les TMS sans qu&apos;elles le sachent.
-                Le bilan complet analyse les 6 dimensions + ta posture réelle en vidéo.
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
-                {["22 questions approfondies", "6 dimensions complètes", "Analyse vidéo IA", "Rapport PDF"].map(f => (
-                  <span key={f} style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(212,162,42,0.12)", fontFamily: T.b, fontSize: 11, color: "#d4a22a" }}>
-                    ✓ {f}
-                  </span>
-                ))}
-              </div>
-              <Link href="/premium" style={{ textDecoration: "none" }}>
-                <div style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", background: "linear-gradient(135deg,#d4a22a,#f4a261)", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff", cursor: "pointer" }}>
-                  Débloquer mon bilan complet →
+          {/* Bloc conversion premium (B3) */}
+          {isLocked && (() => {
+            const painScore = scores.pain ?? 70;
+            const setupScore = scores.setup ?? 70;
+            const habitsScore = scores.habits ?? 70;
+            const mainIssue = painScore < setupScore && painScore < habitsScore
+              ? { msg: "tes douleurs sont plus sérieuses qu'elles n'y paraissent" }
+              : setupScore < habitsScore
+              ? { msg: "ton poste génère des contraintes que tu ne vois pas encore" }
+              : { msg: "tes habitudes de travail accumulent une charge invisible" };
+            const hasPain = scores.pain < 60;
+
+            return (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                style={{ width: "100%", borderRadius: 24, overflow: "hidden", marginBottom: 8 }}>
+
+                <div style={{
+                  padding: "24px 24px 20px",
+                  background: "linear-gradient(135deg, rgba(43,92,230,0.12), rgba(124,58,237,0.10))",
+                  border: "1.5px solid rgba(43,92,230,0.25)",
+                  borderBottom: "none",
+                  borderRadius: "24px 24px 0 0",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+                      background: "rgba(43,92,230,0.15)", border: "1px solid rgba(43,92,230,0.3)",
+                      display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
+                      🔍
+                    </div>
+                    <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 15, color: "var(--text-primary)", margin: 0 }}>
+                      Ce qu&apos;on a trouvé — et ce qu&apos;on ne peut pas encore te dire
+                    </p>
+                  </div>
+
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.75, margin: "0 0 16px" }}>
+                    Ton score de <strong style={{ color: "var(--text-primary)" }}>{scores.global}/100</strong> est calculé
+                    sur 6 dimensions. Tu vois ci-dessous tes 3 premières dimensions —
+                    {hasPain
+                      ? ` mais si tu as mal, c'est souvent le sommeil, le stress ou la nutrition qui amplifient la douleur sans que tu le saches.`
+                      : ` mais les 3 dimensions cachées peuvent complètement changer le diagnostic.`
+                    }
+                  </p>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {[
+                      { emoji: "🌙", label: "Sommeil & énergie",
+                        teaser: hasPain
+                          ? "Ta récupération musculaire la nuit détermine si tes douleurs s'améliorent ou empirent..."
+                          : "Ton niveau d'énergie au travail est directement lié à la qualité de ton sommeil..." },
+                      { emoji: "🍽️", label: "Nutrition",
+                        teaser: "L'inflammation alimentaire peut multiplier par 2 l'intensité des douleurs musculaires..." },
+                      { emoji: "🏃", label: "Lifestyle & bien-être",
+                        teaser: "Ton niveau de stress au travail génère du cortisol qui maintient tes muscles en tension..." },
+                    ].map((item, i) => (
+                      <div key={i} style={{ padding: "12px 14px", borderRadius: 12,
+                        background: "rgba(0,0,0,0.15)", border: "0.5px solid rgba(255,255,255,0.06)",
+                        display: "flex", alignItems: "center", gap: 12, position: "relative", overflow: "hidden" }}>
+                        <span style={{ fontSize: 18, flexShrink: 0 }}>{item.emoji}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "var(--text-primary)", margin: "0 0 3px" }}>{item.label}</p>
+                          <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)", margin: 0,
+                            filter: "blur(5px)", userSelect: "none" as const, lineHeight: 1.4 }}>
+                            {item.teaser}
+                          </p>
+                        </div>
+                        <div style={{ flexShrink: 0, padding: "4px 10px", borderRadius: 100,
+                          background: "rgba(212,162,42,0.15)", border: "0.5px solid rgba(212,162,42,0.3)" }}>
+                          <span style={{ fontFamily: T.b, fontSize: 11, color: "#d4a22a", fontWeight: 700 }}>🔒 Verrouillé</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </Link>
-            </motion.div>
-          )}
+
+                <div style={{
+                  padding: "20px 24px",
+                  background: "rgba(43,92,230,0.06)",
+                  border: "1.5px solid rgba(43,92,230,0.25)",
+                  borderTop: "0.5px solid rgba(43,92,230,0.15)",
+                  borderRadius: "0 0 24px 24px",
+                }}>
+                  <Link href="/premium" style={{ textDecoration: "none" }}>
+                    <motion.div
+                      whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
+                      style={{ padding: "16px 0", borderRadius: 100, textAlign: "center",
+                        background: "linear-gradient(135deg, #2b5ce6, #7c3aed)",
+                        boxShadow: "0 4px 24px rgba(43,92,230,0.4)",
+                        fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#fff",
+                        cursor: "pointer", marginBottom: 10 }}>
+                      🔓 Voir mon analyse complète →
+                    </motion.div>
+                  </Link>
+                  <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
+                    {["6 dimensions analysées", "Analyse vidéo IA", "Rapport PDF", "Conseils personnalisés"].map(f => (
+                      <span key={f} style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)" }}>✓ {f}</span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })()}
 
           {/* Bilan complet / incomplet */}
           {hasVideoAnalysis ? (
@@ -628,14 +717,14 @@ export default function ResultsPage() {
                     </span>
                   ))}
                 </div>
-                <Link href={isExpressMode ? "/premium" : "/video-intro"} style={{ textDecoration: "none" }}>
+                <Link href={isLocked ? "/premium" : "/video-intro"} style={{ textDecoration: "none" }}>
                   <div style={{
                     padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-                    background: isExpressMode ? "linear-gradient(135deg,#d4a22a,#f4a261)" : "linear-gradient(135deg,#7c3aed,#a78bfa)",
-                    boxShadow: isExpressMode ? "0 4px 20px rgba(212,162,42,0.4)" : "0 4px 20px rgba(124,58,237,0.4)",
+                    background: isLocked ? "linear-gradient(135deg, #2b5ce6, #7c3aed)" : "linear-gradient(135deg, #7c3aed, #a78bfa)",
+                    boxShadow: isLocked ? "0 4px 20px rgba(43,92,230,0.4)" : "0 4px 20px rgba(124,58,237,0.4)",
                     fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
                   }}>
-                    {isExpressMode ? "🔒 Inclus dans le bilan complet — Débloquer →" : "🎥 Compléter mon bilan avec l'analyse vidéo →"}
+                    {isLocked ? "🔒 Inclus dans le bilan complet →" : "🎥 Analyser ma posture →"}
                   </div>
                 </Link>
                 <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", textAlign: "center", marginTop: 8 }}>
@@ -754,8 +843,8 @@ export default function ResultsPage() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             {SUB_SCORES.map(({ key, label, emoji, dimensionPath, dimensionColor }, i) => {
-              const isLocked = isExpressMode && ["sleep_energy", "lifestyle", "nutrition"].includes(key);
-              if (isLocked) return <LockedSubScoreBar key={key} label={label} emoji={emoji} />;
+              const locked = isLocked && ["sleep_energy", "lifestyle", "nutrition"].includes(key);
+              if (locked) return <LockedSubScoreBar key={key} label={label} emoji={emoji} />;
               return (
                 <SubScoreBar
                   key={key}

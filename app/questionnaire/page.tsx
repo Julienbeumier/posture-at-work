@@ -592,7 +592,6 @@ function ExpressBureauQuestionnaire() {
     sessionStorage.removeItem("postureatwork_answers_debout");
     sessionStorage.setItem("postureatwork_answers", JSON.stringify(mapped));
     sessionStorage.setItem("postureatwork_scores", JSON.stringify(scores));
-    sessionStorage.setItem("postureatwork_mode", "express");
     localStorage.setItem("paw_answers", JSON.stringify(mapped));
     router.push("/results");
   }
@@ -803,7 +802,6 @@ function DeboutExpressQuestionnaire() {
     sessionStorage.removeItem("postureatwork_answers");
     sessionStorage.setItem("postureatwork_answers_debout", JSON.stringify(mapped));
     sessionStorage.setItem("postureatwork_scores", JSON.stringify(scores));
-    sessionStorage.setItem("postureatwork_mode", "express");
     sessionStorage.setItem("paw_job_type_active", "debout");
     router.push("/results");
   }
@@ -1025,7 +1023,6 @@ function BureauQuestionnaire({ isContinue = false }: { isContinue?: boolean }) {
     sessionStorage.removeItem("postureatwork_answers_debout");
     sessionStorage.setItem("postureatwork_answers", JSON.stringify(answers));
     sessionStorage.setItem("postureatwork_scores", JSON.stringify(scores));
-    sessionStorage.setItem("postureatwork_mode", "complet");
     localStorage.setItem("paw_answers", JSON.stringify(answers));
     router.push("/results");
   }
