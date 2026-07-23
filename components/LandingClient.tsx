@@ -97,7 +97,7 @@ function FAQ({ isMobile }: { isMobile: boolean }) {
     },
     {
       q: "C'est gratuit ?",
-      a: "Le bilan de base est gratuit — questionnaire complet et scores par dimension. L'analyse vidéo IA, les conseils détaillés et le suivi sont disponibles en version premium."
+      a: "Le questionnaire complet (30 questions) et tes 3 premiers scores sont gratuits. Pour débloquer les 6 dimensions complètes, l'analyse vidéo IA, les conseils détaillés, les exercices et le rapport PDF, c'est 19,99€ en accès à vie — moins cher qu'une séance kiné."
     },
     {
       q: "Ça fonctionne aussi si je travaille debout ?",
@@ -397,7 +397,7 @@ export default function LandingClient() {
                   </div>
                 </Link>
                 <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", margin: 0 }}>
-                  Gratuit · 40 secondes · Résultats immédiats
+                  3 scores gratuits · Analyse complète à 19,99€ · Résultats immédiats
                 </p>
               </div>
             </div>
@@ -556,11 +556,11 @@ export default function LandingClient() {
               fontFamily: T.h, fontWeight: 800, fontSize: 16, cursor: "pointer",
               boxShadow: "0 4px 32px rgba(43,92,230,0.4)",
             }}>
-              Commencer mon bilan gratuit →
+              Commencer mon bilan →
             </div>
           </Link>
           <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", marginTop: 12 }}>
-            Gratuit · Sans carte bancaire · Résultats immédiats
+            3 scores gratuits · Analyse complète 19,99€ · Sans engagement
           </p>
         </motion.div>
       </section>

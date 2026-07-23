@@ -1093,7 +1093,7 @@ export default function ResultsPage() {
           {premium ? (
             <>
               <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#74c69d", margin: "0 0 6px" }}>
-                👑 Offert en beta — accès complet activé
+                👑 Accès premium activé
               </p>
               <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", margin: "0 0 16px" }}>
                 Tous les outils PAW sont débloqués pour toi.
@@ -1113,7 +1113,7 @@ export default function ResultsPage() {
                 🚀 Tu n&apos;as accès qu&apos;à une partie de PAW
               </p>
               <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", margin: "0 0 16px" }}>
-                Le premium est offert en beta — profites-en
+                Tu as accès à l&apos;analyse complète — 6 dimensions + vidéo IA
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
                 {["Conseils détaillés bloqués", "Analyse vidéo IA bloquée", "Dashboard bloqué", "Rapport PDF bloqué"].map((item) => (
@@ -1125,7 +1125,7 @@ export default function ResultsPage() {
               </div>
               <Link href="/premium" style={{ textDecoration: "none" }}>
                 <div style={{ padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "linear-gradient(135deg, #2b5ce6, #7c9fff)", boxShadow: "0 0 24px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
-                  Débloquer gratuitement →
+                  🔓 Débloquer mon analyse complète — 19,99€ →
                 </div>
               </Link>
             </>

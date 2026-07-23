@@ -354,7 +354,7 @@ export default function PremiumPage() {
             <div style={{ borderRadius: 20, overflow: "hidden", border: "0.5px solid rgba(255,255,255,0.08)" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 80px 80px", background: "rgba(255,255,255,0.03)" }}>
                 <div style={{ padding: "14px 20px", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "var(--t40)", letterSpacing: "0.05em" }}>FONCTIONNALITÉ</div>
-                <div style={{ padding: "14px 8px", textAlign: "center", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "var(--t40)" }}>Gratuit</div>
+                <div style={{ padding: "14px 8px", textAlign: "center", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "var(--t40)" }}>Bilan gratuit</div>
                 <div style={{ padding: "14px 8px", textAlign: "center", background: "rgba(43,92,230,0.08)", borderLeft: "0.5px solid rgba(43,92,230,0.15)" }}>
                   <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#7c9fff" }}>Premium</span>
                   <br />

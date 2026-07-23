@@ -410,7 +410,7 @@ export default function DimensionPage() {
         {/* Premium bandeau */}
         <div style={{ marginBottom: 20, padding: "10px 16px", borderRadius: 12, background: premium ? "rgba(245,158,11,0.08)" : "rgba(43,92,230,0.08)", border: `0.5px solid ${premium ? "rgba(245,158,11,0.25)" : "rgba(43,92,230,0.20)"}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
           <p style={{ fontFamily: T.b, fontSize: 12, color: premium ? "rgba(245,158,11,0.85)" : "var(--t55)", margin: 0, lineHeight: 1.5 }}>
-            {premium ? "👑 Offert en beta — tous les conseils détaillés sont débloqués" : "💎 Conseils détaillés disponibles avec le premium — offert en beta"}
+            {premium ? "👑 Accès premium — tous les conseils détaillés sont débloqués" : "💎 Conseils détaillés disponibles avec le premium — 19,99€ à vie"}
           </p>
           {!premium && (
             <Link href="/premium" style={{ textDecoration: "none", flexShrink: 0 }}>
