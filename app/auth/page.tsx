@@ -80,6 +80,11 @@ function AuthForm() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [consented, setConsented] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [hasPendingBilan, setHasPendingBilan] = useState(false);
+
+  useEffect(() => {
+    setHasPendingBilan(!!sessionStorage.getItem("postureatwork_scores"));
+  }, []);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -95,6 +100,17 @@ function AuthForm() {
   async function handleGoogle() {
     setOauthLoading(true);
     setError("");
+    const pendingScores = sessionStorage.getItem("postureatwork_scores");
+    const pendingAnswers = sessionStorage.getItem("postureatwork_answers");
+    const pendingJobType = localStorage.getItem("paw_job_type");
+    if (pendingScores) {
+      localStorage.setItem("paw_pending_assessment", JSON.stringify({
+        scores: pendingScores,
+        answers: pendingAnswers,
+        jobType: pendingJobType,
+        savedAt: new Date().toISOString(),
+      }));
+    }
     const appUrl = window.location.origin;
     const { error: err } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -152,6 +168,17 @@ function AuthForm() {
         : err.message);
       setLoading(false);
       return;
+    }
+    const pendingScores = sessionStorage.getItem("postureatwork_scores");
+    const pendingAnswers = sessionStorage.getItem("postureatwork_answers");
+    const pendingJobType = localStorage.getItem("paw_job_type");
+    if (pendingScores) {
+      localStorage.setItem("paw_pending_assessment", JSON.stringify({
+        scores: pendingScores,
+        answers: pendingAnswers,
+        jobType: pendingJobType,
+        savedAt: new Date().toISOString(),
+      }));
     }
     setSuccess("Vérifie ta boîte mail pour confirmer ton compte !");
     setLoading(false);
@@ -214,6 +241,16 @@ function AuthForm() {
             : "Reçois un lien pour réinitialiser ton mot de passe"}
           </p>
         </motion.div>
+
+        {hasPendingBilan && redirect.includes("premium") && (
+          <div style={{ padding: "12px 16px", borderRadius: 12, marginBottom: 16,
+            background: "rgba(116,198,157,0.08)", border: "0.5px solid rgba(116,198,157,0.2)",
+            textAlign: "center" }}>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "#74c69d", margin: 0 }}>
+              ✅ Ton bilan est sauvegardé — crée ton compte pour accéder à l&apos;analyse complète
+            </p>
+          </div>
+        )}
 
         {!isReset && (
           <div style={{

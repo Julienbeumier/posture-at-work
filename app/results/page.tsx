@@ -114,15 +114,15 @@ const DIM_INLINE_PRODUCTS_DEBOUT: Record<string, { name: string; url: string; re
 
 // ─── Locked sub-score (non-premium) ──────────────────────────────────────────
 
-function LockedSubScoreBar({ label, emoji }: { label: string; emoji: string }) {
+function LockedSubScoreBar({ label, emoji, onClick }: { label: string; emoji: string; onClick?: () => void }) {
   return (
-    <Link href="/premium" style={{ textDecoration: "none" }}>
-      <motion.div
-        whileHover={{ scale: 1.005 }}
-        style={{ position: "relative", overflow: "hidden", borderRadius: 14,
-          padding: "16px 18px", cursor: "pointer",
-          background: "rgba(212,162,42,0.04)",
-          border: "0.5px solid rgba(212,162,42,0.2)" }}>
+    <motion.div
+      onClick={onClick}
+      whileHover={{ scale: 1.005 }}
+      style={{ position: "relative", overflow: "hidden", borderRadius: 14,
+        padding: "16px 18px", cursor: "pointer",
+        background: "rgba(212,162,42,0.04)",
+        border: "0.5px solid rgba(212,162,42,0.2)" }}>
 
         <div style={{ position: "absolute", inset: 0, zIndex: 2,
           background: "linear-gradient(to bottom, transparent 30%, rgba(15,15,26,0.85) 100%)" }} />
@@ -160,7 +160,6 @@ function LockedSubScoreBar({ label, emoji }: { label: string; emoji: string }) {
           <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 11, color: "#fff" }}>Débloquer →</span>
         </div>
       </motion.div>
-    </Link>
   );
 }
 
@@ -338,11 +337,15 @@ export default function ResultsPage() {
   const [jobType, setJobType] = useState("bureau");
   const [hasVideoAnalysis, setHasVideoAnalysis] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
+  }, []);
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data }) => setIsLoggedIn(!!data.user));
   }, []);
 
   useEffect(() => {
@@ -465,6 +468,23 @@ export default function ResultsPage() {
     });
     setEmailSent(true);
     setEmailLoading(false);
+  }
+
+  function handleLockedClick() {
+    const scores = sessionStorage.getItem("postureatwork_scores");
+    const answers = sessionStorage.getItem("postureatwork_answers");
+    const jobType = localStorage.getItem("paw_job_type");
+    if (!isLoggedIn) {
+      if (scores) {
+        localStorage.setItem("paw_pending_assessment", JSON.stringify({
+          scores, answers, jobType,
+          savedAt: new Date().toISOString(),
+        }));
+      }
+      router.push("/auth?redirect=/premium");
+    } else {
+      router.push("/premium");
+    }
   }
 
   if (!scores || !answers) {
@@ -626,7 +646,7 @@ export default function ResultsPage() {
                   borderTop: "0.5px solid rgba(43,92,230,0.15)",
                   borderRadius: "0 0 24px 24px",
                 }}>
-                  <Link href="/premium" style={{ textDecoration: "none" }}>
+                  <div onClick={handleLockedClick} style={{ cursor: "pointer" }}>
                     <motion.div
                       whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
                       style={{ padding: "16px 0", borderRadius: 100, textAlign: "center",
@@ -636,7 +656,7 @@ export default function ResultsPage() {
                         cursor: "pointer", marginBottom: 10 }}>
                       🔓 Voir mon analyse complète →
                     </motion.div>
-                  </Link>
+                  </div>
                   <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
                     {["6 dimensions analysées", "Analyse vidéo IA", "Rapport PDF", "Conseils personnalisés"].map(f => (
                       <span key={f} style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)" }}>✓ {f}</span>
@@ -717,16 +737,29 @@ export default function ResultsPage() {
                     </span>
                   ))}
                 </div>
-                <Link href={isLocked ? "/premium" : "/video-intro"} style={{ textDecoration: "none" }}>
-                  <div style={{
-                    padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-                    background: isLocked ? "linear-gradient(135deg, #2b5ce6, #7c3aed)" : "linear-gradient(135deg, #7c3aed, #a78bfa)",
-                    boxShadow: isLocked ? "0 4px 20px rgba(43,92,230,0.4)" : "0 4px 20px rgba(124,58,237,0.4)",
-                    fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
-                  }}>
-                    {isLocked ? "🔒 Inclus dans le bilan complet →" : "🎥 Analyser ma posture →"}
+                {isLocked ? (
+                  <div onClick={handleLockedClick} style={{ cursor: "pointer" }}>
+                    <div style={{
+                      padding: "14px 0", borderRadius: 100, textAlign: "center",
+                      background: "linear-gradient(135deg, #2b5ce6, #7c3aed)",
+                      boxShadow: "0 4px 20px rgba(43,92,230,0.4)",
+                      fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
+                    }}>
+                      🔒 Inclus dans le bilan complet →
+                    </div>
                   </div>
-                </Link>
+                ) : (
+                  <Link href="/video-intro" style={{ textDecoration: "none" }}>
+                    <div style={{
+                      padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
+                      background: "linear-gradient(135deg, #7c3aed, #a78bfa)",
+                      boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
+                      fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
+                    }}>
+                      🎥 Analyser ma posture →
+                    </div>
+                  </Link>
+                )}
                 <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", textAlign: "center", marginTop: 8 }}>
                   40 secondes · Via ta caméra · Résultats immédiats
                 </p>
@@ -844,7 +877,7 @@ export default function ResultsPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             {SUB_SCORES.map(({ key, label, emoji, dimensionPath, dimensionColor }, i) => {
               const locked = isLocked && ["sleep_energy", "lifestyle", "nutrition"].includes(key);
-              if (locked) return <LockedSubScoreBar key={key} label={label} emoji={emoji} />;
+              if (locked) return <LockedSubScoreBar key={key} label={label} emoji={emoji} onClick={handleLockedClick} />;
               return (
                 <SubScoreBar
                   key={key}
@@ -1123,11 +1156,11 @@ export default function ResultsPage() {
                   </div>
                 ))}
               </div>
-              <Link href="/premium" style={{ textDecoration: "none" }}>
+              <div onClick={handleLockedClick} style={{ cursor: "pointer" }}>
                 <div style={{ padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "linear-gradient(135deg, #2b5ce6, #7c9fff)", boxShadow: "0 0 24px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
                   🔓 Débloquer mon analyse complète — 19,99€ →
                 </div>
-              </Link>
+              </div>
             </>
           )}
         </motion.div>

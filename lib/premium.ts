@@ -6,22 +6,11 @@ export function isPremium(): boolean {
 }
 
 export async function activatePremium(
-  supabase: SupabaseClient,
-  userId?: string
+  _supabase: SupabaseClient,
+  _userId?: string
 ): Promise<void> {
-  localStorage.setItem("paw_premium", "true");
-  const now = new Date().toISOString();
-  localStorage.setItem("paw_premium_activated_at", now);
-  if (!localStorage.getItem("paw_premium_since")) {
-    localStorage.setItem("paw_premium_since", now);
-  }
-  if (userId) {
-    await supabase.from("profiles").upsert({
-      user_id: userId,
-      is_premium: true,
-      premium_activated_at: new Date().toISOString(),
-    }, { onConflict: "user_id" });
-  }
+  console.warn("[premium] activatePremium appelé directement — utiliser Stripe checkout");
+  // Le premium est activé exclusivement par le webhook Stripe
 }
 
 export async function checkPremium(

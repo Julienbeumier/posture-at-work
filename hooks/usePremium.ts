@@ -22,8 +22,6 @@ export function usePremium() {
         return;
       }
 
-      if (localStorage.getItem("paw_premium") === "true") return;
-
       const { data } = await supabase
         .from("profiles")
         .select("is_premium")
@@ -33,6 +31,9 @@ export function usePremium() {
       if (data?.is_premium) {
         localStorage.setItem("paw_premium", "true");
         setPremium(true);
+      } else if (localStorage.getItem("paw_premium") === "true") {
+        localStorage.removeItem("paw_premium");
+        setPremium(false);
       }
     }
 

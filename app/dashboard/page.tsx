@@ -241,6 +241,44 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    async function recoverPendingAssessment() {
+      const pending = localStorage.getItem("paw_pending_assessment");
+      if (!pending) return;
+
+      const { scores, answers, jobType, savedAt } = JSON.parse(pending);
+      const age = Date.now() - new Date(savedAt).getTime();
+      if (age > 2 * 60 * 60 * 1000) {
+        localStorage.removeItem("paw_pending_assessment");
+        return;
+      }
+
+      const supabase = createClient();
+      const { data: { user: u } } = await supabase.auth.getUser();
+      if (!u) return;
+
+      if (scores) sessionStorage.setItem("postureatwork_scores", scores);
+      if (answers) sessionStorage.setItem("postureatwork_answers", answers);
+      if (jobType) localStorage.setItem("paw_job_type", jobType);
+
+      const parsedScores = JSON.parse(scores);
+      const parsedAnswers = answers ? JSON.parse(answers) : {};
+
+      await supabase.from("assessments").upsert({
+        user_id: u.id,
+        global_score: parsedScores.global,
+        scores: parsedScores,
+        answers: parsedAnswers,
+        job_type: jobType ?? "bureau",
+      }, { onConflict: "user_id" });
+
+      localStorage.removeItem("paw_pending_assessment");
+      router.push("/results");
+    }
+    recoverPendingAssessment();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     const loadDashboard = async () => {
       const supabase = createClient();
 
