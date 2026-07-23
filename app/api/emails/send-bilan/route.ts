@@ -3,6 +3,8 @@ import { Resend } from "resend";
 import { emailBilan } from "@/lib/emails/templates";
 import { createClient } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = "PostureAtWork <onboarding@resend.dev>";
 

@@ -63,12 +63,12 @@ const ROWS = [
 
 const FAQ = [
   {
-    q: "Combien de temps l'accès beta gratuit dure-t-il ?",
-    a: "On ne peut pas donner de date précise — ça dépend de notre rythme de développement. Ce qu'on peut dire : tous les comptes créés pendant la beta gardent l'accès premium à vie, même après le passage en payant.",
+    q: "C'est quoi exactement le paiement ?",
+    a: "Un seul paiement de 19,99€. Pas d'abonnement, pas de renouvellement automatique. Tu paies une fois et tu as accès à vie — y compris tous les futurs bilans et fonctionnalités.",
   },
   {
-    q: "Que se passe-t-il quand PAW devient payant ?",
-    a: "Ton accès reste gratuit à vie. Le 9.99€ ne s'applique qu'aux nouveaux comptes créés après le lancement officiel.",
+    q: "Et si je ne suis pas satisfait ?",
+    a: "On rembourse sans question dans les 7 jours. Envoie un email à hello@postureatwork.com avec ton numéro de commande et c'est réglé sous 24h.",
   },
   {
     q: "L'analyse vidéo est-elle sécurisée ?",
@@ -133,22 +133,37 @@ export default function PremiumPage() {
 
   const hasBilan = typeof window !== "undefined" && !!sessionStorage.getItem("postureatwork_scores");
 
-  const activatePremium = async () => {
-    localStorage.setItem("paw_premium", "true");
-    localStorage.setItem("paw_premium_activated_at", new Date().toISOString());
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
-    if (user) {
-      const supabase = createClient();
-      await supabase.from("profiles").upsert({
-        user_id: user.id,
-        is_premium: true,
-        premium_activated_at: new Date().toISOString(),
-      }, { onConflict: "user_id" });
-      router.push("/dashboard?premium=activated");
-    } else {
-      router.push(hasBilan ? "/auth?next=/dashboard?premium=activated" : "/onboarding");
+  async function handleCheckout() {
+    if (!user) {
+      router.push("/auth?redirect=/premium");
+      return;
     }
-  };
+
+    setCheckoutLoading(true);
+    setCheckoutError("");
+
+    try {
+      const res = await fetch("/api/stripe/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+
+      if (data.error) {
+        setCheckoutError(data.error);
+        setCheckoutLoading(false);
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch {
+      setCheckoutError("Erreur de connexion. Réessaie.");
+      setCheckoutLoading(false);
+    }
+  }
 
   return (
     <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingTop: 80, paddingBottom: 80, position: "relative", overflow: "hidden" }}>
@@ -252,15 +267,22 @@ export default function PremiumPage() {
             <motion.div
               animate={{ boxShadow: ["0 0 30px rgba(43,92,230,0.3)", "0 0 50px rgba(43,92,230,0.5)", "0 0 30px rgba(43,92,230,0.3)"] }}
               transition={{ duration: 2.5, repeat: Infinity }}
-              onClick={activatePremium}
+              onClick={handleCheckout}
               style={{ display: "inline-block", padding: "18px 40px", borderRadius: 100,
-                cursor: "pointer", background: "linear-gradient(135deg, #2b5ce6, #7c3aed)",
+                cursor: checkoutLoading ? "default" : "pointer",
+                opacity: checkoutLoading ? 0.7 : 1,
+                background: "linear-gradient(135deg, #2b5ce6, #7c3aed)",
                 fontFamily: T.h, fontWeight: 800, fontSize: 17, color: "#fff", marginBottom: 12 }}>
-              🔓 Débloquer mon analyse complète →
+              {checkoutLoading ? "Redirection vers le paiement…" : "🔓 Débloquer mon analyse complète — 19,99€ →"}
             </motion.div>
 
+            {checkoutError && (
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595",
+                textAlign: "center", marginBottom: 8 }}>{checkoutError}</p>
+            )}
+
             <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)" }}>
-              Gratuit pendant la beta · Sans carte bancaire
+              Paiement sécurisé · Accès à vie · 19,99€ one-shot
             </p>
           </motion.div>
 
@@ -336,7 +358,7 @@ export default function PremiumPage() {
                 <div style={{ padding: "14px 8px", textAlign: "center", background: "rgba(43,92,230,0.08)", borderLeft: "0.5px solid rgba(43,92,230,0.15)" }}>
                   <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#7c9fff" }}>Premium</span>
                   <br />
-                  <span style={{ fontFamily: T.b, fontSize: 9, color: "#d4a22a" }}>🎁 Offert</span>
+                  <span style={{ fontFamily: T.b, fontSize: 9, color: "#d4a22a" }}>19,99€ à vie</span>
                 </div>
               </div>
 
@@ -390,15 +412,21 @@ export default function PremiumPage() {
               </p>
               <motion.div
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                onClick={activatePremium}
+                onClick={handleCheckout}
                 style={{ display: "inline-block", padding: "16px 36px", borderRadius: 100,
-                  cursor: "pointer", background: "#2b5ce6",
+                  cursor: checkoutLoading ? "default" : "pointer",
+                  opacity: checkoutLoading ? 0.7 : 1,
+                  background: "#2b5ce6",
                   boxShadow: "0 4px 24px rgba(43,92,230,0.4)",
                   fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#fff" }}>
-                🔓 Débloquer maintenant →
+                {checkoutLoading ? "Redirection vers le paiement…" : "🔓 Débloquer maintenant — 19,99€ →"}
               </motion.div>
+              {checkoutError && (
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595",
+                  textAlign: "center", marginTop: 8 }}>{checkoutError}</p>
+              )}
               <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", marginTop: 10 }}>
-                Gratuit pendant la beta
+                Paiement sécurisé · Accès à vie · 19,99€ one-shot
               </p>
             </div>
           </motion.div>
@@ -415,11 +443,19 @@ export default function PremiumPage() {
 
           {/* ── FINAL CTA ── */}
           <div style={{ textAlign: "center" }}>
-            <div onClick={activatePremium}
-              style={{ display: "inline-block", padding: "16px 32px", borderRadius: 100, cursor: "pointer", background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.4)", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 12 }}>
-              🚀 Activer maintenant — c&apos;est gratuit
+            <div onClick={handleCheckout}
+              style={{ display: "inline-block", padding: "16px 32px", borderRadius: 100,
+                cursor: checkoutLoading ? "default" : "pointer",
+                opacity: checkoutLoading ? 0.7 : 1,
+                background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.4)",
+                fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 12 }}>
+              {checkoutLoading ? "Redirection vers le paiement…" : "🚀 Débloquer — 19,99€ à vie →"}
             </div>
-            <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)" }}>Accès à vie offert pendant la beta</p>
+            {checkoutError && (
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595",
+                textAlign: "center", marginBottom: 8 }}>{checkoutError}</p>
+            )}
+            <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)" }}>Paiement sécurisé · Sans abonnement</p>
           </div>
 
         </>)}
