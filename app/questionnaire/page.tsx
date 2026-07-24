@@ -1010,16 +1010,16 @@ export default function QuestionnairePage() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        router.replace("/onboarding");
+        window.location.href = "/onboarding";
         return;
       }
+      localStorage.removeItem("paw_example_mode");
+      sessionStorage.removeItem("paw_example_mode");
+      setJobType(localStorage.getItem("paw_job_type") ?? "bureau");
+      setFirstname(localStorage.getItem("paw_firstname") ?? "");
       setAuthChecked(true);
     }
     checkAuth();
-    localStorage.removeItem("paw_example_mode");
-    sessionStorage.removeItem("paw_example_mode");
-    setJobType(localStorage.getItem("paw_job_type") ?? "bureau");
-    setFirstname(localStorage.getItem("paw_firstname") ?? "");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
