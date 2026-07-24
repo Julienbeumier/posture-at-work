@@ -1000,6 +1000,7 @@ import { PROFILE_CATEGORIES, type JobType } from "@/lib/questionnaire-profiles";
 
 export default function QuestionnairePage() {
   const router = useRouter();
+  const [authChecked, setAuthChecked] = useState(false);
   const [jobType, setJobType] = useState<string>("");
   const [firstname, setFirstname] = useState<string>("");
 
@@ -1010,7 +1011,9 @@ export default function QuestionnairePage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         router.replace("/onboarding");
+        return;
       }
+      setAuthChecked(true);
     }
     checkAuth();
     localStorage.removeItem("paw_example_mode");
@@ -1020,7 +1023,15 @@ export default function QuestionnairePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!jobType) return null;
+  if (!authChecked || !jobType) return (
+    <main style={{ minHeight: "100vh", background: "var(--main-bg)",
+      display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: 32, height: 32, borderRadius: "50%",
+        border: "2px solid rgba(43,92,230,0.2)", borderTopColor: "#2b5ce6",
+        animation: "spin 0.8s linear infinite" }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </main>
+  );
 
   if (jobType === "bureau" || !PROFILE_CATEGORIES[jobType as Exclude<JobType, "bureau">]) {
     return <BureauQuestionnaire />;
