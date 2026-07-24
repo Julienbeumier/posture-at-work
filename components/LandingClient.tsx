@@ -582,7 +582,7 @@ export default function LandingClient() {
           </p>
           <div style={{ display: "flex", gap: 24, flexWrap: "wrap", justifyContent: "center" }}>
             {[
-              { label: "Questionnaire", href: "/questionnaire" },
+              { label: "Mon bilan", href: "/onboarding" },
               { label: "Exercices", href: "/mobilite" },
               { label: "Entreprise", href: "/entreprise" },
               { label: "À propos & Contact", href: "/about" },
