@@ -226,7 +226,7 @@ export default function Navbar() {
 
           {/* Mon bilan button (non-connected, always visible) */}
           {!user && (
-            <Link href="/questionnaire" style={{ textDecoration: "none" }}>
+            <Link href="/onboarding" style={{ textDecoration: "none" }}>
               <div style={{ padding: "11px 18px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#7c9fff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.h, minHeight: 44, display: "flex", alignItems: "center" }}>
                 Mon bilan
               </div>
