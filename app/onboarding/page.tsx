@@ -572,7 +572,23 @@ export default function OnboardingPage() {
                   </div>
 
                   <div
-                    onClick={() => router.push("/questionnaire")}
+                    onClick={async () => {
+                      localStorage.setItem("paw_onboarding", JSON.stringify({
+                        name,
+                        age,
+                        job: jobType,
+                        hoursWeek,
+                        savedAt: new Date().toISOString(),
+                      }));
+                      const { createClient } = await import("@/lib/supabase");
+                      const supabase = createClient();
+                      const { data: { user } } = await supabase.auth.getUser();
+                      if (user) {
+                        router.push("/questionnaire");
+                      } else {
+                        router.push("/auth?redirect=/questionnaire&from=onboarding");
+                      }
+                    }}
                     style={{
                       width: "100%",
                       padding: "17px 24px",
@@ -589,8 +605,12 @@ export default function OnboardingPage() {
                       boxSizing: "border-box",
                     }}
                   >
-                    Commencer mon bilan express — 3 minutes
+                    Créer mon compte et commencer →
                   </div>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)",
+                    textAlign: "center", marginTop: 10 }}>
+                    Google ou email · 30 secondes · Tes données sont sécurisées
+                  </p>
                 </div>
               </motion.div>
             )}

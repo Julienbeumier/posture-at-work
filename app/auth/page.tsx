@@ -68,6 +68,9 @@ function AuthForm() {
   const router = useRouter();
   const supabase = createClient();
   const redirect = searchParams.get("redirect") ?? "/dashboard";
+  const fromOnboarding = searchParams.get("from") === "onboarding";
+  const pendingOnboarding = typeof window !== "undefined" ? localStorage.getItem("paw_onboarding") : null;
+  const onboardingData = pendingOnboarding ? JSON.parse(pendingOnboarding) : null;
 
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
   const [email, setEmail] = useState("");
@@ -233,7 +236,7 @@ function AuthForm() {
             Posture At Work
           </p>
           <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", margin: "0 0 6px" }}>
-            {isLogin ? "Bon retour 👋" : isSignup ? "Créer mon compte" : "Mot de passe oublié"}
+            {isLogin ? "Bon retour 👋" : isSignup ? (fromOnboarding ? "Dernière étape 🎯" : "Créer mon compte") : "Mot de passe oublié"}
           </h1>
           <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", margin: 0 }}>
             {isLogin ? "Connecte-toi pour accéder à ton bilan"
@@ -241,6 +244,20 @@ function AuthForm() {
             : "Reçois un lien pour réinitialiser ton mot de passe"}
           </p>
         </motion.div>
+
+        {fromOnboarding && onboardingData && (
+          <div style={{ padding: "12px 16px", borderRadius: 12, marginBottom: 16,
+            background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)",
+            textAlign: "center" }}>
+            <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+              color: "var(--text-primary)", margin: "0 0 4px" }}>
+              Parfait {onboardingData.name} 👋
+            </p>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: 0 }}>
+              Crée ton compte pour accéder à ton bilan personnalisé
+            </p>
+          </div>
+        )}
 
         {hasPendingBilan && redirect.includes("premium") && (
           <div style={{ padding: "12px 16px", borderRadius: 12, marginBottom: 16,
@@ -392,14 +409,6 @@ function AuthForm() {
                   : "Envoyer le lien →"}
               </button>
 
-              {isLogin && (
-                <div style={{ textAlign: "center" }}>
-                  <Link href={redirect.startsWith("/") ? redirect : "/dashboard"}
-                    style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", textDecoration: "none" }}>
-                    Continuer sans compte →
-                  </Link>
-                </div>
-              )}
 
               {isReset && (
                 <button onClick={() => { setMode("login"); setError(""); }}

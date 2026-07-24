@@ -206,7 +206,7 @@ export default function LandingClient() {
         </motion.p>
 
         <motion.div {...fadeUp(0.15)} style={{ display: "flex", gap: 12, justifyContent: "center", alignItems: "center", flexWrap: "wrap" }}>
-          <Link href="/questionnaire" style={{ textDecoration: "none" }}>
+          <Link href="/onboarding" style={{ textDecoration: "none" }}>
             <div style={{
               padding: "14px 28px", borderRadius: 100, background: "#2b5ce6",
               color: "#fff", fontFamily: T.h, fontWeight: 800, fontSize: 15, cursor: "pointer",
@@ -549,7 +549,7 @@ export default function LandingClient() {
           <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)", lineHeight: 1.65, marginBottom: 28, maxWidth: 440, margin: "0 auto 28px" }}>
             Comprends enfin pourquoi tu as mal — et ce que tu peux faire aujourd&apos;hui.
           </p>
-          <Link href="/questionnaire" style={{ textDecoration: "none" }}>
+          <Link href="/onboarding" style={{ textDecoration: "none" }}>
             <div style={{
               display: "inline-block", padding: "16px 36px", borderRadius: 100,
               background: "#2b5ce6", color: "#fff",

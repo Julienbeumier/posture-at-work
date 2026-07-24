@@ -279,6 +279,28 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    async function recoverOnboarding() {
+      const pending = localStorage.getItem("paw_onboarding");
+      if (!pending) return;
+
+      const data = JSON.parse(pending);
+      const age = Date.now() - new Date(data.savedAt).getTime();
+      if (age > 2 * 60 * 60 * 1000) {
+        localStorage.removeItem("paw_onboarding");
+        return;
+      }
+
+      if (data.name) localStorage.setItem("paw_firstname", data.name);
+      if (data.age) localStorage.setItem("paw_age", data.age);
+      if (data.job) localStorage.setItem("paw_job_type", data.job);
+      if (data.hoursWeek) localStorage.setItem("paw_hours_week", data.hoursWeek);
+
+      localStorage.removeItem("paw_onboarding");
+    }
+    recoverOnboarding();
+  }, []);
+
+  useEffect(() => {
     const loadDashboard = async () => {
       const supabase = createClient();
 

@@ -999,14 +999,25 @@ import ProfileQuestionnaire from "./ProfileQuestionnaire";
 import { PROFILE_CATEGORIES, type JobType } from "@/lib/questionnaire-profiles";
 
 export default function QuestionnairePage() {
+  const router = useRouter();
   const [jobType, setJobType] = useState<string>("");
   const [firstname, setFirstname] = useState<string>("");
 
   useEffect(() => {
+    async function checkAuth() {
+      const { createClient } = await import("@/lib/supabase");
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace("/onboarding");
+      }
+    }
+    checkAuth();
     localStorage.removeItem("paw_example_mode");
     sessionStorage.removeItem("paw_example_mode");
     setJobType(localStorage.getItem("paw_job_type") ?? "bureau");
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!jobType) return null;
