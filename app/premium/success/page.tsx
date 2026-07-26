@@ -11,7 +11,7 @@ const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-s
 function SuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "error" | "reconnect">("loading");
 
   useEffect(() => {
     if (!sessionId) { setStatus("error"); return; }
@@ -21,7 +21,7 @@ function SuccessContent() {
       attempts++;
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { clearInterval(interval); setStatus("error"); return; }
+      if (!user) { clearInterval(interval); setStatus("reconnect"); return; }
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -62,6 +62,32 @@ function SuccessContent() {
         </p>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
+    </main>
+  );
+
+  if (status === "reconnect") return (
+    <main style={{ minHeight: "100vh", background: "var(--main-bg)",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+        style={{ textAlign: "center", maxWidth: 400 }}>
+        <div style={{ fontSize: 52, marginBottom: 16 }}>🎉</div>
+        <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24,
+          color: "var(--text-primary)", marginBottom: 12 }}>
+          Paiement réussi !
+        </h1>
+        <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)",
+          lineHeight: 1.65, marginBottom: 24 }}>
+          Ton accès premium est activé. Reconnecte-toi pour accéder à ton analyse complète.
+        </p>
+        <Link href="/auth?redirect=/results" style={{ textDecoration: "none" }}>
+          <div style={{ padding: "16px 32px", borderRadius: 100,
+            background: "linear-gradient(135deg, #2b5ce6, #7c3aed)",
+            fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#fff",
+            boxShadow: "0 4px 24px rgba(43,92,230,0.4)", cursor: "pointer" }}>
+            Se connecter → voir mon analyse
+          </div>
+        </Link>
+      </motion.div>
     </main>
   );
 
