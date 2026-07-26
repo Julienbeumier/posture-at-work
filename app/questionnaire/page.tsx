@@ -980,10 +980,10 @@ function BureauQuestionnaire() {
                   boxShadow: "0 0 40px rgba(43,92,230,0.5)",
                 }}
               >
-                Voir mes résultats →
+                Analyser mon bilan →
               </div>
               <p style={{ textAlign: "center", color: "var(--t30)", fontSize: 12, fontFamily: T.b, marginTop: 8 }}>
-                Toutes les questions sont répondues ✓
+                🎯 Ton bilan est prêt — analyse en cours
               </p>
             </div>
           </motion.div>
