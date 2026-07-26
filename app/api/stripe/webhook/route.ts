@@ -53,23 +53,32 @@ export async function POST(req: Request) {
 
     console.log(`[webhook] Premium activé pour user ${userId}`);
 
-    const { data: userProfile } = await supabaseAdmin
-      .from("profiles")
-      .select("first_name")
-      .eq("user_id", userId)
-      .maybeSingle();
+    try {
+      const { data: authData, error: authError } = await supabaseAdmin.auth.admin.getUserById(userId);
 
-    const { data: { user: authUser } } = await supabaseAdmin.auth.admin.getUserById(userId);
+      if (authError) {
+        console.error("[webhook] Erreur getUserById:", authError);
+      } else if (authData?.user?.email) {
+        const { Resend } = await import("resend");
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
-    if (authUser?.email) {
-      const { Resend } = await import("resend");
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.emails.send({
-        from: "PostureAtWork <hello@postureatwork.com>",
-        to: authUser.email,
-        subject: "🎉 Bienvenue dans PAW Premium — ton analyse t'attend",
-        html: premiumWelcomeEmail(userProfile?.first_name ?? undefined),
-      });
+        const firstName = authData.user.user_metadata?.full_name?.split(" ")[0]
+          ?? authData.user.user_metadata?.name?.split(" ")[0]
+          ?? undefined;
+
+        const result = await resend.emails.send({
+          from: "PostureAtWork <hello@postureatwork.com>",
+          to: authData.user.email,
+          subject: "🎉 Bienvenue dans PAW Premium — ton analyse t'attend",
+          html: premiumWelcomeEmail(firstName),
+        });
+
+        console.log("[webhook] Email bienvenue envoyé:", result);
+      } else {
+        console.warn("[webhook] Pas d'email trouvé pour user:", userId);
+      }
+    } catch (emailErr) {
+      console.error("[webhook] Erreur envoi email:", emailErr);
     }
   }
 
