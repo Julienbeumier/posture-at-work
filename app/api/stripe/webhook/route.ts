@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { premiumWelcomeEmail } from "@/lib/emails/templates";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-06-24.dahlia",
@@ -51,6 +52,25 @@ export async function POST(req: Request) {
       .eq("stripe_session_id", session.id);
 
     console.log(`[webhook] Premium activé pour user ${userId}`);
+
+    const { data: userProfile } = await supabaseAdmin
+      .from("profiles")
+      .select("first_name")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    const { data: { user: authUser } } = await supabaseAdmin.auth.admin.getUserById(userId);
+
+    if (authUser?.email) {
+      const { Resend } = await import("resend");
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      await resend.emails.send({
+        from: "PostureAtWork <hello@postureatwork.com>",
+        to: authUser.email,
+        subject: "🎉 Bienvenue dans PAW Premium — ton analyse t'attend",
+        html: premiumWelcomeEmail(userProfile?.first_name ?? undefined),
+      });
+    }
   }
 
   if (event.type === "charge.refunded") {

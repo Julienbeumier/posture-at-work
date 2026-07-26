@@ -233,6 +233,112 @@ export function emailRappel(d: { firstname: string; email: string }): { subject:
   };
 }
 
+// ─── Template Premium — Bienvenue après paiement ─────────────────────────────
+
+export function premiumWelcomeEmail(firstName?: string): string {
+  const name = firstName ?? "toi";
+  const items = [
+    { emoji: "📊", title: "6 dimensions analysées", desc: "Setup, douleurs, habitudes, sommeil, nutrition, lifestyle — une vision complète de ta santé au travail." },
+    { emoji: "🎥", title: "Analyse vidéo IA posturale", desc: "Filme ta posture en 40 secondes. Notre IA détecte ce que ton corps fait réellement au travail." },
+    { emoji: "📄", title: "Rapport PDF complet", desc: "Ton bilan personnalisé à garder, partager avec ton kiné ou ton médecin du travail." },
+    { emoji: "🧘", title: "Hub exercices complet", desc: "30 exercices ciblés avec programmes progressifs pour corriger tes déséquilibres." },
+    { emoji: "♾️", title: "Accès à vie", desc: "Un seul paiement. Tous tes futurs bilans inclus. Pas d'abonnement." },
+  ];
+
+  return `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenue dans PAW Premium</title>
+</head>
+<body style="margin:0;padding:0;background:#0f0f1a;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <div style="max-width:560px;margin:0 auto;padding:40px 24px;">
+
+    <div style="text-align:center;margin-bottom:40px;">
+      <p style="font-size:28px;font-weight:900;color:#ffffff;margin:0;letter-spacing:-0.5px;">
+        PAW<span style="color:#2b5ce6;">.</span>
+      </p>
+      <p style="font-size:11px;letter-spacing:0.2em;color:rgba(255,255,255,0.3);margin:4px 0 0;text-transform:uppercase;">
+        Posture At Work
+      </p>
+    </div>
+
+    <div style="background:linear-gradient(135deg,rgba(43,92,230,0.15),rgba(124,58,237,0.10));border:1px solid rgba(43,92,230,0.25);border-radius:20px;padding:32px 28px;text-align:center;margin-bottom:28px;">
+      <div style="font-size:48px;margin-bottom:16px;">🎉</div>
+      <h1 style="font-size:24px;font-weight:900;color:#ffffff;margin:0 0 12px;letter-spacing:-0.5px;line-height:1.2;">
+        Bienvenue dans PAW Premium, ${name} !
+      </h1>
+      <p style="font-size:15px;color:rgba(255,255,255,0.6);line-height:1.7;margin:0;">
+        Tu viens de faire quelque chose que peu de gens font —
+        investir dans ta santé au travail avant que ça devienne urgent.
+        Ton corps te remerciera.
+      </p>
+    </div>
+
+    <div style="margin-bottom:28px;">
+      <p style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;margin:0 0 14px;">
+        Ce que tu as maintenant
+      </p>
+      ${items.map(item => `
+        <div style="display:flex;gap:14px;padding:14px 16px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08);border-radius:12px;margin-bottom:8px;">
+          <span style="font-size:22px;flex-shrink:0;">${item.emoji}</span>
+          <div>
+            <p style="font-size:14px;font-weight:700;color:#ffffff;margin:0 0 3px;">${item.title}</p>
+            <p style="font-size:12px;color:rgba(255,255,255,0.45);margin:0;line-height:1.5;">${item.desc}</p>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+
+    <div style="text-align:center;margin-bottom:32px;">
+      <a href="https://postureatwork.com/results"
+         style="display:inline-block;padding:16px 36px;border-radius:100px;background:linear-gradient(135deg,#2b5ce6,#7c3aed);color:#ffffff;font-size:16px;font-weight:800;text-decoration:none;letter-spacing:-0.3px;box-shadow:0 4px 24px rgba(43,92,230,0.4);">
+        🔓 Voir mon analyse complète →
+      </a>
+      <p style="font-size:12px;color:rgba(255,255,255,0.25);margin:12px 0 0;">
+        Ton analyse t'attend sur postureatwork.com
+      </p>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.03);border:0.5px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px;margin-bottom:28px;">
+      <p style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.75;margin:0;font-style:italic;">
+        "En cabinet, je vois chaque semaine des patients qui auraient pu éviter
+        des mois de douleurs s'ils avaient agi plus tôt. Tu viens de faire ce premier pas —
+        c'est le plus important."
+      </p>
+      <p style="font-size:12px;color:rgba(255,255,255,0.3);margin:10px 0 0;">
+        — Julien, kinésithérapeute fondateur de PAW
+      </p>
+    </div>
+
+    <div style="background:rgba(43,92,230,0.08);border:0.5px solid rgba(43,92,230,0.2);border-radius:14px;padding:16px 20px;margin-bottom:32px;">
+      <p style="font-size:12px;font-weight:700;color:#7c9fff;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 6px;">
+        💡 Par où commencer ?
+      </p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.65;margin:0;">
+        Va d'abord voir ton score <strong style="color:rgba(255,255,255,0.8);">Douleurs</strong> —
+        c'est souvent là que tout commence. Ensuite fais l'analyse vidéo pour voir
+        ce que ton corps fait réellement. Ça prend 40 secondes et ça change tout.
+      </p>
+    </div>
+
+    <div style="text-align:center;border-top:0.5px solid rgba(255,255,255,0.08);padding-top:24px;">
+      <p style="font-size:12px;color:rgba(255,255,255,0.2);margin:0 0 6px;">
+        PostureAtWork · hello@postureatwork.com
+      </p>
+      <p style="font-size:11px;color:rgba(255,255,255,0.15);margin:0;">
+        Tu reçois cet email car tu viens d'activer ton accès PAW Premium.
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>
+  `;
+}
+
 // ─── Template 5 — J+30 Teaser premium ────────────────────────────────────────
 
 export function emailPremium(d: { firstname: string; email: string }): { subject: string; html: string } {
