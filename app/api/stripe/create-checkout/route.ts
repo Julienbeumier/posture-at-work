@@ -48,6 +48,7 @@ export async function POST() {
         quantity: 1,
       }],
       mode: "payment",
+      allow_promotion_codes: true,
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/premium/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/premium?cancelled=true`,
       metadata: { user_id: user.id },
