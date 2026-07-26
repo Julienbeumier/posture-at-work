@@ -121,6 +121,7 @@ function ExerciseCard({ ex, index, onStart, isDiscreetMode }: {
 export default function MobilitePage() {
   const router = useRouter();
   const { premium } = usePremium();
+  const [premiumChecked, setPremiumChecked] = useState(false);
   const [tab, setTab] = useState<Tab>("bureau");
   const [activeProgram, setActiveProgram] = useState<Program>(PROGRAMS[0]);
   const [phase, setPhase] = useState<Phase>("select");
@@ -140,6 +141,25 @@ export default function MobilitePage() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
   const voiceCleanupRef = useRef<(() => void) | null>(null);
+
+  // ── Premium gate ──────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    async function checkPremium() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { router.push("/auth?redirect=/mobilite"); return; }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_premium")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!profile?.is_premium) { router.push("/premium"); return; }
+      setPremiumChecked(true);
+    }
+    checkPremium();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── Load profile & compute personalized program ───────────────────────────
 
@@ -374,6 +394,16 @@ export default function MobilitePage() {
   const currentEx = phase === "running" ? currentExercises[currentIdx] : null;
   const sessionDuration = currentExercises.reduce((s, e) => s + e.duration, 0);
 
+  if (!premiumChecked) return (
+    <main style={{ minHeight: "100vh", background: "var(--bg-primary)",
+      display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: 32, height: 32, borderRadius: "50%",
+        border: "2px solid rgba(43,92,230,0.2)", borderTopColor: "#2b5ce6",
+        animation: "spin 0.8s linear infinite" }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </main>
+  );
+
   return (
     <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingBottom: 100, position: "relative" }}>
       <BackgroundBlobs blobs={[
@@ -431,16 +461,6 @@ export default function MobilitePage() {
               <p style={{ fontFamily: T.b, fontSize: 12, color: "#74c69d", margin: 0 }}>✓ Invisible pour les collègues — seuls les exercices discrets s'affichent</p>
             </div>
           )}
-        </div>
-
-        {/* Beta banner */}
-        <div style={{ marginBottom: 16, padding: "10px 16px", borderRadius: 12, background: "rgba(245,158,11,0.08)", border: "0.5px solid rgba(245,158,11,0.20)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.30)", fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#f59e0b" }}>
-            {premium ? "👑 Premium" : "🎁 Gratuit"}
-          </span>
-          <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(245,158,11,0.75)", margin: 0 }}>
-            {premium ? "Tous les exercices sont débloqués" : "Tous les exercices sont offerts · Normalement premium"}
-          </p>
         </div>
 
         {/* Notification banner */}

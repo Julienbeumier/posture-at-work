@@ -72,8 +72,27 @@ export default function VideoIntroPage() {
   const [qrLoading, setQrLoading] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [videoReady, setVideoReady] = useState(false);
+  const [premiumChecked, setPremiumChecked] = useState(false);
 
   useEffect(() => {
+    async function checkPremium() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { router.push("/auth?redirect=/video-intro"); return; }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_premium")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!profile?.is_premium) { router.push("/premium"); return; }
+      setPremiumChecked(true);
+    }
+    checkPremium();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!premiumChecked) return;
     const lsType = localStorage.getItem("paw_job_type");
     let scoresType: string | null = null;
     try {
@@ -84,7 +103,8 @@ export default function VideoIntroPage() {
     console.log("scores job_type:", scoresType);
     const effective = scoresType ?? lsType ?? "bureau";
     setJobType(effective);
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [premiumChecked]);
 
   useEffect(() => {
     // Détecter desktop
@@ -150,6 +170,16 @@ export default function VideoIntroPage() {
     sessionStorage.setItem("paw_video_job_type", jobType);
     router.push("/video-capture");
   }
+
+  if (!premiumChecked) return (
+    <main style={{ minHeight: "100vh", background: "#0a0a0a",
+      display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: 32, height: 32, borderRadius: "50%",
+        border: "2px solid rgba(139,92,246,0.2)", borderTopColor: "#a78bfa",
+        animation: "spin 0.8s linear infinite" }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </main>
+  );
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] flex flex-col">
