@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { Turnstile } from "@marsidev/react-turnstile";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
@@ -80,8 +79,6 @@ function AuthForm() {
   const [oauthLoading, setOauthLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [consented, setConsented] = useState(false);
   const [checking, setChecking] = useState(true);
   const [hasPendingBilan, setHasPendingBilan] = useState(false);
 
@@ -144,27 +141,10 @@ function AuthForm() {
     if (!email || !password || !passwordConfirm) { setError("Tous les champs sont requis"); return; }
     if (password !== passwordConfirm) { setError("Les mots de passe ne correspondent pas"); return; }
     if (password.length < 8) { setError("Mot de passe minimum 8 caractères"); return; }
-    if (!consented) { setError("Accepte les conditions pour continuer"); return; }
-    if (!turnstileToken) { setError("Validation CAPTCHA requise"); return; }
-
-    const captchaRes = await fetch("/api/verify-turnstile", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: turnstileToken }),
-    });
-    const captchaData = await captchaRes.json();
-    if (!captchaData.success) { setError("Validation échouée — réessaie"); return; }
 
     setLoading(true);
     setError("");
-    const appUrl = window.location.origin;
-    const { error: err } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${appUrl}/auth/confirm`,
-      },
-    });
+    const { error: err } = await supabase.auth.signUp({ email, password });
     if (err) {
       setError(err.message === "User already registered"
         ? "Un compte existe déjà avec cet email — connecte-toi"
@@ -183,7 +163,7 @@ function AuthForm() {
         savedAt: new Date().toISOString(),
       }));
     }
-    setSuccess("Vérifie ta boîte mail pour confirmer ton compte !");
+    await redirectAfterAuth(router, supabase, redirect);
     setLoading(false);
   }
 
@@ -354,27 +334,6 @@ function AuthForm() {
                     color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }} />
               )}
 
-              {isSignup && (
-                <>
-                  <label style={{ display: "flex", alignItems: "flex-start", gap: 10, cursor: "pointer" }}>
-                    <input type="checkbox" checked={consented} onChange={e => setConsented(e.target.checked)}
-                      style={{ marginTop: 2, flexShrink: 0, accentColor: "#2b5ce6" }} />
-                    <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", lineHeight: 1.55 }}>
-                      J&apos;accepte de recevoir mon rapport et des conseils ergonomiques par email.{" "}
-                      <a href="/politique-confidentialite" style={{ color: "var(--t70)", textDecoration: "underline" }}>
-                        Politique de confidentialité
-                      </a>
-                    </span>
-                  </label>
-
-                  <Turnstile
-                    siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-                    onSuccess={setTurnstileToken}
-                    onError={() => setTurnstileToken(null)}
-                    options={{ theme: "dark", language: "fr" }}
-                  />
-                </>
-              )}
 
               {isLogin && (
                 <div style={{ textAlign: "right", marginTop: -4 }}>
@@ -393,14 +352,14 @@ function AuthForm() {
 
               <button
                 onClick={isLogin ? handleLogin : isSignup ? handleSignup : handleReset}
-                disabled={loading || (isSignup && !turnstileToken)}
+                disabled={loading}
                 style={{
                   padding: "14px 0", borderRadius: 100, border: "none",
-                  background: loading || (isSignup && !turnstileToken) ? "var(--bg-card2)" : "#2b5ce6",
-                  color: loading || (isSignup && !turnstileToken) ? "var(--t40)" : "#fff",
+                  background: loading ? "var(--bg-card2)" : "#2b5ce6",
+                  color: loading ? "var(--t40)" : "#fff",
                   fontFamily: T.h, fontWeight: 800, fontSize: 15,
                   cursor: loading ? "default" : "pointer",
-                  boxShadow: !loading && !(isSignup && !turnstileToken) ? "0 4px 24px rgba(43,92,230,0.35)" : "none",
+                  boxShadow: !loading ? "0 4px 24px rgba(43,92,230,0.35)" : "none",
                   transition: "all 0.2s", opacity: loading ? 0.7 : 1,
                 }}>
                 {loading ? "Chargement…"
