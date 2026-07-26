@@ -36,12 +36,12 @@ function SuccessContent() {
         return;
       }
 
-      if (attempts >= 10) {
+      if (attempts >= 20) {
         clearInterval(interval);
         localStorage.setItem("paw_premium", "true");
         setStatus("success");
       }
-    }, 2000);
+    }, 1500);
 
     return () => clearInterval(interval);
   }, [sessionId]);
@@ -72,11 +72,12 @@ function SuccessContent() {
         <p style={{ fontSize: 48, marginBottom: 16 }}>⚠️</p>
         <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 20,
           color: "var(--text-primary)", marginBottom: 8 }}>
-          Un problème est survenu
+          Activation en cours...
         </p>
         <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)",
           lineHeight: 1.65, marginBottom: 20 }}>
-          Si tu as été débité, contacte-nous à{" "}
+          Ton paiement a bien été reçu. L&apos;activation peut prendre quelques secondes.
+          Rafraîchis la page dans 30 secondes ou contacte-nous si le problème persiste à{" "}
           <a href="mailto:hello@postureatwork.com" style={{ color: "#7c9fff" }}>
             hello@postureatwork.com
           </a>
