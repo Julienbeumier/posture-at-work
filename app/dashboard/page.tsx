@@ -802,7 +802,7 @@ export default function DashboardPage() {
                 : isLocked
                 ? "🔒 Après ton bilan"
                 : isVideoCard && !isPremiumUser && !hasVideoAnalysis
-                ? "Normalement 9.99€"
+                ? "🔒 Inclus dans le bilan complet · 19,99€"
                 : (s.desc ?? "");
               return (
                 <Link key={s.title} href={href} style={{ textDecoration: "none" }}>
@@ -813,7 +813,7 @@ export default function DashboardPage() {
                     <div style={{ position: "absolute", top: -20, right: -20, width: 80, height: 80, borderRadius: "50%", background: s.blob, filter: "blur(24px)", opacity: 0.7 }} />
                     {isVideoCard && (
                       <div style={{ position: "absolute", top: 8, right: 8, padding: "2px 7px", borderRadius: 100, background: "rgba(245,158,11,0.15)", border: "0.5px solid rgba(245,158,11,0.35)", fontFamily: T.b, fontWeight: 700, fontSize: 9, color: "#f59e0b" }}>
-                        {isPremiumUser ? "👑 Premium" : "🎁 Gratuit"}
+                        {isPremiumUser ? "👑 Premium" : "🔒 19,99€"}
                       </div>
                     )}
                     <div style={{ width: 36, height: 36, borderRadius: 10, background: s.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, marginBottom: 10, position: "relative" }}>
