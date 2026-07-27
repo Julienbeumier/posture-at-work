@@ -1,347 +1,138 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useState } from "react";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
-const ADMIN_EMAIL = "julienbeumier@outlook.com";
-
-function scoreColor(s: number) {
-  return s >= 70 ? "#74c69d" : s >= 50 ? "#f4a261" : "#f09595";
-}
-
-interface CompanyRow {
-  id: string;
-  name: string;
-  contact_email: string;
-  contact_name: string;
-  plan: string;
-  is_active: boolean;
-  created_at: string;
-  employee_count: number;
-  assessed_count: number;
-  avg_score: number | null;
-}
-
-interface FeedbackRow {
-  id: string;
-  email: string;
-  nps: number;
-  score_questionnaire: number;
-  score_recommandations: number;
-  score_video: number;
-  score_exercices: number;
-  commentaire: string;
-  created_at: string;
-}
+const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_SECRET ?? "paw-admin-2026";
 
 export default function AdminPage() {
-  const { c } = useTheme();
-  const router = useRouter();
-  const supabase = createClient();
+  const [password, setPassword] = useState("");
+  const [authenticated, setAuthenticated] = useState(false);
+  const [form, setForm] = useState({
+    companyName: "",
+    contactName: "",
+    contactEmail: "",
+    plan: "essentiel",
+    maxEmployees: 25,
+    inviteCode: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ success: boolean; message: string; inviteCode?: string; companyId?: string } | null>(null);
 
-  const [loading, setLoading] = useState(true);
-  const [companies, setCompanies] = useState<CompanyRow[]>([]);
-  const [feedbacks, setFeedbacks] = useState<FeedbackRow[]>([]);
-  const [totalUsers, setTotalUsers] = useState(0);
-  const [totalAssessments, setTotalAssessments] = useState(0);
-  const [activeTab, setActiveTab] = useState<"companies" | "feedbacks">("companies");
+  if (!authenticated) return (
+    <main style={{ minHeight: "100vh", background: "var(--main-bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <div style={{ maxWidth: 320, width: "100%" }}>
+        <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "var(--text-primary)", textAlign: "center", marginBottom: 20 }}>
+          PAW<span style={{ color: "#2b5ce6" }}>.</span> Admin
+        </p>
+        <input type="password" placeholder="Mot de passe admin" value={password}
+          onChange={e => setPassword(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && setAuthenticated(password === ADMIN_PASSWORD)}
+          style={{ width: "100%", padding: "12px 14px", borderRadius: 12, outline: "none", marginBottom: 10, boxSizing: "border-box",
+            background: "var(--bg-card2)", border: "1px solid var(--border2)", color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }} />
+        <button onClick={() => setAuthenticated(password === ADMIN_PASSWORD)}
+          style={{ width: "100%", padding: "13px 0", borderRadius: 100, border: "none", background: "#2b5ce6", color: "#fff",
+            fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
+          Accéder →
+        </button>
+      </div>
+    </main>
+  );
 
-  useEffect(() => {
-    async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || user.email !== ADMIN_EMAIL) {
-        router.push("/");
-        return;
-      }
+  async function handleCreate() {
+    if (!form.companyName || !form.contactEmail) return;
+    setLoading(true);
+    setResult(null);
 
-      const { count: assessCount } = await supabase
-        .from("assessments")
-        .select("*", { count: "exact", head: true });
-      setTotalAssessments(assessCount ?? 0);
-
-      const { count: profileCount } = await supabase
-        .from("profiles")
-        .select("*", { count: "exact", head: true });
-      setTotalUsers(profileCount ?? 0);
-
-      const { data: companiesRaw } = await supabase
-        .from("companies")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (companiesRaw?.length) {
-        const companiesWithStats = await Promise.all(
-          companiesRaw.map(async (company) => {
-            const { count: empCount } = await supabase
-              .from("company_memberships")
-              .select("*", { count: "exact", head: true })
-              .eq("company_id", company.id)
-              .eq("role", "employee");
-
-            const { data: assessments } = await supabase
-              .from("assessments")
-              .select("global_score")
-              .eq("company_id", company.id);
-
-            const avgScore = assessments?.length
-              ? Math.round(
-                  assessments.reduce((sum, a) => sum + (a.global_score ?? 0), 0) /
-                  assessments.length
-                )
-              : null;
-
-            return {
-              ...company,
-              employee_count: empCount ?? 0,
-              assessed_count: assessments?.length ?? 0,
-              avg_score: avgScore,
-            };
-          })
-        );
-        setCompanies(companiesWithStats);
-      }
-
-      const { data: feedbacksRaw } = await supabase
-        .from("feedback")
-        .select("*")
-        .order("created_at", { ascending: false });
-      setFeedbacks(feedbacksRaw ?? []);
-
-      setLoading(false);
-    }
-    load();
-  }, []);
-
-  const avgNps = feedbacks.length
-    ? Math.round(feedbacks.reduce((sum, f) => sum + (f.nps ?? 0), 0) / feedbacks.length * 10) / 10
-    : null;
-
-  if (loading) {
-    return (
-      <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted }}>Chargement admin…</p>
-      </main>
-    );
+    const res = await fetch("/api/admin/create-company", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+    const data = await res.json();
+    setResult(data);
+    setLoading(false);
   }
 
   return (
-    <main style={{ minHeight: "100vh", paddingBottom: 80 }}>
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 24px 0" }}>
+    <main style={{ minHeight: "100vh", background: "var(--main-bg)", padding: "80px 24px 40px" }}>
+      <div style={{ maxWidth: 560, margin: "0 auto" }}>
+        <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "var(--text-primary)", marginBottom: 6 }}>
+          PAW<span style={{ color: "#2b5ce6" }}>.</span> Admin
+        </p>
+        <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", marginBottom: 28 }}>
+          Créer une nouvelle company B2B
+        </p>
 
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 32 }}>
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            padding: "5px 14px", borderRadius: 100, marginBottom: 12,
-            background: "rgba(240,149,149,0.12)", border: "0.5px solid rgba(240,149,149,0.3)",
-          }}>
-            <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600, color: "#f09595" }}>
-              🔐 Super Admin
-            </span>
-          </div>
-          <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: c.textPrimary, margin: 0 }}>
-            Dashboard PAW
-          </h1>
-        </motion.div>
-
-        {/* KPIs globaux */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
-          style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 28 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {[
-            { label: "Utilisateurs", value: totalUsers, color: "#7c9fff" },
-            { label: "Bilans complétés", value: totalAssessments, color: "#74c69d" },
-            { label: "Entreprises", value: companies.length, color: "#a78bfa" },
-            { label: "NPS moyen", value: avgNps !== null ? `${avgNps}/10` : "—", color: "#f4a261" },
-            { label: "Feedbacks reçus", value: feedbacks.length, color: "#5dcaa5" },
-          ].map((kpi, i) => (
-            <div key={i} style={{
-              borderRadius: 16, padding: "18px 16px", textAlign: "center",
-              background: c.bgCard, border: `0.5px solid ${c.border}`,
-            }}>
-              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: kpi.color, margin: "0 0 4px" }}>
-                {kpi.value}
-              </p>
-              <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{kpi.label}</p>
+            { key: "companyName", label: "Nom de l'entreprise", placeholder: "Acme Corp" },
+            { key: "contactName", label: "Nom du contact RH", placeholder: "Marie Martin" },
+            { key: "contactEmail", label: "Email du contact RH", placeholder: "marie@acme.com" },
+            { key: "inviteCode", label: "Code d'invitation (optionnel)", placeholder: "ACME2026 — généré auto si vide" },
+          ].map(field => (
+            <div key={field.key}>
+              <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "var(--t55)", marginBottom: 4 }}>{field.label}</p>
+              <input type="text" placeholder={field.placeholder}
+                value={form[field.key as keyof typeof form] as string}
+                onChange={e => setForm(prev => ({ ...prev, [field.key]: e.target.value }))}
+                style={{ width: "100%", padding: "11px 14px", borderRadius: 10, outline: "none", boxSizing: "border-box",
+                  background: "var(--bg-card2)", border: "1px solid var(--border2)", color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }} />
             </div>
           ))}
-        </motion.div>
 
-        {/* Tabs */}
-        <div style={{
-          display: "flex", gap: 4, padding: 4, borderRadius: 14,
-          background: c.bgCard2, border: `0.5px solid ${c.border}`,
-          marginBottom: 20,
-        }}>
-          {(["companies", "feedbacks"] as const).map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              style={{
-                flex: 1, padding: "10px 0", borderRadius: 10, border: "none",
-                background: activeTab === tab ? "#2b5ce6" : "transparent",
-                color: activeTab === tab ? "#fff" : c.textMuted,
-                fontFamily: T.b, fontWeight: 600, fontSize: 13,
-                cursor: "pointer", transition: "all 0.2s",
-              }}
-            >
-              {tab === "companies" ? `🏢 Entreprises (${companies.length})` : `💬 Feedbacks (${feedbacks.length})`}
-            </button>
-          ))}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div>
+              <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "var(--t55)", marginBottom: 4 }}>Plan</p>
+              <select value={form.plan} onChange={e => setForm(prev => ({ ...prev, plan: e.target.value }))}
+                style={{ width: "100%", padding: "11px 14px", borderRadius: 10, outline: "none", boxSizing: "border-box",
+                  background: "var(--bg-card2)", border: "1px solid var(--border2)", color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }}>
+                <option value="essentiel">Essentiel — 990€/an</option>
+                <option value="croissance">Croissance — 1490€/an</option>
+                <option value="entreprise">Entreprise — Sur devis</option>
+              </select>
+            </div>
+            <div>
+              <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "var(--t55)", marginBottom: 4 }}>Max employés</p>
+              <input type="number" value={form.maxEmployees}
+                onChange={e => setForm(prev => ({ ...prev, maxEmployees: Number(e.target.value) }))}
+                style={{ width: "100%", padding: "11px 14px", borderRadius: 10, outline: "none", boxSizing: "border-box",
+                  background: "var(--bg-card2)", border: "1px solid var(--border2)", color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }} />
+            </div>
+          </div>
         </div>
 
-        {/* Tab — Entreprises */}
-        {activeTab === "companies" && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {companies.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "40px 0" }}>
-                <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted }}>
-                  Aucune entreprise inscrite pour l&apos;instant.
+        <button onClick={handleCreate} disabled={loading || !form.companyName || !form.contactEmail}
+          style={{ width: "100%", marginTop: 20, padding: "15px 0", borderRadius: 100, border: "none",
+            background: form.companyName && form.contactEmail ? "#2b5ce6" : "var(--bg-card2)",
+            color: form.companyName && form.contactEmail ? "#fff" : "var(--t40)",
+            fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer", opacity: loading ? 0.7 : 1 }}>
+          {loading ? "Création en cours…" : "Créer la company →"}
+        </button>
+
+        {result && (
+          <div style={{ marginTop: 16, padding: "16px 18px", borderRadius: 14,
+            background: result.success ? "rgba(116,198,157,0.08)" : "rgba(226,75,74,0.08)",
+            border: `0.5px solid ${result.success ? "rgba(116,198,157,0.25)" : "rgba(226,75,74,0.25)"}` }}>
+            <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+              color: result.success ? "#74c69d" : "#f09595", margin: "0 0 8px" }}>
+              {result.success ? "✅ Company créée !" : "❌ Erreur"}
+            </p>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", margin: 0, lineHeight: 1.6 }}>
+              {result.message}
+            </p>
+            {result.success && result.inviteCode && (
+              <div style={{ marginTop: 10, padding: "10px 12px", borderRadius: 10, background: "rgba(43,92,230,0.08)" }}>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: "0 0 4px" }}>Lien d&apos;invitation employés :</p>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#7c9fff", margin: 0 }}>
+                  postureatwork.com/join/{result.inviteCode}
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: "4px 0 0" }}>
+                  L&apos;email de bienvenue a été envoyé à {form.contactEmail}
                 </p>
               </div>
-            ) : (
-              companies.map((company, i) => (
-                <motion.div key={company.id}
-                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
-                  style={{
-                    borderRadius: 16, padding: "18px 20px",
-                    background: c.bgCard, border: `0.5px solid ${c.border}`,
-                  }}>
-                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
-                        <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: 0 }}>
-                          {company.name}
-                        </p>
-                        <span style={{
-                          padding: "2px 9px", borderRadius: 100,
-                          background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)",
-                          fontFamily: T.b, fontSize: 10, color: "#7c9fff",
-                        }}>
-                          {company.plan}
-                        </span>
-                        {!company.is_active && (
-                          <span style={{
-                            padding: "2px 9px", borderRadius: 100,
-                            background: "rgba(240,149,149,0.12)",
-                            fontFamily: T.b, fontSize: 10, color: "#f09595",
-                          }}>
-                            Inactif
-                          </span>
-                        )}
-                      </div>
-                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>
-                        {company.contact_name} · {company.contact_email}
-                      </p>
-                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: "4px 0 0" }}>
-                        Inscrit le {new Date(company.created_at).toLocaleDateString("fr-FR")}
-                      </p>
-                    </div>
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      {[
-                        { label: "employés", value: company.employee_count, color: "#7c9fff" },
-                        { label: "bilans", value: company.assessed_count, color: "#74c69d" },
-                        { label: "score moy.", value: company.avg_score ?? "—", color: company.avg_score ? scoreColor(company.avg_score) : c.textMuted },
-                      ].map((stat, j) => (
-                        <div key={j} style={{
-                          textAlign: "center", padding: "8px 14px", borderRadius: 12,
-                          background: c.bgCard2, border: `0.5px solid ${c.border}`,
-                          minWidth: 60,
-                        }}>
-                          <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: stat.color, margin: 0 }}>
-                            {stat.value}
-                          </p>
-                          <p style={{ fontFamily: T.b, fontSize: 10, color: c.textMuted, margin: 0 }}>{stat.label}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              ))
             )}
-          </motion.div>
+          </div>
         )}
-
-        {/* Tab — Feedbacks */}
-        {activeTab === "feedbacks" && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {feedbacks.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "40px 0" }}>
-                <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted }}>
-                  Aucun feedback reçu pour l&apos;instant.
-                </p>
-              </div>
-            ) : (
-              feedbacks.map((fb, i) => (
-                <motion.div key={fb.id}
-                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
-                  style={{
-                    borderRadius: 16, padding: "18px 20px",
-                    background: c.bgCard, border: `0.5px solid ${c.border}`,
-                  }}>
-                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 12 }}>
-                    <div>
-                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, margin: "0 0 2px" }}>
-                        {fb.email ?? "Anonyme"}
-                      </p>
-                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>
-                        {new Date(fb.created_at).toLocaleDateString("fr-FR")}
-                      </p>
-                    </div>
-                    <div style={{
-                      padding: "6px 14px", borderRadius: 100,
-                      background: fb.nps >= 9 ? "rgba(116,198,157,0.15)" : fb.nps >= 7 ? "rgba(244,162,97,0.15)" : "rgba(240,149,149,0.15)",
-                      border: `0.5px solid ${fb.nps >= 9 ? "rgba(116,198,157,0.3)" : fb.nps >= 7 ? "rgba(244,162,97,0.3)" : "rgba(240,149,149,0.3)"}`,
-                    }}>
-                      <span style={{
-                        fontFamily: T.h, fontWeight: 900, fontSize: 16,
-                        color: fb.nps >= 9 ? "#74c69d" : fb.nps >= 7 ? "#f4a261" : "#f09595",
-                      }}>
-                        NPS {fb.nps}/10
-                      </span>
-                    </div>
-                  </div>
-
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: fb.commentaire ? 12 : 0 }}>
-                    {[
-                      { label: "Questionnaire", value: fb.score_questionnaire },
-                      { label: "Recommandations", value: fb.score_recommandations },
-                      { label: "Vidéo", value: fb.score_video },
-                      { label: "Exercices", value: fb.score_exercices },
-                    ].filter(s => s.value).map((s, j) => (
-                      <span key={j} style={{
-                        padding: "3px 10px", borderRadius: 100,
-                        background: c.bgCard2, border: `0.5px solid ${c.border}`,
-                        fontFamily: T.b, fontSize: 11, color: c.textSecondary,
-                      }}>
-                        {s.label} {"⭐".repeat(s.value)}
-                      </span>
-                    ))}
-                  </div>
-
-                  {fb.commentaire && (
-                    <div style={{
-                      padding: "10px 14px", borderRadius: 10,
-                      background: c.bgCard2, border: `0.5px solid ${c.border}`,
-                    }}>
-                      <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.6 }}>
-                        &quot;{fb.commentaire}&quot;
-                      </p>
-                    </div>
-                  )}
-                </motion.div>
-              ))
-            )}
-          </motion.div>
-        )}
-
       </div>
     </main>
   );

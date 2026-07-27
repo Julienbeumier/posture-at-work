@@ -68,6 +68,7 @@ function AuthForm() {
   const supabase = createClient();
   const redirect = searchParams.get("redirect") ?? "/dashboard";
   const fromOnboarding = searchParams.get("from") === "onboarding";
+  const fromEntreprise = searchParams.get("from") === "entreprise" || redirect === "/entreprise/dashboard";
   const pendingOnboarding = typeof window !== "undefined" ? localStorage.getItem("paw_onboarding") : null;
   const onboardingData = pendingOnboarding ? JSON.parse(pendingOnboarding) : null;
 
@@ -216,14 +217,44 @@ function AuthForm() {
             Posture At Work
           </p>
           <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", margin: "0 0 6px" }}>
-            {isLogin ? "Bon retour 👋" : isSignup ? (fromOnboarding ? "Dernière étape 🎯" : "Créer mon compte") : "Mot de passe oublié"}
+            {isLogin
+              ? fromEntreprise ? "Accès Dashboard RH 🏢" : "Bon retour 👋"
+              : isSignup
+                ? fromOnboarding ? "Dernière étape 🎯"
+                : fromEntreprise ? "Créer votre compte admin 🏢"
+                : "Créer mon compte"
+              : "Mot de passe oublié"}
           </h1>
           <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", margin: 0 }}>
-            {isLogin ? "Connecte-toi pour accéder à ton bilan"
-            : isSignup ? "Crée ton compte pour sauvegarder ton bilan"
-            : "Reçois un lien pour réinitialiser ton mot de passe"}
+            {isLogin
+              ? fromEntreprise
+                ? "Connectez-vous pour accéder à votre dashboard RH"
+                : "Connecte-toi pour accéder à ton bilan"
+              : isSignup
+                ? fromEntreprise
+                  ? "Créez votre compte administrateur PAW Entreprise"
+                  : fromOnboarding
+                    ? "Crée ton compte pour accéder à ton bilan personnalisé"
+                    : "Crée ton compte pour sauvegarder ton bilan"
+              : "Reçois un lien pour réinitialiser ton mot de passe"}
           </p>
         </motion.div>
+
+        {fromEntreprise && (
+          <div style={{
+            padding: "12px 16px", borderRadius: 12, marginBottom: 16,
+            background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)",
+            textAlign: "center",
+          }}>
+            <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+              color: "var(--text-primary)", margin: "0 0 2px" }}>
+              🏢 PAW Entreprise
+            </p>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: 0 }}>
+              Tableau de bord RH · Données anonymisées · RGPD
+            </p>
+          </div>
+        )}
 
         {fromOnboarding && onboardingData && (
           <div style={{ padding: "12px 16px", borderRadius: 12, marginBottom: 16,

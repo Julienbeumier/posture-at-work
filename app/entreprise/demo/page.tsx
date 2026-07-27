@@ -9,6 +9,21 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
+function useDemoAuth() {
+  const [authorized, setAuthorized] = useState(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    if (token === (process.env.NEXT_PUBLIC_DEMO_TOKEN ?? "pawdemo2026")) {
+      setAuthorized(true);
+    } else {
+      window.location.href = "/entreprise";
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return authorized;
+}
+
 const DIM_META: Record<string, { label: string; emoji: string; color: string; type: "employeur" | "employe" }> = {
   setup:        { label: "Setup & ergonomie",  emoji: "💻", color: "#7c9fff",  type: "employeur" },
   habits:       { label: "Habitudes de travail", emoji: "⏱️", color: "#f4a261", type: "employeur" },
@@ -613,7 +628,10 @@ function analyzeCollectiveVideo(employees: EmployeeRow[], assessed: EmployeeRow[
 }
 
 export default function EntrepriseDemoDashboard() {
+  const authorized = useDemoAuth();
   const { c } = useTheme();
+
+  if (!authorized) return null;
 
   const [company, setCompany] = useState<Company | null>(null);
   const [employees, setEmployees] = useState<EmployeeRow[]>([]);

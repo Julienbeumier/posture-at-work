@@ -386,3 +386,126 @@ export function emailPremium(d: { firstname: string; email: string }): { subject
     html: base(content, d.email),
   };
 }
+
+// ─── Template Entreprise — Bienvenue admin B2B ────────────────────────────────
+
+export function entrepriseWelcomeEmail(data: {
+  companyName: string;
+  adminName?: string;
+  inviteCode: string;
+  dashboardUrl: string;
+}): string {
+  const steps = [
+    {
+      num: "1",
+      title: "Accédez à votre dashboard RH",
+      desc: "Créez votre compte administrateur et accédez à votre tableau de bord.",
+      cta: "Accéder au dashboard →",
+      url: data.dashboardUrl,
+    },
+    {
+      num: "2",
+      title: "Invitez vos équipes",
+      desc: `Partagez ce lien à vos collaborateurs pour qu'ils créent leur bilan :<br><strong style="color:#2b5ce6;">postureatwork.com/join/${data.inviteCode}</strong>`,
+      cta: null,
+      url: null,
+    },
+    {
+      num: "3",
+      title: "Suivez les résultats",
+      desc: "Dès que vos collaborateurs complètent leur bilan, les données apparaissent anonymisées dans votre dashboard.",
+      cta: null,
+      url: null,
+    },
+  ];
+
+  return `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <div style="max-width:580px;margin:0 auto;padding:32px 16px;">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="background:#111827;display:inline-block;padding:12px 24px;border-radius:12px;">
+        <p style="font-size:22px;font-weight:900;color:#ffffff;margin:0;">
+          PAW<span style="color:#2b5ce6;">.</span>
+          <span style="font-size:13px;font-weight:400;color:rgba(255,255,255,0.5);margin-left:8px;">Entreprise</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <div style="background:#ffffff;border-radius:20px;padding:32px 28px;margin-bottom:20px;border:1px solid #e5e7eb;">
+      <h1 style="font-size:22px;font-weight:900;color:#111827;margin:0 0 12px;letter-spacing:-0.5px;line-height:1.2;">
+        Bienvenue sur PAW Entreprise${data.adminName ? `, ${data.adminName}` : ""} 👋
+      </h1>
+      <p style="font-size:15px;color:#6b7280;line-height:1.7;margin:0 0 20px;">
+        Votre espace <strong style="color:#111827;">${data.companyName}</strong> est prêt.
+        Voici tout ce dont vous avez besoin pour démarrer.
+      </p>
+      ${steps.map(step => `
+        <div style="display:flex;gap:16px;padding:16px 0;border-bottom:1px solid #f3f4f6;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-size:14px;font-weight:800;color:#2b5ce6;">${step.num}</span>
+          </div>
+          <div style="flex:1;">
+            <p style="font-size:14px;font-weight:700;color:#111827;margin:0 0 4px;">${step.title}</p>
+            <p style="font-size:13px;color:#6b7280;margin:0 0 8px;line-height:1.55;">${step.desc}</p>
+            ${step.cta && step.url ? `
+              <a href="${step.url}" style="display:inline-block;padding:10px 20px;border-radius:100px;background:#2b5ce6;color:#ffffff;font-size:13px;font-weight:700;text-decoration:none;">
+                ${step.cta}
+              </a>
+            ` : ""}
+          </div>
+        </div>
+      `).join("")}
+    </div>
+
+    <!-- Lien invitation -->
+    <div style="background:#eff6ff;border-radius:16px;padding:20px 24px;margin-bottom:20px;border:1px solid #dbeafe;">
+      <p style="font-size:12px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 8px;">
+        🔗 Lien d'invitation pour vos équipes
+      </p>
+      <p style="font-size:16px;font-weight:800;color:#2b5ce6;margin:0 0 6px;letter-spacing:-0.3px;">
+        postureatwork.com/join/${data.inviteCode}
+      </p>
+      <p style="font-size:12px;color:#6b7280;margin:0;">
+        Partagez ce lien par email, Slack ou votre intranet. Chaque collaborateur crée son propre compte et son bilan reste confidentiel.
+      </p>
+    </div>
+
+    <!-- RGPD -->
+    <div style="background:#f0fdf4;border-radius:16px;padding:16px 20px;margin-bottom:28px;border:1px solid #bbf7d0;">
+      <p style="font-size:13px;color:#374151;line-height:1.65;margin:0;">
+        🔒 <strong>Données 100% anonymisées</strong> — en tant qu'administrateur, vous voyez uniquement des données agrégées.
+        Aucune donnée de santé individuelle n'est accessible. Conformité RGPD garantie.
+      </p>
+    </div>
+
+    <!-- CTA final -->
+    <div style="text-align:center;margin-bottom:28px;">
+      <a href="${data.dashboardUrl}"
+         style="display:inline-block;padding:16px 32px;border-radius:100px;background:linear-gradient(135deg,#2b5ce6,#7c3aed);color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">
+        Accéder à mon dashboard RH →
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align:center;border-top:1px solid #e5e7eb;padding-top:20px;">
+      <p style="font-size:12px;color:#9ca3af;margin:0 0 4px;">
+        PostureAtWork · hello@postureatwork.com
+      </p>
+      <p style="font-size:11px;color:#d1d5db;margin:0;">
+        Une question ? Répondez directement à cet email.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+}
