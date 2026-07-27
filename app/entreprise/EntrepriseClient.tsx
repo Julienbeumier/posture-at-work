@@ -64,60 +64,174 @@ const FEATURES = [
   },
 ];
 
-const PLANS = [
-  {
-    name: "Essentiel",
-    price: "990€",
-    period: "/an",
-    employees: "Jusqu'à 25 employés",
-    perEmployee: "soit 39€/employé/an",
-    features: [
-      "Accès premium PAW pour tous les employés",
-      "Analyse vidéo IA posturale incluse",
-      "Dashboard RH anonymisé",
-      "Rapport collectif trimestriel PDF",
-      "Programme d'exercices collectif",
-      "Call de restitution 1h avec le kiné",
-      "Support email prioritaire",
-    ],
-    color: "#2b5ce6",
-    highlight: false,
-  },
-  {
-    name: "Croissance",
-    price: "1 490€",
-    period: "/an",
-    employees: "Jusqu'à 50 employés",
-    perEmployee: "soit 29€/employé/an",
-    features: [
-      "Tout Essentiel +",
-      "Dashboard par service (bureau vs terrain)",
-      "2 calls de restitution par an",
-      "Suivi d'évolution trimestriel",
-      "Export données CSV",
-      "Rapport ESG/CSRD personnalisé",
-    ],
-    color: "#7c3aed",
-    highlight: true,
-  },
-  {
-    name: "Entreprise",
-    price: "Sur devis",
-    period: "",
-    employees: "50+ employés",
-    perEmployee: "Adapté à votre organisation",
-    features: [
-      "Tout Croissance +",
-      "Questionnaires multi-secteurs",
-      "Dashboard multi-sites",
-      "Accompagnement trimestriel dédié",
-      "Intégration SIRH sur demande",
-      "Rapport ESG/CSRD complet",
-    ],
-    color: "#1d9e75",
-    highlight: false,
-  },
-];
+function calculatePrice(employees: number) {
+  const n = Math.max(10, employees);
+  if (n < 50) {
+    return { pricePerEmployee: 25, totalYear: n * 25, totalMonth: Math.round((n * 25) / 12), tier: "PME", savings: undefined as number | undefined };
+  } else if (n < 150) {
+    const total = n * 20;
+    return { pricePerEmployee: 20, totalYear: total, totalMonth: Math.round(total / 12), tier: "Croissance", savings: n * 25 - total };
+  } else {
+    return { pricePerEmployee: 0, totalYear: 0, totalMonth: 0, tier: "Entreprise", savings: undefined as number | undefined };
+  }
+}
+
+function PricingCalculator({
+  isMobile, c, T, fadeUp,
+}: {
+  isMobile: boolean;
+  c: { textPrimary: string; textSecondary: string; textMuted: string; bgCard: string; bgCard2: string; border: string };
+  T: { h: string; b: string };
+  fadeUp: (delay?: number) => object;
+}) {
+  const [employees, setEmployees] = useState(20);
+  const price = calculatePrice(employees);
+  const isDevis = price.tier === "Entreprise";
+
+  const included = [
+    `Accès premium PAW pour les ${employees} employés`,
+    "Analyse vidéo IA posturale incluse",
+    "Dashboard RH anonymisé",
+    "Rapport collectif trimestriel PDF",
+    "Programme d'exercices collectif",
+    "Call de restitution 1h avec le kiné",
+    "Support email prioritaire",
+  ];
+
+  return (
+    <motion.div {...fadeUp(0.2)} style={{ marginBottom: 72 }}>
+      <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>Tarifs</p>
+      <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
+        Transparent. Sans surprise.
+      </h2>
+      <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 32 }}>
+        Accès premium PAW inclus pour chaque employé. Prix dégressif à partir de 50 personnes.
+      </p>
+
+      <div style={{ borderRadius: 24, padding: isMobile ? "24px 18px" : "36px 40px", background: c.bgCard, border: `0.5px solid ${c.border}` }}>
+        {/* Slider */}
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
+            <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, fontWeight: 600 }}>Nombre d&apos;employés</span>
+            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "#2b5ce6" }}>
+              {employees}{" "}
+              <span style={{ fontSize: 14, fontWeight: 600, color: c.textMuted }}>employés</span>
+            </span>
+          </div>
+          <input
+            type="range"
+            min={10}
+            max={200}
+            step={5}
+            value={employees}
+            onChange={e => setEmployees(Number(e.target.value))}
+            style={{ width: "100%", accentColor: "#2b5ce6", cursor: "pointer" }}
+          />
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+            {["10", "50", "150+", "200"].map(label => (
+              <span key={label} style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>{label}</span>
+            ))}
+          </div>
+        </div>
+
+        {isDevis ? (
+          <div style={{ textAlign: "center", padding: "28px 20px" }}>
+            <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 36, color: c.textPrimary, marginBottom: 8 }}>Sur devis</p>
+            <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 8, lineHeight: 1.65 }}>
+              Pour les organisations de 150+ employés, nous construisons une offre sur mesure :
+              multi-sites, intégration SIRH, accompagnement dédié.
+            </p>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "#7c9fff", marginBottom: 28 }}>
+              Tarif négocié · Déploiement accompagné · SLA garanti
+            </p>
+            <a href="#contact" style={{ textDecoration: "none" }}>
+              <button style={{
+                padding: "14px 32px", borderRadius: 100, border: "none",
+                background: "#2b5ce6", color: "#fff",
+                fontFamily: T.h, fontWeight: 800, fontSize: 15,
+                boxShadow: "0 4px 20px rgba(43,92,230,0.35)", cursor: "pointer",
+              }}>
+                Demander un devis pour {employees} employés →
+              </button>
+            </a>
+          </div>
+        ) : (
+          <div>
+            {/* Prix */}
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16, marginBottom: 20 }}>
+              <div style={{ padding: "20px", borderRadius: 16, textAlign: "center", background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff", fontWeight: 600, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>Annuel</p>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 30, color: c.textPrimary, margin: "0 0 4px" }}>
+                  {price.totalYear.toLocaleString("fr-FR")}€
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>HT / an</p>
+              </div>
+              <div style={{ padding: "20px", borderRadius: 16, textAlign: "center", background: c.bgCard2, border: `0.5px solid ${c.border}` }}>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, fontWeight: 600, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>Mensuel</p>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 30, color: c.textPrimary, margin: "0 0 4px" }}>
+                  {price.totalMonth.toLocaleString("fr-FR")}€
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>HT / mois</p>
+              </div>
+              <div style={{ padding: "20px", borderRadius: 16, textAlign: "center", background: c.bgCard2, border: `0.5px solid ${c.border}` }}>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, fontWeight: 600, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>Par employé</p>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 30, color: c.textPrimary, margin: "0 0 4px" }}>
+                  {price.pricePerEmployee}€
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>HT / an / personne</p>
+              </div>
+            </div>
+
+            {/* Badge économies */}
+            {price.savings && price.savings > 0 && (
+              <div style={{
+                padding: "12px 16px", borderRadius: 12, marginBottom: 20,
+                background: "rgba(29,158,117,0.08)", border: "0.5px solid rgba(29,158,117,0.25)",
+                display: "flex", alignItems: "center", gap: 10,
+              }}>
+                <span style={{ fontSize: 18 }}>🎉</span>
+                <span style={{ fontFamily: T.b, fontSize: 13, color: "#1d9e75", fontWeight: 600 }}>
+                  Économie de {price.savings.toLocaleString("fr-FR")}€/an grâce au tarif dégressif (20€ vs 25€/employé)
+                </span>
+              </div>
+            )}
+
+            {/* Inclus */}
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8, marginBottom: 20 }}>
+              {included.map((f, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                  <span style={{ color: "#2b5ce6", fontSize: 13, flexShrink: 0, marginTop: 1 }}>✓</span>
+                  <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.4 }}>{f}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Argument de valeur */}
+            <div style={{ padding: "14px 16px", borderRadius: 12, marginBottom: 24, background: c.bgCard2, border: `0.5px solid ${c.border}` }}>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.65 }}>
+                💡 L&apos;accès premium individuel coûte <strong style={{ color: c.textPrimary }}>19,99€/personne</strong> — pour {employees} employés, ça ferait{" "}
+                <strong style={{ color: c.textPrimary }}>{(employees * 20).toLocaleString("fr-FR")}€</strong>. Avec PAW Entreprise :{" "}
+                <strong style={{ color: "#2b5ce6" }}>{price.totalYear.toLocaleString("fr-FR")}€</strong> — tout inclus.
+              </p>
+            </div>
+
+            {/* CTA */}
+            <a href="#contact" style={{ textDecoration: "none" }}>
+              <button style={{
+                width: "100%", padding: "15px 0", borderRadius: 100, border: "none",
+                background: "#2b5ce6", color: "#fff",
+                fontFamily: T.h, fontWeight: 800, fontSize: 15,
+                boxShadow: "0 4px 24px rgba(43,92,230,0.35)", cursor: "pointer",
+              }}>
+                Demander une démo pour {employees} employés →
+              </button>
+            </a>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
 
 const VS_ERGO = [
   { critere: "Coût", ergo: "1 000€+ / jour de prestation", paw: "À partir de 990€ / an" },
@@ -374,63 +488,7 @@ export default function EntrepriseClient() {
         </motion.div>
 
         {/* ── PRICING ── */}
-        <motion.div {...fadeUp(0.2)} style={{ marginBottom: 72 }}>
-          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>Tarifs</p>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
-            Transparent. Sans surprise.
-          </h2>
-          <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 32 }}>
-            Tous les plans incluent l&apos;accès premium PAW pour chaque employé et le call de restitution avec le kiné.
-          </p>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
-            {PLANS.map((plan, i) => (
-              <div key={i} style={{
-                borderRadius: 20, padding: "28px 24px",
-                background: plan.highlight ? `${plan.color}08` : c.bgCard,
-                border: `${plan.highlight ? "1.5px" : "0.5px"} solid ${plan.highlight ? plan.color + "40" : c.border}`,
-                position: "relative",
-              }}>
-                {plan.highlight && (
-                  <div style={{
-                    position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)",
-                    padding: "4px 14px", borderRadius: 100,
-                    background: plan.color, color: "#fff",
-                    fontFamily: T.b, fontWeight: 700, fontSize: 11,
-                  }}>
-                    Le plus choisi
-                  </div>
-                )}
-                <p style={{ fontFamily: T.b, fontSize: 12, color: plan.color, fontWeight: 700, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>{plan.name}</p>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
-                  <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 30, color: c.textPrimary }}>{plan.price}</span>
-                  <span style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted }}>{plan.period}</span>
-                </div>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: plan.color, fontWeight: 600, marginBottom: 4 }}>{plan.employees}</p>
-                <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, marginBottom: 20 }}>{plan.perEmployee}</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 24 }}>
-                  {plan.features.map((f, j) => (
-                    <div key={j} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                      <span style={{ color: plan.color, fontSize: 12, marginTop: 1, flexShrink: 0 }}>✓</span>
-                      <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.4 }}>{f}</span>
-                    </div>
-                  ))}
-                </div>
-                <a href="#contact" style={{ textDecoration: "none" }}>
-                  <button style={{
-                    width: "100%", padding: "13px 0", borderRadius: 100,
-                    background: plan.highlight ? plan.color : "transparent",
-                    border: `1.5px solid ${plan.color}`,
-                    color: plan.highlight ? "#fff" : plan.color,
-                    fontFamily: T.h, fontWeight: 700, fontSize: 14,
-                    cursor: "pointer",
-                  }}>
-                    Demander une démo →
-                  </button>
-                </a>
-              </div>
-            ))}
-          </div>
-        </motion.div>
+        <PricingCalculator isMobile={isMobile} c={c} T={T} fadeUp={fadeUp} />
 
         {/* ── CONTACT / DÉMO ── */}
         <motion.div {...fadeUp(0.25)} id="contact" style={{
