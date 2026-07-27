@@ -61,6 +61,16 @@ const pillars = [
     blob: "rgba(124,58,237,0.25)",
     iconBg: "rgba(124,58,237,0.18)",
   },
+  {
+    icon: "🏃",
+    title: "Lifestyle & Bien-être",
+    desc: "Activité physique, stress chronique, cortisol — le mode de vie amplifie ou atténue toutes les douleurs musculaires.",
+    bg: "rgba(29,158,117,0.07)",
+    border: "rgba(29,158,117,0.15)",
+    titleColor: "#1d9e75",
+    blob: "rgba(29,158,117,0.25)",
+    iconBg: "rgba(29,158,117,0.18)",
+  },
 ];
 
 function fadeUp(delay = 0) {
@@ -261,7 +271,7 @@ export default function LandingClient() {
         </motion.div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           {[
-            { step: "01", icon: "📋", title: "Tu réponds au questionnaire", desc: "32 questions sur ton setup, tes douleurs, ton sommeil et tes habitudes. Adapté selon ton métier — bureau ou debout.", color: "#2b5ce6" },
+            { step: "01", icon: "📋", title: "Tu réponds au questionnaire", desc: "30 questions sur ton setup, tes douleurs, ton sommeil et tes habitudes. Adapté selon ton métier — bureau ou debout.", color: "#2b5ce6" },
             { step: "02", icon: "🔬", title: "PAW analyse ta situation", desc: "Un score sur 100 par dimension, des flags cliniques détectés, et une analyse IA de ta posture via ta caméra.", color: "#7c3aed" },
             { step: "03", icon: "✅", title: "Tu reçois ton plan d'action", desc: "Des recommandations concrètes classées par priorité, des exercices ciblés et des produits adaptés à ton profil.", color: "#1d9e75" },
           ].map((item, i) => (
