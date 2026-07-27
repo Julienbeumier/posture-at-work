@@ -67,13 +67,33 @@ const FEATURES = [
 function calculatePrice(employees: number) {
   const n = Math.max(10, employees);
   if (n < 50) {
-    return { pricePerEmployee: 25, totalYear: n * 25, totalMonth: Math.round((n * 25) / 12), tier: "PME", savings: undefined as number | undefined };
+    return {
+      pricePerEmployee: 25,
+      totalYear: n * 25,
+      totalMonth: Math.round((n * 25) / 12),
+      tier: "PME",
+      savings: 0,
+      bilanValue: Math.round(n * 19.99),
+    };
   } else if (n < 150) {
     const total = n * 20;
-    return { pricePerEmployee: 20, totalYear: total, totalMonth: Math.round(total / 12), tier: "Croissance", savings: n * 25 - total };
-  } else {
-    return { pricePerEmployee: 0, totalYear: 0, totalMonth: 0, tier: "Entreprise", savings: undefined as number | undefined };
+    return {
+      pricePerEmployee: 20,
+      totalYear: total,
+      totalMonth: Math.round(total / 12),
+      tier: "Croissance",
+      savings: n * 25 - total,
+      bilanValue: Math.round(n * 19.99),
+    };
   }
+  return {
+    pricePerEmployee: 0,
+    totalYear: 0,
+    totalMonth: 0,
+    tier: "Entreprise",
+    savings: 0,
+    bilanValue: 0,
+  };
 }
 
 function PricingCalculator({
@@ -87,16 +107,6 @@ function PricingCalculator({
   const [employees, setEmployees] = useState(20);
   const price = calculatePrice(employees);
   const isDevis = price.tier === "Entreprise";
-
-  const included = [
-    `Accès premium PAW pour les ${employees} employés`,
-    "Analyse vidéo IA posturale incluse",
-    "Dashboard RH anonymisé",
-    "Rapport collectif trimestriel PDF",
-    "Programme d'exercices collectif",
-    "Call de restitution 1h avec le kiné",
-    "Support email prioritaire",
-  ];
 
   return (
     <motion.div {...fadeUp(0.2)} style={{ marginBottom: 72 }}>
@@ -121,14 +131,14 @@ function PricingCalculator({
           <input
             type="range"
             min={10}
-            max={200}
+            max={160}
             step={5}
             value={employees}
             onChange={e => setEmployees(Number(e.target.value))}
             style={{ width: "100%", accentColor: "#2b5ce6", cursor: "pointer" }}
           />
           <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
-            {["10", "50", "150+", "200"].map(label => (
+            {["10", "25", "50", "75", "100", "150+"].map(label => (
               <span key={label} style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>{label}</span>
             ))}
           </div>
@@ -157,62 +167,74 @@ function PricingCalculator({
           </div>
         ) : (
           <div>
-            {/* Prix */}
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16, marginBottom: 20 }}>
-              <div style={{ padding: "20px", borderRadius: 16, textAlign: "center", background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff", fontWeight: 600, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>Annuel</p>
-                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 30, color: c.textPrimary, margin: "0 0 4px" }}>
+            {/* Prix principal */}
+            <div style={{ textAlign: "center", padding: "24px 0 20px", borderBottom: `0.5px solid ${c.border}`, marginBottom: 20 }}>
+              <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>
+                Votre tarif annuel
+              </p>
+              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 8, marginBottom: 6 }}>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 48 : 64, color: c.textPrimary, letterSpacing: "-3px", lineHeight: 1 }}>
                   {price.totalYear.toLocaleString("fr-FR")}€
-                </p>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>HT / an</p>
+                </span>
+                <span style={{ fontFamily: T.b, fontSize: 16, color: c.textMuted }}>/an HT</span>
               </div>
-              <div style={{ padding: "20px", borderRadius: 16, textAlign: "center", background: c.bgCard2, border: `0.5px solid ${c.border}` }}>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, fontWeight: 600, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>Mensuel</p>
-                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 30, color: c.textPrimary, margin: "0 0 4px" }}>
-                  {price.totalMonth.toLocaleString("fr-FR")}€
-                </p>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>HT / mois</p>
-              </div>
-              <div style={{ padding: "20px", borderRadius: 16, textAlign: "center", background: c.bgCard2, border: `0.5px solid ${c.border}` }}>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, fontWeight: 600, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>Par employé</p>
-                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 30, color: c.textPrimary, margin: "0 0 4px" }}>
-                  {price.pricePerEmployee}€
-                </p>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>HT / an / personne</p>
-              </div>
+              <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, margin: 0 }}>
+                soit <strong style={{ color: c.textPrimary }}>{price.pricePerEmployee}€/employé/an</strong> — {(price.pricePerEmployee / 12).toFixed(2)}€/mois/personne
+              </p>
             </div>
 
-            {/* Badge économies */}
-            {price.savings && price.savings > 0 && (
+            {/* Argument de valeur */}
+            <div style={{
+              padding: "16px 18px", borderRadius: 14, marginBottom: 16,
+              background: price.bilanValue <= price.totalYear ? "rgba(43,92,230,0.06)" : "rgba(116,198,157,0.06)",
+              border: `0.5px solid ${price.bilanValue <= price.totalYear ? "rgba(43,92,230,0.2)" : "rgba(116,198,157,0.2)"}`,
+            }}>
+              {price.bilanValue > price.totalYear ? (
+                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.7 }}>
+                  💡 Si chacun de vos <strong style={{ color: c.textPrimary }}>{employees} employés</strong> achetait son bilan individuellement,
+                  ça coûterait <strong style={{ color: c.textPrimary }}>{price.bilanValue.toLocaleString("fr-FR")}€</strong>.
+                  Avec PAW Entreprise, vous payez <strong style={{ color: "#74c69d" }}>{price.totalYear.toLocaleString("fr-FR")}€</strong> —
+                  et vous avez en plus le dashboard RH, l&apos;analyse collective et le rapport trimestriel.
+                </p>
+              ) : (
+                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.7 }}>
+                  💡 Pour <strong style={{ color: c.textPrimary }}>{employees} employés</strong>, PAW Entreprise inclut
+                  les <strong style={{ color: c.textPrimary }}>{employees} bilans premium</strong> + le dashboard RH collectif
+                  + l&apos;analyse posturale vidéo de toute l&apos;équipe + le rapport trimestriel.
+                  Un ergonome facture <strong style={{ color: c.textPrimary }}>~150€/personne</strong> pour bien moins.
+                </p>
+              )}
+            </div>
+
+            {/* Badge économies si dégressif */}
+            {price.savings > 0 && (
               <div style={{
-                padding: "12px 16px", borderRadius: 12, marginBottom: 20,
-                background: "rgba(29,158,117,0.08)", border: "0.5px solid rgba(29,158,117,0.25)",
-                display: "flex", alignItems: "center", gap: 10,
+                padding: "10px 14px", borderRadius: 10, marginBottom: 16,
+                background: "rgba(116,198,157,0.08)", border: "0.5px solid rgba(116,198,157,0.2)",
+                display: "flex", alignItems: "center", gap: 8,
               }}>
-                <span style={{ fontSize: 18 }}>🎉</span>
+                <span style={{ fontSize: 16 }}>🎉</span>
                 <span style={{ fontFamily: T.b, fontSize: 13, color: "#1d9e75", fontWeight: 600 }}>
-                  Économie de {price.savings.toLocaleString("fr-FR")}€/an grâce au tarif dégressif (20€ vs 25€/employé)
+                  Tarif dégressif : vous économisez {price.savings.toLocaleString("fr-FR")}€/an vs le tarif PME
                 </span>
               </div>
             )}
 
-            {/* Inclus */}
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8, marginBottom: 20 }}>
-              {included.map((f, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                  <span style={{ color: "#2b5ce6", fontSize: 13, flexShrink: 0, marginTop: 1 }}>✓</span>
-                  <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.4 }}>{f}</span>
+            {/* Ce qui est inclus — compact */}
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 6, marginBottom: 20 }}>
+              {[
+                `${employees} bilans premium PAW`,
+                `${employees} analyses vidéo IA`,
+                "Dashboard RH anonymisé",
+                "Rapport trimestriel PDF",
+                "Score ESG/CSRD valorisable",
+                "Call de restitution avec le kiné",
+              ].map((f, i) => (
+                <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                  <span style={{ color: "#2b5ce6", fontSize: 12, flexShrink: 0, marginTop: 2 }}>✓</span>
+                  <span style={{ fontFamily: T.b, fontSize: 12, color: c.textSecondary, lineHeight: 1.4 }}>{f}</span>
                 </div>
               ))}
-            </div>
-
-            {/* Argument de valeur */}
-            <div style={{ padding: "14px 16px", borderRadius: 12, marginBottom: 24, background: c.bgCard2, border: `0.5px solid ${c.border}` }}>
-              <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.65 }}>
-                💡 L&apos;accès premium individuel coûte <strong style={{ color: c.textPrimary }}>19,99€/personne</strong> — pour {employees} employés, ça ferait{" "}
-                <strong style={{ color: c.textPrimary }}>{(employees * 20).toLocaleString("fr-FR")}€</strong>. Avec PAW Entreprise :{" "}
-                <strong style={{ color: "#2b5ce6" }}>{price.totalYear.toLocaleString("fr-FR")}€</strong> — tout inclus.
-              </p>
             </div>
 
             {/* CTA */}
