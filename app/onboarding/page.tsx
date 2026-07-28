@@ -319,6 +319,10 @@ export default function OnboardingPage() {
                       onClick={() => handleAgeSelect(opt)}
                       style={{
                         padding: "12px 22px",
+                        minHeight: "44px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         borderRadius: 100,
                         background: age === opt ? "rgba(43,92,230,0.20)" : "rgba(255,255,255,0.06)",
                         border: `0.5px solid ${age === opt ? "#7c9fff" : "rgba(255,255,255,0.15)"}`,
@@ -486,6 +490,10 @@ export default function OnboardingPage() {
                       onClick={() => handleHoursSelect(opt)}
                       style={{
                         padding: "12px 22px",
+                        minHeight: "44px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         borderRadius: 100,
                         background:
                           hoursWeek === opt ? "rgba(43,92,230,0.20)" : "rgba(255,255,255,0.06)",

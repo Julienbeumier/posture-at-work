@@ -384,7 +384,7 @@ export default function PremiumPage() {
             <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", textAlign: "center", marginBottom: 20 }}>
               Tout ce que tu débloques
             </h2>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
               {FEATURES.map((f, i) => (
                 <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 + i * 0.06 }}
                   style={{ borderRadius: 18, padding: "18px 16px", background: f.bg, border: `0.5px solid ${f.border}` }}>
