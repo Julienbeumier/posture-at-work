@@ -73,6 +73,18 @@ function SuccessContent() {
   const router = useRouter();
   const sessionId = searchParams.get("session_id");
   const [status, setStatus] = useState<"loading" | "success" | "error" | "reconnect">("loading");
+  const [reconnectLoading, setReconnectLoading] = useState(false);
+
+  async function handleGoogleReconnect() {
+    setReconnectLoading(true);
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?redirect=/results`,
+      },
+    });
+  }
 
   useEffect(() => {
     if (!sessionId) { setStatus("error"); return; }
@@ -145,24 +157,50 @@ function SuccessContent() {
     <main style={{ minHeight: "100vh", background: "var(--main-bg)",
       display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-        style={{ textAlign: "center", maxWidth: 400 }}>
+        style={{ textAlign: "center", maxWidth: 400, width: "100%" }}>
+
         <div style={{ fontSize: 52, marginBottom: 16 }}>🎉</div>
         <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24,
-          color: "var(--text-primary)", marginBottom: 12 }}>
+          color: "var(--text-primary)", marginBottom: 8 }}>
           Paiement réussi !
         </h1>
         <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)",
           lineHeight: 1.65, marginBottom: 24 }}>
-          Ton accès premium est activé. Reconnecte-toi pour accéder à ton analyse complète.
+          Ton accès premium est activé. Reconnecte-toi en un clic pour
+          accéder à ton analyse complète.
         </p>
+
+        <button onClick={handleGoogleReconnect}
+          disabled={reconnectLoading}
+          style={{ width: "100%", display: "flex", alignItems: "center",
+            justifyContent: "center", gap: 10, padding: "14px 0",
+            borderRadius: 12, cursor: "pointer", marginBottom: 10,
+            background: "var(--bg-card2)", border: "1px solid var(--border2)",
+            fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600,
+            fontSize: 14, color: "var(--text-primary)" }}>
+          <svg width="18" height="18" viewBox="0 0 18 18">
+            <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+            <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.01a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/>
+            <path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/>
+            <path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/>
+          </svg>
+          {reconnectLoading ? "Connexion…" : "Continuer avec Google"}
+        </button>
+
         <Link href="/auth?redirect=/results" style={{ textDecoration: "none" }}>
-          <div style={{ padding: "16px 32px", borderRadius: 100,
-            background: "linear-gradient(135deg, #2b5ce6, #7c3aed)",
-            fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#fff",
-            boxShadow: "0 4px 24px rgba(43,92,230,0.4)", cursor: "pointer" }}>
-            Se connecter → voir mon analyse
+          <div style={{ width: "100%", padding: "13px 0", borderRadius: 12,
+            border: "0.5px solid var(--border)", background: "transparent",
+            fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600,
+            fontSize: 14, color: "var(--t55)", textAlign: "center", cursor: "pointer" }}>
+            Connexion par email →
           </div>
         </Link>
+
+        <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12,
+          color: "var(--t35)", marginTop: 16 }}>
+          Ton paiement est confirmé — tu retrouveras ton accès premium
+          dès que tu seras connecté.
+        </p>
       </motion.div>
     </main>
   );
