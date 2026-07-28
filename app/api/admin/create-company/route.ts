@@ -46,6 +46,20 @@ export async function POST(req: Request) {
       expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
     });
 
+    const adminToken =
+      Math.random().toString(36).substring(2) +
+      Date.now().toString(36) +
+      Math.random().toString(36).substring(2);
+
+    await supabaseAdmin.from("admin_invites").insert({
+      company_id: company.id,
+      token: adminToken,
+      email: contactEmail,
+      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    });
+
+    const adminUrl = `https://postureatwork.com/auth?admin_token=${adminToken}&redirect=/entreprise/dashboard&from=entreprise`;
+
     const resend = new Resend(process.env.RESEND_API_KEY);
     await resend.emails.send({
       from: "PostureAtWork <hello@postureatwork.com>",
@@ -55,7 +69,7 @@ export async function POST(req: Request) {
         companyName,
         adminName: contactName,
         inviteCode: code,
-        dashboardUrl: `https://postureatwork.com/auth?redirect=/entreprise/dashboard&from=entreprise`,
+        dashboardUrl: adminUrl,
       }),
     });
 

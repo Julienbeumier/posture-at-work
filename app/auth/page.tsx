@@ -67,8 +67,9 @@ function AuthForm() {
   const router = useRouter();
   const supabase = createClient();
   const redirect = searchParams.get("redirect") ?? "/dashboard";
+  const adminToken = searchParams.get("admin_token") ?? "";
   const fromOnboarding = searchParams.get("from") === "onboarding";
-  const fromEntreprise = searchParams.get("from") === "entreprise" || redirect === "/entreprise/dashboard";
+  const fromEntreprise = searchParams.get("from") === "entreprise" || redirect === "/entreprise/dashboard" || !!adminToken;
   const pendingOnboarding = typeof window !== "undefined" ? localStorage.getItem("paw_onboarding") : null;
   const onboardingData = pendingOnboarding ? JSON.parse(pendingOnboarding) : null;
 
@@ -113,11 +114,12 @@ function AuthForm() {
       }));
     }
     const appUrl = window.location.origin;
+    const redirectTo = adminToken
+      ? `${appUrl}/auth/callback?admin_token=${adminToken}&redirect=${encodeURIComponent(redirect)}`
+      : `${appUrl}/auth/callback?redirect=${encodeURIComponent(redirect)}`;
     const { error: err } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `${appUrl}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
-      },
+      options: { redirectTo },
     });
     if (err) { setError(err.message); setOauthLoading(false); }
   }
@@ -126,7 +128,7 @@ function AuthForm() {
     if (!email || !password) { setError("Email et mot de passe requis"); return; }
     setLoading(true);
     setError("");
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: loginData, error: err } = await supabase.auth.signInWithPassword({ email, password });
     if (err) {
       setError(err.message === "Invalid login credentials"
         ? "Email ou mot de passe incorrect"
@@ -134,7 +136,14 @@ function AuthForm() {
       setLoading(false);
       return;
     }
-    await redirectAfterAuth(router, supabase, redirect);
+    if (adminToken && loginData.user) {
+      await fetch("/api/auth/activate-admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminToken, userId: loginData.user.id, email: loginData.user.email }),
+      });
+    }
+    await redirectAfterAuth(router, supabase, adminToken ? "/entreprise/dashboard" : redirect);
     setLoading(false);
   }
 
@@ -164,7 +173,17 @@ function AuthForm() {
         savedAt: new Date().toISOString(),
       }));
     }
-    await redirectAfterAuth(router, supabase, redirect);
+    if (adminToken) {
+      const { data: { user: signupUser } } = await supabase.auth.getUser();
+      if (signupUser) {
+        await fetch("/api/auth/activate-admin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ adminToken, userId: signupUser.id, email: signupUser.email }),
+        });
+      }
+    }
+    await redirectAfterAuth(router, supabase, adminToken ? "/entreprise/dashboard" : redirect);
     setLoading(false);
   }
 

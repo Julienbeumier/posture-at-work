@@ -6,6 +6,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+  const adminToken = searchParams.get("admin_token");
   const redirect = searchParams.get("redirect") ?? "/dashboard";
 
   if (code) {
@@ -19,6 +20,32 @@ export async function GET(request: Request) {
         process.env.SUPABASE_SERVICE_ROLE_KEY!,
         { auth: { autoRefreshToken: false, persistSession: false } }
       );
+
+      if (adminToken) {
+        const { data: invite } = await supabaseAdmin
+          .from("admin_invites")
+          .select("company_id, email, used_at")
+          .eq("token", adminToken)
+          .gt("expires_at", new Date().toISOString())
+          .maybeSingle();
+
+        if (invite && !invite.used_at && invite.email === data.user.email) {
+          await supabaseAdmin.from("company_memberships").upsert({
+            company_id: invite.company_id,
+            user_id: data.user.id,
+            role: "admin",
+            anonymous_id: "Admin",
+          }, { onConflict: "company_id,user_id" });
+
+          await supabaseAdmin
+            .from("admin_invites")
+            .update({ used_at: new Date().toISOString() })
+            .eq("token", adminToken);
+
+          return NextResponse.redirect(`${origin}/entreprise/dashboard`);
+        }
+      }
+
       const { data: adminMembership } = await supabaseAdmin
         .from("company_memberships")
         .select("company_id")
