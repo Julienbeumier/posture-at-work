@@ -247,7 +247,7 @@ export default function DashboardPage() {
 
       const { scores, answers, jobType, savedAt } = JSON.parse(pending);
       const age = Date.now() - new Date(savedAt).getTime();
-      if (age > 2 * 60 * 60 * 1000) {
+      if (age > 4 * 60 * 60 * 1000) {
         localStorage.removeItem("paw_pending_assessment");
         return;
       }

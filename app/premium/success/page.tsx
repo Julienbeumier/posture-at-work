@@ -1,15 +1,76 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import Link from "next/link";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
+async function recoverAndSavePendingAssessment(
+  userId: string,
+  supabase: ReturnType<typeof createClient>
+) {
+  try {
+    const pending = localStorage.getItem("paw_pending_assessment");
+    const sessionScores = sessionStorage.getItem("postureatwork_scores");
+    const sessionAnswers = sessionStorage.getItem("postureatwork_answers");
+    const sessionJobType = localStorage.getItem("paw_job_type");
+
+    let scores: Record<string, number> | null = null;
+    let answers: Record<string, unknown> | null = null;
+    let jobType = "bureau";
+
+    if (pending) {
+      const data = JSON.parse(pending);
+      const age = Date.now() - new Date(data.savedAt).getTime();
+      if (age < 4 * 60 * 60 * 1000) {
+        scores = JSON.parse(data.scores);
+        answers = data.answers ? JSON.parse(data.answers) : null;
+        jobType = data.jobType ?? "bureau";
+      }
+    } else if (sessionScores) {
+      scores = JSON.parse(sessionScores);
+      answers = sessionAnswers ? JSON.parse(sessionAnswers) : null;
+      jobType = sessionJobType ?? "bureau";
+    }
+
+    if (!scores) return;
+
+    const { data: existing } = await supabase
+      .from("assessments")
+      .select("id")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existing) {
+      await supabase
+        .from("assessments")
+        .update({ global_score: scores.global, scores, answers, job_type: jobType })
+        .eq("id", existing.id);
+    } else {
+      await supabase
+        .from("assessments")
+        .insert({ user_id: userId, global_score: scores.global, scores, answers, job_type: jobType });
+    }
+
+    sessionStorage.setItem("postureatwork_scores", JSON.stringify(scores));
+    if (answers) sessionStorage.setItem("postureatwork_answers", JSON.stringify(answers));
+    if (jobType) localStorage.setItem("paw_job_type", jobType);
+    localStorage.removeItem("paw_pending_assessment");
+
+    console.log("[success] Bilan récupéré et sauvegardé");
+  } catch (err) {
+    console.error("[success] Erreur récupération bilan:", err);
+  }
+}
+
 function SuccessContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const sessionId = searchParams.get("session_id");
   const [status, setStatus] = useState<"loading" | "success" | "error" | "reconnect">("loading");
 
@@ -21,7 +82,20 @@ function SuccessContent() {
       attempts++;
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { clearInterval(interval); setStatus("reconnect"); return; }
+      if (!user) {
+        const sessionScores = sessionStorage.getItem("postureatwork_scores");
+        if (sessionScores && !localStorage.getItem("paw_pending_assessment")) {
+          localStorage.setItem("paw_pending_assessment", JSON.stringify({
+            scores: sessionScores,
+            answers: sessionStorage.getItem("postureatwork_answers"),
+            jobType: localStorage.getItem("paw_job_type"),
+            savedAt: new Date().toISOString(),
+          }));
+        }
+        clearInterval(interval);
+        setStatus("reconnect");
+        return;
+      }
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -32,7 +106,9 @@ function SuccessContent() {
       if (profile?.is_premium) {
         localStorage.setItem("paw_premium", "true");
         clearInterval(interval);
+        await recoverAndSavePendingAssessment(user.id, supabase);
         setStatus("success");
+        setTimeout(() => router.push("/results"), 2500);
         return;
       }
 
@@ -162,20 +238,15 @@ function SuccessContent() {
           ))}
         </div>
 
-        <Link href="/results" style={{ textDecoration: "none" }}>
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            style={{ padding: "16px 0", borderRadius: 100, textAlign: "center",
-              background: "linear-gradient(135deg, #2b5ce6, #7c3aed)",
-              boxShadow: "0 4px 24px rgba(43,92,230,0.4)",
-              fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#fff",
-              cursor: "pointer", marginBottom: 12 }}>
-            🔓 Voir mon analyse complète →
-          </motion.div>
-        </Link>
-
-        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)" }}>
-          Un email de confirmation a été envoyé à ton adresse
+        <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", marginBottom: 12 }}>
+          Redirection vers ton analyse dans quelques secondes…
         </p>
+
+        <Link href="/results" style={{ textDecoration: "none" }}>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", textDecoration: "underline" }}>
+            Cliquer ici si la redirection ne fonctionne pas
+          </p>
+        </Link>
       </motion.div>
     </main>
   );
