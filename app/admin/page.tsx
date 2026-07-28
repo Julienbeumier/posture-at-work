@@ -11,9 +11,10 @@ export default function AdminPage() {
     companyName: "",
     contactName: "",
     contactEmail: "",
-    plan: "essentiel",
+    plan: "pme",
     maxEmployees: 25,
     inviteCode: "",
+    agreedPrice: "",
   });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string; inviteCode?: string; companyId?: string } | null>(null);
@@ -69,6 +70,7 @@ export default function AdminPage() {
             { key: "contactName", label: "Nom du contact RH", placeholder: "Marie Martin" },
             { key: "contactEmail", label: "Email du contact RH", placeholder: "marie@acme.com" },
             { key: "inviteCode", label: "Code d'invitation (optionnel)", placeholder: "ACME2026 — généré auto si vide" },
+            { key: "agreedPrice", label: "Prix annuel facturé (€)", placeholder: "ex: 750 pour 30 employés × 25€" },
           ].map(field => (
             <div key={field.key}>
               <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "var(--t55)", marginBottom: 4 }}>{field.label}</p>
@@ -86,9 +88,9 @@ export default function AdminPage() {
               <select value={form.plan} onChange={e => setForm(prev => ({ ...prev, plan: e.target.value }))}
                 style={{ width: "100%", padding: "11px 14px", borderRadius: 10, outline: "none", boxSizing: "border-box",
                   background: "var(--bg-card2)", border: "1px solid var(--border2)", color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }}>
-                <option value="essentiel">Essentiel — 990€/an</option>
-                <option value="croissance">Croissance — 1490€/an</option>
-                <option value="entreprise">Entreprise — Sur devis</option>
+                <option value="pme">PME — 25€/employé/an (10-49)</option>
+                <option value="croissance">Croissance — 20€/employé/an (50-149)</option>
+                <option value="entreprise">Entreprise — Sur devis (150+)</option>
               </select>
             </div>
             <div>
@@ -130,6 +132,13 @@ export default function AdminPage() {
                   L&apos;email de bienvenue a été envoyé à {form.contactEmail}
                 </p>
               </div>
+            )}
+            {result.success && (
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", marginTop: 6 }}>
+                Prix indicatif : {form.maxEmployees < 50
+                  ? `${form.maxEmployees} × 25€ = ${form.maxEmployees * 25}€/an`
+                  : `${form.maxEmployees} × 20€ = ${form.maxEmployees * 20}€/an`}
+              </p>
             )}
           </div>
         )}
