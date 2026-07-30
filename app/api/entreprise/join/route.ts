@@ -22,12 +22,6 @@ export async function POST(req: Request) {
 
     const anonymousId = `Employé #${(count ?? 0) + 1}`;
 
-    // Marquer l'invite comme utilisée
-    await supabaseAdmin
-      .from("company_invites")
-      .update({ used_at: new Date().toISOString(), used_by: userId })
-      .eq("code", code.toUpperCase());
-
     // Créer le membership employé
     const { error } = await supabaseAdmin
       .from("company_memberships")
