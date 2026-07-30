@@ -647,13 +647,28 @@ export default function FinalReportPage() {
       }).eq("id", latest[0].id);
     };
 
-    const companyId = localStorage.getItem("paw_company_id") ?? null;
-    saveAssessmentForUser(user.id, scores, answers, target as unknown as Record<string, unknown>, companyId)
-      .then(async () => {
+    (async () => {
+      let companyId = localStorage.getItem("paw_company_id");
+      if (!companyId) {
+        const { data: membership } = await createClient()
+          .from("company_memberships")
+          .select("company_id")
+          .eq("user_id", user.id)
+          .eq("role", "employee")
+          .maybeSingle();
+        if (membership?.company_id) {
+          companyId = membership.company_id;
+          localStorage.setItem("paw_company_id", membership.company_id);
+        }
+      }
+      try {
+        await saveAssessmentForUser(user.id, scores, answers, target as unknown as Record<string, unknown>, companyId ?? null);
         await saveVideoAnalysis();
         setSaveStatus("saved");
-      })
-      .catch(() => setSaveStatus("error"));
+      } catch {
+        setSaveStatus("error");
+      }
+    })();
   }, [user, report, personneAnalysis, deboutAnalysis]);
 
   // Sauvegarde via le token de session QR code — fonctionne même sans session

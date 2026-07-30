@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase";
+import { createClient, saveAssessmentForUser } from "@/lib/supabase";
 import {
   calculateScores,
   getRecommendations,
@@ -370,17 +370,23 @@ export default function ResultsPage() {
       try {
         const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();
-        console.log("[PAW] Tentative sauvegarde Supabase — user:", !!user);
-        if (!user) { console.log("[PAW] Pas connecté — pas de sauvegarde"); return; }
-        console.log("[PAW] Scores à sauvegarder:", s);
-        const { error } = await supabase.from("assessments").insert({
-          user_id: user.id,
-          scores: s,
-          answers: a,
-          global_score: s.global,
-          job_type: s.job_type ?? "bureau",
-          created_at: new Date().toISOString(),
-        });
+        if (!user) { return; }
+
+        let companyId = localStorage.getItem("paw_company_id");
+        if (!companyId) {
+          const { data: membership } = await supabase
+            .from("company_memberships")
+            .select("company_id")
+            .eq("user_id", user.id)
+            .eq("role", "employee")
+            .maybeSingle();
+          if (membership?.company_id) {
+            companyId = membership.company_id;
+            localStorage.setItem("paw_company_id", membership.company_id);
+          }
+        }
+
+        const { error } = await saveAssessmentForUser(user.id, s, a as Record<string, unknown>, null, companyId);
         if (error) console.error("[PAW] Erreur sauvegarde:", error);
         else console.log("[PAW] Bilan sauvegardé ✅");
       } catch (e) {

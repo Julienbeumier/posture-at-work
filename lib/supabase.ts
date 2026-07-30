@@ -89,15 +89,42 @@ export async function saveAssessmentForUser(
   companyId?: string | null
 ): Promise<{ error: Error | null }> {
   const client = createClient();
-  const { error } = await client.from("assessments").insert([{
-    user_id: userId,
-    scores,
-    answers,
-    global_score: scores.global,
-    video_analysis: videoAnalysis ?? null,
-    company_id: companyId ?? null,
-  }]);
-  return { error: error as Error | null };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const { data: existing } = await client
+    .from("assessments")
+    .select("id")
+    .eq("user_id", userId)
+    .gte("created_at", today.toISOString())
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (existing) {
+    const { error } = await client
+      .from("assessments")
+      .update({
+        scores,
+        answers,
+        global_score: scores.global,
+        video_analysis: videoAnalysis ?? null,
+        company_id: companyId ?? null,
+      })
+      .eq("id", existing.id);
+    return { error: error as Error | null };
+  } else {
+    const { error } = await client.from("assessments").insert([{
+      user_id: userId,
+      scores,
+      answers,
+      global_score: scores.global,
+      video_analysis: videoAnalysis ?? null,
+      company_id: companyId ?? null,
+    }]);
+    return { error: error as Error | null };
+  }
 }
 
 // ─── B2B Types ────────────────────────────────────────────────────────────────
