@@ -57,10 +57,10 @@ export default function AdminPage() {
     <main style={{ minHeight: "100vh", background: "var(--main-bg)", padding: "80px 24px 40px" }}>
       <div style={{ maxWidth: 560, margin: "0 auto" }}>
         <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "var(--text-primary)", marginBottom: 6 }}>
-          PAW<span style={{ color: "#2b5ce6" }}>.</span> Admin
+          PAW<span style={{ color: "#2b5ce6" }}>.</span> Administration
         </p>
         <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", marginBottom: 28 }}>
-          Créer une nouvelle company B2B
+          Créer une nouvelle entreprise B2B
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -81,52 +81,47 @@ export default function AdminPage() {
           ))}
 
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-              <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "var(--t55)", margin: 0 }}>
-                Nombre d&apos;employés
-              </p>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "#2b5ce6" }}>
-                  {form.maxEmployees}
-                </span>
-                <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)" }}>employés</span>
-              </div>
+            <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "var(--t55)", marginBottom: 8 }}>
+              Nombre d&apos;employés
+            </p>
+
+            <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 10 }}>
+              <input type="number" min={10} max={500} value={form.maxEmployees}
+                onChange={e => {
+                  const n = Math.max(10, Number(e.target.value));
+                  const plan = n < 50 ? "pme" : n < 150 ? "croissance" : "entreprise";
+                  setForm(prev => ({ ...prev, maxEmployees: n, plan }));
+                }}
+                style={{ width: 80, padding: "8px 10px", borderRadius: 8, outline: "none",
+                  background: "var(--bg-card2)", border: "1px solid var(--border2)",
+                  color: "var(--text-primary)", fontFamily: T.b, fontSize: 16,
+                  fontWeight: 700, textAlign: "center" }} />
+              <input type="range" min={10} max={200} step={1}
+                value={Math.min(form.maxEmployees, 200)}
+                onChange={e => {
+                  const n = Number(e.target.value);
+                  const plan = n < 50 ? "pme" : n < 150 ? "croissance" : "entreprise";
+                  setForm(prev => ({ ...prev, maxEmployees: n, plan }));
+                }}
+                style={{ flex: 1, accentColor: "#2b5ce6", cursor: "pointer" }} />
             </div>
 
-            <input type="range" min={10} max={200} step={5}
-              value={form.maxEmployees}
-              onChange={e => {
-                const n = Number(e.target.value);
-                const plan = n < 50 ? "pme" : n < 150 ? "croissance" : "entreprise";
-                setForm(prev => ({ ...prev, maxEmployees: n, plan }));
-              }}
-              style={{ width: "100%", accentColor: "#2b5ce6", cursor: "pointer", marginBottom: 8 }} />
-
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              {["10", "50", "100", "150", "200"].map(v => (
-                <span key={v} style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)" }}>{v}</span>
-              ))}
-            </div>
-
-            <div style={{ marginTop: 12, padding: "12px 14px", borderRadius: 10,
-              background: form.maxEmployees >= 150
-                ? "rgba(124,58,237,0.08)"
-                : "rgba(43,92,230,0.08)",
-              border: `0.5px solid ${form.maxEmployees >= 150 ? "rgba(124,58,237,0.2)" : "rgba(43,92,230,0.2)"}` }}>
+            <div style={{ padding: "10px 14px", borderRadius: 10,
+              background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
               {form.maxEmployees >= 150 ? (
                 <p style={{ fontFamily: T.b, fontSize: 13, color: "#c4b5fd", margin: 0 }}>
-                  📋 Sur devis — tarif négocié pour 150+ employés
+                  Sur devis — 150+ employés
                 </p>
               ) : (
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", margin: 0 }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)" }}>
                     {form.maxEmployees} × {form.maxEmployees < 50 ? "25" : "20"}€/an
-                  </p>
-                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: "#2b5ce6", margin: 0 }}>
+                  </span>
+                  <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#2b5ce6" }}>
                     {form.maxEmployees < 50
                       ? form.maxEmployees * 25
                       : form.maxEmployees * 20}€/an
-                  </p>
+                  </span>
                 </div>
               )}
             </div>
@@ -138,7 +133,7 @@ export default function AdminPage() {
             background: form.companyName && form.contactEmail ? "#2b5ce6" : "var(--bg-card2)",
             color: form.companyName && form.contactEmail ? "#fff" : "var(--t40)",
             fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer", opacity: loading ? 0.7 : 1 }}>
-          {loading ? "Création en cours…" : "Créer la company →"}
+          {loading ? "Création en cours…" : "Créer l'entreprise →"}
         </button>
 
         {result && (
@@ -147,7 +142,7 @@ export default function AdminPage() {
             border: `0.5px solid ${result.success ? "rgba(116,198,157,0.25)" : "rgba(226,75,74,0.25)"}` }}>
             <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
               color: result.success ? "#74c69d" : "#f09595", margin: "0 0 8px" }}>
-              {result.success ? "✅ Company créée !" : "❌ Erreur"}
+              {result.success ? "✅ Entreprise créée !" : "❌ Erreur"}
             </p>
             <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", margin: 0, lineHeight: 1.6 }}>
               {result.message}

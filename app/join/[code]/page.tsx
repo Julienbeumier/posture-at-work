@@ -34,18 +34,26 @@ export default function JoinPage() {
       body: JSON.stringify({ code, userId, companyId }),
     });
 
-    const data = await res.json();
     if (!res.ok) {
       setError("Erreur lors de la jonction à l'entreprise");
       setStep("welcome");
       return;
     }
 
+    // Activer le premium automatiquement pour les employés B2B
+    await supabase.from("profiles").upsert({
+      user_id: userId,
+      is_premium: true,
+      premium_source: "b2b",
+      premium_activated_at: new Date().toISOString(),
+    }, { onConflict: "user_id" });
+
     localStorage.setItem("paw_company_id", companyId);
     localStorage.setItem("paw_is_b2b", "true");
+    localStorage.setItem("paw_premium", "true");
     setStep("done");
     setTimeout(() => router.push("/onboarding"), 2000);
-  }, [code, router]);
+  }, [code, router, supabase]);
 
   useEffect(() => {
     async function checkCode() {

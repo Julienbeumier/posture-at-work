@@ -951,7 +951,7 @@ export const PROFILE_CATEGORIES: Record<Exclude<JobType, "bureau">, CategoryDef[
 
 export const JOB_META: Record<JobType, { emoji: string; label: string }> = {
   bureau:       { emoji: "💻", label: "Bureau / télétravail" },
-  debout:       { emoji: "🏪", label: "Commerce / restauration" },
+  debout:       { emoji: "🏪", label: "Bilan Profil Debout" },
   artisan:      { emoji: "🔧", label: "Artisan / terrain" },
   transport:    { emoji: "🚗", label: "Transport / mobilité" },
   medical:      { emoji: "🏥", label: "Médical / paramédical" },

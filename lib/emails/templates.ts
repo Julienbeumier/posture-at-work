@@ -490,7 +490,7 @@ export function entrepriseWelcomeEmail(data: {
     <!-- CTA final -->
     <div style="text-align:center;margin-bottom:28px;">
       <a href="${data.dashboardUrl}"
-         style="display:inline-block;padding:16px 32px;border-radius:100px;background:linear-gradient(135deg,#2b5ce6,#7c3aed);color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">
+         style="display:inline-block;padding:16px 32px;border-radius:100px;background:#2b5ce6;color:#ffffff !important;font-size:15px;font-weight:700;text-decoration:none;font-family:'Helvetica Neue',Arial,sans-serif;">
         Accéder à mon dashboard RH →
       </a>
     </div>
