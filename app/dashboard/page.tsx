@@ -198,6 +198,110 @@ function Skeleton() {
   return <div style={{ height: 80, borderRadius: 18, background: "var(--bg-card-2)", animation: "pulse 1.5s ease-in-out infinite" }} />;
 }
 
+// ─── SignalForm ───────────────────────────────────────────────────────────────
+
+function SignalForm({ companyId, anonymousId, onSent }: {
+  companyId: string;
+  anonymousId: string;
+  onSent: () => void;
+}) {
+  const supabase = createClient();
+  const TF = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
+  const [type, setType] = useState("");
+  const [zone, setZone] = useState("");
+  const [description, setDescription] = useState("");
+  const [intensity, setIntensity] = useState(3);
+  const [loading, setLoading] = useState(false);
+
+  const types = [
+    { key: "douleur", label: "🩺 Douleur physique", showZone: true, showIntensity: true },
+    { key: "equipement", label: "🪑 Problème d'équipement", showZone: false, showIntensity: false },
+    { key: "contrainte", label: "⚠️ Contrainte posturale", showZone: true, showIntensity: false },
+    { key: "autre", label: "💬 Autre", showZone: false, showIntensity: false },
+  ];
+
+  const zones = ["Lombaires / dos bas", "Cervicales / nuque", "Épaules", "Poignets / mains", "Jambes / genoux", "Pieds", "Autre"];
+
+  const selectedType = types.find(t => t.key === type);
+
+  async function handleSubmit() {
+    if (!type || !description.trim()) return;
+    setLoading(true);
+    await supabase.from("signals").insert({
+      company_id: companyId,
+      anonymous_id: anonymousId,
+      type,
+      zone: zone || null,
+      description: description.trim(),
+      intensity: selectedType?.showIntensity ? intensity : null,
+    });
+    setLoading(false);
+    onSent();
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        {types.map(t => (
+          <button key={t.key} onClick={() => setType(t.key)}
+            style={{ padding: "10px 12px", borderRadius: 10, cursor: "pointer",
+              background: type === t.key ? "rgba(244,162,97,0.15)" : "rgba(255,255,255,0.04)",
+              border: `0.5px solid ${type === t.key ? "rgba(244,162,97,0.4)" : "rgba(255,255,255,0.08)"}`,
+              fontFamily: TF.b, fontSize: 12, fontWeight: 600,
+              color: type === t.key ? "#f4a261" : "rgba(255,255,255,0.5)", textAlign: "left" as const }}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {selectedType?.showZone && (
+        <select value={zone} onChange={e => setZone(e.target.value)}
+          style={{ padding: "10px 12px", borderRadius: 10, outline: "none",
+            background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.1)",
+            color: zone ? "var(--text-primary)" : "rgba(255,255,255,0.35)",
+            fontFamily: TF.b, fontSize: 13 }}>
+          <option value="">Zone concernée (optionnel)</option>
+          {zones.map(z => <option key={z} value={z}>{z}</option>)}
+        </select>
+      )}
+
+      {selectedType?.showIntensity && (
+        <div>
+          <p style={{ fontFamily: TF.b, fontSize: 12,
+            color: "rgba(255,255,255,0.45)", marginBottom: 6 }}>
+            Intensité de la douleur : <strong style={{ color: "#f4a261" }}>{intensity}/5</strong>
+          </p>
+          <input type="range" min={1} max={5} step={1} value={intensity}
+            onChange={e => setIntensity(Number(e.target.value))}
+            style={{ width: "100%", accentColor: "#f4a261" }} />
+        </div>
+      )}
+
+      {type && (
+        <textarea
+          placeholder="Décrivez brièvement le problème… (ex: douleur lombaire qui s'aggrave en fin de journée)"
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+          rows={3}
+          style={{ padding: "10px 12px", borderRadius: 10, outline: "none", resize: "none",
+            background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.1)",
+            color: "var(--text-primary)", fontFamily: TF.b,
+            fontSize: 13, lineHeight: 1.5 }}
+        />
+      )}
+
+      {type && description.trim() && (
+        <button onClick={handleSubmit} disabled={loading}
+          style={{ padding: "12px 0", borderRadius: 100, border: "none", cursor: "pointer",
+            background: "#f4a261", color: "#fff", opacity: loading ? 0.7 : 1,
+            fontFamily: TF.h, fontWeight: 700, fontSize: 14 }}>
+          {loading ? "Envoi…" : "Envoyer le signalement →"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ─── Main dashboard ───────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
@@ -228,6 +332,10 @@ export default function DashboardPage() {
   const [premiumToast, setPremiumToast] = useState(false);
   const [showFeedbackBanner, setShowFeedbackBanner] = useState(false);
   const [notAdminError, setNotAdminError] = useState(false);
+  const [isB2B, setIsB2B] = useState(false);
+  const [companyId, setCompanyId] = useState<string | null>(null);
+  const [anonymousId, setAnonymousId] = useState<string | null>(null);
+  const [signalSent, setSignalSent] = useState(false);
   const [membership, setMembership] = useState<{
     role: "admin" | "employee";
     company_name: string;
@@ -389,7 +497,7 @@ export default function DashboardPage() {
       // Vérifier si l'user a un membership entreprise
       const { data: membershipData } = await supabase
         .from("company_memberships")
-        .select("role, companies(name)")
+        .select("company_id, anonymous_id, role, companies(name)")
         .eq("user_id", u.id)
         .maybeSingle();
 
@@ -398,6 +506,11 @@ export default function DashboardPage() {
           role: membershipData.role as "admin" | "employee",
           company_name: (membershipData.companies as unknown as { name: string })?.name ?? "votre entreprise",
         });
+        if (membershipData.role === "employee") {
+          setIsB2B(true);
+          setCompanyId(membershipData.company_id);
+          setAnonymousId(membershipData.anonymous_id);
+        }
       }
 
       setLoading(false);
@@ -1237,6 +1350,42 @@ export default function DashboardPage() {
                 );
               })}
             </div>
+          </motion.div>
+        )}
+
+        {/* ── B2B SIGNALEMENT ── */}
+        {isB2B && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            style={{ padding: "20px", borderRadius: 20,
+              background: "rgba(244,162,97,0.06)", border: "0.5px solid rgba(244,162,97,0.2)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <span style={{ fontSize: 20 }}>💬</span>
+              <div>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15,
+                  color: "var(--text-primary)", margin: 0 }}>
+                  Signaler un problème à votre RH
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", margin: "2px 0 0" }}>
+                  Anonyme · Visible uniquement par votre responsable RH
+                </p>
+              </div>
+            </div>
+
+            {!signalSent ? (
+              <SignalForm
+                companyId={companyId!}
+                anonymousId={anonymousId!}
+                onSent={() => setSignalSent(true)}
+              />
+            ) : (
+              <div style={{ padding: "12px 16px", borderRadius: 12,
+                background: "rgba(116,198,157,0.1)", border: "0.5px solid rgba(116,198,157,0.25)",
+                textAlign: "center" }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "#74c69d", margin: 0 }}>
+                  ✅ Signalement envoyé — votre RH en sera informé
+                </p>
+              </div>
+            )}
           </motion.div>
         )}
 

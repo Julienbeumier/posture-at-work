@@ -173,6 +173,17 @@ interface EmployeeRow {
   video_analysis: Record<string, unknown> | null;
 }
 
+interface Signal {
+  id: string;
+  anonymous_id: string;
+  type: string;
+  zone?: string;
+  description: string;
+  intensity?: number;
+  created_at: string;
+  status: string;
+}
+
 function generateReport(assessed: EmployeeRow[]) {
   if (assessed.length === 0) return null;
 
@@ -627,7 +638,7 @@ export default function EntrepriseDashboard() {
   const [activeProfile, setActiveProfile] = useState<"bureau" | "debout">("bureau");
   const [expandedEmployee, setExpandedEmployee] = useState<string | null>(null);
   const [relanceSent, setRelanceSent] = useState(false);
-  const [signals, setSignals] = useState<{ id: string; category: string; message: string; treated: boolean; created_at: string }[]>([]);
+  const [signals, setSignals] = useState<Signal[]>([]);
   const [evolutionData, setEvolutionData] = useState<{ mois: string; global: number | null; bureau: number | null; debout: number | null; count: number }[]>([]);
   const [employeeFilter, setEmployeeFilter] = useState<"all" | "bureau" | "debout">("all");
   const [isMobile, setIsMobile] = useState(false);
@@ -665,10 +676,13 @@ export default function EntrepriseDashboard() {
       setLoading(false);
 
       // Charger les signalements
-      const signalsRes = await fetch("/api/entreprise/signals").catch(() => null);
-      if (signalsRes?.ok) {
-        const signalsData = await signalsRes.json();
-        if (signalsData?.data) setSignals(signalsData.data);
+      if (data.company?.id) {
+        const { data: signalsData } = await supabase
+          .from("signals")
+          .select("*")
+          .eq("company_id", data.company.id)
+          .order("created_at", { ascending: false });
+        setSignals(signalsData ?? []);
       }
     }
     load();
@@ -2212,74 +2226,92 @@ export default function EntrepriseDashboard() {
           {/* ── TAB SIGNALEMENTS ── */}
           {activeTab === "signals" && (
             <motion.div key="signals" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-              <div style={{ borderRadius: 20, padding: "22px 24px", background: c.bgCard, border: `0.5px solid ${c.border}` }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: 0 }}>
-                    💬 Signalements de vos équipes
-                  </p>
-                  <span style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted }}>
-                    {signals.filter(s => !s.treated).length} non traité{signals.filter(s => !s.treated).length > 1 ? "s" : ""}
-                  </span>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+                  marginBottom: 20 }}>
+                  <div>
+                    <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18,
+                      color: c.textPrimary, margin: "0 0 4px" }}>
+                      💬 Signalements de vos équipes
+                    </p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0 }}>
+                      {signals.length} signalement{signals.length > 1 ? "s" : ""} reçu{signals.length > 1 ? "s" : ""}
+                      {" · "}Données anonymisées
+                    </p>
+                  </div>
                 </div>
 
                 {signals.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "32px 0" }}>
-                    <p style={{ fontSize: 32, marginBottom: 8 }}>📭</p>
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted }}>Aucun signalement pour l&apos;instant.</p>
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginTop: 4 }}>
-                      Vos employés peuvent signaler des problèmes ergonomiques après leur bilan.
+                  <div style={{ textAlign: "center", padding: "48px 24px" }}>
+                    <span style={{ fontSize: 40, display: "block", marginBottom: 12 }}>💬</span>
+                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 16,
+                      color: c.textPrimary, marginBottom: 8 }}>
+                      Aucun signalement pour l&apos;instant
+                    </p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, lineHeight: 1.65 }}>
+                      Vos employés peuvent signaler des problèmes depuis leur dashboard personnel.
+                      Les signalements apparaîtront ici de façon anonyme.
                     </p>
                   </div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {signals.map((signal, i) => (
-                      <div key={i} style={{
-                        padding: "14px 16px", borderRadius: 12,
-                        background: signal.treated ? c.bgCard2 : "rgba(43,92,230,0.05)",
-                        border: `0.5px solid ${signal.treated ? c.border : "rgba(43,92,230,0.2)"}`,
-                        display: "flex", gap: 14, alignItems: "flex-start",
-                        opacity: signal.treated ? 0.6 : 1,
-                      }}>
-                        <span style={{ fontSize: 20, flexShrink: 0 }}>
-                          {signal.category === "eclairage" ? "💡"
-                            : signal.category === "temperature" ? "🌡️"
-                            : signal.category === "bruit" ? "🔊"
-                            : signal.category === "poste_travail" ? "🪑"
-                            : signal.category === "espace" ? "📐"
-                            : signal.category === "manutention" ? "📦"
-                            : "💬"}
-                        </span>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                            <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(43,92,230,0.10)", fontFamily: T.b, fontSize: 10, fontWeight: 600, color: "#7c9fff", textTransform: "capitalize" }}>
-                              {signal.category.replace("_", " ")}
-                            </span>
-                            <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>
-                              {new Date(signal.created_at).toLocaleDateString("fr-FR")}
-                            </span>
-                            {signal.treated && (
-                              <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(29,158,117,0.12)", fontFamily: T.b, fontSize: 10, color: "#1d9e75" }}>
-                                ✓ Traité
+                    {signals.map(signal => {
+                      const typeConfig: Record<string, { emoji: string; color: string; bg: string; border: string }> = {
+                        douleur: { emoji: "🩺", color: "#f09595", bg: "rgba(240,149,149,0.06)", border: "rgba(240,149,149,0.2)" },
+                        equipement: { emoji: "🪑", color: "#7c9fff", bg: "rgba(43,92,230,0.06)", border: "rgba(43,92,230,0.2)" },
+                        contrainte: { emoji: "⚠️", color: "#f4a261", bg: "rgba(244,162,97,0.06)", border: "rgba(244,162,97,0.2)" },
+                        autre: { emoji: "💬", color: c.textMuted, bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.08)" },
+                      };
+                      const cfg = typeConfig[signal.type] ?? typeConfig.autre;
+                      const date = new Date(signal.created_at).toLocaleDateString("fr-FR", {
+                        day: "numeric", month: "long",
+                      });
+
+                      return (
+                        <div key={signal.id} style={{ padding: "16px 18px", borderRadius: 16,
+                          background: cfg.bg, border: `0.5px solid ${cfg.border}` }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                            <span style={{ fontSize: 18 }}>{cfg.emoji}</span>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                                <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
+                                  color: cfg.color }}>
+                                  {signal.type === "douleur" ? "Douleur physique"
+                                    : signal.type === "equipement" ? "Problème d'équipement"
+                                    : signal.type === "contrainte" ? "Contrainte posturale"
+                                    : "Autre"}
+                                </span>
+                                {signal.zone && (
+                                  <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted,
+                                    padding: "2px 8px", borderRadius: 100,
+                                    background: "rgba(255,255,255,0.06)" }}>
+                                    {signal.zone}
+                                  </span>
+                                )}
+                                {signal.intensity && (
+                                  <span style={{ fontFamily: T.b, fontSize: 11, color: "#f09595" }}>
+                                    Intensité {signal.intensity}/5
+                                  </span>
+                                )}
+                              </div>
+                              <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>
+                                {signal.anonymous_id} · {date}
                               </span>
-                            )}
+                            </div>
+                            <div style={{ padding: "3px 10px", borderRadius: 100, flexShrink: 0,
+                              background: signal.status === "nouveau" ? "rgba(43,92,230,0.15)" : "rgba(116,198,157,0.15)",
+                              fontFamily: T.b, fontSize: 10, fontWeight: 700,
+                              color: signal.status === "nouveau" ? "#7c9fff" : "#74c69d" }}>
+                              {signal.status === "nouveau" ? "Nouveau" : "Traité"}
+                            </div>
                           </div>
-                          <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.6 }}>
-                            {signal.message}
+                          <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary,
+                            lineHeight: 1.6, margin: 0 }}>
+                            {signal.description}
                           </p>
                         </div>
-                        {!signal.treated && (
-                          <button
-                            onClick={async () => {
-                              await fetch(`/api/entreprise/signals/${signal.id}`, { method: "PATCH" });
-                              setSignals(prev => prev.map(s => s.id === signal.id ? { ...s, treated: true } : s));
-                            }}
-                            style={{ padding: "6px 12px", borderRadius: 8, border: "none", background: "#1d9e75", color: "#fff", fontFamily: T.b, fontWeight: 600, fontSize: 11, cursor: "pointer", flexShrink: 0 }}
-                          >
-                            Marquer traité
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
