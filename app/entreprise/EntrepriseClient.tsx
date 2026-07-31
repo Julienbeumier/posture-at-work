@@ -17,26 +17,14 @@ const FEATURES = [
   {
     icon: "🎯",
     title: "Bilan individuel pour chaque employé",
-    desc: "Chaque collaborateur fait son bilan en 5 minutes. Questionnaire clinique + analyse vidéo IA. Accès premium à vie inclus — chacun garde son bilan même s'il quitte l'entreprise.",
+    desc: "Chaque collaborateur fait son bilan en 5 minutes. Questionnaire clinique + analyse vidéo IA. Accès premium à vie inclus.",
     color: "#2b5ce6",
   },
   {
     icon: "📊",
     title: "Dashboard RH avec actions prioritaires",
-    desc: "Scores par dimension, zones à risque, tendances bureau vs terrain. PAW vous dit exactement quoi faire en priorité — pas juste des données brutes.",
+    desc: "Scores par dimension, zones à risque, rapport trimestriel kiné. PAW vous dit exactement quoi faire — pas juste des données brutes.",
     color: "#7c3aed",
-  },
-  {
-    icon: "🌿",
-    title: "Rapport ESG Social valorisable",
-    desc: "Rapport trimestriel signé par notre kinésithérapeute. Utilisable pour votre CSRD, vos prêts bancaires à impact, votre score EcoVadis ou votre CSSCT.",
-    color: "#1d9e75",
-  },
-  {
-    icon: "📞",
-    title: "Call de restitution avec le kiné fondateur",
-    desc: "1h avec Julien, kinésithérapeute spécialisé TMS. Il analyse vos résultats et vous guide sur les actions prioritaires. Inclus dans tous les plans.",
-    color: "#f59e0b",
   },
 ];
 
@@ -370,15 +358,6 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
   );
 }
 
-const VS_ERGO = [
-  { critere: "Coût", ergo: "1 000€+ / jour de prestation", paw: "À partir de 990€ / an" },
-  { critere: "Couverture", ergo: "5 à 10 personnes max par jour", paw: "Tous vos employés simultanément" },
-  { critere: "Analyse posturale", ergo: "Observation ponctuelle", paw: "Vidéo IA pour chaque employé" },
-  { critere: "Suivi dans le temps", ergo: "Rapport unique, pas de suivi", paw: "Suivi trimestriel continu" },
-  { critere: "Outil pour l'employé", ergo: "Aucun", paw: "Accès premium PAW complet" },
-  { critere: "Données RH", ergo: "Rapport Word statique", paw: "Dashboard live + export CSV" },
-];
-
 export default function EntrepriseClient() {
   const { c } = useTheme();
   const [contactSent, setContactSent] = useState(false);
@@ -470,144 +449,7 @@ export default function EntrepriseClient() {
           </div>
         </motion.div>
 
-        {/* ── BADGES TECH ── */}
-        <motion.div {...fadeUp(0.05)} style={{ marginBottom: 56 }}>
-          <div style={{
-            padding: "20px 28px", borderRadius: 18,
-            background: "rgba(255,255,255,0.02)",
-            border: "0.5px solid rgba(255,255,255,0.07)",
-            display: "flex", alignItems: "center",
-            justifyContent: "center", flexWrap: "wrap", gap: isMobile ? 12 : 24,
-          }}>
-            {/* Label */}
-            <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600,
-              color: "var(--t30)", textTransform: "uppercase", letterSpacing: "0.1em",
-              flexBasis: isMobile ? "100%" : "auto", textAlign: "center" }}>
-              Propulsé par
-            </span>
-
-            {/* Séparateur desktop */}
-            {!isMobile && <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)" }} />}
-
-            {/* Claude / Anthropic */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8,
-                background: "linear-gradient(135deg, #cc785c, #d4966a)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 14, flexShrink: 0 }}>
-                ✦
-              </div>
-              <div>
-                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
-                  color: "var(--text-primary)", margin: 0, lineHeight: 1 }}>
-                  Claude AI
-                </p>
-                <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)",
-                  margin: "2px 0 0" }}>
-                  by Anthropic
-                </p>
-              </div>
-            </div>
-
-            <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)" }} />
-
-            {/* Stripe */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8,
-                background: "#635bff",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                flexShrink: 0 }}>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M6.5 2C4.5 2 3 3.2 3 4.8c0 1.4 1 2.2 2.6 2.8 1.3.5 1.7.8 1.7 1.4 0 .7-.7 1.1-1.8 1.1-1.2 0-2.1-.4-2.8-.9L2 10.5c.8.5 1.9.9 3.2.9C7.4 11.4 9 10.2 9 8.5c0-1.5-1-2.3-2.7-2.9C5 5.1 4.6 4.8 4.6 4.2c0-.6.6-1 1.6-1 1 0 1.8.3 2.4.7l.7-1.6C8.6 2.4 7.7 2 6.5 2z" fill="white"/>
-                </svg>
-              </div>
-              <div>
-                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
-                  color: "var(--text-primary)", margin: 0, lineHeight: 1 }}>
-                  Stripe
-                </p>
-                <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)",
-                  margin: "2px 0 0" }}>
-                  Paiements sécurisés
-                </p>
-              </div>
-            </div>
-
-            <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)" }} />
-
-            {/* Supabase */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8,
-                background: "#3ecf8e",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                flexShrink: 0 }}>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M7.5 1L2 8h5l-.5 5 5.5-7H7l.5-5z" fill="white"/>
-                </svg>
-              </div>
-              <div>
-                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
-                  color: "var(--text-primary)", margin: 0, lineHeight: 1 }}>
-                  Supabase EU
-                </p>
-                <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)",
-                  margin: "2px 0 0" }}>
-                  Données hébergées en Europe
-                </p>
-              </div>
-            </div>
-
-            <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)" }} />
-
-            {/* RGPD */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8,
-                background: "rgba(116,198,157,0.15)",
-                border: "0.5px solid rgba(116,198,157,0.3)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 14, flexShrink: 0 }}>
-                🔒
-              </div>
-              <div>
-                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
-                  color: "#74c69d", margin: 0, lineHeight: 1 }}>
-                  RGPD
-                </p>
-                <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)",
-                  margin: "2px 0 0" }}>
-                  Données anonymisées
-                </p>
-              </div>
-            </div>
-
-            <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)",
-              display: isMobile ? "none" : "block" }} />
-
-            {/* Kiné validé */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8,
-                background: "rgba(43,92,230,0.15)",
-                border: "0.5px solid rgba(43,92,230,0.3)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 14, flexShrink: 0 }}>
-                🩺
-              </div>
-              <div>
-                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
-                  color: "#7c9fff", margin: 0, lineHeight: 1 }}>
-                  Validé cliniquement
-                </p>
-                <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)",
-                  margin: "2px 0 0" }}>
-                  Par un kinésithérapeute
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </motion.div>
-
-        {/* ── 2. DOULEURS DRH ── */}
+        {/* ── 2. DOULEURS DRH + STATS ── */}
         <motion.div {...fadeUp(0.05)} style={{ marginBottom: 72 }}>
           <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, color: "#f09595", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16, textAlign: "center" }}>
             Ça vous parle ?
@@ -644,118 +486,29 @@ export default function EntrepriseClient() {
               </motion.div>
             ))}
           </div>
-        </motion.div>
 
-        {/* ── 3. STATS TMS ── */}
-        <motion.div {...fadeUp(0.05)} style={{ marginBottom: 72 }}>
-          <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 20 : 26, color: c.textPrimary, textAlign: "center", margin: "0 0 24px", letterSpacing: "-0.5px" }}>
-            Les TMS ne sont pas une fatalité.{" "}
-            <span style={{ color: "#2b5ce6" }}>Ce sont des signaux qu&apos;on peut capter à temps.</span>
-          </p>
-          <div style={{
-            display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-            borderRadius: 20, overflow: "hidden",
-            border: `0.5px solid ${c.border}`, background: c.bgCard,
-          }}>
+          {/* Stats rapides sous les cards douleurs */}
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 8, marginTop: 16 }}>
             {[
-              { value: "87%", label: "des maladies professionnelles sont des TMS", source: "INRS 2023" },
-              { value: "73j", label: "d'arrêt de travail en moyenne par TMS", source: "Assurance Maladie" },
-              { value: "~8 000€", label: "coût moyen d'un seul arrêt TMS pour l'entreprise", source: "INRS" },
+              { value: "87%", label: "des maladies pro sont des TMS", source: "INRS" },
+              { value: "73j", label: "d'arrêt moyen par TMS", source: "Assurance Maladie" },
+              { value: "~8 000€", label: "coût moyen d'un arrêt TMS", source: "INRS" },
             ].map((s, i) => (
-              <div key={i} style={{
-                padding: "28px 24px", textAlign: "center",
-                borderRight: !isMobile && i < 2 ? `0.5px solid ${c.border}` : "none",
-                borderBottom: isMobile && i < 2 ? `0.5px solid ${c.border}` : "none",
-              }}>
-                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 36, color: "#2b5ce6", margin: "0 0 8px" }}>{s.value}</p>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.55, margin: "0 0 6px" }}>{s.label}</p>
-                <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>Source : {s.source}</p>
+              <div key={i} style={{ padding: "14px 16px", borderRadius: 14,
+                background: "rgba(226,75,74,0.04)",
+                border: "0.5px solid rgba(226,75,74,0.12)", textAlign: "center" }}>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24,
+                  color: "#f09595", margin: "0 0 4px" }}>{s.value}</p>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted,
+                  margin: "0 0 2px", lineHeight: 1.4 }}>{s.label}</p>
+                <p style={{ fontFamily: T.b, fontSize: 10, color: c.textMuted,
+                  opacity: 0.5, margin: 0 }}>Source : {s.source}</p>
               </div>
             ))}
           </div>
         </motion.div>
 
-        {/* ── 4. CALCULATEUR ROI ── */}
-        <ROICalculator isMobile={isMobile} c={c as Record<string, string>} T={T} fadeUp={fadeUp} />
-
-        {/* ── 5. COMMENT ÇA MARCHE ── */}
-        <motion.div {...fadeUp(0.1)} style={{ marginBottom: 72 }}>
-          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>
-            Simple à déployer
-          </p>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 22 : 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
-            Opérationnel en 48h.<br />Résultats en 30 jours.
-          </h2>
-          <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 32, lineHeight: 1.65, maxWidth: 500 }}>
-            Pas d&apos;installation. Pas de formation IT. Pas de contrat longue durée.
-          </p>
-
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16 }}>
-            {[
-              {
-                step: "01", icon: "⚡", color: "#2b5ce6",
-                title: "On crée votre espace",
-                desc: "Après votre démo, on configure votre dashboard RH en 48h. Vous recevez un lien d'invitation à partager à vos équipes.",
-                detail: "→ Vous ne faites rien techniquement",
-              },
-              {
-                step: "02", icon: "📱", color: "#7c3aed",
-                title: "Vos employés font leur bilan",
-                desc: "5 à 10 minutes sur mobile ou PC. Questionnaire + analyse vidéo IA posturale. Chaque employé reçoit son propre rapport personnalisé.",
-                detail: "→ Taux de participation moyen : 87%",
-              },
-              {
-                step: "03", icon: "📊", color: "#1d9e75",
-                title: "Vous pilotez et agissez",
-                desc: "Votre dashboard RH se remplit en temps réel. Identifiez les zones à risque, les actions prioritaires, et suivez l'évolution.",
-                detail: "→ Premier rapport sous 30 jours",
-              },
-            ].map((step, i) => (
-              <motion.div key={i} {...fadeUp(i * 0.08)} style={{
-                padding: "24px", borderRadius: 20,
-                background: c.bgCard, border: `0.5px solid ${c.border}`,
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                  <div style={{ fontFamily: T.h, fontWeight: 900, fontSize: 11, color: step.color, opacity: 0.5, letterSpacing: "0.1em" }}>
-                    {step.step}
-                  </div>
-                  <div style={{ width: 1, height: 12, background: c.border }} />
-                  <span style={{ fontSize: 20 }}>{step.icon}</span>
-                </div>
-                <h3 style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: c.textPrimary, margin: "0 0 10px" }}>
-                  {step.title}
-                </h3>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, lineHeight: 1.65, margin: "0 0 12px" }}>
-                  {step.desc}
-                </p>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: step.color, fontWeight: 600, margin: 0 }}>
-                  {step.detail}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-
-          <div style={{
-            marginTop: 16, padding: "16px 20px", borderRadius: 16,
-            background: "rgba(43,92,230,0.04)", border: "0.5px solid rgba(43,92,230,0.15)",
-            display: "flex", gap: 14, alignItems: "flex-start",
-          }}>
-            <span style={{ fontSize: 20, flexShrink: 0 }}>🤔</span>
-            <div>
-              <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, margin: "0 0 4px" }}>
-                &quot;Est-ce que mes employés vont vraiment le faire ?&quot;
-              </p>
-              <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.65 }}>
-                C&apos;est la question qu&apos;on nous pose le plus souvent. La réponse : oui, parce que chaque employé reçoit
-                {" "}<strong style={{ color: c.textPrimary }}>son propre bilan personnel</strong> —
-                pas un rapport collectif anonyme. Quand les gens savent qu&apos;ils vont avoir des réponses sur{" "}
-                <em>leurs</em> douleurs, ils participent. Taux moyen constaté : <strong style={{ color: "#74c69d" }}>87%</strong>.
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* ── 6. DASHBOARD MOCKUP ── */}
+        {/* ── 3. DASHBOARD MOCKUP ── */}
         <motion.div {...fadeUp(0.1)} style={{ marginBottom: 72 }}>
           <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>
             Votre dashboard RH
@@ -907,129 +660,84 @@ export default function EntrepriseClient() {
           </div>
         </motion.div>
 
-        {/* ── 7. VS ERGONOME ── */}
+        {/* ── 4. COMMENT ÇA MARCHE ── */}
         <motion.div {...fadeUp(0.1)} style={{ marginBottom: 72 }}>
-          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>PAW vs Ergonome</p>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
-            Un ergonome passe une journée.<br />
-            <span style={{ color: "#2b5ce6" }}>PAW reste toute l&apos;année.</span>
-          </h2>
-          <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 28, lineHeight: 1.65 }}>
-            L&apos;ergonome vous donne un rapport. PAW donne un outil à chaque employé — et vous donne les données pour agir tout au long de l&apos;année.
-          </p>
-          {isMobile ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {VS_ERGO.map((row, i) => (
-                <div key={i} style={{ borderRadius: 12, overflow: "hidden", border: `0.5px solid ${c.border}` }}>
-                  <div style={{ padding: "8px 12px", background: c.bgCard2 }}>
-                    <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: c.textSecondary }}>{row.critere}</span>
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-                    <div style={{ padding: "10px 12px", borderRight: `0.5px solid ${c.border}` }}>
-                      <p style={{ fontFamily: T.b, fontSize: 10, color: c.textMuted, margin: "0 0 3px" }}>Ergonome</p>
-                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.4 }}>{row.ergo}</p>
-                    </div>
-                    <div style={{ padding: "10px 12px", background: "rgba(43,92,230,0.04)" }}>
-                      <p style={{ fontFamily: T.b, fontSize: 10, color: "#7c9fff", margin: "0 0 3px" }}>PAW</p>
-                      <p style={{ fontFamily: T.b, fontSize: 12, color: "#2b5ce6", fontWeight: 600, margin: 0, lineHeight: 1.4 }}>✓ {row.paw}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div style={{ borderRadius: 16, overflow: "hidden", border: `0.5px solid ${c.border}` }}>
-              {VS_ERGO.map((row, i) => (
-                <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderBottom: i < VS_ERGO.length - 1 ? `0.5px solid ${c.border}` : "none" }}>
-                  <div style={{ padding: "14px 18px", background: c.bgCard2, borderRight: `0.5px solid ${c.border}` }}>
-                    <span style={{ fontFamily: T.b, fontSize: 13, fontWeight: 600, color: c.textSecondary }}>{row.critere}</span>
-                  </div>
-                  <div style={{ padding: "14px 18px", borderRight: `0.5px solid ${c.border}` }}>
-                    <span style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted }}>{row.ergo}</span>
-                  </div>
-                  <div style={{ padding: "14px 18px", background: "rgba(43,92,230,0.04)" }}>
-                    <span style={{ fontFamily: T.b, fontSize: 13, color: "#2b5ce6", fontWeight: 600 }}>✓ {row.paw}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-
-        {/* ── 8. DOUBLE VALEUR ── */}
-        <motion.div {...fadeUp(0.08)} style={{ marginBottom: 72 }}>
           <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>
-            Une double valeur, un seul abonnement
+            Simple à déployer
           </p>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
-            Un ergonome vous laisse un rapport.<br />PAW laisse un outil à chacun.
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 22 : 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
+            Opérationnel en 48h.<br />Résultats en 30 jours.
           </h2>
-          <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 28, lineHeight: 1.65, maxWidth: 640 }}>
-            Avec un ergonome classique, les recommandations remontent uniquement vers vous.
-            Avec PAW, chaque collaborateur reçoit en plus son propre bilan de santé au travail —
-            et les clés pour améliorer sa situation au quotidien.
+          <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 32, lineHeight: 1.65, maxWidth: 500 }}>
+            Pas d&apos;installation. Pas de formation IT. Pas de contrat longue durée.
           </p>
 
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
-            <div style={{ padding: "24px", borderRadius: 20, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                <span style={{ fontSize: 24 }}>🏢</span>
-                <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#7c9fff" }}>Pour vous, employeur</span>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {[
-                  "Dashboard RH anonymisé avec tendances collectives",
-                  "Rapport de synthèse ergonomique trimestriel",
-                  "Plan d'action priorisé par impact",
-                  "Score Santé Sociale valorisable en ESG",
-                ].map((item, i) => (
-                  <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                    <span style={{ color: "#7c9fff", fontSize: 13, flexShrink: 0, marginTop: 2 }}>✓</span>
-                    <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.5 }}>{item}</span>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16 }}>
+            {[
+              {
+                step: "01", icon: "⚡", color: "#2b5ce6",
+                title: "On crée votre espace",
+                desc: "Après votre démo, on configure votre dashboard RH en 48h. Vous recevez un lien d'invitation à partager à vos équipes.",
+                detail: "→ Vous ne faites rien techniquement",
+              },
+              {
+                step: "02", icon: "📱", color: "#7c3aed",
+                title: "Vos employés font leur bilan",
+                desc: "5 à 10 minutes sur mobile ou PC. Questionnaire + analyse vidéo IA posturale. Chaque employé reçoit son propre rapport personnalisé.",
+                detail: "→ Taux de participation moyen : 87%",
+              },
+              {
+                step: "03", icon: "📊", color: "#1d9e75",
+                title: "Vous pilotez et agissez",
+                desc: "Votre dashboard RH se remplit en temps réel. Identifiez les zones à risque, les actions prioritaires, et suivez l'évolution.",
+                detail: "→ Premier rapport sous 30 jours",
+              },
+            ].map((step, i) => (
+              <motion.div key={i} {...fadeUp(i * 0.08)} style={{
+                padding: "24px", borderRadius: 20,
+                background: c.bgCard, border: `0.5px solid ${c.border}`,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                  <div style={{ fontFamily: T.h, fontWeight: 900, fontSize: 11, color: step.color, opacity: 0.5, letterSpacing: "0.1em" }}>
+                    {step.step}
                   </div>
-                ))}
-              </div>
-            </div>
+                  <div style={{ width: 1, height: 12, background: c.border }} />
+                  <span style={{ fontSize: 20 }}>{step.icon}</span>
+                </div>
+                <h3 style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: c.textPrimary, margin: "0 0 10px" }}>
+                  {step.title}
+                </h3>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, lineHeight: 1.65, margin: "0 0 12px" }}>
+                  {step.desc}
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: step.color, fontWeight: 600, margin: 0 }}>
+                  {step.detail}
+                </p>
+              </motion.div>
+            ))}
+          </div>
 
-            <div style={{ padding: "24px", borderRadius: 20, background: "rgba(29,158,117,0.06)", border: "0.5px solid rgba(29,158,117,0.2)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                <span style={{ fontSize: 24 }}>🙋</span>
-                <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#1d9e75" }}>Pour chacun de vos employés</span>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {[
-                  "Bilan personnel complet (6 dimensions analysées)",
-                  "Analyse vidéo IA de sa propre posture",
-                  "Conseils et exercices 100% personnalisés",
-                  "Un outil de santé qui lui appartient — même s'il change d'entreprise",
-                ].map((item, i) => (
-                  <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                    <span style={{ color: "#1d9e75", fontSize: 13, flexShrink: 0, marginTop: 2 }}>✓</span>
-                    <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.5 }}>{item}</span>
-                  </div>
-                ))}
-              </div>
+          <div style={{
+            marginTop: 16, padding: "16px 20px", borderRadius: 16,
+            background: "rgba(43,92,230,0.04)", border: "0.5px solid rgba(43,92,230,0.15)",
+            display: "flex", gap: 14, alignItems: "flex-start",
+          }}>
+            <span style={{ fontSize: 20, flexShrink: 0 }}>🤔</span>
+            <div>
+              <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, margin: "0 0 4px" }}>
+                &quot;Est-ce que mes employés vont vraiment le faire ?&quot;
+              </p>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.65 }}>
+                C&apos;est la question qu&apos;on nous pose le plus souvent. La réponse : oui, parce que chaque employé reçoit
+                {" "}<strong style={{ color: c.textPrimary }}>son propre bilan personnel</strong> —
+                pas un rapport collectif anonyme. Quand les gens savent qu&apos;ils vont avoir des réponses sur{" "}
+                <em>leurs</em> douleurs, ils participent. Taux moyen constaté : <strong style={{ color: "#74c69d" }}>87%</strong>.
+              </p>
             </div>
           </div>
 
-          <div style={{ marginTop: 16, padding: "14px 18px", borderRadius: 14, background: c.bgCard, border: `0.5px solid ${c.border}`, textAlign: "center" }}>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.6 }}>
-              💡 Pour 30 employés, l&apos;accès individuel seul vaudrait <strong style={{ color: c.textPrimary }}>600€</strong> (19,99€/personne).
-              Inclus dans votre abonnement PAW Entreprise.
-            </p>
-          </div>
-        </motion.div>
-
-        {/* ── 9. FEATURES ── */}
-        <motion.div {...fadeUp(0.15)} style={{ marginBottom: 72 }}>
-          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>Ce qui est inclus</p>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
-            Un programme de prévention TMS<br />clé en main.
-          </h2>
-          <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 32, lineHeight: 1.65 }}>
-            Pas juste un logiciel. Un accompagnement complet avec un kinésithérapeute derrière.
-          </p>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 14 }}>
+          {/* Ce qui est inclus — 2 features compactes */}
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 14, marginTop: 24 }}>
             {FEATURES.map((f, i) => (
               <motion.div key={i} {...fadeUp(i * 0.05)} style={{ padding: "22px", borderRadius: 16, background: c.bgCard, border: `0.5px solid ${c.border}` }}>
                 <div style={{ width: 44, height: 44, borderRadius: 12, background: `${f.color}12`, border: `1px solid ${f.color}25`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 14 }}>
@@ -1046,10 +754,29 @@ export default function EntrepriseClient() {
           </div>
         </motion.div>
 
-        {/* ── 10. PRICING ── */}
+        {/* ── 5. CALCULATEUR ROI + PRICING ── */}
+        <ROICalculator isMobile={isMobile} c={c as Record<string, string>} T={T} fadeUp={fadeUp} />
         <PricingCalculator isMobile={isMobile} c={c} T={T} fadeUp={fadeUp} />
 
-        {/* ── 11. CONTACT / DÉMO ── */}
+        {/* Badges tech — discrets */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center",
+          gap: 16, flexWrap: "wrap", marginBottom: 48, opacity: 0.5 }}>
+          <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>
+            Propulsé par
+          </span>
+          {["✦ Claude AI (Anthropic)", "Stripe", "Supabase EU"].map((b, i) => (
+            <span key={i} style={{ fontFamily: T.b, fontSize: 11,
+              color: c.textMuted, fontWeight: 600 }}>
+              {b}
+            </span>
+          ))}
+          <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>·</span>
+          <span style={{ fontFamily: T.b, fontSize: 11, color: "#74c69d", fontWeight: 600 }}>
+            🔒 RGPD · Données EU
+          </span>
+        </div>
+
+        {/* ── 6. CONTACT / DÉMO ── */}
         <motion.div {...fadeUp(0.25)} id="contact" style={{ borderRadius: 24, padding: "40px 36px", marginBottom: 32, background: c.bgCard, border: `0.5px solid ${c.border}` }}>
           <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>Contact</p>
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: c.textPrimary, marginBottom: 8 }}>
