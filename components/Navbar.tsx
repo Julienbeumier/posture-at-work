@@ -167,9 +167,16 @@ export default function Navbar() {
 
           {/* Entreprise link (desktop) */}
           <Link href={isEnterpriseAdmin ? "/entreprise/dashboard" : "/entreprise"} className="hidden md:block" style={{ textDecoration: "none" }}>
-            <span style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "var(--t55)", cursor: "pointer" }}>
-              {isEnterpriseAdmin ? "Dashboard RH" : "Entreprise"}
-            </span>
+            <div style={{
+              padding: "6px 14px", borderRadius: 100, cursor: "pointer",
+              background: "rgba(124,58,237,0.12)",
+              border: "0.5px solid rgba(124,58,237,0.3)",
+              fontFamily: "var(--font-jakarta), sans-serif",
+              fontSize: 13, fontWeight: 600,
+              color: "#c4b5fd",
+            }}>
+              {isEnterpriseAdmin ? "🏢 Dashboard RH" : "Entreprise"}
+            </div>
           </Link>
 
           {/* Desktop nav links (hidden on mobile) */}
@@ -178,7 +185,7 @@ export default function Navbar() {
               <>
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>
                   <div style={{ padding: "7px 16px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#7c9fff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-                    Mobilité
+                    Exercices
                   </div>
                 </Link>
                 <Link href="/dashboard" style={{ textDecoration: "none" }}>
@@ -267,28 +274,55 @@ export default function Navbar() {
               <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", margin: 0 }}>
                 {user.email}
               </p>
+              {premium && (
+                <p style={{ fontFamily: T.b, fontSize: 11, color: "#f59e0b", margin: "2px 0 0" }}>
+                  👑 Premium activé
+                </p>
+              )}
             </div>
           )}
-          <Link href="/premium" onClick={() => setIsMenuOpen(false)} style={{ ...menuItemStyle, color: "#fbbf24", background: "rgba(245,158,11,0.06)" }}>
-            💎 Passer au premium — 19,99€
-          </Link>
-          <Link href="/onboarding" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
-            🎯 Nouveau bilan
-          </Link>
-          <Link href="/mobilite" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
-            🧘 Mobilité
-          </Link>
-          <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
-            📊 Dashboard
-          </Link>
-          <Link href={isEnterpriseAdmin ? "/entreprise/dashboard" : "/entreprise"} onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
-            🏢 {isEnterpriseAdmin ? "Dashboard RH" : "Entreprise"}
-          </Link>
-          {!user && (
-            <Link href="/auth" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
-              🔑 Se connecter
+
+          {user && (
+            <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+              📊 Dashboard
             </Link>
           )}
+
+          {user && premium && (
+            <Link href="/mobilite" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+              🧘 Exercices
+            </Link>
+          )}
+
+          {user && (
+            <Link href="/onboarding" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+              🎯 Nouveau bilan
+            </Link>
+          )}
+
+          {user && !premium && (
+            <Link href="/premium" onClick={() => setIsMenuOpen(false)} style={{ ...menuItemStyle, color: "#fbbf24", background: "rgba(245,158,11,0.06)" }}>
+              💎 Débloquer le premium — 19,99€
+            </Link>
+          )}
+
+          {user && isEnterpriseAdmin && (
+            <Link href="/entreprise/dashboard" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+              🏢 Dashboard RH
+            </Link>
+          )}
+
+          {!user && (
+            <>
+              <Link href="/onboarding" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+                🎯 Faire mon bilan
+              </Link>
+              <Link href="/auth" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+                🔑 Se connecter
+              </Link>
+            </>
+          )}
+
           {user && (
             <button
               onClick={() => { signOut(); setIsMenuOpen(false); }}
