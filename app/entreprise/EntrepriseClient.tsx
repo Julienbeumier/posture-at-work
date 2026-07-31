@@ -470,6 +470,143 @@ export default function EntrepriseClient() {
           </div>
         </motion.div>
 
+        {/* ── BADGES TECH ── */}
+        <motion.div {...fadeUp(0.05)} style={{ marginBottom: 56 }}>
+          <div style={{
+            padding: "20px 28px", borderRadius: 18,
+            background: "rgba(255,255,255,0.02)",
+            border: "0.5px solid rgba(255,255,255,0.07)",
+            display: "flex", alignItems: "center",
+            justifyContent: "center", flexWrap: "wrap", gap: isMobile ? 12 : 24,
+          }}>
+            {/* Label */}
+            <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600,
+              color: "var(--t30)", textTransform: "uppercase", letterSpacing: "0.1em",
+              flexBasis: isMobile ? "100%" : "auto", textAlign: "center" }}>
+              Propulsé par
+            </span>
+
+            {/* Séparateur desktop */}
+            {!isMobile && <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)" }} />}
+
+            {/* Claude / Anthropic */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8,
+                background: "linear-gradient(135deg, #cc785c, #d4966a)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 14, flexShrink: 0 }}>
+                ✦
+              </div>
+              <div>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
+                  color: "var(--text-primary)", margin: 0, lineHeight: 1 }}>
+                  Claude AI
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)",
+                  margin: "2px 0 0" }}>
+                  by Anthropic
+                </p>
+              </div>
+            </div>
+
+            <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)" }} />
+
+            {/* Stripe */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8,
+                background: "#635bff",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0 }}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M6.5 2C4.5 2 3 3.2 3 4.8c0 1.4 1 2.2 2.6 2.8 1.3.5 1.7.8 1.7 1.4 0 .7-.7 1.1-1.8 1.1-1.2 0-2.1-.4-2.8-.9L2 10.5c.8.5 1.9.9 3.2.9C7.4 11.4 9 10.2 9 8.5c0-1.5-1-2.3-2.7-2.9C5 5.1 4.6 4.8 4.6 4.2c0-.6.6-1 1.6-1 1 0 1.8.3 2.4.7l.7-1.6C8.6 2.4 7.7 2 6.5 2z" fill="white"/>
+                </svg>
+              </div>
+              <div>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
+                  color: "var(--text-primary)", margin: 0, lineHeight: 1 }}>
+                  Stripe
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)",
+                  margin: "2px 0 0" }}>
+                  Paiements sécurisés
+                </p>
+              </div>
+            </div>
+
+            <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)" }} />
+
+            {/* Supabase */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8,
+                background: "#3ecf8e",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0 }}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M7.5 1L2 8h5l-.5 5 5.5-7H7l.5-5z" fill="white"/>
+                </svg>
+              </div>
+              <div>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
+                  color: "var(--text-primary)", margin: 0, lineHeight: 1 }}>
+                  Supabase EU
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)",
+                  margin: "2px 0 0" }}>
+                  Données hébergées en Europe
+                </p>
+              </div>
+            </div>
+
+            <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)" }} />
+
+            {/* RGPD */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8,
+                background: "rgba(116,198,157,0.15)",
+                border: "0.5px solid rgba(116,198,157,0.3)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 14, flexShrink: 0 }}>
+                🔒
+              </div>
+              <div>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
+                  color: "#74c69d", margin: 0, lineHeight: 1 }}>
+                  RGPD
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)",
+                  margin: "2px 0 0" }}>
+                  Données anonymisées
+                </p>
+              </div>
+            </div>
+
+            <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)",
+              display: isMobile ? "none" : "block" }} />
+
+            {/* Kiné validé */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8,
+                background: "rgba(43,92,230,0.15)",
+                border: "0.5px solid rgba(43,92,230,0.3)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 14, flexShrink: 0 }}>
+                🩺
+              </div>
+              <div>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
+                  color: "#7c9fff", margin: 0, lineHeight: 1 }}>
+                  Validé cliniquement
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)",
+                  margin: "2px 0 0" }}>
+                  Par un kinésithérapeute
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </motion.div>
+
         {/* ── 2. DOULEURS DRH ── */}
         <motion.div {...fadeUp(0.05)} style={{ marginBottom: 72 }}>
           <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, color: "#f09595", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16, textAlign: "center" }}>
