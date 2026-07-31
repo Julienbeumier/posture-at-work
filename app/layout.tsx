@@ -24,11 +24,11 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL("https://postureatwork.com"),
   title: {
-    default: "PostureAtWork — Bilan ergonomique gratuit en 5 minutes",
+    default: "PostureAtWork — Bilan santé au travail par IA",
     template: "%s | PostureAtWork",
   },
   description:
-    "Analyse ta posture, tes douleurs et tes habitudes au travail en 5 minutes. Bilan ergonomique gratuit avec conseils personnalisés pour les travailleurs sédentaires et debout.",
+    "Fais ton bilan santé au travail en 5 minutes. Questionnaire clinique validé par un kinésithérapeute + analyse vidéo IA posturale. Détecte tes risques TMS et reçois des conseils personnalisés.",
   keywords: [
     "bilan ergonomique", "posture bureau", "douleurs dos travail",
     "ergonomie poste de travail", "mal de dos télétravail",
