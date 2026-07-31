@@ -191,7 +191,7 @@ function PricingCalculator({
                 `${employees} analyses vidéo IA`,
                 "Dashboard RH anonymisé",
                 "Rapport trimestriel PDF",
-                "Score ESG/CSRD valorisable",
+                "Rapport bien-être valorisable",
                 "Call de restitution avec le kiné",
               ].map((f, i) => (
                 <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
@@ -467,9 +467,9 @@ export default function EntrepriseClient() {
                 desc: "Vous avez besoin de données, d'un rapport et d'actions concrètes. Pas d'un ergonome qui passe une journée et repart.",
               },
               {
-                emoji: "🤷",
-                pain: "\"Je sais pas par où commencer\"",
-                desc: "La prévention TMS c'est large. PAW vous dit exactement quels postes sont à risque et quelles actions ont le plus d'impact.",
+                emoji: "⚖️",
+                pain: "\"Le CPPT me demande un plan de prévention concret\"",
+                desc: "La loi bien-être au travail oblige toute entreprise à documenter sa prévention TMS. PAW vous fournit les données et le rapport — sans effort supplémentaire.",
               },
             ].map((item, i) => (
               <motion.div key={i} {...fadeUp(i * 0.05)} style={{
@@ -736,6 +736,18 @@ export default function EntrepriseClient() {
             </div>
           </div>
 
+          <div style={{ marginTop: 10, padding: "12px 16px", borderRadius: 12,
+            background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.15)",
+            display: "flex", gap: 10, alignItems: "flex-start" }}>
+            <span style={{ fontSize: 16, flexShrink: 0 }}>⚖️</span>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.65 }}>
+              <strong style={{ color: c.textSecondary }}>Obligation légale :</strong>{" "}
+              La loi bien-être au travail (Belgique) et le DUER (France) imposent à toute entreprise
+              un plan de prévention des risques TMS. PAW documente cette obligation —
+              et vous fournit les preuves en cas de contrôle.
+            </p>
+          </div>
+
           {/* Ce qui est inclus — 2 features compactes */}
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 14, marginTop: 24 }}>
             {FEATURES.map((f, i) => (
@@ -757,6 +769,27 @@ export default function EntrepriseClient() {
         {/* ── 5. CALCULATEUR ROI + PRICING ── */}
         <ROICalculator isMobile={isMobile} c={c as Record<string, string>} T={T} fadeUp={fadeUp} />
         <PricingCalculator isMobile={isMobile} c={c} T={T} fadeUp={fadeUp} />
+
+        {/* ESG discret */}
+        <motion.div {...fadeUp(0.05)} style={{ marginBottom: 40 }}>
+          <div style={{ padding: "18px 22px", borderRadius: 16,
+            background: "rgba(116,198,157,0.04)", border: "0.5px solid rgba(116,198,157,0.15)",
+            display: "flex", gap: 14, alignItems: "flex-start", flexWrap: "wrap" }}>
+            <span style={{ fontSize: 20, flexShrink: 0 }}>🌿</span>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+                color: c.textPrimary, margin: "0 0 4px" }}>
+                Un bonus pour votre reporting social
+              </p>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted,
+                margin: 0, lineHeight: 1.65 }}>
+                Le rapport PAW alimente vos indicateurs bien-être pour votre CPPT,
+                vos appels d&apos;offres grands comptes et votre score EcoVadis Social —
+                sans travail supplémentaire de votre part.
+              </p>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Badges tech — discrets */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center",

@@ -521,7 +521,7 @@ export default function LandingClient() {
           {/* Bottom CTA */}
           <div style={{ padding: isMobile ? "20px 16px" : "24px 40px", background: "rgba(124,58,237,0.04)", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
             <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t45)", margin: 0, lineHeight: 1.6 }}>
-              Dashboard RH anonymisé · Rapport collectif · Suivi trimestriel · Angle CSRD/ESG
+              Dashboard RH anonymisé · Rapport collectif · Suivi trimestriel · Reporting social
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end" }}>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>

@@ -1464,7 +1464,7 @@ export default function EntrepriseDashboard() {
                             color: "#74c69d",
                             actions: [
                               "Refaire passer les bilans PAW aux équipes pour mesurer l'évolution",
-                              "Intégrer les résultats dans votre rapport ESG Social / CSRD",
+                              "Intégrer les résultats dans votre reporting social (CPPT, EcoVadis)",
                               allSetup < 55 ? "Étudier l'installation de bureaux assis-debout pour les postes les plus critiques" : null,
                               "Planifier le call de restitution trimestriel avec le kinésithérapeute PAW",
                             ].filter(Boolean) as string[],
