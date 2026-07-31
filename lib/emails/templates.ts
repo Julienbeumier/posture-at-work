@@ -387,6 +387,97 @@ export function emailPremium(d: { firstname: string; email: string }): { subject
   };
 }
 
+// ─── Template Bienvenue — Inscription ────────────────────────────────────────
+
+export function welcomeEmail(data: { email: string; firstName?: string }): string {
+  const name = data.firstName ?? "toi";
+  return `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <div style="max-width:560px;margin:0 auto;padding:32px 16px;">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="background:#111827;display:inline-block;padding:12px 24px;border-radius:12px;">
+        <p style="font-size:22px;font-weight:900;color:#ffffff;margin:0;letter-spacing:-0.5px;">
+          PAW<span style="color:#2b5ce6;">.</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <div style="background:#ffffff;border-radius:20px;padding:32px 28px;margin-bottom:20px;border:1px solid #e5e7eb;">
+      <h1 style="font-size:22px;font-weight:900;color:#111827;margin:0 0 12px;letter-spacing:-0.5px;line-height:1.2;">
+        Bienvenue sur PAW, ${name} 👋
+      </h1>
+      <p style="font-size:14px;color:#6b7280;line-height:1.75;margin:0 0 20px;">
+        Ton compte est créé. Tu peux maintenant faire ton bilan santé au travail
+        et découvrir ce que ton corps essaie de te dire.
+      </p>
+      <a href="https://postureatwork.com/onboarding"
+         style="display:inline-block;padding:14px 28px;border-radius:100px;
+         background:#2b5ce6;color:#ffffff;font-size:15px;font-weight:700;
+         text-decoration:none;">
+        Commencer mon bilan →
+      </a>
+    </div>
+
+    <!-- Ce qui t'attend -->
+    <div style="background:#ffffff;border-radius:20px;padding:24px 28px;margin-bottom:20px;border:1px solid #e5e7eb;">
+      <p style="font-size:12px;font-weight:700;color:#9ca3af;text-transform:uppercase;
+        letter-spacing:0.1em;margin:0 0 16px;">
+        Ce qui t'attend
+      </p>
+      ${[
+        { emoji: "📊", title: "30 questions cliniques", desc: "Validées par un kinésithérapeute spécialisé TMS." },
+        { emoji: "🎥", title: "Analyse vidéo IA posturale", desc: "40 secondes. Ta vraie posture analysée par intelligence artificielle." },
+        { emoji: "🎯", title: "3 actions prioritaires", desc: "Pas des conseils génériques — des actions pour tes douleurs." },
+      ].map(item => `
+        <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;">
+          <span style="font-size:20px;flex-shrink:0;">${item.emoji}</span>
+          <div>
+            <p style="font-size:13px;font-weight:700;color:#111827;margin:0 0 2px;">${item.title}</p>
+            <p style="font-size:12px;color:#6b7280;margin:0;line-height:1.5;">${item.desc}</p>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+
+    <!-- Premium teaser -->
+    <div style="background:#eff6ff;border-radius:16px;padding:18px 22px;margin-bottom:24px;border:1px solid #dbeafe;">
+      <p style="font-size:13px;font-weight:700;color:#1e40af;margin:0 0 6px;">
+        💎 Bilan complet disponible en premium
+      </p>
+      <p style="font-size:12px;color:#3b82f6;line-height:1.65;margin:0 0 10px;">
+        Le questionnaire est gratuit. Pour débloquer les 6 dimensions complètes,
+        l'analyse vidéo IA et le rapport PDF — c'est 19,99€ en accès à vie.
+      </p>
+      <a href="https://postureatwork.com/premium"
+         style="font-size:12px;font-weight:700;color:#2b5ce6;text-decoration:none;">
+        Découvrir le premium →
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align:center;border-top:1px solid #e5e7eb;padding-top:20px;">
+      <p style="font-size:12px;color:#9ca3af;margin:0 0 4px;">
+        PostureAtWork · hello@postureatwork.com
+      </p>
+      <p style="font-size:11px;color:#d1d5db;margin:0;">
+        Tu reçois cet email car tu viens de créer un compte PAW.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+}
+
 // ─── Template Entreprise — Bienvenue admin B2B ────────────────────────────────
 
 export function entrepriseWelcomeEmail(data: {

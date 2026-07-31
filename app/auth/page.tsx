@@ -183,6 +183,12 @@ function AuthForm() {
         });
       }
     }
+    const firstName = localStorage.getItem("paw_firstname") ?? undefined;
+    fetch("/api/auth/welcome", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, firstName }),
+    }).catch(() => {});
     await redirectAfterAuth(router, supabase, adminToken ? "/entreprise/dashboard" : redirect);
     setLoading(false);
   }

@@ -21,6 +21,24 @@ export async function GET(request: Request) {
         { auth: { autoRefreshToken: false, persistSession: false } }
       );
 
+      // Vérifier si nouveau user — envoyer email de bienvenue
+      const { data: existingProfile } = await supabaseAdmin
+        .from("profiles")
+        .select("id")
+        .eq("user_id", data.user.id)
+        .maybeSingle();
+
+      if (!existingProfile) {
+        fetch(`${origin}/api/auth/welcome`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: data.user.email,
+            firstName: (data.user.user_metadata?.full_name as string | undefined)?.split(" ")[0],
+          }),
+        }).catch(() => {});
+      }
+
       if (adminToken) {
         const { data: invite } = await supabaseAdmin
           .from("admin_invites")
