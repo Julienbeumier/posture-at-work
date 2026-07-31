@@ -101,7 +101,9 @@ export async function POST(req: Request) {
 // ── Templates inline ──────────────────────────────────────────────────────────
 
 function reminderJ1Email(firstName?: string): string {
-  const name = firstName ?? "toi";
+  const displayName = (firstName && firstName !== "toi")
+    ? firstName.charAt(0).toUpperCase() + firstName.slice(1) + ","
+    : "";
   return `
 <!DOCTYPE html>
 <html lang="fr">
@@ -115,7 +117,7 @@ function reminderJ1Email(firstName?: string): string {
     </div>
     <div style="background:#fff;border-radius:20px;padding:28px;border:1px solid #e5e7eb;margin-bottom:16px;">
       <h1 style="font-size:20px;font-weight:900;color:#111827;margin:0 0 12px;">
-        Hé ${name}, ton bilan t'attend 👀
+        ${displayName ? displayName + " ton" : "Ton"} bilan t'attend 👀
       </h1>
       <p style="font-size:14px;color:#6b7280;line-height:1.75;margin:0 0 20px;">
         Tu as créé ton compte hier mais tu n'as pas encore fait ton bilan.
@@ -128,8 +130,8 @@ function reminderJ1Email(firstName?: string): string {
     </div>
     <div style="background:#fff;border-radius:16px;padding:18px 22px;border:1px solid #e5e7eb;margin-bottom:20px;">
       <p style="font-size:13px;color:#374151;line-height:1.65;margin:0;">
-        💡 <strong>Le saviez-tu ?</strong> 87% des douleurs au travail ont une cause identifiable.
-        Le questionnaire PAW te dit exactement où ça vient — et quoi faire.
+        💡 <strong>87% des douleurs au travail ont une cause identifiable.</strong>
+        Le questionnaire PAW te dit exactement d'où ça vient — et quoi faire en priorité.
       </p>
     </div>
     <div style="text-align:center;padding-top:16px;border-top:1px solid #e5e7eb;">
@@ -141,7 +143,9 @@ function reminderJ1Email(firstName?: string): string {
 }
 
 function reminderJ7Email(firstName?: string, score?: number): string {
-  const name = firstName ?? "toi";
+  const displayName = (firstName && firstName !== "toi")
+    ? firstName.charAt(0).toUpperCase() + firstName.slice(1) + ","
+    : "";
   const scoreText = score ? `Ton score global est de <strong style="color:#2b5ce6;">${score}/100</strong>. ` : "";
   return `
 <!DOCTYPE html>
@@ -156,10 +160,10 @@ function reminderJ7Email(firstName?: string, score?: number): string {
     </div>
     <div style="background:#fff;border-radius:20px;padding:28px;border:1px solid #e5e7eb;margin-bottom:16px;">
       <h1 style="font-size:20px;font-weight:900;color:#111827;margin:0 0 12px;">
-        ${name}, il te manque la moitié de ton analyse 🔒
+        ${displayName ? displayName + " il" : "Il"} te manque la moitié de ton analyse 🔒
       </h1>
       <p style="font-size:14px;color:#6b7280;line-height:1.75;margin:0 0 16px;">
-        ${scoreText}Mais 3 dimensions restent verrouillées — sommeil, nutrition, lifestyle.
+        ${scoreText ? scoreText + " M" : "M"}ais 3 dimensions restent verrouillées — sommeil, nutrition, lifestyle.
         Ce sont souvent elles qui expliquent pourquoi les douleurs persistent malgré les efforts.
       </p>
       <div style="background:#f8faff;border-radius:12px;padding:14px 16px;margin-bottom:20px;border:1px solid #dbeafe;">
