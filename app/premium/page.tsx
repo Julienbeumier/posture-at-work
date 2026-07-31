@@ -180,7 +180,7 @@ export default function PremiumPage() {
         {/* ── ALREADY PREMIUM ── */}
         {alreadyPremium && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: "center", paddingTop: 40 }}>
-            <div style={{ borderRadius: 28, padding: "40px 32px", background: "rgba(45,106,79,0.12)", border: "0.5px solid rgba(116,198,157,0.30)", marginBottom: 24 }}>
+            <div style={{ borderRadius: 20, padding: "40px 32px", background: "rgba(45,106,79,0.12)", border: "0.5px solid rgba(116,198,157,0.30)", marginBottom: 24 }}>
               <div style={{ fontSize: 56, marginBottom: 16 }}>✨</div>
               <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#74c69d", marginBottom: 12 }}>
                 Tu as déjà le premium activé !
@@ -189,7 +189,7 @@ export default function PremiumPage() {
                 Tous les accès sont débloqués.<br />Conseils détaillés, analyse vidéo IA, dashboard, rapport PDF — tout est à toi.
               </p>
               <Link href="/dashboard" style={{ textDecoration: "none" }}>
-                <div style={{ display: "inline-block", padding: "14px 28px", borderRadius: 100, background: "#74c69d", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--bg-primary)", cursor: "pointer" }}>
+                <div style={{ display: "inline-block", padding: "15px 32px", borderRadius: 100, background: "#74c69d", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--bg-primary)", cursor: "pointer" }}>
                   ← Retour au dashboard
                 </div>
               </Link>
@@ -229,7 +229,7 @@ export default function PremiumPage() {
                   { label: "Douleurs", score: userScores.pain, emoji: "🩺" },
                   { label: "Habitudes", score: userScores.habits, emoji: "⏱️" },
                 ].map(d => (
-                  <div key={d.label} style={{ padding: "10px 16px", borderRadius: 14,
+                  <div key={d.label} style={{ padding: "10px 16px", borderRadius: 16,
                     background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
                     <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)" }}>{d.emoji} {d.label}</span>
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 20,
@@ -242,7 +242,7 @@ export default function PremiumPage() {
                   { label: "Nutrition", emoji: "🍽️" },
                   { label: "Lifestyle", emoji: "🏃" },
                 ].map(d => (
-                  <div key={d.label} style={{ padding: "10px 16px", borderRadius: 14,
+                  <div key={d.label} style={{ padding: "10px 16px", borderRadius: 16,
                     background: "rgba(212,162,42,0.06)", border: "0.5px solid rgba(212,162,42,0.2)",
                     position: "relative" }}>
                     <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)" }}>{d.emoji} {d.label}</span>
@@ -268,11 +268,11 @@ export default function PremiumPage() {
               animate={{ boxShadow: ["0 0 30px rgba(43,92,230,0.3)", "0 0 50px rgba(43,92,230,0.5)", "0 0 30px rgba(43,92,230,0.3)"] }}
               transition={{ duration: 2.5, repeat: Infinity }}
               onClick={handleCheckout}
-              style={{ display: "inline-block", padding: "18px 40px", borderRadius: 100,
+              style={{ display: "inline-block", padding: "15px 32px", borderRadius: 100,
                 cursor: checkoutLoading ? "default" : "pointer",
                 opacity: checkoutLoading ? 0.7 : 1,
                 background: "linear-gradient(135deg, #2b5ce6, #7c3aed)",
-                fontFamily: T.h, fontWeight: 800, fontSize: 17, color: "#fff", marginBottom: 12 }}>
+                fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 12 }}>
               {checkoutLoading ? "Redirection vers le paiement…" : "🔓 Débloquer mon analyse complète — 19,99€ →"}
             </motion.div>
 
@@ -387,7 +387,7 @@ export default function PremiumPage() {
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
               {FEATURES.map((f, i) => (
                 <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 + i * 0.06 }}
-                  style={{ borderRadius: 18, padding: "18px 16px", background: f.bg, border: `0.5px solid ${f.border}` }}>
+                  style={{ borderRadius: 16, padding: "18px 16px", background: f.bg, border: `0.5px solid ${f.border}` }}>
                   <div style={{ fontSize: 24, marginBottom: 10 }}>{f.emoji}</div>
                   <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: f.color, margin: "0 0 8px" }}>{f.title}</p>
                   <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.6, margin: 0 }}>{f.desc}</p>
@@ -398,7 +398,7 @@ export default function PremiumPage() {
 
           {/* ── SECTION 5 : CTA INTERMÉDIAIRE ── */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ marginBottom: 48 }}>
-            <div style={{ borderRadius: 24, padding: "32px 28px", textAlign: "center",
+            <div style={{ borderRadius: 20, padding: "32px 28px", textAlign: "center",
               background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
               <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "var(--text-primary)", marginBottom: 8 }}>
                 Prêt à voir l&apos;analyse complète ?
@@ -413,12 +413,12 @@ export default function PremiumPage() {
               <motion.div
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 onClick={handleCheckout}
-                style={{ display: "inline-block", padding: "16px 36px", borderRadius: 100,
+                style={{ display: "inline-block", padding: "15px 32px", borderRadius: 100,
                   cursor: checkoutLoading ? "default" : "pointer",
                   opacity: checkoutLoading ? 0.7 : 1,
                   background: "#2b5ce6",
                   boxShadow: "0 4px 24px rgba(43,92,230,0.4)",
-                  fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#fff" }}>
+                  fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff" }}>
                 {checkoutLoading ? "Redirection vers le paiement…" : "🔓 Débloquer maintenant — 19,99€ →"}
               </motion.div>
               {checkoutError && (
@@ -444,7 +444,7 @@ export default function PremiumPage() {
           {/* ── FINAL CTA ── */}
           <div style={{ textAlign: "center" }}>
             <div onClick={handleCheckout}
-              style={{ display: "inline-block", padding: "16px 32px", borderRadius: 100,
+              style={{ display: "inline-block", padding: "15px 32px", borderRadius: 100,
                 cursor: checkoutLoading ? "default" : "pointer",
                 opacity: checkoutLoading ? 0.7 : 1,
                 background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.4)",

@@ -200,7 +200,7 @@ export default function LandingClient() {
         </motion.div>
 
         <motion.h1 {...fadeUp(0.05)} style={{
-          fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? "28px" : "clamp(36px, 5vw, 52px)",
+          fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? "32px" : "48px",
           lineHeight: 1.1, color: "var(--text-primary)", margin: "0 0 20px", letterSpacing: "-1px",
         }}>
           Nuque, dos, épaules.<br />
@@ -218,7 +218,7 @@ export default function LandingClient() {
         <motion.div {...fadeUp(0.15)} style={{ display: "flex", gap: 12, justifyContent: "center", alignItems: "center", flexWrap: "wrap" }}>
           <Link href="/onboarding" style={{ textDecoration: "none" }}>
             <div style={{
-              padding: "14px 28px", borderRadius: 100, background: "#2b5ce6",
+              padding: "15px 32px", borderRadius: 100, background: "#2b5ce6",
               color: "#fff", fontFamily: T.h, fontWeight: 800, fontSize: 15, cursor: "pointer",
               boxShadow: "0 4px 24px rgba(43,92,230,0.35)",
             }}>
@@ -264,7 +264,7 @@ export default function LandingClient() {
       <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 40 }}>
           <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 14 }}>Simple & rapide</p>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 32, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 10 }}>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 24 : 32, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 10 }}>
             Comment ça marche ?
           </h2>
           <p style={{ color: "var(--t50)", fontFamily: T.b, fontSize: 14 }}>Simple, rapide, actionnable.</p>
@@ -297,7 +297,7 @@ export default function LandingClient() {
           style={{ marginBottom: 80 }}
         >
           <div style={{
-            borderRadius: 28, overflow: "hidden",
+            borderRadius: 20, overflow: "hidden",
             border: "1px solid rgba(124,58,237,0.3)",
             background: "linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(43,92,230,0.06) 100%)",
           }}>
@@ -316,7 +316,7 @@ export default function LandingClient() {
 
               <h2 style={{
                 fontFamily: T.h, fontWeight: 900,
-                fontSize: isMobile ? "26px" : "36px",
+                fontSize: isMobile ? "24px" : "32px",
                 color: "var(--text-primary)", margin: "0 0 16px",
                 letterSpacing: "-0.5px", lineHeight: 1.2,
               }}>
@@ -351,7 +351,7 @@ export default function LandingClient() {
                     background: "rgba(124,58,237,0.06)",
                     border: "0.5px solid rgba(124,58,237,0.2)",
                   }}>
-                    <span style={{ fontSize: 24, display: "block", marginBottom: 8 }}>{f.emoji}</span>
+                    <span style={{ fontSize: 28, display: "block", marginBottom: 8 }}>{f.emoji}</span>
                     <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#c4b5fd", margin: "0 0 4px" }}>
                       {f.title}
                     </p>
@@ -397,7 +397,7 @@ export default function LandingClient() {
               <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
                 <Link href="/onboarding" style={{ textDecoration: "none" }}>
                   <div style={{
-                    padding: "14px 28px", borderRadius: 100,
+                    padding: "15px 32px", borderRadius: 100,
                     background: "linear-gradient(135deg, #7c3aed, #2b5ce6)",
                     boxShadow: "0 4px 24px rgba(124,58,237,0.4)",
                     fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
@@ -419,7 +419,7 @@ export default function LandingClient() {
       <section style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 48 }}>
           <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 14 }}>6 dimensions analysées</p>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 32, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 12 }}>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 24 : 32, color: "var(--text-primary)", letterSpacing: "-0.5px", marginBottom: 12 }}>
             Une vue complète.<br />Pas juste la posture.
           </h2>
           <p style={{ color: "var(--t65)", fontFamily: T.b, fontSize: 15 }}>
@@ -430,7 +430,7 @@ export default function LandingClient() {
           {pillars.map((p, i) => (
             <motion.div key={i} {...fadeUp(i * 0.07)} style={{ padding: "24px", borderRadius: 20, background: p.bg, border: `0.5px solid ${p.border}`, position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: -30, right: -30, width: 100, height: 100, borderRadius: "50%", background: p.blob, filter: "blur(30px)", opacity: 0.6 }} />
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: p.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, marginBottom: 14, position: "relative" }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: p.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, marginBottom: 14, position: "relative" }}>
                 {p.icon}
               </div>
               <h3 style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: p.titleColor, marginBottom: 8, position: "relative" }}>{p.title}</h3>
@@ -444,7 +444,7 @@ export default function LandingClient() {
       <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
         <motion.div {...fadeUp(0)} style={{ marginBottom: 32 }}>
           <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 14 }}>Créé par un praticien</p>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 32, color: "var(--text-primary)", margin: "0 0 14px", letterSpacing: "-0.5px", lineHeight: 1.15 }}>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 24 : 32, color: "var(--text-primary)", margin: "0 0 14px", letterSpacing: "-0.5px", lineHeight: 1.15 }}>
             L&apos;IA analyse.<br />Le kiné a défini les règles.
           </h2>
           <p style={{ fontFamily: T.b, fontSize: 15, color: "var(--t55)", lineHeight: 1.75, maxWidth: 540, margin: 0 }}>
@@ -459,7 +459,7 @@ export default function LandingClient() {
           <div style={{
             width: 52, height: 52, borderRadius: "50%", flexShrink: 0,
             background: "rgba(43,92,230,0.12)", border: "1.5px solid rgba(43,92,230,0.3)",
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24,
+            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28,
           }}>🩺</div>
           <div>
             <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: "0 0 4px" }}>
@@ -493,7 +493,7 @@ export default function LandingClient() {
           {/* Top */}
           <div style={{ padding: isMobile ? "24px 20px" : "40px 40px 32px", background: "rgba(124,58,237,0.07)", borderBottom: "0.5px solid rgba(124,58,237,0.15)" }}>
             <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#a78bfa", textTransform: "uppercase", marginBottom: 12 }}>PostureAtWork Entreprise</p>
-            <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "var(--text-primary)", margin: "0 0 12px", lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 24 : 32, color: "var(--text-primary)", margin: "0 0 12px", lineHeight: 1.15 }}>
               Vos équipes travaillent dur.<br />Leurs douleurs s&apos;accumulent en silence.
             </h2>
             <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)", lineHeight: 1.75, margin: 0, maxWidth: 600 }}>
@@ -551,8 +551,8 @@ export default function LandingClient() {
 
       {/* ── CTA FINAL ── */}
       <section style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto 80px", padding: "0 24px" }}>
-        <motion.div {...fadeUp(0)} style={{ textAlign: "center", padding: isMobile ? "48px 24px" : "64px 48px", borderRadius: 28, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
-          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 26 : 36, color: "var(--text-primary)", marginBottom: 16, letterSpacing: "-0.5px" }}>
+        <motion.div {...fadeUp(0)} style={{ textAlign: "center", padding: isMobile ? "48px 24px" : "64px 48px", borderRadius: 20, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
+          <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 24 : 32, color: "var(--text-primary)", marginBottom: 16, letterSpacing: "-0.5px" }}>
             Ton bilan prend 5 minutes.<br />
             <span style={{ color: "#2b5ce6" }}>Les résultats durent.</span>
           </h2>
@@ -561,9 +561,9 @@ export default function LandingClient() {
           </p>
           <Link href="/onboarding" style={{ textDecoration: "none" }}>
             <div style={{
-              display: "inline-block", padding: "16px 36px", borderRadius: 100,
+              display: "inline-block", padding: "15px 32px", borderRadius: 100,
               background: "#2b5ce6", color: "#fff",
-              fontFamily: T.h, fontWeight: 800, fontSize: 16, cursor: "pointer",
+              fontFamily: T.h, fontWeight: 800, fontSize: 15, cursor: "pointer",
               boxShadow: "0 4px 32px rgba(43,92,230,0.4)",
             }}>
               Commencer mon bilan →

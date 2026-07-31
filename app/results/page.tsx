@@ -119,7 +119,7 @@ function LockedSubScoreBar({ label, emoji, onClick }: { label: string; emoji: st
     <motion.div
       onClick={onClick}
       whileHover={{ scale: 1.005 }}
-      style={{ position: "relative", overflow: "hidden", borderRadius: 14,
+      style={{ position: "relative", overflow: "hidden", borderRadius: 16,
         padding: "16px 18px", cursor: "pointer",
         background: "rgba(212,162,42,0.04)",
         border: "0.5px solid rgba(212,162,42,0.2)" }}>
@@ -585,14 +585,14 @@ export default function ResultsPage() {
             return (
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                style={{ width: "100%", borderRadius: 24, overflow: "hidden", marginBottom: 8 }}>
+                style={{ width: "100%", borderRadius: 20, overflow: "hidden", marginBottom: 8 }}>
 
                 <div style={{
                   padding: "24px 24px 20px",
                   background: "linear-gradient(135deg, rgba(43,92,230,0.12), rgba(124,58,237,0.10))",
                   border: "1.5px solid rgba(43,92,230,0.25)",
                   borderBottom: "none",
-                  borderRadius: "24px 24px 0 0",
+                  borderRadius: "20px 20px 0 0",
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                     <div style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0,
@@ -650,7 +650,7 @@ export default function ResultsPage() {
                   background: "rgba(43,92,230,0.06)",
                   border: "1.5px solid rgba(43,92,230,0.25)",
                   borderTop: "0.5px solid rgba(43,92,230,0.15)",
-                  borderRadius: "0 0 24px 24px",
+                  borderRadius: "0 0 20px 20px",
                 }}>
                   <div onClick={handleLockedClick} style={{ cursor: "pointer" }}>
                     <motion.div
@@ -791,7 +791,7 @@ export default function ResultsPage() {
           {jobType !== "bureau" && (() => {
             const jc = getJobContent(jobType);
             return (
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 18px", borderRadius: 14, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)", maxWidth: 480, textAlign: "left" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 18px", borderRadius: 16, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)", maxWidth: 480, textAlign: "left" }}>
                 <span style={{ fontSize: 20, flexShrink: 0 }}>{jc.emoji}</span>
                 <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{jc.intro}</p>
               </div>
@@ -827,7 +827,7 @@ export default function ResultsPage() {
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
               style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
               {cards.map((c, i) => (
-                <div key={i} style={{ padding: "12px 16px", borderRadius: 14, background: c.bg, border: `0.5px solid ${c.border}`, display: "flex", alignItems: "flex-start", gap: 10 }}>
+                <div key={i} style={{ padding: "12px 16px", borderRadius: 16, background: c.bg, border: `0.5px solid ${c.border}`, display: "flex", alignItems: "flex-start", gap: 10 }}>
                   <p style={{ fontFamily: T.b, fontSize: 13, color: c.color, lineHeight: 1.6, margin: 0 }}>{c.text}</p>
                 </div>
               ))}
@@ -847,7 +847,7 @@ export default function ResultsPage() {
           else { msg = "Ton ressenti correspond bien à ta situation réelle — bonne conscience corporelle."; msgColor = "#7c9fff"; }
           return (
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
-              style={{ borderRadius: 18, padding: "16px 20px", background: "var(--bg-card)", border: "0.5px solid var(--border-2)", marginBottom: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+              style={{ borderRadius: 16, padding: "16px 20px", background: "var(--bg-card)", border: "0.5px solid var(--border-2)", marginBottom: 16, display: "flex", flexDirection: "column", gap: 10 }}>
               <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "var(--t55)", margin: 0 }}>🪞 Ton ressenti vs ton score réel</p>
               <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                 <div style={{ flex: 1, textAlign: "center", padding: "10px 0", borderRadius: 12, background: "var(--bg-card-2)", border: "0.5px solid var(--border)" }}>
@@ -871,7 +871,7 @@ export default function ResultsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           style={{
-            borderRadius: 24, padding: "24px 28px",
+            borderRadius: 20, padding: "24px 28px",
             background: "var(--bg-card)", border: "0.5px solid var(--border-2)",
             marginBottom: 20,
           }}
@@ -1071,21 +1071,21 @@ export default function ResultsPage() {
             return (
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>
-                  <div style={{ borderRadius: 18, padding: "16px 14px", background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)", textAlign: "center", cursor: "pointer" }}>
+                  <div style={{ borderRadius: 16, padding: "16px 14px", background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)", textAlign: "center", cursor: "pointer" }}>
                     <div style={{ fontSize: 24, marginBottom: 8 }}>🧘</div>
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#7c9fff", margin: "0 0 4px" }}>Exercices</p>
                     <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: 0 }}>Programme guidé</p>
                   </div>
                 </Link>
                 <Link href={lowestDim.dimensionPath} style={{ textDecoration: "none" }}>
-                  <div style={{ borderRadius: 18, padding: "16px 14px", background: "rgba(124,58,237,0.10)", border: "0.5px solid rgba(124,58,237,0.25)", textAlign: "center", cursor: "pointer" }}>
+                  <div style={{ borderRadius: 16, padding: "16px 14px", background: "rgba(124,58,237,0.10)", border: "0.5px solid rgba(124,58,237,0.25)", textAlign: "center", cursor: "pointer" }}>
                     <div style={{ fontSize: 24, marginBottom: 8 }}>🎯</div>
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#a78bfa", margin: "0 0 4px" }}>Plan prioritaire</p>
                     <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: 0 }}>{lowestDim.label}</p>
                   </div>
                 </Link>
                 <Link href="/video-intro" style={{ textDecoration: "none" }}>
-                  <div style={{ borderRadius: 18, padding: "16px 14px", background: "rgba(45,106,79,0.10)", border: "0.5px solid rgba(45,106,79,0.25)", textAlign: "center", cursor: "pointer" }}>
+                  <div style={{ borderRadius: 16, padding: "16px 14px", background: "rgba(45,106,79,0.10)", border: "0.5px solid rgba(45,106,79,0.25)", textAlign: "center", cursor: "pointer" }}>
                     <div style={{ fontSize: 24, marginBottom: 8 }}>🎬</div>
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#74c69d", margin: "0 0 4px" }}>Analyse IA</p>
                     <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: 0 }}>Posture vidéo</p>
@@ -1103,7 +1103,7 @@ export default function ResultsPage() {
           if (!facts.length) return null;
           return (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.48 }}
-              style={{ borderRadius: 22, padding: "20px 22px", marginBottom: 16, background: "rgba(167,139,250,0.06)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
+              style={{ borderRadius: 20, padding: "20px 22px", marginBottom: 16, background: "rgba(167,139,250,0.06)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
               <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#a78bfa", margin: "0 0 12px" }}>💡 Le saviez-vous ?</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {facts.map((fact, i) => (
@@ -1123,7 +1123,7 @@ export default function ResultsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           style={{
-            borderRadius: 24, padding: "24px 26px",
+            borderRadius: 20, padding: "24px 26px",
             background: premium ? "rgba(45,106,79,0.10)" : "rgba(43,92,230,0.08)",
             border: `0.5px solid ${premium ? "rgba(116,198,157,0.25)" : "rgba(43,92,230,0.25)"}`,
             marginBottom: 16,
@@ -1177,7 +1177,7 @@ export default function ResultsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
           style={{
-            borderRadius: 24, padding: "24px 26px",
+            borderRadius: 20, padding: "24px 26px",
             background: "linear-gradient(135deg, rgba(43,92,230,0.10), rgba(43,92,230,0.06))",
             border: "0.5px solid rgba(43,92,230,0.25)",
             marginBottom: 16,
@@ -1196,7 +1196,7 @@ export default function ResultsPage() {
                 key="sent"
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
-                style={{ padding: "14px 18px", borderRadius: 14, background: "rgba(45,106,79,0.15)", border: "0.5px solid rgba(116,198,157,0.35)", display: "flex", alignItems: "center", gap: 10 }}
+                style={{ padding: "14px 18px", borderRadius: 16, background: "rgba(45,106,79,0.15)", border: "0.5px solid rgba(116,198,157,0.35)", display: "flex", alignItems: "center", gap: 10 }}
               >
                 <span style={{ fontSize: 18 }}>📧</span>
                 <p style={{ fontFamily: T.b, fontSize: 13, color: "#74c69d", margin: 0 }}>
