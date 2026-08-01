@@ -33,20 +33,23 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    async function checkEnterprise() {
-      const supabase = createClient();
-      const { data: { user: u } } = await supabase.auth.getUser();
-      if (!u) return;
-      const { data } = await supabase
-        .from("company_memberships")
-        .select("company_id")
-        .eq("user_id", u.id)
-        .eq("role", "admin")
-        .maybeSingle();
-      setIsEnterpriseAdmin(!!data);
+    console.log("[Navbar] user:", user?.email, "isEnterpriseAdmin:", isEnterpriseAdmin);
+    if (!user) {
+      setIsEnterpriseAdmin(false);
+      return;
     }
-    checkEnterprise();
-  }, []);
+    const supabase = createClient();
+    supabase
+      .from("company_memberships")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(({ data }) => {
+        setIsEnterpriseAdmin(!!data);
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
