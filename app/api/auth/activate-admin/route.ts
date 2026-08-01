@@ -36,6 +36,13 @@ export async function POST(req: Request) {
       anonymous_id: "Admin",
     }, { onConflict: "company_id,user_id" });
 
+    await supabaseAdmin.from("profiles").upsert({
+      user_id: userId,
+      is_premium: true,
+      premium_source: "b2b_admin",
+      premium_activated_at: new Date().toISOString(),
+    }, { onConflict: "user_id" });
+
     await supabaseAdmin
       .from("admin_invites")
       .update({ used_at: new Date().toISOString() })
