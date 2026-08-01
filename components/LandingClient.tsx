@@ -204,7 +204,7 @@ export default function LandingClient() {
           lineHeight: 1.1, color: "var(--text-primary)", margin: "0 0 20px", letterSpacing: "-1px",
         }}>
           Nuque, dos, épaules.<br />
-          <span style={{ color: "#2b5ce6" }}>Ton corps te donne des signaux.</span><br />
+          <span style={{ color: "#2b5ce6" }}>Ton corps t&apos;envoie des signaux.</span><br />
           Posture At Work t&apos;aide à les comprendre.
         </motion.h1>
 
