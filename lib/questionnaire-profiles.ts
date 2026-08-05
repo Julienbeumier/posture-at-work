@@ -73,15 +73,13 @@ export function mapDeboutExpressToStandard(
     q_d_sommeil_heures: 7,
     q_d_sommeil_qualite: "normal",
     q_d_jambes_soir: "bien",
-    q_d_varices: "non",
-    q_d_jambes_nuit: "non",
-    q_d_crampes_global: "jamais",
     q_d_irradiation: "non",
     q_d_ecrans_soir: "parfois",
     q_d_petit_dej: "leger",
     q_d_energie_boisson: "eau",
     q_d_repas_service: "sandwich_assis",
-    q_d20: [],
+    q_d_stress: "modere",
+    q_d_posture_tete: "neutre",
     q_d_consultation: "jamais",
     q_d_activite_lifestyle: ["aucune"],
     q_d_activite_intensite: "moderee",
@@ -136,7 +134,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d1", title: "Ton poste debout", subtitle: "Sol, chaussures, ergonomie et ancienneté", emoji: "🏭",
     color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
     selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
-    requiredQ: ["q_d_anciennete", "q_d1", "q_d2", "q_d3", "q_d_endurance", "q_d_position_var", "q_d7"],
+    requiredQ: ["q_d_anciennete", "q_d1", "q_d2", "q_d3", "q_d_endurance", "q_d_position_var", "q_d7", "q_d_posture_tete"],
     questions: [
       { id: "q_d_anciennete", type: "choice", label: "Depuis combien de temps travailles-tu dans ce métier debout ?", options: [
         { value: "moins_1an", label: "🌱 Moins d'1 an" },
@@ -151,12 +149,6 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "caillebotis", label: "🔲 Caillebotis / grilles métalliques" },
         { value: "exterieur", label: "🌿 Extérieur (pavés, asphalte)" },
         { value: "varie", label: "🔀 Ça varie beaucoup" },
-      ]},
-      { id: "q_d_temperature", type: "choice", label: "Quelle est la température à ton poste de travail ?", note: "Les extrêmes thermiques augmentent la fatigue musculaire et les risques de crampes", options: [
-        { value: "normale", label: "✅ Normale et confortable (18-22°C)" },
-        { value: "chaud", label: "🔥 Chaud (cuisine, boulangerie, forge…)" },
-        { value: "froid", label: "❄️ Froid (chambre froide, extérieur hivernal)" },
-        { value: "variable", label: "🔀 Variable selon les zones" },
       ]},
       { id: "q_d2", type: "choice", label: "As-tu un tapis anti-fatigue à ton poste ?", options: [
         { value: "oui_ergo", label: "✅ Oui, tapis ergonomique" },
@@ -199,13 +191,23 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "trop_haut", label: "⬆️ Trop haute (épaules soulevées)" },
         { value: "pas_plan", label: "🤷 Je n'ai pas de plan de travail fixe" },
       ]},
+      { id: "q_d_posture_tete", type: "choice",
+        label: "Pendant le travail, ta tête/nuque est souvent ?",
+        note: "Une tête inclinée en avant de 30° multiplie par 3 la charge sur les vertèbres cervicales.",
+        options: [
+          { value: "neutre", label: "✅ Droite et neutre" },
+          { value: "bas", label: "⬇️ Inclinée vers le bas (caissier, plan de travail bas)" },
+          { value: "cote", label: "↔️ Tournée sur le côté fréquemment" },
+          { value: "ecran_loin", label: "👀 Tendue vers l'avant (écran, client)" },
+        ]
+      },
     ],
   },
   {
     id: "cat-d2", title: "Tes douleurs spécifiques", subtitle: "Pieds, jambes, dos — les zones clés debout", emoji: "🩺",
     color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
     selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
-    requiredQ: ["q_d8", "q_d9", "q_d10", "q_d11", "q_d12", "q_d_irradiation", "q_d_jambes_soir", "q_d_varices"],
+    requiredQ: ["q_d8", "q_d9", "q_d10", "q_d11", "q_d12", "q_d_irradiation", "q_d_jambes_soir"],
     questions: [
       { id: "q_d8", type: "painscale", label: "Douleurs pieds / talons", note: "La douleur au talon au premier pas du matin est un signal important — note-le" },
       { id: "q_d13", type: "choice", label: "Tes douleurs aux pieds/talons se manifestent surtout ?", conditional: true, options: [
@@ -227,16 +229,11 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "jusqu_pied", label: "🚨 Oui, jusqu'au pied / aux orteils" },
       ]},
       { id: "q_d_jambes_soir", type: "choice", label: "Le soir après le travail, tes jambes sont ?", options: [
-        { value: "bien", label: "✅ Bien, pas de problème" },
+        { value: "bien", label: "✅ Bien, aucun problème" },
         { value: "lourdes", label: "😐 Un peu lourdes / fatiguées" },
         { value: "lourdes_gonflees", label: "😫 Lourdes et gonflées" },
-        { value: "douloureuses", label: "🔴 Douloureuses avec varices visibles" },
-      ]},
-      { id: "q_d_varices", type: "choice", label: "As-tu des varices visibles sur les jambes ?", options: [
-        { value: "non", label: "✅ Non" },
-        { value: "veinules", label: "🔸 Quelques petites veinules" },
-        { value: "varices", label: "⚠️ Varices visibles" },
-        { value: "importantes", label: "🔴 Varices importantes et douloureuses" },
+        { value: "crampes", label: "🔴 Crampes régulières en fin de journée" },
+        { value: "douloureuses", label: "🔴 Douloureuses / varices gênantes" },
       ]},
     ],
   },
@@ -244,7 +241,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d3", title: "Habitudes & contraintes", subtitle: "Pauses, charges, gestes répétitifs", emoji: "⏱️",
     color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
     selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
-    requiredQ: ["q_d_repetitif", "q_d_charges", "q_d16", "q_d19"],
+    requiredQ: ["q_d_repetitif", "q_d_charges", "q_d16", "q_d_stress", "q_d19"],
     questions: [
       { id: "q_d_repetitif", type: "choice", label: "Fais-tu des gestes répétitifs dans ton travail ?", options: [
         { value: "non", label: "✅ Non, gestes variés" },
@@ -282,6 +279,16 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "rarement", label: "⚠️ Rarement" },
         { value: "jamais", label: "🚫 Jamais — pas le temps ou pas autorisé" },
       ]},
+      { id: "q_d_stress", type: "choice",
+        label: "Ton niveau de stress au travail est ?",
+        note: "Le stress chronique maintient les muscles en tension permanente — facteur aggravant majeur des TMS.",
+        options: [
+          { value: "faible", label: "😊 Faible — je gère bien" },
+          { value: "modere", label: "🔸 Modéré — parfois tendu" },
+          { value: "eleve", label: "😟 Élevé — souvent sous pression" },
+          { value: "tres_eleve", label: "😫 Très élevé — épuisement fréquent" },
+        ]
+      },
       { id: "q_d19", type: "choice", label: "Hydratation pendant le service ?", options: [
         { value: "reguliere", label: "✅ Je bois régulièrement (>1.5L)" },
         { value: "parfois", label: "🔸 Parfois, pas assez" },
@@ -296,14 +303,6 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
     requiredQ: ["q_d_recuperation"],
     questions: [
-      { id: "q_d20", type: "multiselect", label: "Que fais-tu après le travail pour récupérer ?", options: [
-        { value: "etirements", label: "🧘 Étirements / yoga" },
-        { value: "natation", label: "🏊 Natation / vélo (faible impact)" },
-        { value: "course", label: "🏃 Course à pied / sport intensif" },
-        { value: "repos", label: "🛋️ Repos passif" },
-        { value: "surelever", label: "🦵 Je surélève les jambes" },
-        { value: "compression", label: "🧦 Je porte des chaussettes de compression" },
-      ]},
       { id: "q_d_recuperation", type: "choice", label: "Comment récupères-tu physiquement après ta journée ?", options: [
         { value: "bien", label: "✅ Bien — récupéré le lendemain matin" },
         { value: "partiellement", label: "🔸 Partiellement — encore fatigué le lendemain" },
@@ -316,7 +315,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d5", title: "Sommeil & nuits", subtitle: "Qualité du sommeil et récupération nocturne", emoji: "😴",
     color: "#7dd3fc", colorBg: "rgba(14,165,233,0.08)", colorBorder: "rgba(14,165,233,0.18)",
     selectedBg: "rgba(14,165,233,0.18)", selectedColor: "#7dd3fc",
-    requiredQ: ["q_d_sommeil_qualite", "q_d_jambes_nuit", "q_d_ecrans_soir"],
+    requiredQ: ["q_d_sommeil_qualite", "q_d_ecrans_soir"],
     questions: [
       { id: "q_d_sommeil_heures", type: "slider", label: "Combien d'heures dors-tu par nuit en moyenne ?", min: 5, max: 10, step: 0.5, unit: "h", reference: "⚠️ Moins de 7h = récupération musculaire incomplète pour un métier debout", alwaysAnswered: true },
       { id: "q_d_sommeil_qualite", type: "choice", label: "Quelle est la qualité de ton sommeil ?", options: [
@@ -324,12 +323,6 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
         { value: "correct", label: "🔸 Correct, sans problème majeur" },
         { value: "leger", label: "😐 Léger / fragmenté / réveils fréquents" },
         { value: "tres_mauvais", label: "😫 Très mauvais" },
-      ]},
-      { id: "q_d_jambes_nuit", type: "choice", label: "La nuit, tes jambes sont-elles agitées ou inconfortables ?", options: [
-        { value: "non", label: "✅ Non, aucun problème" },
-        { value: "parfois", label: "🔸 Parfois une sensation d'inconfort" },
-        { value: "souvent_agitees", label: "😟 Souvent agitées, difficile de rester immobile" },
-        { value: "perturbe_sommeil", label: "😫 Oui, ça perturbe mon sommeil régulièrement" },
       ]},
       { id: "q_d_ecrans_soir", type: "choice",
         label: "Utilises-tu des écrans dans l'heure avant de dormir ?",
@@ -347,18 +340,8 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
     id: "cat-d6", title: "Nutrition & énergie", subtitle: "Petit-déjeuner, crampes, boissons, pause repas", emoji: "🍽️",
     color: "#a78bfa", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
     selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
-    requiredQ: ["q_d_petit_dej", "q_d_crampes_global", "q_d_energie_boisson", "q_d_repas_service"],
+    requiredQ: ["q_d_petit_dej", "q_d_energie_boisson", "q_d_repas_service"],
     questions: [
-      { id: "q_d_crampes_global", type: "choice",
-        label: "As-tu des crampes musculaires ?",
-        note: "Les crampes chez les travailleurs debout sont souvent liées à la déshydratation, au manque de magnésium et à la fatigue musculaire.",
-        options: [
-          { value: "non", label: "✅ Non, jamais" },
-          { value: "service_seulement", label: "🔸 Parfois pendant ou juste après le travail" },
-          { value: "nocturnes", label: "😟 Surtout la nuit (crampes nocturnes)" },
-          { value: "service_et_nuit", label: "😫 Les deux — en service ET la nuit" },
-        ]
-      },
       { id: "q_d_petit_dej", type: "choice", label: "Prends-tu un vrai petit-déjeuner avant le travail ?", note: "Sans carburant le matin, tes muscles se relâchent et ta posture s'effondre dès 10h", options: [
         { value: "complet", label: "✅ Oui, complet (protéines + glucides complexes)" },
         { value: "leger", label: "🔸 Léger (café + toast)" },

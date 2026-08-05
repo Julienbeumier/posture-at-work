@@ -605,11 +605,8 @@ function calcDeboutScores(a: GenericAnswers): Scores {
     planScore[a["q_d7"] as string] ?? 60,
     enduranceScore[a["q_d_endurance"] as string] ?? 60,
   ];
-  // Temperature penalty applied after average
-  const tempPenalty: Record<string, number> = { normale: 0, chaud: -5, froid: -8, variable: -3 };
-  const tempAdj = tempPenalty[a["q_d_temperature"] as string] ?? 0;
   const secu3bAdj = a["q_d3"] === "securite" ? (chaussSecu3b[a["q_d3b"] as string] ?? 0) : 0;
-  const setup = clamp(Math.round(setupComponents.reduce((s, v) => s + v, 0) / setupComponents.length) + tempAdj + secu3bAdj);
+  const setup = clamp(Math.round(setupComponents.reduce((s, v) => s + v, 0) / setupComponents.length) + secu3bAdj);
 
   // ── pain_debout (35%) ────────────────────────────────────────────────────
   const painZones = [
@@ -631,28 +628,19 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const timingMap: Record<string, number> = { pas: 0, fin_journee: -5, cours_service: -10, premier_pas: -10, lever_et_service: -15, tout_temps: -15 };
   rawPain += timingMap[a["q_d13"] as string] ?? 0;
 
-  // Jambes soir (q_d_jambes_soir) — valeurs: bien / lourdes / lourdes_gonflees / douloureuses
-  if (a["q_d_jambes_soir"] === "lourdes_gonflees") rawPain -= 8;
+  // Jambes soir (q_d_jambes_soir) — valeurs: bien / lourdes / lourdes_gonflees / crampes / douloureuses
+  if (a["q_d_jambes_soir"] === "crampes") rawPain -= 10;
+  else if (a["q_d_jambes_soir"] === "lourdes_gonflees") rawPain -= 8;
   else if (a["q_d_jambes_soir"] === "douloureuses") rawPain -= 15;
-
-  // Varices (q_d_varices) — valeurs: non / veinules / varices / importantes
-  if (a["q_d_varices"] === "varices") rawPain -= 10;
-  else if (a["q_d_varices"] === "importantes") rawPain -= 20;
 
   // Irradiation (q_d_irradiation) — valeurs: non / fesse_cuisse / jusqu_genou / jusqu_pied
   if (a["q_d_irradiation"] === "fesse_cuisse") rawPain -= 5;
   else if (a["q_d_irradiation"] === "jusqu_genou") rawPain -= 10;
   else if (a["q_d_irradiation"] === "jusqu_pied") rawPain -= 20;
 
-  // Crampes (q_d_crampes_global)
-  const crampesGlobal = a["q_d_crampes_global"] as string;
-  if (crampesGlobal === "service_et_nuit") rawPain -= 15;
-  else if (crampesGlobal === "nocturnes") rawPain -= 10;
-  else if (crampesGlobal === "service_seulement") rawPain -= 5;
-
-  // Jambes agitées nuit (q_d_jambes_nuit) — valeurs: non / parfois / souvent_agitees / perturbe_sommeil
-  if (a["q_d_jambes_nuit"] === "souvent_agitees") rawPain -= 8;
-  else if (a["q_d_jambes_nuit"] === "perturbe_sommeil") rawPain -= 12;
+  // Posture tête / nuque (q_d_posture_tete)
+  const postureNuqueMap: Record<string, number> = { neutre: 0, bas: -8, cote: -6, ecran_loin: -5 };
+  rawPain += postureNuqueMap[a["q_d_posture_tete"] as string] ?? 0;
 
   // Manutention lourde (>30kg)
   if (a["q_d_charges"] === "tres_lourdes") rawPain -= 10;
@@ -682,6 +670,10 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   if (protection.includes("chaussures_securite")) habits = clamp(habits + 5);
   if (protection.includes("aucun")) habits = clamp(habits - 10);
 
+  // Stress chronique (q_d_stress) — facteur aggravant TMS
+  const stressMap: Record<string, number> = { faible: 5, modere: 0, eleve: -10, tres_eleve: -20 };
+  habits = clamp(habits + (stressMap[a["q_d_stress"] as string] ?? 0));
+
   // ── sleep_energy (12%) ───────────────────────────────────────────────────
   let sleep_energy = 100;
 
@@ -694,14 +686,9 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   if (qualite === "epuise" || qualite === "courbature") sleep_energy -= 30;
   else if (qualite === "fatigue") sleep_energy -= 15;
 
-  const crampes = a["q_d_crampes_global"] as string;
-  if (crampes === "service_et_nuit") sleep_energy -= 20;
-  else if (crampes === "nocturnes") sleep_energy -= 15;
-  else if (crampes === "service_seulement") sleep_energy -= 5;
-
-  const jambesnuit = a["q_d_jambes_nuit"] as string;
-  if (jambesnuit === "souvent") sleep_energy -= 15;
-  else if (jambesnuit === "parfois") sleep_energy -= 5;
+  // Crampes via q_d_jambes_soir (fusionné)
+  if (a["q_d_jambes_soir"] === "crampes") sleep_energy -= 12;
+  else if (a["q_d_jambes_soir"] === "douloureuses") sleep_energy -= 8;
 
   // Écrans le soir — impact qualité sommeil
   const ecransSoir = a["q_d_ecrans_soir"] as string;
@@ -712,29 +699,17 @@ function calcDeboutScores(a: GenericAnswers): Scores {
 
   // ── nutrition_debout (12%) ───────────────────────────────────────────────
   const petitDejMap: Record<string, number> = { complet: 100, leger: 65, juste_cafe: 30, saute: 0 };
-  const crampesAlimMap: Record<string, number> = {
-    non: 100,
-    service_seulement: 65,
-    nocturnes: 55,
-    service_et_nuit: 20,
-  };
+  const jambesSoirNutrMap: Record<string, number> = { bien: 100, lourdes: 80, lourdes_gonflees: 60, crampes: 45, douloureuses: 35 };
   const energieMap: Record<string, number> = { eau: 100, parfois_soda: 75, souvent_energisantes: 25, seul_moyen: 0 };
   const repasMap: Record<string, number> = { repas_chaud: 100, sandwich_assis: 70, debout_travaillant: 30, saute_pause: 0 };
   const nutrition = clamp(Math.round((
     (petitDejMap[a["q_d_petit_dej"] as string] ?? 60) +
-    (crampesAlimMap[a["q_d_crampes_global"] as string] ?? 70) +
+    (jambesSoirNutrMap[a["q_d_jambes_soir"] as string] ?? 70) +
     (energieMap[a["q_d_energie_boisson"] as string] ?? 70) +
     (repasMap[a["q_d_repas_service"] as string] ?? 60)
   ) / 4));
 
   // ── lifestyle_debout (8%) ────────────────────────────────────────────────
-  const recup = Array.isArray(a["q_d20"]) ? (a["q_d20"] as string[]) : [];
-  let lifestyleBase = 30;
-  if (recup.includes("etirements")) lifestyleBase += 20;
-  if (recup.includes("natation")) lifestyleBase += 20;
-  if (recup.includes("surelever")) lifestyleBase += 15;
-  if (recup.includes("compression")) lifestyleBase += 10;
-
   const consultMap: Record<string, number> = { suivi_regulier: 100, consulte_une_fois: 75, jamais: 40, pas_eu_temps: 30 };
 
   // q_d_activite_lifestyle intègre étirements + activité
@@ -760,9 +735,8 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const lifestyle = clamp(Math.round((
     activiteScore +
     (consultMap[a["q_d_consultation"] as string] ?? 45) +
-    lifestyleBase +
     autoEvalScore
-  ) / 4));
+  ) / 3));
 
   // ── global (setup 20% · pain 30% · habits 18% · sleep 12% · nutrition 12% · lifestyle 8%) ──
   const global = clamp(Math.round(
