@@ -53,10 +53,12 @@ export default function AnalyzingPage() {
       const questionnaire_scores: Scores | null = scoresRaw ? JSON.parse(scoresRaw) : null;
       const questionnaire_answers = answersRaw ? JSON.parse(answersRaw) : {};
 
-      const jobType = (questionnaire_scores as (Record<string, unknown> | null))?.job_type as string
-        ?? sessionStorage.getItem("paw_video_job_type")
+      // Priorité : sessionStorage (défini par video-intro) > scores > localStorage
+      const jobType = sessionStorage.getItem("paw_video_job_type")
+        ?? (questionnaire_scores as (Record<string, unknown> | null))?.job_type as string
         ?? localStorage.getItem("paw_job_type")
         ?? "bureau";
+      console.log("jobType =", jobType);
 
       // ── Debout analysis mode ─────────────────────────────────────────────
       if (framesPersonneRaw && !framesPosteRaw && jobType === "debout") {

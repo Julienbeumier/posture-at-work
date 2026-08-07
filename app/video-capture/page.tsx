@@ -133,8 +133,12 @@ export default function VideoCapturePage() {
         .then(data => {
           if (data.scores) sessionStorage.setItem("postureatwork_scores", JSON.stringify(data.scores));
           if (data.answers) sessionStorage.setItem("postureatwork_answers", JSON.stringify(data.answers));
-          if (data.job_type) localStorage.setItem("paw_job_type", data.job_type);
-          console.log("Session mobile chargée depuis token");
+          if (data.job_type) {
+            localStorage.setItem("paw_job_type", data.job_type);
+            jobTypeRef.current = data.job_type;
+            setIsBureau(data.job_type === "bureau");
+          }
+          console.log("Session mobile chargée, jobType:", data.job_type);
         })
         .catch(err => console.error("Erreur chargement session:", err));
     }
