@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     }
 
     await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "PostureAtWork <hello@postureatwork.com>",
       to: "hello@postureatwork.com",
       subject: `[PAW Contact] Message de ${nom}`,
       html: `
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     // Si la demande mentionne une démo, envoyer une confirmation avec le lien démo
     if (message?.toLowerCase().includes("démo")) {
       await resend.emails.send({
-        from: "PostureAtWork <onboarding@resend.dev>",
+        from: "PostureAtWork <hello@postureatwork.com>",
         to: email,
         subject: "Votre demande de démo PAW Entreprise",
         html: `
