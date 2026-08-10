@@ -145,9 +145,8 @@ export default function VideoCapturePage() {
   }, []);
 
   useEffect(() => {
-    const jt = sessionStorage.getItem("paw_video_job_type")
-      ?? localStorage.getItem("paw_job_type")
-      ?? "bureau";
+    // Valeur par défaut — sera mise à jour après fetch si token présent
+    const jt = localStorage.getItem("paw_job_type") ?? "bureau";
     jobTypeRef.current = jt;
     setIsBureau(jt === "bureau");
   }, []);
