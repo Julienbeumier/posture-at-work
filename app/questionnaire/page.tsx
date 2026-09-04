@@ -999,37 +999,99 @@ import ProfileQuestionnaire from "./ProfileQuestionnaire";
 import { PROFILE_CATEGORIES, type JobType } from "@/lib/questionnaire-profiles";
 
 export default function QuestionnairePage() {
-  const router = useRouter();
   const [authChecked, setAuthChecked] = useState(false);
   const [jobType, setJobType] = useState<string>("");
   const [firstname, setFirstname] = useState<string>("");
+  const [profileChosen, setProfileChosen] = useState(false);
 
   useEffect(() => {
     async function checkAuth() {
       const { createClient } = await import("@/lib/supabase");
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
+
       if (!user) {
-        window.location.href = "/onboarding";
+        window.location.href = "/auth";
         return;
       }
+
       localStorage.removeItem("paw_example_mode");
       sessionStorage.removeItem("paw_example_mode");
+
+      // Récupérer le prénom depuis Google Auth si pas en localStorage
+      const storedName = localStorage.getItem("paw_firstname");
+      const googleName = user.user_metadata?.full_name?.split(" ")[0]
+        ?? user.user_metadata?.name?.split(" ")[0];
+      if (!storedName && googleName) {
+        localStorage.setItem("paw_firstname", googleName);
+      }
+      setFirstname(storedName ?? googleName ?? "");
+
+      // jobType par défaut bureau — l'employé choisit dans la page
       setJobType(localStorage.getItem("paw_job_type") ?? "bureau");
-      setFirstname(localStorage.getItem("paw_firstname") ?? "");
+      setProfileChosen(!!localStorage.getItem("paw_job_type_confirmed"));
       setAuthChecked(true);
     }
     checkAuth();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!authChecked || !jobType) return (
+  if (!authChecked) return (
     <main style={{ minHeight: "100vh", background: "var(--main-bg)",
       display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ width: 32, height: 32, borderRadius: "50%",
         border: "2px solid rgba(43,92,230,0.2)", borderTopColor: "#2b5ce6",
         animation: "spin 0.8s linear infinite" }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </main>
+  );
+
+  if (!profileChosen) return (
+    <main style={{ minHeight: "100vh", background: "var(--bg-primary)",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+        style={{ maxWidth: 480, width: "100%", textAlign: "center" }}>
+        <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24,
+          color: "var(--text-primary)", marginBottom: 8 }}>
+          Quel est ton profil de travail ?
+        </p>
+        <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)",
+          lineHeight: 1.65, marginBottom: 28 }}>
+          Tes questions et conseils seront adaptés à ton poste.
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          {[
+            { value: "bureau", emoji: "💻", label: "Bureau / Télétravail",
+              desc: "Assis devant un écran la majorité du temps" },
+            { value: "debout", emoji: "🏭", label: "Debout / Actif",
+              desc: "Caissier, soignant, magasinier, serveur..." },
+          ].map(profile => (
+            <motion.div key={profile.value}
+              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                localStorage.setItem("paw_job_type", profile.value);
+                localStorage.setItem("paw_job_type_confirmed", "true");
+                setJobType(profile.value);
+                setProfileChosen(true);
+              }}
+              style={{ padding: "24px 16px", borderRadius: 20, cursor: "pointer",
+                background: "var(--bg-card)", border: "0.5px solid var(--border)",
+                transition: "all 0.2s" }}>
+              <span style={{ fontSize: 36, display: "block", marginBottom: 12 }}>
+                {profile.emoji}
+              </span>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15,
+                color: "var(--text-primary)", margin: "0 0 6px" }}>
+                {profile.label}
+              </p>
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)",
+                margin: 0, lineHeight: 1.5 }}>
+                {profile.desc}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
     </main>
   );
 
