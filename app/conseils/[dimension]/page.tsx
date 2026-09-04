@@ -11,7 +11,6 @@ import { EXERCISES, type Exercise } from "@/lib/exercises";
 import { createClient } from "@/lib/supabase";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { getJobContent, getScoreInterpretation, getJobDimensionContent, type JobDimensionContent } from "@/lib/job-content";
-import { usePremium } from "@/hooks/usePremium";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const T = {
@@ -216,7 +215,6 @@ const THOMAS_ANSWERS = {
 
 export default function DimensionPage() {
   const params = useParams();
-  const { premium } = usePremium();
   const { c } = useTheme();
   const dimensionParam = typeof params.dimension === "string" ? params.dimension : "";
 
@@ -405,18 +403,6 @@ export default function DimensionPage() {
               ← Mes résultats
             </span>
           </Link>
-        </div>
-
-        {/* Premium bandeau */}
-        <div style={{ marginBottom: 20, padding: "10px 16px", borderRadius: 12, background: premium ? "rgba(245,158,11,0.08)" : "rgba(43,92,230,0.08)", border: `0.5px solid ${premium ? "rgba(245,158,11,0.25)" : "rgba(43,92,230,0.20)"}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <p style={{ fontFamily: T.b, fontSize: 12, color: premium ? "rgba(245,158,11,0.85)" : "var(--t55)", margin: 0, lineHeight: 1.5 }}>
-            {premium ? "👑 Accès premium — tous les conseils détaillés sont débloqués" : "💎 Conseils détaillés disponibles avec le premium — 19,99€ à vie"}
-          </p>
-          {!premium && (
-            <Link href="/premium" style={{ textDecoration: "none", flexShrink: 0 }}>
-              <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#7c9fff" }}>Activer →</span>
-            </Link>
-          )}
         </div>
 
         {/* Bandeau exemple */}

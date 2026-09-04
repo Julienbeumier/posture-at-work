@@ -79,12 +79,6 @@ export default function VideoIntroPage() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/auth?redirect=/video-intro"); return; }
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_premium")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      if (!profile?.is_premium) { router.push("/premium"); return; }
       setPremiumChecked(true);
     }
     checkPremium();

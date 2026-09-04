@@ -15,7 +15,6 @@ import {
 } from "@/lib/scoring";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { getJobContent } from "@/lib/job-content";
-import { usePremium } from "@/hooks/usePremium";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const T = {
@@ -111,57 +110,6 @@ const DIM_INLINE_PRODUCTS_DEBOUT: Record<string, { name: string; url: string; re
   "/conseils/habitudes": { name: "Repose-pieds ergonomique",         url: "https://amzn.to/4uMCqZO",                                                                 reason: "Permet d'alterner l'appui et soulage le bas du dos de 25%",                   price: "~35€" },
   "/conseils/nutrition": { name: "Gourde 1.5L graduée",              url: "https://amzn.to/4dVZNJl",                                                                 reason: "Hydratation critique pour les métiers debout — boire sans y penser",          price: "~15€" },
 };
-
-// ─── Locked sub-score (non-premium) ──────────────────────────────────────────
-
-function LockedSubScoreBar({ label, emoji, onClick }: { label: string; emoji: string; onClick?: () => void }) {
-  return (
-    <motion.div
-      onClick={onClick}
-      whileHover={{ scale: 1.005 }}
-      style={{ position: "relative", overflow: "hidden", borderRadius: 16,
-        padding: "16px 18px", cursor: "pointer",
-        background: "rgba(212,162,42,0.04)",
-        border: "0.5px solid rgba(212,162,42,0.2)" }}>
-
-        <div style={{ position: "absolute", inset: 0, zIndex: 2,
-          background: "linear-gradient(to bottom, transparent 30%, rgba(15,15,26,0.85) 100%)" }} />
-
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 18 }}>{emoji}</span>
-            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "var(--t55)" }}>{label}</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6,
-            padding: "3px 10px", borderRadius: 100,
-            background: "rgba(212,162,42,0.12)", border: "0.5px solid rgba(212,162,42,0.25)" }}>
-            <span style={{ fontSize: 10 }}>🔒</span>
-            <span style={{ fontFamily: T.b, fontSize: 10, color: "#d4a22a", fontWeight: 700 }}>Premium</span>
-          </div>
-        </div>
-
-        <div style={{ height: 5, borderRadius: 100, background: "var(--bg-card-2)",
-          marginBottom: 6, overflow: "hidden", position: "relative" }}>
-          <div style={{ position: "absolute", top: 0, left: 0, height: "100%",
-            width: "65%", borderRadius: 100, filter: "blur(3px)",
-            background: "linear-gradient(90deg, #d4a22a, #f4a261)" }} />
-        </div>
-
-        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", margin: 0,
-          filter: "blur(4px)", userSelect: "none" as const, lineHeight: 1.5 }}>
-          Analyse disponible dans le bilan complet — score et recommandations personnalisées
-        </p>
-
-        <div style={{ position: "absolute", bottom: 12, left: "50%",
-          transform: "translateX(-50%)", zIndex: 3,
-          padding: "5px 14px", borderRadius: 100,
-          background: "rgba(43,92,230,0.9)",
-          boxShadow: "0 2px 12px rgba(43,92,230,0.4)" }}>
-          <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 11, color: "#fff" }}>Débloquer →</span>
-        </div>
-      </motion.div>
-  );
-}
 
 // ─── Sub-score bar ────────────────────────────────────────────────────────────
 
@@ -324,7 +272,6 @@ const PRIORITY_STYLE = {
 
 export default function ResultsPage() {
   const router = useRouter();
-  const { premium } = usePremium();
   const { c } = useTheme();
   const [answers, setAnswers] = useState<QuestionnaireAnswers | null>(null);
   const [scores, setScores] = useState<Scores | null>(null);
@@ -476,23 +423,6 @@ export default function ResultsPage() {
     setEmailLoading(false);
   }
 
-  function handleLockedClick() {
-    const scores = sessionStorage.getItem("postureatwork_scores");
-    const answers = sessionStorage.getItem("postureatwork_answers");
-    const jobType = localStorage.getItem("paw_job_type");
-    if (!isLoggedIn) {
-      if (scores) {
-        localStorage.setItem("paw_pending_assessment", JSON.stringify({
-          scores, answers, jobType,
-          savedAt: new Date().toISOString(),
-        }));
-      }
-      router.push("/auth?redirect=/premium");
-    } else {
-      router.push("/premium");
-    }
-  }
-
   if (!scores || !answers) {
     return (
       <main style={{ minHeight: "100vh", background: c.mainBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -501,7 +431,6 @@ export default function ResultsPage() {
     );
   }
 
-  const isLocked = !premium;
   const bureauRecs = getRecommendations(scores, answers);
   const deboutRecs: { title: string; description: string; priority: "urgent" | "important" | "good" }[] = [];
   if (jobType === "debout") {
@@ -549,12 +478,12 @@ export default function ResultsPage() {
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 6,
             padding: "6px 14px", borderRadius: 100,
-            background: isLocked ? "rgba(212,162,42,0.12)" : "rgba(116,198,157,0.12)",
-            border: `0.5px solid ${isLocked ? "rgba(212,162,42,0.3)" : "rgba(116,198,157,0.3)"}`,
+            background: "rgba(116,198,157,0.12)",
+            border: "0.5px solid rgba(116,198,157,0.3)",
           }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: isLocked ? "#d4a22a" : "#74c69d" }} />
-            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: isLocked ? "#d4a22a" : "#74c69d" }}>
-              {isLocked ? "🔒 Analyse partielle — 3 dimensions sur 6" : "✅ Analyse complète"}
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#74c69d" }} />
+            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#74c69d" }}>
+              ✅ Analyse complète
             </span>
           </div>
 
@@ -568,109 +497,6 @@ export default function ResultsPage() {
           }}>
             <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: badge.color }}>{badge.label}</span>
           </div>
-
-          {/* Bloc conversion premium (B3) */}
-          {isLocked && (() => {
-            const painScore = scores.pain ?? 70;
-            const setupScore = scores.setup ?? 70;
-            const habitsScore = scores.habits ?? 70;
-            const mainIssue = painScore < setupScore && painScore < habitsScore
-              ? { msg: "tes douleurs sont plus sérieuses qu'elles n'y paraissent" }
-              : setupScore < habitsScore
-              ? { msg: "ton poste génère des contraintes que tu ne vois pas encore" }
-              : { msg: "tes habitudes de travail accumulent une charge invisible" };
-            const hasPain = scores.pain < 60;
-
-            return (
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                style={{ width: "100%", borderRadius: 20, overflow: "hidden", marginBottom: 8 }}>
-
-                <div style={{
-                  padding: "24px 24px 20px",
-                  background: "linear-gradient(135deg, rgba(43,92,230,0.12), rgba(124,58,237,0.10))",
-                  border: "1.5px solid rgba(43,92,230,0.25)",
-                  borderBottom: "none",
-                  borderRadius: "20px 20px 0 0",
-                }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                      background: "rgba(43,92,230,0.15)", border: "1px solid rgba(43,92,230,0.3)",
-                      display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
-                      🔍
-                    </div>
-                    <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 15, color: "var(--text-primary)", margin: 0 }}>
-                      Ce qu&apos;on a trouvé — et ce qu&apos;on ne peut pas encore te dire
-                    </p>
-                  </div>
-
-                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.75, margin: "0 0 16px" }}>
-                    Ton score de <strong style={{ color: "var(--text-primary)" }}>{scores.global}/100</strong> est calculé
-                    sur 6 dimensions. Tu vois ci-dessous tes 3 premières dimensions —
-                    {hasPain
-                      ? ` mais si tu as mal, c'est souvent le sommeil, le stress ou la nutrition qui amplifient la douleur sans que tu le saches.`
-                      : ` mais les 3 dimensions cachées peuvent complètement changer le diagnostic.`
-                    }
-                  </p>
-
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {[
-                      { emoji: "🌙", label: "Sommeil & énergie",
-                        teaser: hasPain
-                          ? "Ta récupération musculaire la nuit détermine si tes douleurs s'améliorent ou empirent..."
-                          : "Ton niveau d'énergie au travail est directement lié à la qualité de ton sommeil..." },
-                      { emoji: "🍽️", label: "Nutrition",
-                        teaser: "L'inflammation alimentaire peut multiplier par 2 l'intensité des douleurs musculaires..." },
-                      { emoji: "🏃", label: "Lifestyle & bien-être",
-                        teaser: "Ton niveau de stress au travail génère du cortisol qui maintient tes muscles en tension..." },
-                    ].map((item, i) => (
-                      <div key={i} style={{ padding: "12px 14px", borderRadius: 12,
-                        background: "rgba(0,0,0,0.15)", border: "0.5px solid rgba(255,255,255,0.06)",
-                        display: "flex", alignItems: "center", gap: 12, position: "relative", overflow: "hidden" }}>
-                        <span style={{ fontSize: 18, flexShrink: 0 }}>{item.emoji}</span>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "var(--text-primary)", margin: "0 0 3px" }}>{item.label}</p>
-                          <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)", margin: 0,
-                            filter: "blur(5px)", userSelect: "none" as const, lineHeight: 1.4 }}>
-                            {item.teaser}
-                          </p>
-                        </div>
-                        <div style={{ flexShrink: 0, padding: "4px 10px", borderRadius: 100,
-                          background: "rgba(212,162,42,0.15)", border: "0.5px solid rgba(212,162,42,0.3)" }}>
-                          <span style={{ fontFamily: T.b, fontSize: 11, color: "#d4a22a", fontWeight: 700 }}>🔒 Verrouillé</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{
-                  padding: "20px 24px",
-                  background: "rgba(43,92,230,0.06)",
-                  border: "1.5px solid rgba(43,92,230,0.25)",
-                  borderTop: "0.5px solid rgba(43,92,230,0.15)",
-                  borderRadius: "0 0 20px 20px",
-                }}>
-                  <div onClick={handleLockedClick} style={{ cursor: "pointer" }}>
-                    <motion.div
-                      whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
-                      style={{ padding: "16px 0", borderRadius: 100, textAlign: "center",
-                        background: "linear-gradient(135deg, #2b5ce6, #7c3aed)",
-                        boxShadow: "0 4px 24px rgba(43,92,230,0.4)",
-                        fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#fff",
-                        cursor: "pointer", marginBottom: 10 }}>
-                      🔓 Voir mon analyse complète →
-                    </motion.div>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
-                    {["6 dimensions analysées", "Analyse vidéo IA", "Rapport PDF", "Conseils personnalisés"].map(f => (
-                      <span key={f} style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)" }}>✓ {f}</span>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })()}
 
           {/* Bilan complet / incomplet */}
           {hasVideoAnalysis ? (
@@ -742,29 +568,16 @@ export default function ResultsPage() {
                     </span>
                   ))}
                 </div>
-                {isLocked ? (
-                  <div onClick={handleLockedClick} style={{ cursor: "pointer" }}>
-                    <div style={{
-                      padding: "14px 0", borderRadius: 100, textAlign: "center",
-                      background: "linear-gradient(135deg, #2b5ce6, #7c3aed)",
-                      boxShadow: "0 4px 20px rgba(43,92,230,0.4)",
-                      fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
-                    }}>
-                      🔒 Inclus dans le bilan complet →
-                    </div>
+                <Link href="/video-intro" style={{ textDecoration: "none" }}>
+                  <div style={{
+                    padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
+                    background: "linear-gradient(135deg, #7c3aed, #a78bfa)",
+                    boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
+                    fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
+                  }}>
+                    🎥 Analyser ma posture →
                   </div>
-                ) : (
-                  <Link href="/video-intro" style={{ textDecoration: "none" }}>
-                    <div style={{
-                      padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-                      background: "linear-gradient(135deg, #7c3aed, #a78bfa)",
-                      boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
-                      fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
-                    }}>
-                      🎥 Analyser ma posture →
-                    </div>
-                  </Link>
-                )}
+                </Link>
                 <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", textAlign: "center", marginTop: 8 }}>
                   40 secondes · Via ta caméra · Résultats immédiats
                 </p>
@@ -880,23 +693,19 @@ export default function ResultsPage() {
             <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)" }}>Clique pour détails</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-            {SUB_SCORES.map(({ key, label, emoji, dimensionPath, dimensionColor }, i) => {
-              const locked = isLocked && ["sleep_energy", "lifestyle", "nutrition"].includes(key);
-              if (locked) return <LockedSubScoreBar key={key} label={label} emoji={emoji} onClick={handleLockedClick} />;
-              return (
-                <SubScoreBar
-                  key={key}
-                  label={label}
-                  emoji={emoji}
-                  score={scores[key]}
-                  interpretation={scoreInterpretation(key, scores[key], answers)}
-                  dimensionPath={dimensionPath}
-                  dimensionColor={dimensionColor}
-                  delay={i * 0.15}
-                  jobType={jobType}
-                />
-              );
-            })}
+            {SUB_SCORES.map(({ key, label, emoji, dimensionPath, dimensionColor }, i) => (
+              <SubScoreBar
+                key={key}
+                label={label}
+                emoji={emoji}
+                score={scores[key]}
+                interpretation={scoreInterpretation(key, scores[key], answers)}
+                dimensionPath={dimensionPath}
+                dimensionColor={dimensionColor}
+                delay={i * 0.15}
+                jobType={jobType}
+              />
+            ))}
             {!hasVideoAnalysis && (
               <motion.div
                 initial={{ opacity: 0, y: 14 }}
@@ -1115,60 +924,6 @@ export default function ResultsPage() {
             </motion.div>
           );
         })()}
-
-        {/* ── PREMIUM UPSELL / STATUS ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          style={{
-            borderRadius: 20, padding: "24px 26px",
-            background: premium ? "rgba(45,106,79,0.10)" : "rgba(43,92,230,0.08)",
-            border: `0.5px solid ${premium ? "rgba(116,198,157,0.25)" : "rgba(43,92,230,0.25)"}`,
-            marginBottom: 16,
-          }}
-        >
-          {premium ? (
-            <>
-              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#74c69d", margin: "0 0 6px" }}>
-                👑 Accès premium activé
-              </p>
-              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", margin: "0 0 16px" }}>
-                Tous les outils PAW sont débloqués pour toi.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {["Conseils détaillés accessibles", "Analyse vidéo IA accessible", "Dashboard & historique accessible", "Rapport PDF accessible"].map((item) => (
-                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 12, color: "#74c69d" }}>✓</span>
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", margin: 0 }}>{item}</p>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <>
-              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "var(--text-primary)", margin: "0 0 6px" }}>
-                🚀 Tu n&apos;as accès qu&apos;à une partie de PAW
-              </p>
-              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", margin: "0 0 16px" }}>
-                Tu as accès à l&apos;analyse complète — 6 dimensions + vidéo IA
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
-                {["Conseils détaillés bloqués", "Analyse vidéo IA bloquée", "Dashboard bloqué", "Rapport PDF bloqué"].map((item) => (
-                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 12, color: "#f09595" }}>✕</span>
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", margin: 0 }}>{item}</p>
-                  </div>
-                ))}
-              </div>
-              <div onClick={handleLockedClick} style={{ cursor: "pointer" }}>
-                <div style={{ padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "linear-gradient(135deg, #2b5ce6, #7c9fff)", boxShadow: "0 0 24px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
-                  🔓 Débloquer mon analyse complète — 19,99€ →
-                </div>
-              </div>
-            </>
-          )}
-        </motion.div>
 
         {/* ── SAVE CTA ── */}
         <motion.div

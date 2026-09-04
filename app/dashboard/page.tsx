@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-import { usePremium } from "@/hooks/usePremium";
 import { useTheme } from "@/contexts/ThemeContext";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -306,7 +305,6 @@ function SignalForm({ companyId, anonymousId, onSent }: {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { premium: isPremiumUser } = usePremium();
   const { c } = useTheme();
   const [user, setUser] = useState<User | null>(null);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
@@ -329,7 +327,6 @@ export default function DashboardPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [showIosBanner, setShowIosBanner] = useState(false);
-  const [premiumToast, setPremiumToast] = useState(false);
   const [showFeedbackBanner, setShowFeedbackBanner] = useState(false);
   const [notAdminError, setNotAdminError] = useState(false);
   const [isB2B, setIsB2B] = useState(false);
@@ -515,13 +512,6 @@ export default function DashboardPage() {
 
       setLoading(false);
 
-      // Show premium activation toast if redirected from /premium
-      if (typeof window !== "undefined" && window.location.search.includes("premium=activated")) {
-        setPremiumToast(true);
-        setTimeout(() => setPremiumToast(false), 5000);
-        window.history.replaceState({}, "", "/dashboard");
-      }
-
       // Vérifier si redirection depuis entreprise sans droits admin
       if (typeof window !== "undefined") {
         const params = new URLSearchParams(window.location.search);
@@ -696,28 +686,6 @@ export default function DashboardPage() {
 
       <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: isMobile ? "20px 16px" : "20px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
 
-        {/* ── PREMIUM TOAST ── */}
-        <AnimatePresence>
-          {premiumToast && (
-            <motion.div
-              initial={{ opacity: 0, y: -16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              style={{
-                borderRadius: 16, padding: "14px 20px",
-                background: "rgba(45,106,79,0.20)", border: "0.5px solid rgba(116,198,157,0.35)",
-                display: "flex", alignItems: "center", gap: 12,
-              }}
-            >
-              <span style={{ fontSize: 20 }}>🎉</span>
-              <div>
-                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#74c69d", margin: 0 }}>Accès premium activé !</p>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(116,198,157,0.75)", margin: 0 }}>Tu as maintenant accès à tout PostureAtWork.</p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {/* ── FEEDBACK BANNER ── */}
         {showFeedbackBanner && (
           <motion.div
@@ -783,11 +751,6 @@ export default function DashboardPage() {
                 <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "var(--text-primary)", margin: 0 }}>
                   Bonjour {displayName} 👋
                 </p>
-                {isPremiumUser && (
-                  <span style={{ padding: "3px 10px", borderRadius: 100, background: "linear-gradient(135deg, #f59e0b, #d4622a)", fontFamily: T.h, fontWeight: 800, fontSize: 11, color: "#fff", letterSpacing: "0.5px" }}>
-                    ✨ PREMIUM
-                  </span>
-                )}
               </div>
               {latestBadge && (
                 <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
@@ -823,7 +786,7 @@ export default function DashboardPage() {
               )}
             </div>
           </div>
-          <Link href="/onboarding" style={{ textDecoration: "none", display: "block", marginTop: 16 }}>
+          <Link href="/questionnaire" style={{ textDecoration: "none", display: "block", marginTop: 16 }}>
             <div style={{
               padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
               background: "#2b5ce6", boxShadow: "0 4px 20px rgba(43,92,230,0.4)",
@@ -861,7 +824,7 @@ export default function DashboardPage() {
             <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", lineHeight: 1.65, marginBottom: 20 }}>
               Fais ton premier bilan en 5 minutes pour débloquer ton tableau de bord complet.
             </p>
-            <Link href="/onboarding" style={{ textDecoration: "none" }}>
+            <Link href="/questionnaire" style={{ textDecoration: "none" }}>
               <div style={{ padding: "14px 0", borderRadius: 100, background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.4)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
                 Faire mon premier bilan →
               </div>
@@ -906,16 +869,13 @@ export default function DashboardPage() {
               const noAssessment = !latest;
               const isVideoCard = s.title === "Analyse vidéo";
               const hasVideoAnalysis = latest?.video_analysis != null;
-              // Cards linking to /conseils or /results without a bilan → redirect to /onboarding
+              // Cards linking to /conseils or /results without a bilan → redirect to /questionnaire
               const isLocked = noAssessment && (s.href.startsWith("/conseils") || s.href === "/results");
-              const videoHref = isPremiumUser ? "/video-intro" : "/premium";
-              const href = isLocked ? "/onboarding" : isVideoCard ? videoHref : s.href;
+              const href = isLocked ? "/questionnaire" : isVideoCard ? "/video-intro" : s.href;
               const desc = score != null
                 ? `${score}/100 · ${statusLabel(score)}`
                 : isLocked
                 ? "🔒 Après ton bilan"
-                : isVideoCard && !isPremiumUser && !hasVideoAnalysis
-                ? "🔒 Inclus dans le bilan complet · 19,99€"
                 : (s.desc ?? "");
               return (
                 <Link key={s.title} href={href} style={{ textDecoration: "none" }}>
@@ -924,16 +884,11 @@ export default function DashboardPage() {
                     background: s.bg, border: `0.5px solid ${s.border}`, cursor: "pointer",
                   }}>
                     <div style={{ position: "absolute", top: -20, right: -20, width: 80, height: 80, borderRadius: "50%", background: s.blob, filter: "blur(24px)", opacity: 0.7 }} />
-                    {isVideoCard && (
-                      <div style={{ position: "absolute", top: 8, right: 8, padding: "2px 7px", borderRadius: 100, background: "rgba(245,158,11,0.15)", border: "0.5px solid rgba(245,158,11,0.35)", fontFamily: T.b, fontWeight: 700, fontSize: 9, color: "#f59e0b" }}>
-                        {isPremiumUser ? "👑 Premium" : "🔒 19,99€"}
-                      </div>
-                    )}
                     <div style={{ width: 36, height: 36, borderRadius: 10, background: s.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, marginBottom: 10, position: "relative" }}>
                       {s.icon}
                     </div>
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: s.color, margin: 0, marginBottom: 3, position: "relative" }}>
-                      {isVideoCard ? (isPremiumUser ? "Lancer mon analyse →" : "Lancer maintenant →") : s.title}
+                      {isVideoCard ? "Lancer mon analyse →" : s.title}
                     </p>
                     <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0, position: "relative" }}>
                       {desc}
@@ -1224,7 +1179,7 @@ export default function DashboardPage() {
                 ? "Il est temps de refaire ton bilan pour mesurer ta progression !"
                 : `Recommandé le ${nextBilanDate!.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}`}
             </p>
-            <Link href="/onboarding" style={{ textDecoration: "none" }}>
+            <Link href="/questionnaire" style={{ textDecoration: "none" }}>
               <div style={{
                 padding: "12px 0", borderRadius: 100, textAlign: "center",
                 background: daysUntilBilan <= 0 ? "#2b5ce6" : "rgba(255,255,255,0.05)",

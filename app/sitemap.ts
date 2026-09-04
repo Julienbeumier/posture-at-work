@@ -9,7 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/questionnaire`,           lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${base}/entreprise`,              lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/entreprise/signup`,       lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${base}/premium`,                 lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/mobilite`,                lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/conseils/setup`,          lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/conseils/douleurs`,       lastModified: now, changeFrequency: "monthly", priority: 0.6 },

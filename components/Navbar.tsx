@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-import { usePremium } from "@/hooks/usePremium";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
@@ -14,7 +13,6 @@ const HIDDEN_ON = ["/questionnaire", "/video-capture"];
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { premium } = usePremium();
   const { theme, toggle: toggleTheme } = useTheme();
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -168,19 +166,21 @@ export default function Navbar() {
             </span>
           </button>
 
-          {/* Entreprise link (desktop) */}
-          <Link href={isEnterpriseAdmin ? "/entreprise/dashboard" : "/entreprise"} className="hidden md:block" style={{ textDecoration: "none" }}>
-            <div style={{
-              padding: "6px 14px", borderRadius: 100, cursor: "pointer",
-              background: "rgba(124,58,237,0.12)",
-              border: "0.5px solid rgba(124,58,237,0.3)",
-              fontFamily: "var(--font-jakarta), sans-serif",
-              fontSize: 13, fontWeight: 600,
-              color: "#c4b5fd",
-            }}>
-              {isEnterpriseAdmin ? "🏢 Dashboard RH" : "Entreprise"}
-            </div>
-          </Link>
+          {/* Entreprise link (desktop, admin only) */}
+          {isEnterpriseAdmin && (
+            <Link href="/entreprise/dashboard" className="hidden md:block" style={{ textDecoration: "none" }}>
+              <div style={{
+                padding: "6px 14px", borderRadius: 100, cursor: "pointer",
+                background: "rgba(124,58,237,0.12)",
+                border: "0.5px solid rgba(124,58,237,0.3)",
+                fontFamily: "var(--font-jakarta), sans-serif",
+                fontSize: 13, fontWeight: 600,
+                color: "#c4b5fd",
+              }}>
+                🏢 Dashboard RH
+              </div>
+            </Link>
+          )}
 
           {/* Desktop nav links (hidden on mobile) */}
           <span className="hidden md:flex items-center" style={{ gap: 8 }}>
@@ -212,11 +212,10 @@ export default function Navbar() {
               <div style={{ position: "relative", display: "inline-block" }}>
                 <div
                   onClick={() => setMenuOpen((v) => !v)}
-                  style={{ width: 34, height: 34, borderRadius: "50%", background: premium ? "linear-gradient(135deg, #f59e0b, #d4622a)" : "linear-gradient(135deg, #2b5ce6, #7c9fff)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: T.h }}
+                  style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg, #2b5ce6, #7c9fff)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: T.h }}
                 >
                   {initials}
                 </div>
-                {premium && <span style={{ position: "absolute", top: -6, right: -6, fontSize: 12, lineHeight: 1 }}>👑</span>}
               </div>
               {menuOpen && (
                 <div style={{ position: "absolute", right: 0, top: 42, width: 180, borderRadius: 16, background: "rgba(18,18,30,0.98)", border: "0.5px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.5)", overflow: "hidden" }}>
@@ -234,9 +233,9 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Mon bilan button (non-connected, always visible) */}
-          {!user && (
-            <Link href="/onboarding" style={{ textDecoration: "none" }}>
+          {/* Mon bilan button (connecté seulement) */}
+          {user && (
+            <Link href="/questionnaire" style={{ textDecoration: "none" }}>
               <div style={{ padding: "11px 18px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#7c9fff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.h, minHeight: 44, display: "flex", alignItems: "center" }}>
                 Mon bilan
               </div>
@@ -277,11 +276,6 @@ export default function Navbar() {
               <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", margin: 0 }}>
                 {user.email}
               </p>
-              {premium && (
-                <p style={{ fontFamily: T.b, fontSize: 11, color: "#f59e0b", margin: "2px 0 0" }}>
-                  👑 Premium activé
-                </p>
-              )}
             </div>
           )}
 
@@ -291,21 +285,15 @@ export default function Navbar() {
             </Link>
           )}
 
-          {user && premium && (
+          {user && (
             <Link href="/mobilite" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
               🧘 Exercices
             </Link>
           )}
 
           {user && (
-            <Link href="/onboarding" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
-              🎯 Nouveau bilan
-            </Link>
-          )}
-
-          {user && !premium && (
-            <Link href="/premium" onClick={() => setIsMenuOpen(false)} style={{ ...menuItemStyle, color: "#fbbf24", background: "rgba(245,158,11,0.06)" }}>
-              💎 Débloquer le premium — 19,99€
+            <Link href="/questionnaire" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+              🎯 Mon bilan
             </Link>
           )}
 
@@ -317,7 +305,7 @@ export default function Navbar() {
 
           {!user && (
             <>
-              <Link href="/onboarding" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+              <Link href="/questionnaire" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
                 🎯 Faire mon bilan
               </Link>
               <Link href="/auth" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>

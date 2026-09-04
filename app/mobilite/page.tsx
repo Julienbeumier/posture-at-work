@@ -8,7 +8,6 @@ import { EXERCISES, PROGRAMS, TARGETED_PROGRAMS, WEEKLY_CHALLENGES, type Exercis
 import { getVoiceGuide } from "@/lib/voice";
 import { createClient } from "@/lib/supabase";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
-import { usePremium } from "@/hooks/usePremium";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
@@ -120,7 +119,6 @@ function ExerciseCard({ ex, index, onStart, isDiscreetMode }: {
 
 export default function MobilitePage() {
   const router = useRouter();
-  const { premium } = usePremium();
   const [premiumChecked, setPremiumChecked] = useState(false);
   const [tab, setTab] = useState<Tab>("bureau");
   const [activeProgram, setActiveProgram] = useState<Program>(PROGRAMS[0]);
@@ -149,12 +147,6 @@ export default function MobilitePage() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/auth?redirect=/mobilite"); return; }
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_premium")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      if (!profile?.is_premium) { router.push("/premium"); return; }
       setPremiumChecked(true);
     }
     checkPremium();
