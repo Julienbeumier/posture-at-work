@@ -52,7 +52,7 @@ export default function JoinPage() {
     localStorage.setItem("paw_is_b2b", "true");
     localStorage.setItem("paw_premium", "true");
     setStep("done");
-    setTimeout(() => router.push("/onboarding"), 2000);
+    setTimeout(() => router.push("/questionnaire"), 2000);
   }, [code, router, supabase]);
 
   useEffect(() => {
@@ -73,7 +73,8 @@ export default function JoinPage() {
       if (user) {
         await joinCompany(user.id, result.company.id);
       } else {
-        setStep("welcome");
+        sessionStorage.setItem("paw_join_code", code);
+        router.push(`/auth?redirect=/questionnaire&from_join=true`);
       }
     }
     if (code) checkCode();

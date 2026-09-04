@@ -70,6 +70,10 @@ function AuthForm() {
   const adminToken = searchParams.get("admin_token") ?? "";
   const fromOnboarding = searchParams.get("from") === "onboarding";
   const fromEntreprise = searchParams.get("from") === "entreprise" || redirect === "/entreprise/dashboard" || !!adminToken;
+  // Inscription uniquement via token d'invitation ou lien admin
+  const canSignup = !!adminToken
+    || !!searchParams.get("from_join")
+    || redirect.includes("/join/");
   const pendingOnboarding = typeof window !== "undefined" ? localStorage.getItem("paw_onboarding") : null;
   const onboardingData = pendingOnboarding ? JSON.parse(pendingOnboarding) : null;
 
@@ -311,18 +315,28 @@ function AuthForm() {
             background: "var(--bg-card2)", border: "0.5px solid var(--border)",
             marginBottom: 20,
           }}>
-            {(["login", "signup"] as const).map(tab => (
-              <button key={tab} onClick={() => { setMode(tab); setError(""); setSuccess(""); }}
+            <button onClick={() => { setMode("login"); setError(""); setSuccess(""); }}
+              style={{
+                flex: 1, padding: "9px 0", borderRadius: 10, border: "none",
+                background: mode === "login" ? "#2b5ce6" : "transparent",
+                color: mode === "login" ? "#fff" : "var(--t50)",
+                fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer",
+                transition: "all 0.2s",
+              }}>
+              Se connecter
+            </button>
+            {canSignup && (
+              <button onClick={() => { setMode("signup"); setError(""); setSuccess(""); }}
                 style={{
                   flex: 1, padding: "9px 0", borderRadius: 10, border: "none",
-                  background: mode === tab ? "#2b5ce6" : "transparent",
-                  color: mode === tab ? "#fff" : "var(--t50)",
+                  background: mode === "signup" ? "#2b5ce6" : "transparent",
+                  color: mode === "signup" ? "#fff" : "var(--t50)",
                   fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer",
                   transition: "all 0.2s",
                 }}>
-                {tab === "login" ? "Se connecter" : "S'inscrire"}
+                S&apos;inscrire
               </button>
-            ))}
+            )}
           </div>
         )}
 
@@ -430,6 +444,13 @@ function AuthForm() {
                   style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)", background: "none", border: "none", cursor: "pointer", textAlign: "center" }}>
                   ← Retour à la connexion
                 </button>
+              )}
+
+              {isLogin && !canSignup && (
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)",
+                  textAlign: "center", marginTop: 4 }}>
+                  Pas encore de compte ? Contactez votre administrateur PAW.
+                </p>
               )}
 
             </motion.div>
