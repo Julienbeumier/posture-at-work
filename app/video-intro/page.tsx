@@ -356,6 +356,23 @@ export default function VideoIntroPage() {
           </motion.div>
         )}
 
+        {/* Avertissement son */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.48 }}
+          style={{ width: "100%", padding: "12px 16px", borderRadius: 12, marginBottom: 16,
+            background: "rgba(244,162,97,0.08)", border: "0.5px solid rgba(244,162,97,0.25)",
+            display: "flex", alignItems: "center", gap: 10 }}
+        >
+          <span style={{ fontSize: 20, flexShrink: 0 }}>🔊</span>
+          <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13,
+            color: "#f4a261", margin: 0, lineHeight: 1.5 }}>
+            <strong>Active le son de ton téléphone</strong> — les instructions
+            sont données à l&apos;oral pendant l&apos;analyse. Tu peux aussi mettre des écouteurs.
+          </p>
+        </motion.div>
+
         {/* QR code desktop → mobile */}
         {isDesktop && (
           <motion.div
