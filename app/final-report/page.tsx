@@ -751,14 +751,20 @@ export default function FinalReportPage() {
 
   useEffect(() => {
     if (!user || savedRef.current || loadedFromRemoteRef.current) return;
+
+    // Sauvegarder même sans vidéo — on sauvegarde les scores questionnaire
     const target = report ?? personneAnalysis ?? deboutAnalysis ?? null;
-    if (!target) return;
-    savedRef.current = true;
-    setSaveStatus("saving");
+
     const isExample = sessionStorage.getItem("paw_example_mode") === "true";
     const scoresRaw = isExample
       ? sessionStorage.getItem("paw_example_scores")
       : sessionStorage.getItem("postureatwork_scores");
+
+    // Si pas de vidéo mais qu'on a des scores → sauvegarder quand même
+    if (!target && !scoresRaw) return; // Vraiment rien à sauvegarder
+
+    savedRef.current = true;
+    setSaveStatus("saving");
     const answersRaw = isExample
       ? sessionStorage.getItem("paw_example_answers")
       : sessionStorage.getItem("postureatwork_answers");
@@ -798,14 +804,21 @@ export default function FinalReportPage() {
         }
       }
       try {
-        await saveAssessmentForUser(user.id, scores, answers, target as unknown as Record<string, unknown>, companyId ?? null);
+        // Sauvegarder avec ou sans vidéo
+        await saveAssessmentForUser(
+          user.id,
+          scores,
+          answers,
+          (target as unknown as Record<string, unknown>) ?? {},
+          companyId ?? null
+        );
         await saveVideoAnalysis();
         setSaveStatus("saved");
       } catch {
         setSaveStatus("error");
       }
     })();
-  }, [user, report, personneAnalysis, deboutAnalysis]);
+  }, [user, report, personneAnalysis, deboutAnalysis, questionnaireScore]);
 
   // Sauvegarde via le token de session QR code — fonctionne même sans session
   // active sur l'appareil mobile (le desktop est connecté, pas forcément le mobile)
