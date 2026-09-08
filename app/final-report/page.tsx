@@ -502,6 +502,138 @@ function DailyChecklist({ items }: { items: string[] }) {
   );
 }
 
+// ─── ExpandableSection ────────────────────────────────────────────────────────
+
+function ExpandableSection({ title, children, defaultOpen = false }: {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div style={{ borderRadius: 16, overflow: "hidden", border: "0.5px solid var(--border)", marginBottom: 12 }}>
+      <button onClick={() => setOpen(!open)}
+        style={{ width: "100%", padding: "16px 18px", display: "flex", alignItems: "center",
+          justifyContent: "space-between", background: "var(--bg-card)", border: "none", cursor: "pointer" }}>
+        <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "var(--text-primary)" }}>{title}</span>
+        <span style={{ fontSize: 18, color: "var(--t50)", transform: open ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>▾</span>
+      </button>
+      {open && (
+        <div style={{ padding: "16px 18px", borderTop: "0.5px solid var(--border)", background: "var(--bg-card)" }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── TopProblems ──────────────────────────────────────────────────────────────
+
+function TopProblems({ scores, answers, personne, poste, debout }: {
+  scores: Record<string, number> | null;
+  answers: Record<string, unknown> | null;
+  personne: PersonneAnalysis | null;
+  poste: PosteAnalysis | null;
+  debout: DeboutAnalysis | null;
+}) {
+  const problems: { emoji: string; title: string; detail: string; color: string }[] = [];
+
+  const SEG_NAMES_PERSONNE: Record<string, string> = {
+    tete_cou: "Tête & cou", epaules_dos_haut: "Épaules & dos haut",
+    bas_dos_bassin: "Dos bas & bassin", membres_superieurs: "Bras & mains",
+    membres_inferieurs: "Jambes & pieds",
+  };
+  const SEG_NAMES_DEBOUT: Record<string, string> = {
+    colonne: "Colonne vertébrale", epaules: "Épaules", tete_cou: "Tête & cou",
+    appui_jambes: "Appui & jambes", membres_superieurs: "Bras & mains",
+  };
+
+  // 1. Posture — segment le plus critique
+  if (personne) {
+    const entries = Object.entries(personne.segments) as [string, PersonneSegment][];
+    const worst = entries.sort((a, b) => a[1].score - b[1].score)[0];
+    if (worst && worst[1].score < 70) {
+      problems.push({
+        emoji: "🧍",
+        title: SEG_NAMES_PERSONNE[worst[0]] ?? worst[0],
+        detail: worst[1].issues?.[0] ?? "Posture à corriger",
+        color: worst[1].score < 50 ? "#f09595" : "#f4a261",
+      });
+    }
+  } else if (debout) {
+    const entries = Object.entries(debout.posture) as [string, DeboutPostureSegment][];
+    const worst = entries.sort((a, b) => a[1].score - b[1].score)[0];
+    if (worst && worst[1].score < 70) {
+      problems.push({
+        emoji: "🧍",
+        title: SEG_NAMES_DEBOUT[worst[0]] ?? worst[0],
+        detail: worst[1].observation ?? "Posture à corriger",
+        color: worst[1].score < 50 ? "#f09595" : "#f4a261",
+      });
+    }
+  }
+
+  // 2. Setup / ergonomie (bureau)
+  const setupScore = scores?.setup ?? 100;
+  if (poste && setupScore < 65 && poste.mainIssues?.length > 0) {
+    const worst = poste.mainIssues[0];
+    problems.push({
+      emoji: "🖥️",
+      title: worst.element ?? "Ergonomie du poste",
+      detail: worst.issue ?? worst.fix ?? "",
+      color: worst.severity === "élevé" ? "#f09595" : "#f4a261",
+    });
+  }
+
+  // 3. Plainte principale / douleurs
+  const plainte = answers?.q_plainte_principale as string | undefined;
+  if (plainte && plainte.trim().length > 0) {
+    problems.push({
+      emoji: "💬",
+      title: "Ta gêne principale",
+      detail: plainte,
+      color: "#a8c0ff",
+    });
+  } else {
+    const painScore = scores?.pain ?? 100;
+    if (painScore < 60) {
+      problems.push({
+        emoji: "😣",
+        title: "Douleurs signalées",
+        detail: "Des douleurs significatives ont été identifiées dans ton questionnaire.",
+        color: "#f09595",
+      });
+    }
+  }
+
+  if (problems.length === 0) return null;
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+      style={{ borderRadius: 20, padding: "20px 22px", marginBottom: 16,
+        background: "rgba(255,255,255,0.015)", border: "0.5px solid rgba(255,255,255,0.07)" }}>
+      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: "0 0 14px" }}>
+        🎯 Top {problems.length} point{problems.length > 1 ? "s" : ""} à traiter
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {problems.map((p, i) => (
+          <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "12px 14px", borderRadius: 14,
+            background: `${p.color}0d`, border: `0.5px solid ${p.color}30` }}>
+            <div style={{ width: 32, height: 32, borderRadius: 10, background: `${p.color}1a`, border: `0.5px solid ${p.color}40`,
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
+              {p.emoji}
+            </div>
+            <div>
+              <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: p.color, margin: "0 0 3px" }}>{p.title}</p>
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", margin: 0, lineHeight: 1.5 }}>{p.detail}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function FinalReportPage() {
@@ -515,6 +647,8 @@ export default function FinalReportPage() {
   const [deboutAnalysis, setDeboutAnalysis] = useState<DeboutAnalysis | null>(null);
 
   const [questionnaireScore, setQuestionnaireScore] = useState<number | null>(null);
+  const [questionScores, setQuestionScores] = useState<Record<string, number> | null>(null);
+  const [questionAnswers, setQuestionAnswers] = useState<Record<string, unknown> | null>(null);
   const [synthesis, setSynthesis] = useState<ReturnType<typeof buildCrossedSynthesis> | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -555,16 +689,18 @@ export default function FinalReportPage() {
     const answersRaw = isExample
       ? sessionStorage.getItem("paw_example_answers")
       : sessionStorage.getItem("postureatwork_answers");
-    const questionScores = scoresRaw ? JSON.parse(scoresRaw) : null;
-    const questionAnswers = answersRaw ? JSON.parse(answersRaw) : null;
-    if (questionScores) setQuestionnaireScore(questionScores.global ?? null);
+    const parsedScores = scoresRaw ? JSON.parse(scoresRaw) : null;
+    const parsedAnswers = answersRaw ? JSON.parse(answersRaw) : null;
+    if (parsedScores) setQuestionnaireScore(parsedScores.global ?? null);
+    setQuestionScores(parsedScores);
+    setQuestionAnswers(parsedAnswers);
 
     setSynthesis(buildCrossedSynthesis(
       analysisPersonne,
       analysisPoste,
       analysisDebout,
-      questionScores,
-      questionAnswers,
+      parsedScores,
+      parsedAnswers,
     ));
 
     createClient().auth.getUser().then(async ({ data }) => {
@@ -607,8 +743,8 @@ export default function FinalReportPage() {
         remotePersonne,
         remotePoste,
         remoteDebout,
-        questionScores,
-        questionAnswers,
+        parsedScores,
+        parsedAnswers,
       ));
     });
   }, []);
@@ -786,6 +922,16 @@ export default function FinalReportPage() {
             </>
           )}
 
+          <TopProblems
+            scores={questionScores}
+            answers={questionAnswers}
+            personne={null}
+            poste={null}
+            debout={deboutAnalysis}
+          />
+
+          <ExpandableSection title="📊 Rapport détaillé complet" defaultOpen={false}>
+
           {/* Posture section */}
           <section style={{ marginBottom: 20 }}>
             <div style={{ borderRadius: 22, padding: "20px 20px 16px", background: "rgba(167,139,250,0.05)", border: "0.5px solid rgba(167,139,250,0.15)" }}>
@@ -912,6 +1058,8 @@ export default function FinalReportPage() {
               {synthesis.dailyChecklist.length > 0 && <DailyChecklist items={synthesis.dailyChecklist} />}
             </>
           )}
+
+          </ExpandableSection>
 
           {/* Save */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
@@ -1057,6 +1205,16 @@ export default function FinalReportPage() {
               <PositivePointsBlock points={synthesis.positivePoints} />
             </>
           )}
+
+          <TopProblems
+            scores={questionScores}
+            answers={questionAnswers}
+            personne={personneAnalysis}
+            poste={posteAnalysis}
+            debout={null}
+          />
+
+          <ExpandableSection title="📊 Rapport détaillé complet" defaultOpen={false}>
 
           {/* ── SECTION 1 — POSTURE ── */}
           <section style={{ marginBottom: 12 }}>
@@ -1261,6 +1419,8 @@ export default function FinalReportPage() {
               </div>
             </section>
           )}
+
+          </ExpandableSection>
 
           {/* ── SAVE ── */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}

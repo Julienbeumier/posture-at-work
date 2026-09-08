@@ -65,6 +65,13 @@ const CATEGORIES = [
     selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
     requiredQ: ["q25"],
   },
+  {
+    index: 7, id: "cat-8",
+    title: "Ta situation", subtitle: "Gênes & contexte de travail", emoji: "💬",
+    color: "#2b5ce6", colorBg: "rgba(43,92,230,0.08)", colorBorder: "rgba(43,92,230,0.18)",
+    selectedBg: "rgba(43,92,230,0.18)", selectedColor: "#a8c0ff",
+    requiredQ: ["q_plainte_principale"],
+  },
 ] as const;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -940,6 +947,42 @@ function BureauQuestionnaire() {
         <CategorySection cat={CATEGORIES[6]} done={isCategoryDone(6, answers)} onRef={(el) => { catRefs.current[6] = el; }}>
           <QBlock number="32" question="Comment tu te sens au travail en ce moment ?" answered={answers.q25 !== null} cat={CATEGORIES[6]}>
             <WellbeingScale value={answers.q25} onChange={(v) => update("q25", v)} cat={CATEGORIES[6]} />
+          </QBlock>
+        </CategorySection>
+
+        {/* CAT 8 — TA SITUATION */}
+        <CategorySection cat={CATEGORIES[7]} done={isCategoryDone(7, answers)} onRef={(el) => { catRefs.current[7] = el; }}>
+          <QBlock number="33" question="Quelle est ta principale gêne physique au travail ?" answered={!!answers.q_plainte_principale} cat={CATEGORIES[7]}
+            note="Décris en quelques mots ce qui te gêne le plus. Ex : 'douleur nuque en fin de journée', 'poignets qui brûlent', 'dos bloqué le matin'">
+            <textarea
+              value={answers.q_plainte_principale ?? ""}
+              onChange={e => update("q_plainte_principale", e.target.value)}
+              placeholder="Décris ta principale gêne…"
+              rows={3}
+              style={{
+                width: "100%", padding: "12px 14px", borderRadius: 12,
+                outline: "none", resize: "none", boxSizing: "border-box",
+                background: "var(--bg-card-2)", border: "0.5px solid var(--border-2)",
+                color: "var(--text-primary)",
+                fontFamily: "var(--font-jakarta), sans-serif", fontSize: 14, lineHeight: 1.5,
+              }}
+            />
+          </QBlock>
+          <QBlock number="34" question="Des remarques sur ton poste de travail ou tes conditions ?" answered={true} cat={CATEGORIES[7]}
+            note="Optionnel — tout ce qui pourrait aider à mieux comprendre ta situation.">
+            <textarea
+              value={answers.q_remarques_poste ?? ""}
+              onChange={e => update("q_remarques_poste", e.target.value)}
+              placeholder="Optionnel — tes remarques sur ton poste ou contexte de travail…"
+              rows={3}
+              style={{
+                width: "100%", padding: "12px 14px", borderRadius: 12,
+                outline: "none", resize: "none", boxSizing: "border-box",
+                background: "var(--bg-card-2)", border: "0.5px solid var(--border-2)",
+                color: "var(--text-primary)",
+                fontFamily: "var(--font-jakarta), sans-serif", fontSize: 14, lineHeight: 1.5,
+              }}
+            />
           </QBlock>
         </CategorySection>
       </div>

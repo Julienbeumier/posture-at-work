@@ -248,7 +248,8 @@ export default function ProfileQuestionnaire({
   }
 
   const done = completedCount(categories, answers);
-  const allDone = isAllDone(categories, answers);
+  const plainteOk = typeof answers["q_plainte_principale"] === "string" && (answers["q_plainte_principale"] as string).trim().length > 0;
+  const allDone = isAllDone(categories, answers) && plainteOk;
   const meta = JOB_META[jobType];
 
   return (
@@ -383,6 +384,61 @@ export default function ProfileQuestionnaire({
             </section>
           );
         })}
+
+        {/* Ta situation — champs libres */}
+        <section style={{ scrollMarginTop: 80, marginBottom: 12, padding: "0 16px" }}>
+          <div style={{ borderRadius: 22, overflow: "hidden", border: "0.5px solid rgba(43,92,230,0.18)" }}>
+            <div style={{ padding: "20px 22px", background: "rgba(43,92,230,0.08)", borderBottom: "0.5px solid rgba(43,92,230,0.18)", display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 12, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
+                💬
+              </div>
+              <div>
+                <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 17, color: "#f0f0fa", margin: 0 }}>Ta situation</h2>
+                <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 12, fontFamily: T.b, margin: 0 }}>Gênes & contexte de travail</p>
+              </div>
+            </div>
+            <div style={{ padding: "16px", background: "rgba(255,255,255,0.015)", display: "flex", flexDirection: "column", gap: 10 }}>
+              {/* Plainte principale — obligatoire */}
+              <div style={{ padding: "20px", borderRadius: 18, background: plainteOk ? "rgba(43,92,230,0.08)" : "rgba(255,255,255,0.02)", border: plainteOk ? "0.5px solid rgba(43,92,230,0.18)" : "0.5px solid rgba(255,255,255,0.06)", transition: "all 0.3s ease", display: "flex", flexDirection: "column", gap: 14 }}>
+                <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                  <div style={{ width: 24, height: 24, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: T.h, fontWeight: 700, background: plainteOk ? "rgba(43,92,230,0.08)" : "rgba(255,255,255,0.05)", border: plainteOk ? "1px solid rgba(43,92,230,0.55)" : "0.5px solid rgba(255,255,255,0.10)", color: plainteOk ? "#2b5ce6" : "rgba(220,220,245,0.35)" }}>
+                    {plainteOk ? "✓" : "1"}
+                  </div>
+                  <div>
+                    <p style={{ color: "#f0f0fa", fontSize: 14, fontFamily: T.b, lineHeight: 1.5, margin: 0 }}>Quelle est ta principale gêne physique au travail ?</p>
+                    <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 11, fontFamily: T.b, lineHeight: 1.5, margin: "4px 0 0" }}>ℹ️ Décris en quelques mots ce qui te gêne le plus. Ex : &apos;douleur nuque en fin de journée&apos;, &apos;poignets qui brûlent&apos;, &apos;dos bloqué le matin&apos;</p>
+                  </div>
+                </div>
+                <textarea
+                  value={(answers["q_plainte_principale"] as string) ?? ""}
+                  onChange={e => update("q_plainte_principale", e.target.value)}
+                  placeholder="Décris ta principale gêne…"
+                  rows={3}
+                  style={{ width: "100%", padding: "12px 14px", borderRadius: 12, outline: "none", resize: "none", boxSizing: "border-box", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.10)", color: "#f0f0fa", fontFamily: T.b, fontSize: 14, lineHeight: 1.5 }}
+                />
+              </div>
+              {/* Remarques — optionnel */}
+              <div style={{ padding: "20px", borderRadius: 18, background: "rgba(43,92,230,0.04)", border: "0.5px solid rgba(43,92,230,0.12)", display: "flex", flexDirection: "column", gap: 14 }}>
+                <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                  <div style={{ width: 24, height: 24, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: T.h, fontWeight: 700, background: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.10)", color: "rgba(220,220,245,0.35)" }}>
+                    2
+                  </div>
+                  <div>
+                    <p style={{ color: "#f0f0fa", fontSize: 14, fontFamily: T.b, lineHeight: 1.5, margin: 0 }}>Des remarques sur ton poste de travail ou tes conditions ?</p>
+                    <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 11, fontFamily: T.b, lineHeight: 1.5, margin: "4px 0 0" }}>ℹ️ Optionnel — tout ce qui pourrait aider à mieux comprendre ta situation.</p>
+                  </div>
+                </div>
+                <textarea
+                  value={(answers["q_remarques_poste"] as string) ?? ""}
+                  onChange={e => update("q_remarques_poste", e.target.value)}
+                  placeholder="Optionnel — tes remarques sur ton poste ou contexte de travail…"
+                  rows={3}
+                  style={{ width: "100%", padding: "12px 14px", borderRadius: 12, outline: "none", resize: "none", boxSizing: "border-box", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.10)", color: "#f0f0fa", fontFamily: T.b, fontSize: 14, lineHeight: 1.5 }}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
       {/* Floating CTA */}
