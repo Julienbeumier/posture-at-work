@@ -574,6 +574,7 @@ function BureauQuestionnaire() {
 
   const allDone = isAllAnswered(answers);
   const done = completedCount(answers);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   return (
     <main style={{ minHeight: "100vh", paddingBottom: 80, background: c.mainBg }}>
@@ -680,6 +681,98 @@ function BureauQuestionnaire() {
 
       {/* Questions */}
       <div style={{ maxWidth: 680, margin: "0 auto", padding: isMobile ? "20px 16px 40px" : "20px 20px 40px" }}>
+
+        {/* Bandeau confidentialité */}
+        <div style={{ padding: "10px 16px", marginBottom: 16, borderRadius: 12,
+          background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.2)",
+          display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>🔒</span>
+          <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)",
+            margin: 0, flex: 1, lineHeight: 1.5 }}>
+            <strong style={{ color: "var(--text-primary)" }}>Confidentiel</strong> —{" "}
+            ton employeur ne voit jamais tes réponses individuelles.
+          </p>
+          <button onClick={() => setShowPrivacyModal(true)}
+            style={{ fontFamily: T.b, fontSize: 12, color: "#74c69d", fontWeight: 600,
+              background: "none", border: "none", cursor: "pointer", padding: 0,
+              textDecoration: "underline", flexShrink: 0 }}>
+            En savoir plus →
+          </button>
+        </div>
+
+        {/* Modal confidentialité */}
+        {showPrivacyModal && (
+          <div style={{ position: "fixed", inset: 0, zIndex: 1000,
+            background: "rgba(0,0,0,0.7)", display: "flex",
+            alignItems: "center", justifyContent: "center", padding: 24 }}
+            onClick={() => setShowPrivacyModal(false)}>
+            <div style={{ maxWidth: 440, width: "100%", borderRadius: 20,
+              background: "var(--bg-card)", border: "0.5px solid var(--border)",
+              padding: "28px 24px" }}
+              onClick={e => e.stopPropagation()}>
+              <div style={{ display: "flex", alignItems: "center",
+                justifyContent: "space-between", marginBottom: 20 }}>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18,
+                  color: "var(--text-primary)", margin: 0 }}>
+                  🔒 Tes données sont privées
+                </p>
+                <button onClick={() => setShowPrivacyModal(false)}
+                  style={{ background: "none", border: "none", cursor: "pointer",
+                    fontSize: 20, color: "var(--t40)", padding: 0 }}>✕</button>
+              </div>
+              <div style={{ marginBottom: 16, padding: "14px 16px", borderRadius: 12,
+                background: "rgba(244,162,97,0.06)", border: "0.5px solid rgba(244,162,97,0.2)" }}>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
+                  color: "#f4a261", margin: "0 0 10px" }}>
+                  Ce que ton employeur VOIT
+                </p>
+                {[
+                  "Le score moyen de l'équipe par dimension",
+                  "Ton score individuel — anonymisé (ex: 'Employé #7 : 62/100')",
+                  "Les zones à risque collectives (sans savoir qui)",
+                  "Le nombre d'employés en difficulté (sans noms)",
+                ].map((item, i) => (
+                  <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                    <span style={{ color: "#f4a261", flexShrink: 0 }}>→</span>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t65)",
+                      margin: 0, lineHeight: 1.5 }}>{item}</p>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginBottom: 20, padding: "14px 16px", borderRadius: 12,
+                background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.2)" }}>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
+                  color: "#74c69d", margin: "0 0 10px" }}>
+                  Ce que ton employeur NE VOIT PAS
+                </p>
+                {[
+                  "Tes réponses individuelles aux questions",
+                  "Ton nom associé à un score ou résultat",
+                  "Ta plainte principale et tes remarques",
+                  "Tes scores par dimension personnels",
+                  "Ta vidéo et ton analyse posturale",
+                ].map((item, i) => (
+                  <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                    <span style={{ color: "#74c69d", flexShrink: 0 }}>✓</span>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t65)",
+                      margin: 0, lineHeight: 1.5 }}>{item}</p>
+                  </div>
+                ))}
+              </div>
+              <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)",
+                margin: "0 0 16px", lineHeight: 1.6, textAlign: "center" }}>
+                Données hébergées en Europe · Conformité RGPD ·{" "}
+                Tu peux supprimer ton compte à tout moment
+              </p>
+              <button onClick={() => setShowPrivacyModal(false)}
+                style={{ width: "100%", padding: "13px 0", borderRadius: 100,
+                  background: "#2b5ce6", color: "#fff", border: "none", cursor: "pointer",
+                  fontFamily: T.h, fontWeight: 700, fontSize: 14 }}>
+                Compris →
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Greeting */}
         {firstname && (
