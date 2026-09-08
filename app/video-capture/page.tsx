@@ -49,6 +49,7 @@ const STEP2_SPEECH: Array<{ t: number; text: string }> = [
 
 const STEP1_FRAME_TIMES = [10, 22, 35];
 const STEP2_FRAME_TIMES = [5, 12];
+const MAX_FRAMES = 3;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -74,7 +75,17 @@ function captureFrame(videoEl: HTMLVideoElement): string {
   const ctx = canvas.getContext("2d");
   if (!ctx) return "";
   ctx.drawImage(videoEl, 0, 0, w, h);
-  return canvas.toDataURL("image/jpeg", 0.8);
+  const MAX_WIDTH = 640;
+  if (canvas.width > MAX_WIDTH) {
+    const ratio = MAX_WIDTH / canvas.width;
+    const smallCanvas = document.createElement("canvas");
+    smallCanvas.width = MAX_WIDTH;
+    smallCanvas.height = Math.round(canvas.height * ratio);
+    const sCtx = smallCanvas.getContext("2d");
+    sCtx?.drawImage(canvas, 0, 0, smallCanvas.width, smallCanvas.height);
+    return smallCanvas.toDataURL("image/jpeg", 0.4);
+  }
+  return canvas.toDataURL("image/jpeg", 0.4);
 }
 
 // ─── Countdown circle ─────────────────────────────────────────────────────────
@@ -224,7 +235,7 @@ export default function VideoCapturePage() {
         try {
           sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture));
         } catch {
-          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture.slice(0, 3)));
+          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture.slice(0, MAX_FRAMES)));
         }
         if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
         setPhase("processing");
@@ -234,7 +245,7 @@ export default function VideoCapturePage() {
         try {
           sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture));
         } catch {
-          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture.slice(0, 3)));
+          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture.slice(0, MAX_FRAMES)));
         }
         if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
         setPhase("processing");
@@ -281,7 +292,7 @@ export default function VideoCapturePage() {
     try {
       sessionStorage.setItem("postureatwork_frames", JSON.stringify(framesRef.current));
     } catch {
-      const trimmed: StoredFrames = { posture: framesRef.current.posture.slice(0, 3), bureau: framesRef.current.bureau.slice(0, 2) };
+      const trimmed: StoredFrames = { posture: framesRef.current.posture.slice(0, MAX_FRAMES), bureau: framesRef.current.bureau.slice(0, MAX_FRAMES - 1) };
       sessionStorage.setItem("postureatwork_frames", JSON.stringify(trimmed));
     }
     setTimeout(() => { setPhase("done"); router.push("/analyzing"); }, 600);
