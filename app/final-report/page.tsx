@@ -750,75 +750,55 @@ export default function FinalReportPage() {
   }, []);
 
   useEffect(() => {
-    if (!user || savedRef.current || loadedFromRemoteRef.current) return;
+    if (savedRef.current || loadedFromRemoteRef.current) return;
+    if (!user) return;
 
-    // Sauvegarder même sans vidéo — on sauvegarde les scores questionnaire
-    const target = report ?? personneAnalysis ?? deboutAnalysis ?? null;
-
-    const isExample = sessionStorage.getItem("paw_example_mode") === "true";
-    const scoresRaw = isExample
-      ? sessionStorage.getItem("paw_example_scores")
-      : sessionStorage.getItem("postureatwork_scores");
-
-    // Si pas de vidéo mais qu'on a des scores → sauvegarder quand même
-    if (!target && !scoresRaw) return; // Vraiment rien à sauvegarder
+    const scoresRaw = sessionStorage.getItem("postureatwork_scores");
+    if (!scoresRaw) return;
 
     savedRef.current = true;
     setSaveStatus("saving");
-    const answersRaw = isExample
-      ? sessionStorage.getItem("paw_example_answers")
-      : sessionStorage.getItem("postureatwork_answers");
-    const scores = scoresRaw ? JSON.parse(scoresRaw) : {};
-    const answers = answersRaw ? JSON.parse(answersRaw) : {};
 
-    const saveVideoAnalysis = async () => {
-      const analysisPersonne = JSON.parse(sessionStorage.getItem("paw_analysis_personne") || "null");
-      const analysisPoste = JSON.parse(sessionStorage.getItem("paw_analysis_poste") || "null");
-      if (!analysisPersonne && !analysisPoste) return;
-      const supabase = createClient();
-      const { data: latest } = await supabase
-        .from("assessments").select("id").eq("user_id", user.id)
-        .order("created_at", { ascending: false }).limit(1);
-      if (!latest?.length) return;
-      await supabase.from("assessments").update({
-        video_analysis: {
+    const scores = JSON.parse(scoresRaw);
+    const answersRaw = sessionStorage.getItem("postureatwork_answers");
+    const answers = answersRaw ? JSON.parse(answersRaw) : {};
+    const jobType = localStorage.getItem("paw_job_type") ?? "bureau";
+
+    const analysisPersonne = JSON.parse(sessionStorage.getItem("paw_analysis_personne") || "null");
+    const analysisPoste = JSON.parse(sessionStorage.getItem("paw_analysis_poste") || "null");
+    const analysisDebout = JSON.parse(sessionStorage.getItem("paw_analysis_debout") || "null");
+
+    const videoAnalysis = (analysisPersonne || analysisPoste || analysisDebout)
+      ? {
           personne: analysisPersonne,
           poste: analysisPoste,
+          debout: analysisDebout,
           analyzed_at: new Date().toISOString(),
-        },
-      }).eq("id", latest[0].id);
-    };
-
-    (async () => {
-      let companyId = localStorage.getItem("paw_company_id");
-      if (!companyId) {
-        const { data: membership } = await createClient()
-          .from("company_memberships")
-          .select("company_id")
-          .eq("user_id", user.id)
-          .eq("role", "employee")
-          .maybeSingle();
-        if (membership?.company_id) {
-          companyId = membership.company_id;
-          localStorage.setItem("paw_company_id", membership.company_id);
         }
-      }
-      try {
-        // Sauvegarder avec ou sans vidéo
-        await saveAssessmentForUser(
-          user.id,
-          scores,
-          answers,
-          (target as unknown as Record<string, unknown>) ?? {},
-          companyId ?? null
-        );
-        await saveVideoAnalysis();
-        setSaveStatus("saved");
-      } catch {
+      : null;
+
+    fetch("/api/assessments/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ scores, answers, videoAnalysis, jobType }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          setSaveStatus("saved");
+          console.log("[final-report] Bilan sauvegardé:", data.id);
+        } else {
+          console.error("[final-report] Erreur sauvegarde:", data.error);
+          setSaveStatus("error");
+          savedRef.current = false;
+        }
+      })
+      .catch(err => {
+        console.error("[final-report] Erreur fetch:", err);
         setSaveStatus("error");
-      }
-    })();
-  }, [user, report, personneAnalysis, deboutAnalysis, questionnaireScore]);
+        savedRef.current = false;
+      });
+  }, [user]);
 
   // Sauvegarde via le token de session QR code — fonctionne même sans session
   // active sur l'appareil mobile (le desktop est connecté, pas forcément le mobile)
