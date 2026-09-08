@@ -94,43 +94,41 @@ export default function AnalyzingPage() {
         const framesPersonne: string[] = JSON.parse(framesPersonneRaw);
         const framesPoste: string[] = JSON.parse(framesPosteRaw);
 
-        await Promise.all([
-          (async () => {
-            const c1 = new AbortController();
-            const t1 = setTimeout(() => c1.abort(), 55000);
-            try {
-              const r = await fetch("/api/analyze-video", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ frames: framesPersonne, analysisType: "personne", questionnaire_scores, questionnaire_answers }),
-                signal: c1.signal,
-              });
-              const data = await r.json();
-              sessionStorage.setItem("paw_analysis_personne", JSON.stringify(data));
-              setPersonneDone(true);
-            } finally {
-              clearTimeout(t1);
-            }
-          })(),
+        // Analyse personne d'abord
+        const c1 = new AbortController();
+        const t1 = setTimeout(() => c1.abort(), 55000);
+        try {
+          const r1 = await fetch("/api/analyze-video", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ frames: framesPersonne, analysisType: "personne",
+              questionnaire_scores, questionnaire_answers }),
+            signal: c1.signal,
+          });
+          const data1 = await r1.json();
+          sessionStorage.setItem("paw_analysis_personne", JSON.stringify(data1));
+          setPersonneDone(true);
+        } finally {
+          clearTimeout(t1);
+        }
 
-          (async () => {
-            const c2 = new AbortController();
-            const t2 = setTimeout(() => c2.abort(), 55000);
-            try {
-              const r = await fetch("/api/analyze-video", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ frames: framesPoste, analysisType: "poste", questionnaire_scores, questionnaire_answers }),
-                signal: c2.signal,
-              });
-              const data = await r.json();
-              sessionStorage.setItem("paw_analysis_poste", JSON.stringify(data));
-              setPosteDone(true);
-            } finally {
-              clearTimeout(t2);
-            }
-          })(),
-        ]);
+        // Puis analyse poste
+        const c2 = new AbortController();
+        const t2 = setTimeout(() => c2.abort(), 55000);
+        try {
+          const r2 = await fetch("/api/analyze-video", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ frames: framesPoste, analysisType: "poste",
+              questionnaire_scores, questionnaire_answers }),
+            signal: c2.signal,
+          });
+          const data2 = await r2.json();
+          sessionStorage.setItem("paw_analysis_poste", JSON.stringify(data2));
+          setPosteDone(true);
+        } finally {
+          clearTimeout(t2);
+        }
 
         setGenerating(true);
         setTimeout(() => router.push("/final-report"), 1200);
@@ -324,7 +322,7 @@ export default function AnalyzingPage() {
         </div>
 
         <p className="text-slate-600 text-xs">
-          {isDual ? "Double analyse en parallèle — 20–40 secondes" : "Cela peut prendre 15–30 secondes"}
+          {isDual ? "Double analyse séquentielle — 40–90 secondes" : "Cela peut prendre 15–30 secondes"}
         </p>
       </div>
     </main>

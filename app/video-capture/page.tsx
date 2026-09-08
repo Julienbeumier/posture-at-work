@@ -47,8 +47,8 @@ const STEP2_SPEECH: Array<{ t: number; text: string }> = [
   { t: 15, text: "Parfait, on a tout ce qu'il faut !" },
 ];
 
-const STEP1_FRAME_TIMES = [8, 18, 28, 38];
-const STEP2_FRAME_TIMES = [4, 9, 14];
+const STEP1_FRAME_TIMES = [10, 22, 35];
+const STEP2_FRAME_TIMES = [5, 12];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -224,7 +224,7 @@ export default function VideoCapturePage() {
         try {
           sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture));
         } catch {
-          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture.slice(0, 4)));
+          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture.slice(0, 3)));
         }
         if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
         setPhase("processing");
@@ -234,7 +234,7 @@ export default function VideoCapturePage() {
         try {
           sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture));
         } catch {
-          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture.slice(0, 4)));
+          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture.slice(0, 3)));
         }
         if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
         setPhase("processing");
@@ -281,7 +281,7 @@ export default function VideoCapturePage() {
     try {
       sessionStorage.setItem("postureatwork_frames", JSON.stringify(framesRef.current));
     } catch {
-      const trimmed: StoredFrames = { posture: framesRef.current.posture.slice(0, 4), bureau: framesRef.current.bureau.slice(0, 3) };
+      const trimmed: StoredFrames = { posture: framesRef.current.posture.slice(0, 3), bureau: framesRef.current.bureau.slice(0, 2) };
       sessionStorage.setItem("postureatwork_frames", JSON.stringify(trimmed));
     }
     setTimeout(() => { setPhase("done"); router.push("/analyzing"); }, 600);
