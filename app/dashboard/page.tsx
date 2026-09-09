@@ -107,7 +107,7 @@ function getWeekStart() {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function HeroCircle({ score }: { score: number }) {
-  const size = 70; const sw = 5;
+  const size = 96; const sw = 6;
   const r = (size - sw) / 2;
   const circ = 2 * Math.PI * r;
   const color = sc(score);
@@ -124,8 +124,8 @@ function HeroCircle({ score }: { score: number }) {
         />
       </svg>
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "#a8c0ff", lineHeight: 1 }}>{score}</span>
-        <span style={{ fontSize: 8, color: "var(--t40)" }}>/100</span>
+        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "#a8c0ff", lineHeight: 1 }}>{score}</span>
+        <span style={{ fontSize: 9, color: "var(--t40)" }}>/100</span>
       </div>
     </div>
   );
@@ -685,7 +685,7 @@ export default function DashboardPage() {
 
   return (
     <main style={{ minHeight: "100vh", background: c.mainBg }}>
-      <div style={{ maxWidth: 720, margin: "0 auto",
+      <div style={{ maxWidth: 860, margin: "0 auto",
         padding: isMobile ? "80px 16px 40px" : "100px 24px 60px" }}>
 
         {/* ── FEEDBACK BANNER ── */}
@@ -765,9 +765,9 @@ export default function DashboardPage() {
         )}
 
         {/* ── 1. GREETING ── */}
-        <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
+        <motion.div {...fadeUp(0)} style={{ marginBottom: 32 }}>
           <p style={{ fontFamily: T.h, fontWeight: 900,
-            fontSize: isMobile ? 22 : 26, color: "var(--text-primary)",
+            fontSize: isMobile ? 28 : 34, color: "var(--text-primary)",
             margin: "0 0 4px", letterSpacing: "-0.5px" }}>
             Bonjour{firstname ? ` ${firstname}` : ""} 👋
           </p>
@@ -782,7 +782,7 @@ export default function DashboardPage() {
           <>
             {/* ── 2. SCORE GLOBAL ── */}
             <motion.div {...fadeUp(0.05)} style={{ marginBottom: 16 }}>
-              <div style={{ borderRadius: 20, padding: "24px",
+              <div style={{ borderRadius: 20, padding: "32px",
                 background: "var(--bg-card)", border: "0.5px solid var(--border)",
                 display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
 
@@ -794,15 +794,15 @@ export default function DashboardPage() {
                     letterSpacing: "0.06em", margin: "0 0 4px" }}>
                     Score santé au travail
                   </p>
-                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16,
-                    color: "var(--text-primary)", margin: "0 0 8px" }}>
+                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: isMobile ? 18 : 20,
+                    color: "var(--text-primary)", margin: "0 0 12px" }}>
                     {latestAssessment.global_score >= 70 ? "Bon niveau général" :
                      latestAssessment.global_score >= 50 ? "Des améliorations possibles" :
                      "Attention — des points critiques identifiés"}
                   </p>
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600,
-                      padding: "3px 10px", borderRadius: 100,
+                    <span style={{ fontFamily: T.b, fontSize: 13, fontWeight: 600,
+                      padding: "5px 14px", borderRadius: 100,
                       background: latestAssessment.video_analysis
                         ? "rgba(116,198,157,0.12)" : "rgba(244,162,97,0.12)",
                       color: latestAssessment.video_analysis ? "#74c69d" : "#f4a261",
@@ -847,20 +847,20 @@ export default function DashboardPage() {
                     const score = latestAssessment.scores?.[key as keyof typeof latestAssessment.scores] ?? 0;
                     const color = score >= 70 ? "#74c69d" : score >= 50 ? "#f4a261" : "#f09595";
                     return (
-                      <div key={key} style={{ padding: "10px 12px", borderRadius: 12,
+                      <div key={key} style={{ padding: "14px 16px", borderRadius: 12,
                         background: "var(--bg-card-2)", border: "0.5px solid var(--border)" }}>
                         <div style={{ display: "flex", justifyContent: "space-between",
                           alignItems: "center", marginBottom: 6 }}>
-                          <span style={{ fontSize: 14 }}>{emoji}</span>
+                          <span style={{ fontSize: 18 }}>{emoji}</span>
                           <span style={{ fontFamily: T.h, fontWeight: 700,
-                            fontSize: 16, color }}>{score}</span>
+                            fontSize: 20, color }}>{score}</span>
                         </div>
-                        <div style={{ height: 3, borderRadius: 100,
+                        <div style={{ height: 5, borderRadius: 100,
                           background: "var(--border)", overflow: "hidden" }}>
                           <div style={{ width: `${score}%`, height: "100%",
                             borderRadius: 100, background: color }} />
                         </div>
-                        <p style={{ fontFamily: T.b, fontSize: 11,
+                        <p style={{ fontFamily: T.b, fontSize: 13,
                           color: "var(--t45)", margin: "4px 0 0" }}>{label}</p>
                       </div>
                     );
@@ -876,20 +876,20 @@ export default function DashboardPage() {
                 gap: 10 }}>
 
                 <Link href="/final-report" style={{ textDecoration: "none" }}>
-                  <div style={{ padding: "16px", borderRadius: 16,
+                  <div style={{ padding: "20px", borderRadius: 16,
                     background: "var(--bg-card)", border: "0.5px solid var(--border)",
                     cursor: "pointer", height: "100%" }}>
-                    <span style={{ fontSize: 24, display: "block", marginBottom: 8 }}>📋</span>
-                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+                    <span style={{ fontSize: 32, display: "block", marginBottom: 8 }}>📋</span>
+                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 16,
                       color: "var(--text-primary)", margin: "0 0 4px" }}>Mon rapport</p>
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: 0 }}>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", margin: 0 }}>
                       Priorités · Actions · Détail
                     </p>
                   </div>
                 </Link>
 
                 <Link href="/video-intro" style={{ textDecoration: "none" }}>
-                  <div style={{ padding: "16px", borderRadius: 16,
+                  <div style={{ padding: "20px", borderRadius: 16,
                     background: latestAssessment.video_analysis
                       ? "var(--bg-card)"
                       : "rgba(43,92,230,0.06)",
@@ -897,12 +897,12 @@ export default function DashboardPage() {
                       ? "0.5px solid var(--border)"
                       : "0.5px solid rgba(43,92,230,0.25)",
                     cursor: "pointer", height: "100%" }}>
-                    <span style={{ fontSize: 24, display: "block", marginBottom: 8 }}>🎥</span>
-                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+                    <span style={{ fontSize: 32, display: "block", marginBottom: 8 }}>🎥</span>
+                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 16,
                       color: "var(--text-primary)", margin: "0 0 4px" }}>
                       {latestAssessment.video_analysis ? "Refaire l'analyse" : "Analyse vidéo"}
                     </p>
-                    <p style={{ fontFamily: T.b, fontSize: 12,
+                    <p style={{ fontFamily: T.b, fontSize: 13,
                       color: latestAssessment.video_analysis ? "var(--t50)" : "#7c9fff",
                       margin: 0 }}>
                       {latestAssessment.video_analysis ? "Posture · Setup" : "⚡ À compléter"}
@@ -911,13 +911,13 @@ export default function DashboardPage() {
                 </Link>
 
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>
-                  <div style={{ padding: "16px", borderRadius: 16,
+                  <div style={{ padding: "20px", borderRadius: 16,
                     background: "var(--bg-card)", border: "0.5px solid var(--border)",
                     cursor: "pointer", height: "100%" }}>
-                    <span style={{ fontSize: 24, display: "block", marginBottom: 8 }}>🧘</span>
-                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+                    <span style={{ fontSize: 32, display: "block", marginBottom: 8 }}>🧘</span>
+                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 16,
                       color: "var(--text-primary)", margin: "0 0 4px" }}>Mes exercices</p>
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: 0 }}>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", margin: 0 }}>
                       Programme · 10 min/jour
                     </p>
                   </div>
