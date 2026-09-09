@@ -837,32 +837,41 @@ export default function DashboardPage() {
                   gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)",
                   gap: 10 }}>
                   {[
-                    { key: "setup", emoji: "💻", label: "Setup" },
-                    { key: "pain", emoji: "🩺", label: "Douleurs" },
-                    { key: "habits", emoji: "⏱️", label: "Habitudes" },
-                    { key: "sleep_energy", emoji: "🌙", label: "Sommeil" },
-                    { key: "nutrition", emoji: "🍽️", label: "Nutrition" },
-                    { key: "lifestyle", emoji: "🏃", label: "Lifestyle" },
-                  ].map(({ key, emoji, label }) => {
+                    { key: "setup", emoji: "💻", label: "Setup", dim: "setup" },
+                    { key: "pain", emoji: "🩺", label: "Douleurs", dim: "pain" },
+                    { key: "habits", emoji: "⏱️", label: "Habitudes", dim: "habits" },
+                    { key: "sleep_energy", emoji: "🌙", label: "Sommeil", dim: "sleep" },
+                    { key: "nutrition", emoji: "🍽️", label: "Nutrition", dim: "nutrition" },
+                    { key: "lifestyle", emoji: "🏃", label: "Lifestyle", dim: "lifestyle" },
+                  ].map(({ key, emoji, label, dim }) => {
                     const score = latestAssessment.scores?.[key as keyof typeof latestAssessment.scores] ?? 0;
                     const color = score >= 70 ? "#74c69d" : score >= 50 ? "#f4a261" : "#f09595";
                     return (
-                      <div key={key} style={{ padding: "14px 16px", borderRadius: 12,
-                        background: "var(--bg-card-2)", border: "0.5px solid var(--border)" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between",
-                          alignItems: "center", marginBottom: 6 }}>
-                          <span style={{ fontSize: 18 }}>{emoji}</span>
-                          <span style={{ fontFamily: T.h, fontWeight: 700,
-                            fontSize: 20, color }}>{score}</span>
-                        </div>
-                        <div style={{ height: 5, borderRadius: 100,
-                          background: "var(--border)", overflow: "hidden" }}>
-                          <div style={{ width: `${score}%`, height: "100%",
-                            borderRadius: 100, background: color }} />
-                        </div>
-                        <p style={{ fontFamily: T.b, fontSize: 13,
-                          color: "var(--t45)", margin: "4px 0 0" }}>{label}</p>
-                      </div>
+                      <Link key={key} href={`/final-report?dimension=${dim}`}
+                        style={{ textDecoration: "none" }}>
+                        <motion.div
+                          whileHover={{ scale: 1.03, y: -2 }}
+                          whileTap={{ scale: 0.97 }}
+                          style={{ padding: "14px 16px", borderRadius: 12,
+                            background: "var(--bg-card-2)", border: "0.5px solid var(--border)",
+                            cursor: "pointer", position: "relative" }}>
+                          <div style={{ position: "absolute", top: 8, right: 10,
+                            fontSize: 10, color: "var(--t30)" }}>→</div>
+                          <div style={{ display: "flex", justifyContent: "space-between",
+                            alignItems: "center", marginBottom: 6 }}>
+                            <span style={{ fontSize: 18 }}>{emoji}</span>
+                            <span style={{ fontFamily: T.h, fontWeight: 700,
+                              fontSize: 20, color }}>{score}</span>
+                          </div>
+                          <div style={{ height: 5, borderRadius: 100,
+                            background: "var(--border)", overflow: "hidden" }}>
+                            <div style={{ width: `${score}%`, height: "100%",
+                              borderRadius: 100, background: color }} />
+                          </div>
+                          <p style={{ fontFamily: T.b, fontSize: 13,
+                            color: "var(--t45)", margin: "6px 0 0" }}>{label}</p>
+                        </motion.div>
+                      </Link>
                     );
                   })}
                 </div>
