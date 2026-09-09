@@ -937,9 +937,6 @@ export default function FinalReportPage() {
                   <DeboutSegCard key={key} label={label} seg={da.posture[key]} delay={i * 0.06} />
                 ))}
               </div>
-              <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{da.overallAssessment}</p>
-              </div>
               {da.mainIssues.length > 0 && (
                 <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
                   {da.mainIssues.map((issue, i) => {
@@ -1207,6 +1204,189 @@ export default function FinalReportPage() {
             debout={null}
           />
 
+          {isDual && personneAnalysis && posteAnalysis && (
+            <div style={{ marginBottom: 20 }}>
+
+              {/* Score global vidéo */}
+              <div style={{ display: "flex", gap: 12, alignItems: "center",
+                padding: "16px 18px", borderRadius: 14, marginBottom: 14,
+                background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
+                <div style={{ textAlign: "center", flexShrink: 0 }}>
+                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28,
+                    color: personneAnalysis.globalPostureScore >= 70 ? "#74c69d" :
+                           personneAnalysis.globalPostureScore >= 50 ? "#f4a261" : "#f09595",
+                    margin: 0, lineHeight: 1 }}>
+                    {personneAnalysis.globalPostureScore}
+                  </p>
+                  <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: "2px 0 0" }}>
+                    posture
+                  </p>
+                </div>
+                <div style={{ width: 1, height: 36, background: "var(--border)", flexShrink: 0 }} />
+                <div style={{ textAlign: "center", flexShrink: 0 }}>
+                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28,
+                    color: posteAnalysis.globalSetupScore >= 70 ? "#74c69d" :
+                           posteAnalysis.globalSetupScore >= 50 ? "#f4a261" : "#f09595",
+                    margin: 0, lineHeight: 1 }}>
+                    {posteAnalysis.globalSetupScore}
+                  </p>
+                  <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: "2px 0 0" }}>
+                    setup
+                  </p>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+                    color: "var(--text-primary)", margin: "0 0 4px" }}>
+                    Analyse vidéo IA
+                  </p>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", margin: 0, lineHeight: 1.5 }}>
+                    {personneAnalysis.segments && Object.keys(personneAnalysis.segments).length} zones posturales analysées
+                    · {posteAnalysis.elements && Object.keys(posteAnalysis.elements).length} éléments de setup évalués
+                  </p>
+                </div>
+              </div>
+
+              {/* Points positifs */}
+              {((personneAnalysis.positivePoints?.length ?? 0) + (posteAnalysis.positivePoints?.length ?? 0)) > 0 && (
+                <div style={{ padding: "12px 16px", borderRadius: 12, marginBottom: 12,
+                  background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.15)" }}>
+                  <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#74c69d",
+                    textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
+                    ✅ Points positifs
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {[...(personneAnalysis.positivePoints ?? []), ...(posteAnalysis.positivePoints ?? [])].slice(0, 4).map((point, i) => (
+                      <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                        <span style={{ color: "#74c69d", fontSize: 12, flexShrink: 0 }}>✓</span>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t65)", margin: 0, lineHeight: 1.5 }}>
+                          {point}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Problèmes identifiés — personne */}
+              {personneAnalysis.mainIssues?.length > 0 && (
+                <div style={{ marginBottom: 10 }}>
+                  <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "var(--t40)",
+                    textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
+                    🎥 Posture — ce qu&apos;on a vu
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {personneAnalysis.mainIssues.map((issue, i) => {
+                      const sevColor = issue.severity === "élevé" ? "#f09595" :
+                                       issue.severity === "modéré" ? "#f4a261" : "#74c69d";
+                      return (
+                        <div key={i} style={{ padding: "12px 14px", borderRadius: 12,
+                          background: `rgba(${issue.severity === "élevé" ? "240,149,149" :
+                                       issue.severity === "modéré" ? "244,162,97" : "116,198,157"},0.06)`,
+                          border: `0.5px solid rgba(${issue.severity === "élevé" ? "240,149,149" :
+                                   issue.severity === "modéré" ? "244,162,97" : "116,198,157"},0.2)`,
+                          display: "flex", gap: 10, alignItems: "flex-start" }}>
+                          <div style={{ width: 8, height: 8, borderRadius: "50%",
+                            background: sevColor, flexShrink: 0, marginTop: 4 }} />
+                          <div>
+                            <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
+                              color: "var(--text-primary)", margin: "0 0 2px" }}>
+                              {issue.zone}
+                            </p>
+                            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t65)",
+                              margin: "0 0 4px", lineHeight: 1.5 }}>{issue.issue}</p>
+                            <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)",
+                              margin: 0, fontStyle: "italic" }}>→ {issue.consequence}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Problèmes setup */}
+              {posteAnalysis.mainIssues?.length > 0 && (
+                <div style={{ marginBottom: 10 }}>
+                  <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "var(--t40)",
+                    textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
+                    🖥️ Setup — ce qu&apos;on a vu
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {posteAnalysis.mainIssues.map((issue, i) => {
+                      const sevColor = issue.severity === "élevé" ? "#f09595" :
+                                       issue.severity === "modéré" ? "#f4a261" : "#74c69d";
+                      return (
+                        <div key={i} style={{ padding: "12px 14px", borderRadius: 12,
+                          background: `rgba(${issue.severity === "élevé" ? "240,149,149" :
+                                       issue.severity === "modéré" ? "244,162,97" : "116,198,157"},0.06)`,
+                          border: `0.5px solid rgba(${issue.severity === "élevé" ? "240,149,149" :
+                                   issue.severity === "modéré" ? "244,162,97" : "116,198,157"},0.2)`,
+                          display: "flex", gap: 10, alignItems: "flex-start" }}>
+                          <div style={{ width: 8, height: 8, borderRadius: "50%",
+                            background: sevColor, flexShrink: 0, marginTop: 4 }} />
+                          <div>
+                            <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
+                              color: "var(--text-primary)", margin: "0 0 2px" }}>
+                              {issue.element}
+                            </p>
+                            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t65)",
+                              margin: "0 0 4px", lineHeight: 1.5 }}>{issue.issue}</p>
+                            <p style={{ fontFamily: T.b, fontSize: 11, color: "#74c69d",
+                              margin: 0, fontWeight: 600 }}>Fix : {issue.fix}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Recommandations vidéo */}
+              {[...(personneAnalysis.recommendations ?? []), ...(posteAnalysis.recommendations ?? [])]
+                .sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
+                .slice(0, 5)
+                .length > 0 && (
+                <div>
+                  <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "var(--t40)",
+                    textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
+                    ⚡ Actions recommandées
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {[...(personneAnalysis.recommendations ?? []), ...(posteAnalysis.recommendations ?? [])]
+                      .sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
+                      .slice(0, 5)
+                      .map((rec, i) => (
+                        <div key={i} style={{ padding: "12px 14px", borderRadius: 12,
+                          background: "var(--bg-card)", border: "0.5px solid var(--border)",
+                          display: "flex", gap: 10, alignItems: "flex-start" }}>
+                          <div style={{ width: 22, height: 22, borderRadius: "50%",
+                            background: "#2b5ce6", display: "flex", alignItems: "center",
+                            justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                            <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 11,
+                              color: "#fff" }}>{i + 1}</span>
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--text-primary)",
+                              margin: "0 0 2px", lineHeight: 1.5, fontWeight: 600 }}>{rec.action}</p>
+                            <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)",
+                              margin: 0, lineHeight: 1.4 }}>{rec.why}</p>
+                            {"cost" in rec && rec.cost && (
+                              <span style={{ fontFamily: T.b, fontSize: 11, color: "#74c69d",
+                                fontWeight: 600 }}>💰 {rec.cost}</span>
+                            )}
+                            {"immediat" in rec && rec.immediat && (
+                              <span style={{ fontFamily: T.b, fontSize: 11, color: "#f09595",
+                                fontWeight: 600 }}> · 🔴 À faire aujourd&apos;hui</span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           <ExpandableSection title="📊 Rapport détaillé complet" defaultOpen={false}>
 
           {/* ── SECTION 1 — POSTURE ── */}
@@ -1227,11 +1407,6 @@ export default function FinalReportPage() {
                 ] as [keyof PersonneAnalysis["segments"], string][]).map(([key, label], i) => (
                   <SegmentBar key={key} label={label} seg={pa.segments[key]} delay={i * 0.06} />
                 ))}
-              </div>
-
-              {/* Synthesis */}
-              <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{pa.overallAssessment}</p>
               </div>
 
               {/* Issues */}
@@ -1294,10 +1469,6 @@ export default function FinalReportPage() {
                 <ElementCard label="Organisation" score={po.elements.organisation.score} issues={po.elements.organisation.issues}
                   extra={`Éclairage : ${po.elements.organisation.eclairage}`}
                   delay={0.18} />
-              </div>
-
-              <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(59,130,246,0.07)", border: "0.5px solid rgba(59,130,246,0.18)" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{po.overallAssessment}</p>
               </div>
 
               {po.positivePoints.length > 0 && (

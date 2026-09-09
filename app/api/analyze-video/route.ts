@@ -334,8 +334,7 @@ Réponds en JSON :
       "why": string,
       "immediat": boolean
     }
-  ],
-  "overallAssessment": string
+  ]
 }
 Retourne UNIQUEMENT le JSON valide, sans texte avant ou après, sans markdown.`;
 
@@ -406,8 +405,7 @@ Réponds en JSON :
       "why": string,
       "cost": "gratuit" | "< 30€" | "30-100€" | "> 100€"
     }
-  ],
-  "overallAssessment": string
+  ]
 }
 Retourne UNIQUEMENT le JSON valide, sans texte avant ou après, sans markdown.`;
 
