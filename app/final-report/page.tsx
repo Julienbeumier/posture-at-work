@@ -1116,25 +1116,6 @@ export default function FinalReportPage() {
     const globalScore = Math.round(pa.globalPostureScore * 0.5 + po.globalSetupScore * 0.5);
     const globalColor = scoreColor(globalScore);
 
-    // Combined top-5 recommendations
-    type CombinedRec = { priority: number; action: string; why: string; source: "posture" | "setup"; immediat?: boolean; cost?: string };
-    const combined: CombinedRec[] = [
-      ...pa.recommendations.map(r => ({ ...r, source: "posture" as const })),
-      ...po.recommendations.map(r => ({ ...r, source: "setup" as const })),
-    ].sort((a, b) => a.priority - b.priority).slice(0, 5);
-
-    // Rule-based products
-    const products: Array<{ name: string; reason: string; priority: string; amazon_search: string }> = [];
-    if (po.elements.ecran.type === "laptop_seul") products.push({ name: "Support laptop réglable", reason: "Élève l'écran à hauteur des yeux — indispensable sans écran externe.", priority: "haute", amazon_search: "support laptop ergonomique réglable aluminium" });
-    if (po.elements.ecran.hauteur === "trop_bas") products.push({ name: "Rehausseur d'écran", reason: "Corrige la hauteur de l'écran pour supprimer la flexion cervicale.", priority: "haute", amazon_search: "rehausseur ecran bureau ergonomique réglable" });
-    if (po.elements.chaise.type && !po.elements.chaise.type.toLowerCase().includes("ergo")) products.push({ name: "Coussin lombaire", reason: "Maintient la lordose naturelle quand la chaise est basique.", priority: "moyenne", amazon_search: "coussin lombaire chaise bureau ergonomique" });
-    if (po.elements.clavier_souris.repose_poignets === false) products.push({ name: "Repose-poignets clavier", reason: "Prévient le syndrome du canal carpien.", priority: "moyenne", amazon_search: "repose poignets clavier bureau ergonomique" });
-    if (po.elements.organisation.eclairage === "mauvais") products.push({ name: "Lampe bureau LED", reason: "Réduit la fatigue visuelle — éclairage insuffisant détecté.", priority: "moyenne", amazon_search: "lampe bureau LED réglable lumière naturelle" });
-
-    // Exercises from bad segments
-    const badSegments = (Object.entries(pa.segments) as [string, PersonneSegment][])
-      .filter(([, seg]) => seg.score < 65).slice(0, 3).map(([key]) => key);
-
     return (
       <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingBottom: 80, position: "relative" }}>
         <BackgroundBlobs blobs={[
@@ -1187,15 +1168,6 @@ export default function FinalReportPage() {
             </div>
           </motion.div>
 
-          {/* Synthèse croisée questionnaire + vidéo */}
-          {synthesis && (
-            <>
-              <CrossedSynthesisHeader synthesis={synthesis} />
-              <ConfirmationsBlock confirmations={synthesis.confirmations} />
-              <PositivePointsBlock points={synthesis.positivePoints} />
-            </>
-          )}
-
           <TopProblems
             scores={questionScores}
             answers={questionAnswers}
@@ -1204,386 +1176,89 @@ export default function FinalReportPage() {
             debout={null}
           />
 
-          {isDual && personneAnalysis && posteAnalysis && (
-            <div style={{ marginBottom: 20 }}>
-
-              {/* Score global vidéo */}
-              <div style={{ display: "flex", gap: 12, alignItems: "center",
-                padding: "16px 18px", borderRadius: 14, marginBottom: 14,
-                background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
-                <div style={{ textAlign: "center", flexShrink: 0 }}>
-                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28,
-                    color: personneAnalysis.globalPostureScore >= 70 ? "#74c69d" :
-                           personneAnalysis.globalPostureScore >= 50 ? "#f4a261" : "#f09595",
-                    margin: 0, lineHeight: 1 }}>
-                    {personneAnalysis.globalPostureScore}
-                  </p>
-                  <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: "2px 0 0" }}>
-                    posture
-                  </p>
-                </div>
-                <div style={{ width: 1, height: 36, background: "var(--border)", flexShrink: 0 }} />
-                <div style={{ textAlign: "center", flexShrink: 0 }}>
-                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28,
-                    color: posteAnalysis.globalSetupScore >= 70 ? "#74c69d" :
-                           posteAnalysis.globalSetupScore >= 50 ? "#f4a261" : "#f09595",
-                    margin: 0, lineHeight: 1 }}>
-                    {posteAnalysis.globalSetupScore}
-                  </p>
-                  <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: "2px 0 0" }}>
-                    setup
-                  </p>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
-                    color: "var(--text-primary)", margin: "0 0 4px" }}>
-                    Analyse vidéo IA
-                  </p>
-                  <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", margin: 0, lineHeight: 1.5 }}>
-                    {personneAnalysis.segments && Object.keys(personneAnalysis.segments).length} zones posturales analysées
-                    · {posteAnalysis.elements && Object.keys(posteAnalysis.elements).length} éléments de setup évalués
-                  </p>
-                </div>
-              </div>
-
-              {/* Points positifs */}
-              {((personneAnalysis.positivePoints?.length ?? 0) + (posteAnalysis.positivePoints?.length ?? 0)) > 0 && (
-                <div style={{ padding: "12px 16px", borderRadius: 12, marginBottom: 12,
-                  background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.15)" }}>
-                  <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#74c69d",
-                    textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
-                    ✅ Points positifs
-                  </p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                    {[...(personneAnalysis.positivePoints ?? []), ...(posteAnalysis.positivePoints ?? [])].slice(0, 4).map((point, i) => (
-                      <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                        <span style={{ color: "#74c69d", fontSize: 12, flexShrink: 0 }}>✓</span>
-                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t65)", margin: 0, lineHeight: 1.5 }}>
-                          {point}
-                        </p>
-                      </div>
-                    ))}
+          {/* Points positifs */}
+          {([...(pa.positivePoints ?? []), ...(po.positivePoints ?? [])]).length > 0 && (
+            <div style={{ padding: "14px 18px", borderRadius: 14, marginBottom: 16,
+              background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.15)" }}>
+              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#74c69d",
+                textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
+                ✅ Ce qui va bien
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {[...(pa.positivePoints ?? []), ...(po.positivePoints ?? [])].slice(0, 4).map((point, i) => (
+                  <div key={i} style={{ display: "flex", gap: 8 }}>
+                    <span style={{ color: "#74c69d", flexShrink: 0 }}>✓</span>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)",
+                      margin: 0, lineHeight: 1.5 }}>{point}</p>
                   </div>
-                </div>
-              )}
-
-              {/* Problèmes identifiés — personne */}
-              {personneAnalysis.mainIssues?.length > 0 && (
-                <div style={{ marginBottom: 10 }}>
-                  <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "var(--t40)",
-                    textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
-                    🎥 Posture — ce qu&apos;on a vu
-                  </p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {personneAnalysis.mainIssues.map((issue, i) => {
-                      const sevColor = issue.severity === "élevé" ? "#f09595" :
-                                       issue.severity === "modéré" ? "#f4a261" : "#74c69d";
-                      return (
-                        <div key={i} style={{ padding: "12px 14px", borderRadius: 12,
-                          background: `rgba(${issue.severity === "élevé" ? "240,149,149" :
-                                       issue.severity === "modéré" ? "244,162,97" : "116,198,157"},0.06)`,
-                          border: `0.5px solid rgba(${issue.severity === "élevé" ? "240,149,149" :
-                                   issue.severity === "modéré" ? "244,162,97" : "116,198,157"},0.2)`,
-                          display: "flex", gap: 10, alignItems: "flex-start" }}>
-                          <div style={{ width: 8, height: 8, borderRadius: "50%",
-                            background: sevColor, flexShrink: 0, marginTop: 4 }} />
-                          <div>
-                            <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
-                              color: "var(--text-primary)", margin: "0 0 2px" }}>
-                              {issue.zone}
-                            </p>
-                            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t65)",
-                              margin: "0 0 4px", lineHeight: 1.5 }}>{issue.issue}</p>
-                            <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)",
-                              margin: 0, fontStyle: "italic" }}>→ {issue.consequence}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Problèmes setup */}
-              {posteAnalysis.mainIssues?.length > 0 && (
-                <div style={{ marginBottom: 10 }}>
-                  <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "var(--t40)",
-                    textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
-                    🖥️ Setup — ce qu&apos;on a vu
-                  </p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {posteAnalysis.mainIssues.map((issue, i) => {
-                      const sevColor = issue.severity === "élevé" ? "#f09595" :
-                                       issue.severity === "modéré" ? "#f4a261" : "#74c69d";
-                      return (
-                        <div key={i} style={{ padding: "12px 14px", borderRadius: 12,
-                          background: `rgba(${issue.severity === "élevé" ? "240,149,149" :
-                                       issue.severity === "modéré" ? "244,162,97" : "116,198,157"},0.06)`,
-                          border: `0.5px solid rgba(${issue.severity === "élevé" ? "240,149,149" :
-                                   issue.severity === "modéré" ? "244,162,97" : "116,198,157"},0.2)`,
-                          display: "flex", gap: 10, alignItems: "flex-start" }}>
-                          <div style={{ width: 8, height: 8, borderRadius: "50%",
-                            background: sevColor, flexShrink: 0, marginTop: 4 }} />
-                          <div>
-                            <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
-                              color: "var(--text-primary)", margin: "0 0 2px" }}>
-                              {issue.element}
-                            </p>
-                            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t65)",
-                              margin: "0 0 4px", lineHeight: 1.5 }}>{issue.issue}</p>
-                            <p style={{ fontFamily: T.b, fontSize: 11, color: "#74c69d",
-                              margin: 0, fontWeight: 600 }}>Fix : {issue.fix}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Recommandations vidéo */}
-              {[...(personneAnalysis.recommendations ?? []), ...(posteAnalysis.recommendations ?? [])]
-                .sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
-                .slice(0, 5)
-                .length > 0 && (
-                <div>
-                  <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "var(--t40)",
-                    textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
-                    ⚡ Actions recommandées
-                  </p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {[...(personneAnalysis.recommendations ?? []), ...(posteAnalysis.recommendations ?? [])]
-                      .sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
-                      .slice(0, 5)
-                      .map((rec, i) => (
-                        <div key={i} style={{ padding: "12px 14px", borderRadius: 12,
-                          background: "var(--bg-card)", border: "0.5px solid var(--border)",
-                          display: "flex", gap: 10, alignItems: "flex-start" }}>
-                          <div style={{ width: 22, height: 22, borderRadius: "50%",
-                            background: "#2b5ce6", display: "flex", alignItems: "center",
-                            justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-                            <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 11,
-                              color: "#fff" }}>{i + 1}</span>
-                          </div>
-                          <div style={{ flex: 1 }}>
-                            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--text-primary)",
-                              margin: "0 0 2px", lineHeight: 1.5, fontWeight: 600 }}>{rec.action}</p>
-                            <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)",
-                              margin: 0, lineHeight: 1.4 }}>{rec.why}</p>
-                            {"cost" in rec && rec.cost && (
-                              <span style={{ fontFamily: T.b, fontSize: 11, color: "#74c69d",
-                                fontWeight: 600 }}>💰 {rec.cost}</span>
-                            )}
-                            {"immediat" in rec && rec.immediat && (
-                              <span style={{ fontFamily: T.b, fontSize: 11, color: "#f09595",
-                                fontWeight: 600 }}> · 🔴 À faire aujourd&apos;hui</span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          <ExpandableSection title="📊 Rapport détaillé complet" defaultOpen={false}>
-
-          {/* ── SECTION 1 — POSTURE ── */}
-          <section style={{ marginBottom: 12 }}>
-            <div style={{ borderRadius: 22, padding: "20px 20px 16px", background: "rgba(167,139,250,0.05)", border: "0.5px solid rgba(167,139,250,0.15)", marginBottom: 20 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-                <SectionTitle emoji="🧍" title="Ta posture" />
-                <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: scoreColor(pa.globalPostureScore) }}>{pa.globalPostureScore}/100</span>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {([
-                  ["tete_cou", "Tête & cou"],
-                  ["epaules_dos_haut", "Épaules & dos haut"],
-                  ["bas_dos_bassin", "Bas du dos & bassin"],
-                  ["membres_superieurs", "Membres supérieurs"],
-                  ["membres_inferieurs", "Membres inférieurs"],
-                ] as [keyof PersonneAnalysis["segments"], string][]).map(([key, label], i) => (
-                  <SegmentBar key={key} label={label} seg={pa.segments[key]} delay={i * 0.06} />
                 ))}
               </div>
-
-              {/* Issues */}
-              {pa.mainIssues.length > 0 && (
-                <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
-                  {pa.mainIssues.map((issue, i) => {
-                    const sevColor = issue.severity === "élevé" ? "#f09595" : issue.severity === "modéré" ? "#f4a261" : "#74c69d";
-                    return (
-                      <div key={i} style={{ borderRadius: 12, padding: "10px 14px", background: `${sevColor}10`, border: `0.5px solid ${sevColor}35` }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-                          <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 12, color: sevColor }}>{issue.zone}</span>
-                          <span style={{ fontFamily: T.b, fontSize: 11, color: `${sevColor}99` }}>· {traduire(issue.severity)}</span>
-                        </div>
-                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t60)", margin: 0 }}>{issue.issue}</p>
-                        <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: "3px 0 0" }}>→ {issue.consequence}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Positive points */}
-              {pa.positivePoints.length > 0 && (
-                <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
-                  {pa.positivePoints.map((pt, i) => (
-                    <span key={i} style={{ padding: "4px 10px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontSize: 11, color: "#74c69d" }}>
-                      ✓ {pt}
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
-          </section>
-
-          {/* ── SEPARATOR ── */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
-            <span style={{ padding: "6px 16px", borderRadius: 100, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--t50)" }}>+</span>
-            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
-          </div>
-
-          {/* ── SECTION 2 — SETUP ── */}
-          <section style={{ marginBottom: 20 }}>
-            <div style={{ borderRadius: 22, padding: "20px 20px 16px", background: "rgba(59,130,246,0.05)", border: "0.5px solid rgba(59,130,246,0.15)", marginBottom: 20 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-                <SectionTitle emoji="🖥️" title="Ton setup" />
-                <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: scoreColor(po.globalSetupScore) }}>{po.globalSetupScore}/100</span>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <ElementCard label="Écran" score={po.elements.ecran.score} issues={po.elements.ecran.issues}
-                  extra={`Hauteur : ${po.elements.ecran.hauteur.replace("_", " ")} · Distance : ${po.elements.ecran.distance.replace("_", " ")} · ${po.elements.ecran.type.replace(/_/g, " ")}`}
-                  delay={0} />
-                <ElementCard label="Clavier & souris" score={po.elements.clavier_souris.score} issues={po.elements.clavier_souris.issues}
-                  extra={po.elements.clavier_souris.repose_poignets !== null ? `Repose-poignets : ${po.elements.clavier_souris.repose_poignets ? "présent" : "absent"}` : undefined}
-                  delay={0.06} />
-                <ElementCard label="Chaise" score={po.elements.chaise.score} issues={po.elements.chaise.issues}
-                  extra={`Type : ${po.elements.chaise.type}${po.elements.chaise.accoudoirs !== null ? ` · Accoudoirs : ${po.elements.chaise.accoudoirs ? "présents" : "absents"}` : ""}`}
-                  delay={0.12} />
-                <ElementCard label="Organisation" score={po.elements.organisation.score} issues={po.elements.organisation.issues}
-                  extra={`Éclairage : ${po.elements.organisation.eclairage}`}
-                  delay={0.18} />
-              </div>
-
-              {po.positivePoints.length > 0 && (
-                <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
-                  {po.positivePoints.map((pt, i) => (
-                    <span key={i} style={{ padding: "4px 10px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontSize: 11, color: "#74c69d" }}>
-                      ✓ {pt}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* ── SECTION 3 — COMBINED RECS ── */}
-          <section style={{ marginBottom: 20 }}>
-            <SectionTitle emoji="⚡" title="Tes 5 priorités" />
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {combined.map((rec, i) => {
-                const isPosture = rec.source === "posture";
-                const accentColor = isPosture ? "#a78bfa" : "#60a5fa";
-                return (
-                  <motion.div key={i}
-                    initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.08 }}
-                    style={{ borderRadius: 18, padding: "16px 18px", background: i === 0 ? "rgba(240,149,149,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${i === 0 ? "rgba(240,149,149,0.25)" : "rgba(255,255,255,0.08)"}` }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 8 }}>
-                      <div style={{ width: 26, height: 26, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 12, color: i === 0 ? "#f09595" : "var(--t35)" }}>
-                        {i + 1}
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
-                          <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{rec.action}</span>
-                          <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: `${accentColor}18`, color: accentColor }}>
-                            {isPosture ? "Posture" : "Setup"}
-                          </span>
-                          {isPosture
-                            ? <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: "rgba(116,198,157,0.12)", color: "#74c69d" }}>Gratuit — correction immédiate</span>
-                            : rec.cost && <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: "rgba(244,162,97,0.12)", color: "#f4a261" }}>{rec.cost}</span>
-                          }
-                        </div>
-                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, margin: 0 }}>{rec.why}</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* Plan progressif + checklist */}
-          {synthesis && (
-            <>
-              <WeekPlanBlock weekPlan={synthesis.weekPlan} />
-              {synthesis.dailyChecklist.length > 0 && <DailyChecklist items={synthesis.dailyChecklist} />}
-            </>
           )}
 
-          {/* ── SECTION 4 — PRODUCTS ── */}
-          {products.length > 0 && (
-            <section style={{ marginBottom: 20 }}>
-              <SectionTitle emoji="🛍️" title="Produits recommandés" />
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {products.map((product, i) => {
-                  const pCfg = PRIORITY_COLOR[product.priority] ?? PRIORITY_COLOR.optionnel;
-                  const amazonUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(product.amazon_search)}&tag=postureatwork-21`;
-                  return (
-                    <motion.div key={i} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.07 }}
-                      style={{ borderRadius: 18, padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                          <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{product.name}</span>
-                          <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 11, color: pCfg.color, background: `${pCfg.color}18` }}>{pCfg.label}</span>
-                        </div>
-                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", lineHeight: 1.6, margin: 0 }}>{product.reason}</p>
-                      </div>
-                      <a href={amazonUrl} target="_blank" rel="noopener noreferrer"
-                        style={{ flexShrink: 0, padding: "8px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer" }}>
-                        Amazon →
-                      </a>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </section>
+          {/* Checklist quotidienne */}
+          {synthesis?.dailyChecklist && synthesis.dailyChecklist.length > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              <DailyChecklist items={synthesis.dailyChecklist} />
+            </div>
           )}
 
-          {/* ── SECTION 5 — EXERCISES ── */}
-          {badSegments.length > 0 && (
-            <section style={{ marginBottom: 20 }}>
-              <SectionTitle emoji="🤸" title="Exercices ciblés" />
-              <div style={{ borderRadius: 22, padding: "16px 18px", background: "rgba(45,106,79,0.08)", border: "0.5px solid rgba(45,106,79,0.20)" }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                  {badSegments.map((key, i) => {
-                    const ex = SEGMENT_EXERCISE[key];
-                    if (!ex) return null;
-                    return (
-                      <div key={key} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 0", borderBottom: i < badSegments.length - 1 ? "0.5px solid rgba(255,255,255,0.05)" : "none" }}>
-                        <span style={{ fontSize: 18, width: 28, textAlign: "center", flexShrink: 0, marginTop: 1 }}>🏋️</span>
-                        <div style={{ flex: 1 }}>
-                          <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "var(--text-primary)", margin: "0 0 2px" }}>{ex.name}</p>
-                          <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0 }}>{ex.instruction}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                <Link href="/mobilite" style={{ textDecoration: "none" }}>
-                  <div style={{ marginTop: 14, padding: "11px 0", borderRadius: 100, textAlign: "center", background: "#2b5ce6", boxShadow: "0 4px 16px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#fff" }}>
-                    Accéder à mon programme →
+          {/* Accordéon — détail technique */}
+          <ExpandableSection title="🔍 Voir le détail de l'analyse" defaultOpen={false}>
+
+            <div style={{ marginBottom: 16 }}>
+              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "var(--t40)",
+                textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>
+                Posture détaillée
+              </p>
+              {(Object.entries(pa.segments ?? {}) as [string, PersonneSegment][]).map(([key, seg]) => (
+                <div key={key} style={{ marginBottom: 8, padding: "10px 12px", borderRadius: 10,
+                  background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600,
+                      color: "var(--text-primary)" }}>
+                      {key.replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase())}
+                    </span>
+                    <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
+                      color: seg.score >= 70 ? "#74c69d" : seg.score >= 50 ? "#f4a261" : "#f09595" }}>
+                      {seg.score}/100
+                    </span>
                   </div>
-                </Link>
-              </div>
-            </section>
-          )}
+                  {seg.note && (
+                    <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t50)",
+                      margin: 0, lineHeight: 1.5 }}>{seg.note}</p>
+                  )}
+                </div>
+              ))}
+            </div>
 
+            <div>
+              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "var(--t40)",
+                textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>
+                Setup détaillé
+              </p>
+              {(Object.entries(po.elements ?? {}) as [string, { score: number; issues: string[] }][]).map(([key, el]) => (
+                <div key={key} style={{ marginBottom: 8, padding: "10px 12px", borderRadius: 10,
+                  background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600,
+                      color: "var(--text-primary)" }}>
+                      {key.replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase())}
+                    </span>
+                    <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
+                      color: el.score >= 70 ? "#74c69d" : el.score >= 50 ? "#f4a261" : "#f09595" }}>
+                      {el.score}/100
+                    </span>
+                  </div>
+                  {el.issues?.length > 0 && (
+                    <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t50)",
+                      margin: 0, lineHeight: 1.5 }}>
+                      {el.issues.join(" · ")}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           </ExpandableSection>
 
           {/* ── SAVE ── */}
