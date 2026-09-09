@@ -653,8 +653,16 @@ export default function FinalReportPage() {
   const [user, setUser] = useState<User | null>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [firstname, setFirstname] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
   const savedRef = useRef(false);
   const loadedFromRemoteRef = useRef(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
@@ -830,7 +838,7 @@ export default function FinalReportPage() {
   if (!report && !isDual && !deboutAnalysis) {
     return (
       <main style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
-        <div style={{ textAlign: "center", maxWidth: 340 }}>
+        <div style={{ textAlign: "center", maxWidth: isMobile ? 340 : 600 }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>📋</div>
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", marginBottom: 10 }}>Aucun rapport trouvé</h2>
           <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t50)", marginBottom: 24 }}>Tu n&apos;as pas encore effectué l&apos;analyse vidéo.</p>
@@ -864,7 +872,7 @@ export default function FinalReportPage() {
           { top: "45%", left: "-8%", color: "rgba(116,198,157,0.09)", size: 380 },
           { bottom: "-10%", right: "15%", color: "rgba(43,92,230,0.07)", size: 400 },
         ]} />
-        <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
+        <div style={{ position: "relative", zIndex: 10, maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
 
           {/* Nav */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 80, paddingBottom: 32 }}>
@@ -911,7 +919,6 @@ export default function FinalReportPage() {
             <>
               <CrossedSynthesisHeader synthesis={synthesis} />
               <ConfirmationsBlock confirmations={synthesis.confirmations} />
-              <PositivePointsBlock points={synthesis.positivePoints} />
             </>
           )}
 
@@ -1123,7 +1130,7 @@ export default function FinalReportPage() {
           { top: "45%", left: "-8%", color: "rgba(43,92,230,0.09)", size: 380 },
           { bottom: "-10%", right: "15%", color: "rgba(34,197,94,0.07)", size: 400 },
         ]} />
-        <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
+        <div style={{ position: "relative", zIndex: 10, maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
 
           {/* Nav */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 80, paddingBottom: 32 }}>
@@ -1176,35 +1183,48 @@ export default function FinalReportPage() {
             debout={null}
           />
 
-          {/* Points positifs */}
-          {([...(pa.positivePoints ?? []), ...(po.positivePoints ?? [])]).length > 0 && (
-            <div style={{ padding: "14px 18px", borderRadius: 14, marginBottom: 16,
-              background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.15)" }}>
-              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#74c69d",
-                textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
-                ✅ Ce qui va bien
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                {[...(pa.positivePoints ?? []), ...(po.positivePoints ?? [])].slice(0, 4).map((point, i) => (
-                  <div key={i} style={{ display: "flex", gap: 8 }}>
-                    <span style={{ color: "#74c69d", flexShrink: 0 }}>✓</span>
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)",
-                      margin: 0, lineHeight: 1.5 }}>{point}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Checklist quotidienne */}
-          {synthesis?.dailyChecklist && synthesis.dailyChecklist.length > 0 && (
-            <div style={{ marginBottom: 16 }}>
-              <DailyChecklist items={synthesis.dailyChecklist} />
-            </div>
-          )}
-
-          {/* Accordéon — détail technique */}
-          <ExpandableSection title="🔍 Voir le détail de l'analyse" defaultOpen={false}>
+          {/* 2-column grid: left = positivePoints + checklist, right = detail */}
+          {(() => {
+            const allPositivePoints = [...new Set([
+              ...(pa.positivePoints ?? []),
+              ...(po.positivePoints ?? []),
+            ])].slice(0, 4);
+            return (
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                gap: 16,
+                marginBottom: 20,
+              }}>
+                {/* Left column */}
+                <div>
+                  {allPositivePoints.length > 0 && (
+                    <div style={{ padding: "14px 18px", borderRadius: 14, marginBottom: 12,
+                      background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.15)" }}>
+                      <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#74c69d",
+                        textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
+                        ✅ Ce qui va bien
+                      </p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        {allPositivePoints.map((point, i) => (
+                          <div key={i} style={{ display: "flex", gap: 8 }}>
+                            <span style={{ color: "#74c69d", flexShrink: 0 }}>✓</span>
+                            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)",
+                              margin: 0, lineHeight: 1.5 }}>{point}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {synthesis?.dailyChecklist && synthesis.dailyChecklist.length > 0 && (
+                    <div style={{ marginBottom: 12 }}>
+                      <DailyChecklist items={synthesis.dailyChecklist} />
+                    </div>
+                  )}
+                </div>
+                {/* Right column */}
+                <div>
+                  <ExpandableSection title="🔍 Voir le détail de l'analyse" defaultOpen={true}>
 
             <div style={{ marginBottom: 16 }}>
               <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "var(--t40)",
@@ -1259,7 +1279,11 @@ export default function FinalReportPage() {
                 </div>
               ))}
             </div>
-          </ExpandableSection>
+                  </ExpandableSection>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* ── SAVE ── */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
@@ -1334,7 +1358,7 @@ export default function FinalReportPage() {
         { bottom: "-10%", right: "15%", color: "rgba(116,198,157,0.08)", size: 400 },
       ]} />
 
-      <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
         {/* Nav */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 80, paddingBottom: 32 }}>
           <Link href="/results" style={{ textDecoration: "none" }}>
