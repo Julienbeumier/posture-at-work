@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 const HIDDEN_ON = ["/questionnaire", "/video-capture"];
@@ -12,6 +13,7 @@ const HIDDEN_ON = ["/questionnaire", "/video-capture"];
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme, toggle: toggleTheme } = useTheme();
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -95,7 +97,7 @@ export default function Navbar() {
     fontFamily: T.h,
     textDecoration: "none",
     cursor: "pointer",
-    borderBottom: "0.5px solid #e5e7eb",
+    borderBottom: "0.5px solid rgba(255,255,255,0.06)",
   };
 
   return (
@@ -106,9 +108,9 @@ export default function Navbar() {
         left: 0,
         right: 0,
         zIndex: 50,
-        background: scrolled ? "rgba(255,255,255,0.95)" : "transparent",
+        background: scrolled ? "rgba(15,15,26,0.92)" : "transparent",
         backdropFilter: scrolled ? "blur(20px)" : "none",
-        borderBottom: scrolled ? "1px solid #e5e7eb" : "none",
+        borderBottom: scrolled ? "0.5px solid rgba(255,255,255,0.07)" : "none",
         transition: "all 0.3s ease",
       }}
     >
@@ -138,7 +140,33 @@ export default function Navbar() {
         {/* Right side */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
 
-            {/* Entreprise link (desktop, admin only) */}
+          {/* Theme toggle pill */}
+          <button
+            onClick={toggleTheme}
+            aria-label="Changer de thème"
+            style={{
+              position: "relative", display: "flex", alignItems: "center",
+              width: 64, height: 32, borderRadius: 100, padding: 4, cursor: "pointer",
+              background: theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(43,92,230,0.12)",
+              border: theme === "dark" ? "0.5px solid rgba(255,255,255,0.15)" : "0.5px solid rgba(43,92,230,0.25)",
+              transition: "all 0.3s ease", outline: "none",
+            }}
+          >
+            <span style={{
+              position: "absolute", left: theme === "dark" ? 4 : 32, width: 24, height: 24,
+              borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 13, lineHeight: 1,
+              background: theme === "dark" ? "rgba(255,255,255,0.15)" : "#2b5ce6",
+              transition: "left 0.25s ease, background 0.25s ease",
+            }}>
+              {theme === "dark" ? "🌙" : "☀️"}
+            </span>
+            <span style={{ position: "absolute", right: theme === "dark" ? 6 : "auto", left: theme === "light" ? 6 : "auto", fontSize: 11, opacity: 0.4 }}>
+              {theme === "dark" ? "☀️" : "🌙"}
+            </span>
+          </button>
+
+          {/* Entreprise link (desktop, admin only) */}
           {isEnterpriseAdmin && (
             <Link href="/entreprise/dashboard" className="hidden md:block" style={{ textDecoration: "none" }}>
               <div style={{
@@ -190,7 +218,7 @@ export default function Navbar() {
                 </div>
               </div>
               {menuOpen && (
-                <div style={{ position: "absolute", right: 0, top: 42, width: 180, borderRadius: 16, background: "#ffffff", border: "1px solid #e5e7eb", boxShadow: "0 8px 32px rgba(0,0,0,0.12)", overflow: "hidden" }}>
+                <div style={{ position: "absolute", right: 0, top: 42, width: 180, borderRadius: 16, background: "rgba(18,18,30,0.98)", border: "0.5px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.5)", overflow: "hidden" }}>
                   <div style={{ padding: "12px 16px", borderBottom: "0.5px solid var(--border)" }}>
                     <p style={{ color: "var(--t55)", fontSize: 11, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</p>
                   </div>
@@ -240,7 +268,7 @@ export default function Navbar() {
             padding: "8px 0",
             zIndex: 100,
             minWidth: 200,
-            boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
           }}
         >
           {user && (
