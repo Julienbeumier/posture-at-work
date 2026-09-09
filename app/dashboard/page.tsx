@@ -837,17 +837,17 @@ export default function DashboardPage() {
                   gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)",
                   gap: 10 }}>
                   {[
-                    { key: "setup", emoji: "💻", label: "Setup", dim: "setup" },
-                    { key: "pain", emoji: "🩺", label: "Douleurs", dim: "pain" },
-                    { key: "habits", emoji: "⏱️", label: "Habitudes", dim: "habits" },
-                    { key: "sleep_energy", emoji: "🌙", label: "Sommeil", dim: "sleep" },
-                    { key: "nutrition", emoji: "🍽️", label: "Nutrition", dim: "nutrition" },
-                    { key: "lifestyle", emoji: "🏃", label: "Lifestyle", dim: "lifestyle" },
-                  ].map(({ key, emoji, label, dim }) => {
+                    { key: "setup",        emoji: "💻", label: "Setup",     href: "/conseils/setup" },
+                    { key: "pain",         emoji: "🩺", label: "Douleurs",  href: "/conseils/douleurs" },
+                    { key: "habits",       emoji: "⏱️", label: "Habitudes", href: "/conseils/habitudes" },
+                    { key: "sleep_energy", emoji: "🌙", label: "Sommeil",   href: "/conseils/sommeil" },
+                    { key: "nutrition",    emoji: "🍽️", label: "Nutrition", href: "/conseils/nutrition" },
+                    { key: "lifestyle",    emoji: "🏃", label: "Lifestyle", href: "/conseils/lifestyle" },
+                  ].map(({ key, emoji, label, href }) => {
                     const score = latestAssessment.scores?.[key as keyof typeof latestAssessment.scores] ?? 0;
                     const color = score >= 70 ? "#74c69d" : score >= 50 ? "#f4a261" : "#f09595";
                     return (
-                      <Link key={key} href={`/final-report?dimension=${dim}`}
+                      <Link key={key} href={href}
                         style={{ textDecoration: "none" }}>
                         <motion.div
                           whileHover={{ scale: 1.03, y: -2 }}

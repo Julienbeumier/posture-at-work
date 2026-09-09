@@ -156,13 +156,22 @@ function scoreInterpretation(key: keyof Omit<Scores, "global" | "job_type">, sco
   }
 }
 
-const SUB_SCORES: { key: keyof Omit<Scores, "global" | "job_type">; label: string; emoji: string; dim: string }[] = [
-  { key: "setup",        label: "Setup & ergonomie",   emoji: "💻", dim: "setup" },
-  { key: "pain",         label: "Douleurs",             emoji: "🩺", dim: "pain" },
-  { key: "habits",       label: "Habitudes de travail", emoji: "⏱️", dim: "habits" },
-  { key: "sleep_energy", label: "Sommeil & énergie",    emoji: "🌙", dim: "sleep" },
-  { key: "lifestyle",    label: "Mode de vie actif",    emoji: "🏃", dim: "lifestyle" },
-  { key: "nutrition",    label: "Nutrition & énergie",  emoji: "🍽️", dim: "nutrition" },
+const DIMENSION_LINKS: Record<string, string> = {
+  setup:        "/conseils/setup",
+  pain:         "/conseils/douleurs",
+  habits:       "/conseils/habitudes",
+  sleep_energy: "/conseils/sommeil",
+  nutrition:    "/conseils/nutrition",
+  lifestyle:    "/conseils/lifestyle",
+};
+
+const SUB_SCORES: { key: keyof Omit<Scores, "global" | "job_type">; label: string; emoji: string }[] = [
+  { key: "setup",        label: "Setup & ergonomie",   emoji: "💻" },
+  { key: "pain",         label: "Douleurs",             emoji: "🩺" },
+  { key: "habits",       label: "Habitudes de travail", emoji: "⏱️" },
+  { key: "sleep_energy", label: "Sommeil & énergie",    emoji: "🌙" },
+  { key: "lifestyle",    label: "Mode de vie actif",    emoji: "🏃" },
+  { key: "nutrition",    label: "Nutrition & énergie",  emoji: "🍽️" },
 ];
 
 export default function ResultsPage() {
@@ -458,8 +467,8 @@ export default function ResultsPage() {
           <div style={{ display: "grid",
             gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
             gap: 12 }}>
-            {SUB_SCORES.map(({ key, label, emoji, dim }, i) => (
-              <Link key={key} href={`/final-report?dimension=${dim}`} style={{ textDecoration: "none" }}>
+            {SUB_SCORES.map(({ key, label, emoji }, i) => (
+              <Link key={key} href={DIMENSION_LINKS[key]} style={{ textDecoration: "none" }}>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
