@@ -91,129 +91,48 @@ function ScoreCircle({ score, isPartial = false }: { score: number; isPartial?: 
   );
 }
 
-// ─── Inline product per dimension ────────────────────────────────────────────
-
-const DIM_INLINE_PRODUCTS: Record<string, { name: string; url: string; reason: string; price: string }> = {
-  "/conseils/setup":     { name: "Rehausseur écran GRIFEMA",           url: "https://amzn.to/3RF8Hn1", reason: "Écran trop bas → charge cervicale +12kg sur la nuque",    price: "~28€" },
-  "/conseils/douleurs":  { name: "Coussin lombaire FORTEM",             url: "https://amzn.to/4dIapg4", reason: "Soulage les douleurs lombaires dès la première utilisation", price: "~30€" },
-  "/conseils/habitudes": { name: "Bureau assis-debout SONGMICS",        url: "https://amzn.to/4dGGncw", reason: "Alterner assis/debout réduit les douleurs lombaires de 50%", price: "~200€" },
-  "/conseils/sommeil":   { name: "Lunettes anti-lumière bleue Horus X", url: "https://amzn.to/4veEs4B", reason: "Bloque la lumière bleue pour retrouver un sommeil naturel",  price: "~30€" },
-  "/conseils/lifestyle": { name: "Coussin d'équilibre BODYMATE",        url: "https://amzn.to/3Rh9avh", reason: "Active les muscles du dos sans effort conscient",           price: "~30€" },
-  "/conseils/nutrition": { name: "Gourde graduée avec horaires 1.5L",   url: "https://amzn.to/4dVZNJl", reason: "Rappel d'hydratation tout au long de la journée",          price: "~15€" },
-};
-
-const DIM_INLINE_PRODUCTS_DEBOUT: Record<string, { name: string; url: string; reason: string; price: string }> = {
-  "/conseils/setup":     { name: "Tapis anti-fatigue ergonomique",  url: "https://amzn.to/4fnjrQR",          reason: "Sol dur sans amorti = fatigue musculaire x3 en fin de journée",               price: "~45€" },
-  "/conseils/douleurs":  { name: "Semelles orthopédiques de travail", url: "https://amzn.to/4eiCfP5", reason: "Amorties et soutien de voûte plantaire pour journées debout",                 price: "~35€" },
-  "/conseils/sommeil":   { name: "Chaussettes de compression graduée", url: "https://amzn.to/4vimwWT", reason: "À porter le matin avant de se lever — prévient jambes lourdes et varices", price: "~20€" },
-  "/conseils/lifestyle": { name: "Balle de massage plantaire",       url: "https://amzn.to/4wZhdNP",        reason: "Auto-massage sous le pied après le service — soulage les tensions en 5 min", price: "~15€" },
-  "/conseils/habitudes": { name: "Repose-pieds ergonomique",         url: "https://amzn.to/4uMCqZO",                                                                 reason: "Permet d'alterner l'appui et soulage le bas du dos de 25%",                   price: "~35€" },
-  "/conseils/nutrition": { name: "Gourde 1.5L graduée",              url: "https://amzn.to/4dVZNJl",                                                                 reason: "Hydratation critique pour les métiers debout — boire sans y penser",          price: "~15€" },
-};
-
 // ─── Sub-score bar ────────────────────────────────────────────────────────────
 
 function SubScoreBar({
-  label, emoji, score, interpretation, dimensionPath, dimensionColor, delay = 0, jobType = "bureau",
+  label, emoji, score, interpretation, dimensionColor, delay = 0,
 }: {
   label: string; emoji: string; score: number; interpretation: string;
-  dimensionPath: string; dimensionColor: string; delay?: number; jobType?: string;
+  dimensionColor: string; delay?: number;
 }) {
-  const color = scoreBarColor(score);
-  const [expanded, setExpanded] = useState(false);
-  const [displayed, setDisplayed] = useState(0);
-
-  useEffect(() => {
-    const t = setTimeout(() => {
-      let cur = 0;
-      const inc = score / 40;
-      const iv = setInterval(() => {
-        cur += inc;
-        if (cur >= score) { setDisplayed(score); clearInterval(iv); }
-        else setDisplayed(Math.round(cur));
-      }, 20);
-      return () => clearInterval(iv);
-    }, delay * 1000);
-    return () => clearTimeout(t);
-  }, [score, delay]);
-
   return (
     <motion.div
-      initial={{ opacity: 0, x: -16 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.4, delay }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      style={{ padding: "16px", borderRadius: 16,
+        background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
     >
-      <div
-        onClick={() => setExpanded((v) => !v)}
-        style={{ cursor: "pointer" }}
-      >
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: T.b, fontSize: 13, color: "var(--t75)" }}>
-            <span>{emoji}</span>
-            <span>{label}</span>
-          </span>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color }}>{displayed}</span>
-            <span style={{ fontSize: 10, color: "var(--t30)" }}>{expanded ? "▲" : "▼"}</span>
-          </div>
+      <div style={{ display: "flex", alignItems: "center",
+        justifyContent: "space-between", marginBottom: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 18 }}>{emoji}</span>
+          <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+            color: "var(--text-primary)" }}>{label}</span>
         </div>
-        <div style={{ height: 5, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden", marginBottom: 4 }}>
-          <motion.div
-            style={{ height: "100%", borderRadius: 100, background: color }}
-            initial={{ width: 0 }}
-            animate={{ width: `${score}%` }}
-            transition={{ duration: 0.8, delay: delay + 0.15, ease: "easeOut" }}
-          />
-        </div>
-        <AnimatePresence>
-          {expanded && (
-            <motion.p
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", lineHeight: 1.6, paddingTop: 4, paddingBottom: 2 }}
-            >
-              {interpretation}
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </div>
-      <Link
-        href={dimensionPath}
-        style={{ textDecoration: "none" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <span style={{
-          display: "inline-block", marginTop: 4,
-          fontFamily: T.b, fontSize: 11, fontWeight: 600,
-          color: dimensionColor, cursor: "pointer",
-        }}>
-          Voir mon plan détaillé →
+        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18,
+          color: score >= 70 ? "#74c69d" : score >= 50 ? "#f4a261" : "#f09595" }}>
+          {score}
         </span>
-      </Link>
-      {score < 70 && (() => {
-        const map = jobType === "debout" ? DIM_INLINE_PRODUCTS_DEBOUT : DIM_INLINE_PRODUCTS;
-        const p = map[dimensionPath];
-        if (!p) return null;
-        return (
-          <div style={{
-            marginTop: 10, padding: "10px 14px", borderRadius: 12,
-            background: `${dimensionColor}10`, border: `0.5px solid ${dimensionColor}30`,
-            display: "flex", alignItems: "center", gap: 10,
-          }}>
-            <span style={{ fontSize: 16, flexShrink: 0 }}>🛒</span>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "var(--text-primary)", margin: 0 }}>{p.name}</p>
-              <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.reason}</p>
-            </div>
-            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: dimensionColor, flexShrink: 0 }}>{p.price}</span>
-            <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{
-              padding: "5px 12px", borderRadius: 100, textDecoration: "none", flexShrink: 0,
-              background: "#2b5ce6", fontFamily: T.b, fontWeight: 700, fontSize: 11, color: "#fff",
-            }}>Amazon →</a>
-          </div>
-        );
-      })()}
+      </div>
+
+      <div style={{ height: 6, borderRadius: 100,
+        background: "rgba(255,255,255,0.06)", marginBottom: 8, overflow: "hidden" }}>
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${score}%` }}
+          transition={{ duration: 0.8, delay, ease: "easeOut" }}
+          style={{ height: "100%", borderRadius: 100,
+            background: score >= 70 ? "#74c69d" : score >= 50 ? "#f4a261" : "#f09595" }}
+        />
+      </div>
+
+      <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)",
+        margin: 0, lineHeight: 1.4 }}>{interpretation}</p>
     </motion.div>
   );
 }
@@ -465,7 +384,7 @@ export default function ResultsPage() {
         { bottom: "-10%", right: "10%", color: "rgba(244,162,97,0.07)", size: 420 },
       ]} />
 
-      <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: isMobile ? "0 16px" : "0 24px" }}>
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 960, margin: "0 auto", padding: isMobile ? "0 16px" : "0 24px" }}>
 
         {/* ── HEADER ── */}
         <motion.div
@@ -498,91 +417,143 @@ export default function ResultsPage() {
             <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: badge.color }}>{badge.label}</span>
           </div>
 
-          {/* Bilan complet / incomplet */}
-          {hasVideoAnalysis ? (
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              padding: "5px 14px", borderRadius: 100, marginBottom: 16,
-              background: "rgba(29,158,117,0.12)", border: "0.5px solid rgba(29,158,117,0.3)",
-            }}>
-              <span style={{ fontSize: 12 }}>✅</span>
-              <span style={{ fontFamily: T.b, fontSize: 12, color: "#1d9e75", fontWeight: 600 }}>
-                Bilan complet — Analyse vidéo incluse
-              </span>
-            </div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              style={{
-                borderRadius: 20, padding: "20px 24px", marginBottom: 20,
-                background: "rgba(124,58,237,0.08)",
-                border: "1.5px solid rgba(124,58,237,0.35)",
-                position: "relative", overflow: "hidden",
-                textAlign: "left", width: "100%",
-              }}
-            >
-              <div style={{
-                position: "absolute", top: -40, right: -40,
-                width: 160, height: 160, borderRadius: "50%",
-                background: "rgba(124,58,237,0.15)", filter: "blur(40px)",
-                pointerEvents: "none",
-              }} />
-              <div style={{ position: "relative", zIndex: 1 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                  <div style={{
-                    width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                    background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.4)",
-                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
-                  }}>
-                    🎥
-                  </div>
-                  <div>
-                    <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 15, color: "#c4b5fd", margin: 0, lineHeight: 1.2 }}>
-                      Ton bilan est incomplet
-                    </p>
-                    <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(196,181,253,0.6)", margin: 0 }}>
-                      La partie la plus importante manque encore
-                    </p>
-                  </div>
-                </div>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.7, margin: "0 0 16px" }}>
-                  Le questionnaire analyse tes habitudes et ta douleur déclarée.
-                  Mais <strong style={{ color: "#c4b5fd" }}>personne n&apos;a encore vu ta posture réelle.</strong>
-                  {" "}L&apos;analyse vidéo IA est la seule façon de savoir exactement
-                  ce que ton corps fait au travail — en 40 secondes.
+          {!hasVideoAnalysis && (
+            <div style={{ width: "100%", marginBottom: 16 }}>
+              <div style={{ textAlign: "center", padding: "24px 20px", borderRadius: 20,
+                background: "rgba(43,92,230,0.06)", border: "1px solid rgba(43,92,230,0.2)",
+                marginBottom: 12 }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>🎥</div>
+                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 20 : 24,
+                  color: "var(--text-primary)", margin: "0 0 10px", letterSpacing: "-0.5px" }}>
+                  Ton analyse est incomplète
                 </p>
-                <div style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
+                <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)",
+                  lineHeight: 1.7, maxWidth: 460, margin: "0 auto 16px" }}>
+                  Le questionnaire révèle ce que tu <em>penses</em> de ta posture.
+                  La vidéo montre ce que ton corps <em>fait réellement</em>.
+                  Sans elle, on ne voit que la moitié du tableau.
+                </p>
+                <div style={{ display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                  gap: 8, marginBottom: 20, textAlign: "left" }}>
                   {[
-                    "Analyse posturale en temps réel",
-                    "Détection des déséquilibres",
-                    "Conseils ultra-personnalisés",
-                  ].map(f => (
-                    <span key={f} style={{
-                      padding: "4px 12px", borderRadius: 100,
-                      background: "rgba(124,58,237,0.12)", border: "0.5px solid rgba(124,58,237,0.25)",
-                      fontFamily: T.b, fontSize: 11, color: "#c4b5fd",
-                    }}>
-                      ✓ {f}
-                    </span>
+                    { icon: "🦆", text: "Projection de tête et charge cervicale" },
+                    { icon: "🦅", text: "Position des épaules et du dos" },
+                    { icon: "💻", text: "Hauteur et distance de l'écran" },
+                    { icon: "🪑", text: "Position assise et soutien lombaire" },
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, alignItems: "center",
+                      padding: "10px 12px", borderRadius: 10,
+                      background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                      <span style={{ fontSize: 18, flexShrink: 0 }}>{item.icon}</span>
+                      <span style={{ fontFamily: T.b, fontSize: 12,
+                        color: "var(--t65)" }}>{item.text}</span>
+                    </div>
                   ))}
                 </div>
                 <Link href="/video-intro" style={{ textDecoration: "none" }}>
-                  <div style={{
-                    padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-                    background: "linear-gradient(135deg, #7c3aed, #a78bfa)",
-                    boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
-                    fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
-                  }}>
-                    🎥 Analyser ma posture →
-                  </div>
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                    style={{ display: "inline-block", padding: "16px 36px",
+                      borderRadius: 100, background: "#2b5ce6", color: "#fff",
+                      fontFamily: T.h, fontWeight: 800, fontSize: 16,
+                      boxShadow: "0 4px 24px rgba(43,92,230,0.4)", cursor: "pointer" }}>
+                    Analyser ma posture en 40 secondes →
+                  </motion.div>
                 </Link>
-                <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", textAlign: "center", marginTop: 8 }}>
-                  40 secondes · Via ta caméra · Résultats immédiats
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)",
+                  margin: "12px 0 0" }}>
+                  Depuis ton PC ou par QR code sur mobile · Résultat immédiat
                 </p>
               </div>
-            </motion.div>
+              <div style={{ padding: "12px 16px", borderRadius: 12,
+                background: "rgba(244,162,97,0.06)", border: "0.5px solid rgba(244,162,97,0.2)",
+                display: "flex", gap: 10, alignItems: "center" }}>
+                <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", margin: 0 }}>
+                  Les scores ci-dessous sont <strong style={{ color: "var(--text-primary)" }}>
+                  basés uniquement sur ton questionnaire</strong> — ils peuvent changer
+                  significativement après l&apos;analyse vidéo.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {hasVideoAnalysis && (
+            <div style={{ width: "100%", marginBottom: 16 }}>
+              <div style={{ display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                gap: 12, marginBottom: 12 }}>
+                <div style={{ padding: "18px", borderRadius: 16,
+                  background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                    <span style={{ fontSize: 20 }}>📋</span>
+                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+                      color: "var(--text-primary)", margin: 0 }}>Questionnaire</p>
+                  </div>
+                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 32,
+                    color: scores.global >= 70 ? "#74c69d" :
+                           scores.global >= 50 ? "#f4a261" : "#f09595",
+                    margin: "0 0 4px", letterSpacing: "-1px" }}>
+                    {scores.global}<span style={{ fontSize: 16, fontWeight: 400,
+                      color: "var(--t40)" }}>/100</span>
+                  </p>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: 0 }}>
+                    30 questions analysées
+                  </p>
+                </div>
+                {(() => {
+                  const videoScore = (() => { try { return JSON.parse(sessionStorage.getItem("paw_analysis_personne") || "{}")?.globalPostureScore; } catch { return null; } })();
+                  const setupScore = (() => { try { return JSON.parse(sessionStorage.getItem("paw_analysis_poste") || "{}")?.globalSetupScore; } catch { return null; } })();
+                  const avgVideo = videoScore && setupScore
+                    ? Math.round((videoScore + setupScore) / 2)
+                    : videoScore ?? setupScore ?? null;
+                  if (avgVideo === null) return null;
+                  return (
+                    <div style={{ padding: "18px", borderRadius: 16,
+                      background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                        <span style={{ fontSize: 20 }}>🎥</span>
+                        <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+                          color: "var(--text-primary)", margin: 0 }}>Analyse vidéo</p>
+                      </div>
+                      <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 32,
+                        color: avgVideo >= 70 ? "#74c69d" :
+                               avgVideo >= 50 ? "#f4a261" : "#f09595",
+                        margin: "0 0 4px", letterSpacing: "-1px" }}>
+                        {avgVideo}<span style={{ fontSize: 16, fontWeight: 400,
+                          color: "var(--t40)" }}>/100</span>
+                      </p>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: 0 }}>
+                        Posture · Setup · Corrélations
+                      </p>
+                    </div>
+                  );
+                })()}
+              </div>
+              <Link href="/final-report" style={{ textDecoration: "none" }}>
+                <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
+                  style={{ padding: "18px 24px", borderRadius: 16, cursor: "pointer",
+                    background: "rgba(116,198,157,0.06)", border: "1px solid rgba(116,198,157,0.25)",
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    gap: 16, flexWrap: "wrap" }}>
+                  <div>
+                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15,
+                      color: "var(--text-primary)", margin: "0 0 4px" }}>
+                      ✅ Ton rapport complet est prêt
+                    </p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", margin: 0 }}>
+                      Top 3 priorités · Actions concrètes · Exercices personnalisés
+                    </p>
+                  </div>
+                  <div style={{ padding: "12px 24px", borderRadius: 100,
+                    background: "#74c69d", color: "#fff",
+                    fontFamily: T.h, fontWeight: 700, fontSize: 14,
+                    flexShrink: 0 }}>
+                    Voir mon rapport →
+                  </div>
+                </motion.div>
+              </Link>
+            </div>
           )}
 
           <div>
@@ -688,61 +659,26 @@ export default function ResultsPage() {
             marginBottom: 20,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <div style={{ marginBottom: 16 }}>
             <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)" }}>Tes 6 indicateurs</span>
-            <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)" }}>Clique pour détails</span>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-            {SUB_SCORES.map(({ key, label, emoji, dimensionPath, dimensionColor }, i) => (
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: 12,
+            marginBottom: 24,
+          }}>
+            {SUB_SCORES.map(({ key, label, emoji, dimensionColor }, i) => (
               <SubScoreBar
                 key={key}
                 label={label}
                 emoji={emoji}
                 score={scores[key]}
                 interpretation={scoreInterpretation(key, scores[key], answers)}
-                dimensionPath={dimensionPath}
                 dimensionColor={dimensionColor}
                 delay={i * 0.15}
-                jobType={jobType}
               />
             ))}
-            {!hasVideoAnalysis && (
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-                style={{
-                  borderRadius: 20, padding: "20px 22px", marginTop: 8,
-                  background: "rgba(124,58,237,0.06)",
-                  border: "1px dashed rgba(124,58,237,0.35)",
-                  display: "flex", alignItems: "center", gap: 14,
-                }}
-              >
-                <div style={{ fontSize: 28, flexShrink: 0 }}>🎥</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#c4b5fd", margin: 0 }}>
-                      Analyse IA posturale
-                    </p>
-                    <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(124,58,237,0.2)", fontFamily: T.b, fontSize: 10, fontWeight: 700, color: "#c4b5fd" }}>
-                      NON ANALYSÉ
-                    </span>
-                  </div>
-                  <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", margin: 0 }}>
-                    Claude Vision n&apos;a pas encore analysé ta posture réelle.
-                  </p>
-                </div>
-                <Link href="/video-intro" style={{ textDecoration: "none", flexShrink: 0 }}>
-                  <div style={{
-                    padding: "8px 16px", borderRadius: 100,
-                    background: "#7c3aed", color: "#fff",
-                    fontFamily: T.b, fontWeight: 700, fontSize: 12, cursor: "pointer",
-                  }}>
-                    Analyser →
-                  </div>
-                </Link>
-              </motion.div>
-            )}
           </div>
         </motion.div>
 
