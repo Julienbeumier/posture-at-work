@@ -642,6 +642,12 @@ export default function DashboardPage() {
 
   const displayName = firstname || user?.user_metadata?.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "toi";
   const latestBadge = latest ? badge(latest.global_score) : null;
+  const latestAssessment = latest ?? null;
+  const fadeUp = (delay: number) => ({
+    initial: { opacity: 0, y: 16 } as const,
+    animate: { opacity: 1, y: 0 } as const,
+    transition: { delay },
+  });
 
   const chartData = assessments.length >= 2
     ? assessments.slice().reverse().map(a => ({
@@ -678,13 +684,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <main style={{ minHeight: "100vh", background: c.mainBg, paddingTop: 56, paddingBottom: 100, position: "relative" }}>
-      <BackgroundBlobs blobs={[
-        { top: "-5%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 500 },
-        { top: "40%", left: "-8%", color: "rgba(45,106,79,0.08)", size: 380 },
-      ]} />
-
-      <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: isMobile ? "20px 16px" : "20px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
+    <main style={{ minHeight: "100vh", background: c.mainBg }}>
+      <div style={{ maxWidth: 720, margin: "0 auto",
+        padding: isMobile ? "80px 16px 40px" : "100px 24px 60px" }}>
 
         {/* ── FEEDBACK BANNER ── */}
         {showFeedbackBanner && (
@@ -692,17 +694,17 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             style={{
-              borderRadius: 18, padding: "18px 20px",
+              borderRadius: 18, padding: "18px 20px", marginBottom: 16,
               background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)",
               display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap",
             }}
           >
             <div style={{ fontSize: 28 }}>💬</div>
             <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: c.textPrimary, margin: "0 0 4px" }}>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)", margin: "0 0 4px" }}>
                 2 minutes pour améliorer PAW ?
               </p>
-              <p style={{ fontFamily: T.b, fontSize: 12, color: c.textSecondary, margin: 0 }}>
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", margin: 0 }}>
                 Ton avis est précieux pour nous aider à construire le meilleur outil de santé au travail.
               </p>
             </div>
@@ -723,8 +725,8 @@ export default function DashboardPage() {
                 }}
                 style={{
                   padding: "9px 14px", borderRadius: 100,
-                  background: "transparent", border: `0.5px solid ${c.border2}`,
-                  color: c.textMuted, fontFamily: T.b, fontSize: 12, cursor: "pointer",
+                  background: "transparent", border: "0.5px solid var(--border-2)",
+                  color: "var(--t50)", fontFamily: T.b, fontSize: 12, cursor: "pointer",
                 }}
               >
                 Plus tard
@@ -733,74 +735,10 @@ export default function DashboardPage() {
           </motion.div>
         )}
 
-        {/* ── S1 : HERO SCORE ── */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} style={{
-          borderRadius: 22, padding: "22px 24px",
-          background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)",
-          position: "relative", overflow: "hidden",
-        }}>
-          <div style={{ position: "absolute", top: -40, right: -40, width: 160, height: 160, borderRadius: "50%", background: "rgba(43,92,230,0.15)", filter: "blur(50px)", pointerEvents: "none" }} />
-          <div style={{ display: "flex", alignItems: "center", gap: 18, position: "relative", zIndex: 1 }}>
-            {latest ? <HeroCircle score={latest.global_score} /> : (
-              <div style={{ width: 70, height: 70, borderRadius: "50%", background: "rgba(43,92,230,0.15)", border: "3px solid rgba(43,92,230,0.3)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span style={{ fontSize: 24 }}>🎯</span>
-              </div>
-            )}
-            <div style={{ flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 4 }}>
-                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "var(--text-primary)", margin: 0 }}>
-                  Bonjour {displayName} 👋
-                </p>
-              </div>
-              {latestBadge && (
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                  <span style={{
-                    display: "inline-block", padding: "3px 12px", borderRadius: 100,
-                    background: latestBadge.bg, border: `0.5px solid ${latestBadge.border}`,
-                    fontFamily: T.b, fontWeight: 600, fontSize: 11, color: latestBadge.color,
-                  }}>
-                    {latestBadge.label}
-                  </span>
-                  {previous && (() => {
-                    const delta = latest.global_score - previous.global_score;
-                    if (delta === 0) return null;
-                    return (
-                      <span style={{
-                        display: "inline-flex", alignItems: "center", gap: 3,
-                        padding: "3px 10px", borderRadius: 100,
-                        background: delta > 0 ? "rgba(116,198,157,0.12)" : "rgba(240,149,149,0.12)",
-                        border: `0.5px solid ${delta > 0 ? "rgba(116,198,157,0.3)" : "rgba(240,149,149,0.3)"}`,
-                        fontFamily: T.h, fontWeight: 700, fontSize: 11,
-                        color: delta > 0 ? "#74c69d" : "#f09595",
-                      }}>
-                        {delta > 0 ? "↑" : "↓"} {delta > 0 ? `+${delta}` : delta} pts
-                      </span>
-                    );
-                  })()}
-                </div>
-              )}
-              {latest && (
-                <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: "4px 0 0" }}>
-                  Bilan du {new Date(latest.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}
-                </p>
-              )}
-            </div>
-          </div>
-          <Link href="/questionnaire" style={{ textDecoration: "none", display: "block", marginTop: 16 }}>
-            <div style={{
-              padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-              background: "#2b5ce6", boxShadow: "0 4px 20px rgba(43,92,230,0.4)",
-              fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
-            }}>
-              {latest ? "Nouveau bilan →" : "Commencer mon bilan →"}
-            </div>
-          </Link>
-        </motion.div>
-
         {/* ── iOS NOTIFICATION BANNER ── */}
         {showIosBanner && (
           <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-            style={{ borderRadius: 16, padding: "14px 18px", background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)", display: "flex", alignItems: "flex-start", gap: 12 }}>
+            style={{ borderRadius: 16, padding: "14px 18px", marginBottom: 16, background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)", display: "flex", alignItems: "flex-start", gap: 12 }}>
             <span style={{ fontSize: 18, flexShrink: 0 }}>📱</span>
             <div style={{ flex: 1 }}>
               <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "var(--text-primary)", margin: "0 0 4px" }}>Active les rappels</p>
@@ -810,25 +748,6 @@ export default function DashboardPage() {
             </div>
             <button onClick={() => setShowIosBanner(false)}
               style={{ background: "none", border: "none", color: "var(--t30)", fontSize: 16, cursor: "pointer", flexShrink: 0, padding: 0 }}>✕</button>
-          </motion.div>
-        )}
-
-        {/* No assessment state */}
-        {!hasBilan && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{
-            borderRadius: 22, padding: "28px 24px", textAlign: "center",
-            background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)",
-          }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>🎯</div>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 17, color: "var(--text-primary)", marginBottom: 8 }}>Pas encore de bilan</p>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", lineHeight: 1.65, marginBottom: 20 }}>
-              Fais ton premier bilan en 5 minutes pour débloquer ton tableau de bord complet.
-            </p>
-            <Link href="/questionnaire" style={{ textDecoration: "none" }}>
-              <div style={{ padding: "14px 0", borderRadius: 100, background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.4)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
-                Faire mon premier bilan →
-              </div>
-            </Link>
           </motion.div>
         )}
 
@@ -845,507 +764,226 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* ── S2 : TIP DU JOUR ── */}
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} style={{
-          borderRadius: 18, padding: "16px 20px",
-          background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.15)",
-        }}>
-          <p style={{ fontFamily: T.b, fontSize: 10, fontWeight: 700, color: "rgba(168,192,255,0.5)", letterSpacing: "0.1em", textTransform: "uppercase", margin: 0, marginBottom: 8 }}>
-            TIP DU JOUR
+        {/* ── 1. GREETING ── */}
+        <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
+          <p style={{ fontFamily: T.h, fontWeight: 900,
+            fontSize: isMobile ? 22 : 26, color: "var(--text-primary)",
+            margin: "0 0 4px", letterSpacing: "-0.5px" }}>
+            Bonjour{firstname ? ` ${firstname}` : ""} 👋
           </p>
-          <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t85)", lineHeight: 1.65, margin: 0 }}>
-            {tip}
+          <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t50)", margin: 0 }}>
+            {latestAssessment
+              ? `Dernier bilan : ${new Date(latestAssessment.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}`
+              : "Tu n'as pas encore fait ton bilan"}
           </p>
         </motion.div>
 
-        {/* ── S3 : CARREFOUR ── */}
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", marginBottom: 10 }}>
-            Ton espace santé
-          </p>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
-            {SHORTCUTS.map((s) => {
-              const score = s.scoreKey && latest ? (latest.scores[s.scoreKey as keyof typeof latest.scores] ?? null) : null;
-              const noAssessment = !latest;
-              const isVideoCard = s.title === "Analyse vidéo";
-              const hasVideoAnalysis = latest?.video_analysis != null;
-              // Cards linking to /conseils or /results without a bilan → redirect to /questionnaire
-              const isLocked = noAssessment && (s.href.startsWith("/conseils") || s.href === "/results");
-              const href = isLocked ? "/questionnaire" : isVideoCard ? "/video-intro" : s.href;
-              const desc = score != null
-                ? `${score}/100 · ${statusLabel(score)}`
-                : isLocked
-                ? "🔒 Après ton bilan"
-                : (s.desc ?? "");
-              return (
-                <Link key={s.title} href={href} style={{ textDecoration: "none" }}>
-                  <div style={{
-                    borderRadius: 18, padding: "16px 16px", position: "relative", overflow: "hidden",
-                    background: s.bg, border: `0.5px solid ${s.border}`, cursor: "pointer",
-                  }}>
-                    <div style={{ position: "absolute", top: -20, right: -20, width: 80, height: 80, borderRadius: "50%", background: s.blob, filter: "blur(24px)", opacity: 0.7 }} />
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: s.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, marginBottom: 10, position: "relative" }}>
-                      {s.icon}
-                    </div>
-                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: s.color, margin: 0, marginBottom: 3, position: "relative" }}>
-                      {isVideoCard ? "Lancer mon analyse →" : s.title}
-                    </p>
-                    <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0, position: "relative" }}>
-                      {desc}
-                    </p>
+        {latestAssessment ? (
+          <>
+            {/* ── 2. SCORE GLOBAL ── */}
+            <motion.div {...fadeUp(0.05)} style={{ marginBottom: 16 }}>
+              <div style={{ borderRadius: 20, padding: "24px",
+                background: "var(--bg-card)", border: "0.5px solid var(--border)",
+                display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+
+                <HeroCircle score={latestAssessment.global_score} />
+
+                <div style={{ flex: 1, minWidth: 160 }}>
+                  <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600,
+                    color: "var(--t40)", textTransform: "uppercase",
+                    letterSpacing: "0.06em", margin: "0 0 4px" }}>
+                    Score santé au travail
+                  </p>
+                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16,
+                    color: "var(--text-primary)", margin: "0 0 8px" }}>
+                    {latestAssessment.global_score >= 70 ? "Bon niveau général" :
+                     latestAssessment.global_score >= 50 ? "Des améliorations possibles" :
+                     "Attention — des points critiques identifiés"}
+                  </p>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600,
+                      padding: "3px 10px", borderRadius: 100,
+                      background: latestAssessment.video_analysis
+                        ? "rgba(116,198,157,0.12)" : "rgba(244,162,97,0.12)",
+                      color: latestAssessment.video_analysis ? "#74c69d" : "#f4a261",
+                      border: `0.5px solid ${latestAssessment.video_analysis
+                        ? "rgba(116,198,157,0.25)" : "rgba(244,162,97,0.25)"}` }}>
+                      {latestAssessment.video_analysis ? "✅ Bilan complet" : "⚠️ Vidéo manquante"}
+                    </span>
+                  </div>
+                </div>
+
+                <Link href="/results" style={{ textDecoration: "none", flexShrink: 0 }}>
+                  <div style={{ padding: "10px 18px", borderRadius: 100,
+                    background: "rgba(43,92,230,0.1)", border: "0.5px solid rgba(43,92,230,0.2)",
+                    fontFamily: T.b, fontSize: 13, fontWeight: 600, color: "#7c9fff",
+                    cursor: "pointer" }}>
+                    Voir mes scores →
                   </div>
                 </Link>
-              );
-            })}
-          </div>
-
-          {/* Produit recommandé pour la dimension la plus faible */}
-          {latest && (() => {
-            const dimKeys = ["setup", "pain", "habits", "sleep_energy", "lifestyle", "nutrition"] as const;
-            const weakest = dimKeys.reduce((a, b) =>
-              (latest.scores[a] ?? 100) <= (latest.scores[b] ?? 100) ? a : b
-            );
-            const prod = DIM_PRODUCTS[weakest];
-            const meta = DIM_META[weakest === "pain" ? "pain" : weakest === "habits" ? "habits" : weakest === "sleep_energy" ? "sleep_energy" : weakest === "lifestyle" ? "lifestyle" : weakest === "nutrition" ? "nutrition" : "setup"];
-            if (!prod || !meta) return null;
-            return (
-              <div style={{ marginTop: 12, padding: "12px 16px", borderRadius: 14, background: "var(--bg-card)", border: "0.5px solid var(--border)", display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: 14, flexShrink: 0 }}>💡</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 11, color: "var(--t45)", margin: "0 0 2px" }}>Recommandé pour toi :</p>
-                  <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 12, color: "var(--text-primary)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</p>
-                </div>
-                <span style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 700, fontSize: 12, color: meta.color, flexShrink: 0 }}>{prod.price}</span>
-                <a href={prod.url} target="_blank" rel="noopener noreferrer" style={{ padding: "5px 12px", borderRadius: 100, textDecoration: "none", background: "#2b5ce6", fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 700, fontSize: 11, color: "#fff", flexShrink: 0 }}>Amazon →</a>
               </div>
-            );
-          })()}
-        </motion.div>
+            </motion.div>
 
-        {/* ── S4 : CHECK-IN ── */}
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.10 }} style={{
-          borderRadius: 22, padding: "22px 20px",
-          background: "var(--bg-card)", border: "0.5px solid var(--border)",
-        }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0 }}>Check-in du jour</p>
-            {streak > 0 && (
-              <span style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(245,158,11,0.15)", border: "0.5px solid rgba(245,158,11,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 11, color: "#fbbf24" }}>
-                🔥 {streak} jour{streak > 1 ? "s" : ""}
-              </span>
-            )}
-          </div>
+            {/* ── 3. SCORES RAPIDES ── */}
+            <motion.div {...fadeUp(0.08)} style={{ marginBottom: 16 }}>
+              <div style={{ borderRadius: 16, padding: "18px 20px",
+                background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+                <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700,
+                  color: "var(--t40)", textTransform: "uppercase",
+                  letterSpacing: "0.06em", margin: "0 0 14px" }}>
+                  Tes 6 dimensions
+                </p>
+                <div style={{ display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)",
+                  gap: 10 }}>
+                  {[
+                    { key: "setup", emoji: "💻", label: "Setup" },
+                    { key: "pain", emoji: "🩺", label: "Douleurs" },
+                    { key: "habits", emoji: "⏱️", label: "Habitudes" },
+                    { key: "sleep_energy", emoji: "🌙", label: "Sommeil" },
+                    { key: "nutrition", emoji: "🍽️", label: "Nutrition" },
+                    { key: "lifestyle", emoji: "🏃", label: "Lifestyle" },
+                  ].map(({ key, emoji, label }) => {
+                    const score = latestAssessment.scores?.[key as keyof typeof latestAssessment.scores] ?? 0;
+                    const color = score >= 70 ? "#74c69d" : score >= 50 ? "#f4a261" : "#f09595";
+                    return (
+                      <div key={key} style={{ padding: "10px 12px", borderRadius: 12,
+                        background: "var(--bg-card-2)", border: "0.5px solid var(--border)" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between",
+                          alignItems: "center", marginBottom: 6 }}>
+                          <span style={{ fontSize: 14 }}>{emoji}</span>
+                          <span style={{ fontFamily: T.h, fontWeight: 700,
+                            fontSize: 16, color }}>{score}</span>
+                        </div>
+                        <div style={{ height: 3, borderRadius: 100,
+                          background: "var(--border)", overflow: "hidden" }}>
+                          <div style={{ width: `${score}%`, height: "100%",
+                            borderRadius: 100, background: color }} />
+                        </div>
+                        <p style={{ fontFamily: T.b, fontSize: 11,
+                          color: "var(--t45)", margin: "4px 0 0" }}>{label}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
 
-          <AnimatePresence mode="wait">
-            {checkinSaved ? (
-              <motion.div key="saved" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: "center", padding: "16px 0" }}>
-                <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
-                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", marginBottom: 6 }}>Journée validée ✅</p>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", marginBottom: 16 }}>Reviens demain pour maintenir ton streak.</p>
-                <Link href="/mobilite" style={{ textDecoration: "none" }}>
-                  <div style={{ padding: "12px 0", borderRadius: 100, background: "rgba(45,106,79,0.20)", border: "0.5px solid rgba(45,106,79,0.35)", fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#74c69d" }}>
-                    🧘 Faire mes exercices →
+            {/* ── 4. ACTIONS RAPIDES ── */}
+            <motion.div {...fadeUp(0.1)} style={{ marginBottom: 16 }}>
+              <div style={{ display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+                gap: 10 }}>
+
+                <Link href="/final-report" style={{ textDecoration: "none" }}>
+                  <div style={{ padding: "16px", borderRadius: 16,
+                    background: "var(--bg-card)", border: "0.5px solid var(--border)",
+                    cursor: "pointer", height: "100%" }}>
+                    <span style={{ fontSize: 24, display: "block", marginBottom: 8 }}>📋</span>
+                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+                      color: "var(--text-primary)", margin: "0 0 4px" }}>Mon rapport</p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: 0 }}>
+                      Priorités · Actions · Détail
+                    </p>
                   </div>
                 </Link>
-              </motion.div>
-            ) : (
-              <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {/* Exercises */}
-                <div
-                  onClick={() => setCheckin((c) => ({ ...c, exercises_done: !c.exercises_done }))}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderRadius: 14, cursor: "pointer",
-                    background: checkin.exercises_done ? "rgba(45,106,79,0.12)" : "rgba(255,255,255,0.03)",
-                    border: checkin.exercises_done ? "0.5px solid rgba(45,106,79,0.35)" : "0.5px solid var(--border)",
-                  }}
-                >
-                  <span style={{ fontSize: 18 }}>✅</span>
-                  <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t85)", flex: 1 }}>Mes exercices du jour</span>
-                  <div style={{ width: 20, height: 20, borderRadius: 6, background: checkin.exercises_done ? "#74c69d" : "rgba(255,255,255,0.06)", border: checkin.exercises_done ? "none" : "0.5px solid rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {checkin.exercises_done && <span style={{ fontSize: 10, color: "var(--bg-primary)", fontWeight: 900 }}>✓</span>}
-                  </div>
-                </div>
 
-                {/* Water */}
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                    <span style={{ fontSize: 16 }}>💧</span>
-                    <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t75)", flex: 1 }}>Eau aujourd&apos;hui</span>
-                    <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: waterGlasses >= 6 ? "#74c69d" : "#a8c0ff" }}>{waterGlasses}</span>
-                    <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)" }}>verres{waterGlasses >= 6 ? " ✓" : ""}</span>
+                <Link href="/video-intro" style={{ textDecoration: "none" }}>
+                  <div style={{ padding: "16px", borderRadius: 16,
+                    background: latestAssessment.video_analysis
+                      ? "var(--bg-card)"
+                      : "rgba(43,92,230,0.06)",
+                    border: latestAssessment.video_analysis
+                      ? "0.5px solid var(--border)"
+                      : "0.5px solid rgba(43,92,230,0.25)",
+                    cursor: "pointer", height: "100%" }}>
+                    <span style={{ fontSize: 24, display: "block", marginBottom: 8 }}>🎥</span>
+                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+                      color: "var(--text-primary)", margin: "0 0 4px" }}>
+                      {latestAssessment.video_analysis ? "Refaire l'analyse" : "Analyse vidéo"}
+                    </p>
+                    <p style={{ fontFamily: T.b, fontSize: 12,
+                      color: latestAssessment.video_analysis ? "var(--t50)" : "#7c9fff",
+                      margin: 0 }}>
+                      {latestAssessment.video_analysis ? "Posture · Setup" : "⚡ À compléter"}
+                    </p>
                   </div>
-                  <input
-                    type="range" min={0} max={10} step={1} value={waterGlasses}
-                    onChange={(e) => setWaterGlasses(Number(e.target.value))}
-                    style={{ width: "100%", accentColor: "#2b5ce6", background: `linear-gradient(to right, #2b5ce6 ${waterGlasses * 10}%, rgba(255,255,255,0.08) ${waterGlasses * 10}%)`, height: 4, borderRadius: 100, outline: "none", appearance: "none" }}
+                </Link>
+
+                <Link href="/mobilite" style={{ textDecoration: "none" }}>
+                  <div style={{ padding: "16px", borderRadius: 16,
+                    background: "var(--bg-card)", border: "0.5px solid var(--border)",
+                    cursor: "pointer", height: "100%" }}>
+                    <span style={{ fontSize: 24, display: "block", marginBottom: 8 }}>🧘</span>
+                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+                      color: "var(--text-primary)", margin: "0 0 4px" }}>Mes exercices</p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: 0 }}>
+                      Programme · 10 min/jour
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* ── 5. SIGNALEMENT B2B ── */}
+            {isB2B && !signalSent && (
+              <motion.div {...fadeUp(0.12)}>
+                <div style={{ padding: "20px", borderRadius: 20, marginBottom: 16,
+                  background: "rgba(244,162,97,0.06)", border: "0.5px solid rgba(244,162,97,0.2)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                    <span style={{ fontSize: 20 }}>💬</span>
+                    <div>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15,
+                        color: "var(--text-primary)", margin: 0 }}>
+                        Signaler un problème à votre RH
+                      </p>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", margin: "2px 0 0" }}>
+                        Anonyme · Visible uniquement par votre responsable RH
+                      </p>
+                    </div>
+                  </div>
+                  <SignalForm
+                    companyId={companyId!}
+                    anonymousId={anonymousId!}
+                    onSent={() => setSignalSent(true)}
                   />
                 </div>
-
-                {/* Breaks */}
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <span style={{ fontSize: 16 }}>⏱️</span>
-                  <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t75)", flex: 1 }}>Pauses actives</span>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <button
-                      onClick={() => setCheckin((c) => ({ ...c, breaks_taken: Math.max(0, c.breaks_taken - 1) }))}
-                      style={{ width: 28, height: 28, borderRadius: 8, background: "var(--bg-card-2)", border: "0.5px solid rgba(255,255,255,0.12)", color: "var(--text-primary)", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-                    >−</button>
-                    <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", width: 20, textAlign: "center" }}>{checkin.breaks_taken}</span>
-                    <button
-                      onClick={() => setCheckin((c) => ({ ...c, breaks_taken: c.breaks_taken + 1 }))}
-                      style={{ width: 28, height: 28, borderRadius: 8, background: "var(--bg-card-2)", border: "0.5px solid rgba(255,255,255,0.12)", color: "var(--text-primary)", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-                    >+</button>
-                  </div>
-                </div>
-
-                {/* Pain */}
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                    <span style={{ fontSize: 16 }}>🤕</span>
-                    <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t75)", flex: 1 }}>Douleur du jour</span>
-                    <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "var(--t50)" }}>{checkin.pain_level}/5</span>
-                  </div>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    {[0, 1, 2, 3, 4, 5].map((v) => (
-                      <button
-                        key={v}
-                        onClick={() => setCheckin((c) => ({ ...c, pain_level: v }))}
-                        style={{
-                          flex: 1, padding: "8px 0", borderRadius: 10, cursor: "pointer",
-                          background: checkin.pain_level === v ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.04)",
-                          border: checkin.pain_level === v ? "0.5px solid rgba(240,149,149,0.45)" : "0.5px solid var(--border)",
-                          fontFamily: T.h, fontWeight: 700, fontSize: 12,
-                          color: checkin.pain_level === v ? "#f09595" : "var(--t35)",
-                        }}
-                      >{v}</button>
-                    ))}
-                  </div>
-                </div>
-
-                <div
-                  onClick={!checkinLoading ? saveCheckin : undefined}
-                  style={{
-                    padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: checkinLoading ? "default" : "pointer",
-                    background: "#2b5ce6", boxShadow: "0 4px 20px rgba(43,92,230,0.35)",
-                    fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
-                    opacity: checkinLoading ? 0.7 : 1,
-                  }}
-                >
-                  {checkinLoading ? "Sauvegarde…" : "Valider ma journée →"}
-                </div>
               </motion.div>
             )}
-          </AnimatePresence>
-        </motion.div>
 
-        {/* ── S5 : 6 SCORES ── */}
-        {latest && (
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} style={{
-            borderRadius: 22, padding: "20px 20px",
-            background: "var(--bg-card)", border: "0.5px solid var(--border)",
-          }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 4 }}>Tes 6 indicateurs</p>
-            <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", marginBottom: 10 }}>Clique pour voir le plan</p>
-            {Object.keys(DIM_META).map((k) => (
-              <ScoreBarRow
-                key={k} dimKey={k}
-                score={latest.scores[k as keyof typeof latest.scores] ?? 0}
-                prev={previous?.scores[k as keyof typeof previous.scores]}
-              />
-            ))}
-          </motion.div>
-        )}
-
-        {/* ── S6 : OBJECTIFS SEMAINE ── */}
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }} style={{
-          borderRadius: 22, padding: "20px 20px",
-          background: "var(--bg-card)", border: "0.5px solid var(--border)",
-        }}>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 16 }}>Objectifs de la semaine</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            {[
-              { icon: "🧘", label: "Exercices quotidiens", done: exercisesDays, total: 5, color: "#74c69d" },
-              { icon: "💧", label: "Hydratation 1.5L/jour", done: waterDays, total: 7, color: "#7c9fff" },
-              { icon: "⏱️", label: "Pauses actives ×3/jour", done: breaksDays, total: 5, color: "#f4a261" },
-            ].map((g) => (
-              <div key={g.label} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <GoalCircle done={g.done} total={g.total} color={g.color} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
-                    <span style={{ fontSize: 13 }}>{g.icon}</span>
-                    <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t75)" }}>{g.label}</span>
-                  </div>
-                  <div style={{ height: 3, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden" }}>
-                    <motion.div
-                      style={{ height: "100%", borderRadius: 100, background: g.color }}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.min(g.done / g.total, 1) * 100}%` }}
-                      transition={{ duration: 0.7, ease: "easeOut" }}
-                    />
-                  </div>
-                  <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)", marginTop: 4 }}>
-                    {g.done} jour{g.done > 1 ? "s" : ""} atteint{g.done > 1 ? "s" : ""} cette semaine
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* ── S7 : ALERTE DOULEUR ── */}
-        {painAlert && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} style={{
-            borderRadius: 20, padding: "18px 20px",
-            background: "rgba(226,75,74,0.10)", border: "0.5px solid rgba(226,75,74,0.30)",
-          }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#f09595", margin: 0, marginBottom: 6 }}>
-              ⚠️ Ta douleur semble progresser cette semaine
-            </p>
-            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t60)", lineHeight: 1.65, marginBottom: 14 }}>
-              Ton niveau de douleur a augmenté ces derniers jours. Voici quoi faire maintenant.
-            </p>
-            <Link href="/conseils/douleurs" style={{ textDecoration: "none" }}>
-              <div style={{ padding: "10px 0", borderRadius: 100, textAlign: "center", background: "rgba(226,75,74,0.18)", border: "0.5px solid rgba(226,75,74,0.35)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f09595" }}>
-                Voir mes conseils douleurs →
-              </div>
-            </Link>
-          </motion.div>
-        )}
-
-        {/* ── S8 : RÉSUMÉ SEMAINE ── */}
-        {weekSummary && (
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }} style={{
-            borderRadius: 22, padding: "20px 20px",
-            background: "var(--bg-card)", border: "0.5px solid var(--border)",
-          }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 14 }}>Ta semaine PAW</p>
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
-              {[
-                { icon: "😴", label: "Douleur moy.", value: `${weekSummary.avgPain}/5`, color: weekSummary.avgPain < 2 ? "#74c69d" : weekSummary.avgPain <= 3 ? "#f4a261" : "#f09595" },
-                { icon: "🧘", label: "Jours exercices", value: `${weekSummary.exerciseDays}/7`, color: "#5dcaa5" },
-                { icon: "💧", label: "Hydratation OK", value: `${weekSummary.waterDays}/7`, color: "#7c9fff" },
-                { icon: "⏱️", label: "Pauses/jour", value: weekSummary.avgBreaks, color: "#f4a261" },
-              ].map((item) => (
-                <div key={item.label} style={{ borderRadius: 14, padding: "14px 14px", background: "var(--bg-card)", border: "0.5px solid rgba(255,255,255,0.06)" }}>
-                  <span style={{ fontSize: 18 }}>{item.icon}</span>
-                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: item.color, margin: "6px 0 2px" }}>{item.value}</p>
-                  <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: 0 }}>{item.label}</p>
-                </div>
-              ))}
+            {/* ── REFAIRE LE BILAN ── */}
+            <div style={{ textAlign: "center", paddingTop: 8, marginBottom: 16 }}>
+              <Link href="/questionnaire" style={{ textDecoration: "none" }}>
+                <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t35)", cursor: "pointer" }}>
+                  🔄 Nouveau bilan
+                </span>
+              </Link>
             </div>
-          </motion.div>
-        )}
-
-        {/* ── S9 : AMÉLIORATIONS ── */}
-        {improvements.length >= 2 && (
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} style={{
-            borderRadius: 22, padding: "20px 20px",
-            background: "rgba(45,106,79,0.08)", border: "0.5px solid rgba(45,106,79,0.22)",
-          }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#74c69d", margin: 0, marginBottom: 12 }}>
-              🎉 Depuis ton premier bilan
+          </>
+        ) : (
+          /* ── PAS DE BILAN ── */
+          <motion.div {...fadeUp(0.05)} style={{ textAlign: "center", padding: "48px 24px" }}>
+            <span style={{ fontSize: 52, display: "block", marginBottom: 16 }}>📋</span>
+            <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22,
+              color: "var(--text-primary)", marginBottom: 8 }}>
+              Tu n&apos;as pas encore fait ton bilan
             </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {improvements.slice(0, 4).map((imp) => (
-                <div key={imp.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t75)" }}>{imp.label}</span>
-                  <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#74c69d" }}>+{imp.delta} pts</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
-        {/* ── S10 : PROCHAIN BILAN ── */}
-        {latest && daysUntilBilan !== null && (
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }} style={{
-            borderRadius: 22, padding: "20px 20px",
-            background: "var(--bg-card)", border: "0.5px solid var(--border)",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0 }}>🗓️ Prochain bilan</p>
-              <span style={{
-                padding: "4px 12px", borderRadius: 100,
-                background: daysUntilBilan <= 0 ? "rgba(240,149,149,0.15)" : "rgba(43,92,230,0.15)",
-                border: daysUntilBilan <= 0 ? "0.5px solid rgba(240,149,149,0.3)" : "0.5px solid rgba(43,92,230,0.3)",
-                fontFamily: T.b, fontWeight: 700, fontSize: 11,
-                color: daysUntilBilan <= 0 ? "#f09595" : "#7c9fff",
-              }}>
-                {daysUntilBilan <= 0 ? "Maintenant !" : `Dans ${daysUntilBilan}j`}
-              </span>
-            </div>
-            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", marginBottom: 14 }}>
-              {daysUntilBilan <= 0
-                ? "Il est temps de refaire ton bilan pour mesurer ta progression !"
-                : `Recommandé le ${nextBilanDate!.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}`}
+            <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)",
+              lineHeight: 1.65, marginBottom: 24, maxWidth: 380, margin: "0 auto 24px" }}>
+              10 minutes pour comprendre ce que ton corps essaie de te dire au travail.
             </p>
             <Link href="/questionnaire" style={{ textDecoration: "none" }}>
-              <div style={{
-                padding: "12px 0", borderRadius: 100, textAlign: "center",
-                background: daysUntilBilan <= 0 ? "#2b5ce6" : "rgba(255,255,255,0.05)",
-                border: daysUntilBilan <= 0 ? "none" : "0.5px solid var(--border-3)",
-                boxShadow: daysUntilBilan <= 0 ? "0 4px 20px rgba(43,92,230,0.35)" : "none",
-                fontFamily: T.h, fontWeight: 700, fontSize: 13,
-                color: daysUntilBilan <= 0 ? "#fff" : "var(--t50)",
-              }}>
-                Nouveau bilan →
+              <div style={{ display: "inline-block", padding: "15px 32px",
+                borderRadius: 100, background: "#2b5ce6", color: "#fff",
+                fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
+                Commencer mon bilan →
               </div>
             </Link>
-          </motion.div>
-        )}
-
-        {/* ── S_CHART : ÉVOLUTION ── */}
-        {chartData && (
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.21 }} style={{
-            borderRadius: 22, padding: "20px 20px",
-            background: "var(--bg-card)", border: "0.5px solid var(--border)",
-          }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 4 }}>📈 Ton évolution</p>
-            <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", marginBottom: 16 }}>
-              Score global sur tes {assessments.length} derniers bilans
-            </p>
-            <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={chartData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
-                <XAxis dataKey="date" stroke="rgba(240,240,250,0.15)" tick={{ fontSize: 10, fill: "var(--t35)" }} />
-                <YAxis domain={[0, 100]} stroke="rgba(240,240,250,0.15)" tick={{ fontSize: 10, fill: "var(--t35)" }} width={32} />
-                <Tooltip
-                  contentStyle={{ background: "var(--bg-secondary)", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 12, fontSize: 12, color: "var(--text-primary)" }}
-                  labelStyle={{ color: "var(--t50)", marginBottom: 4 }}
-                />
-                <Line type="monotone" dataKey="score" stroke="#2b5ce6" strokeWidth={2.5}
-                  dot={{ fill: "#2b5ce6", r: 4, strokeWidth: 0 }}
-                  activeDot={{ r: 6, fill: "#7c9fff" }}
-                  name="Score global"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </motion.div>
-        )}
-
-        {/* ── S11 : HISTORIQUE ── */}
-        {assessments.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }} style={{
-            borderRadius: 22, padding: "20px 20px",
-            background: "var(--bg-card)", border: "0.5px solid var(--border)",
-          }}>
-            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: 0, marginBottom: 12 }}>📋 Mes bilans</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {assessments.map((a, i) => {
-                const prev = assessments[i + 1];
-                const delta = prev ? a.global_score - prev.global_score : null;
-                const color = sc(a.global_score);
-                const b = badge(a.global_score);
-                const isExpanded = expandedBilan === a.id;
-                const jobType = (a.scores as Record<string, unknown>)?.job_type ?? a.job_type ?? "bureau";
-                return (
-                  <motion.div key={a.id} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.24 + i * 0.04 }}
-                    style={{ borderRadius: 16, background: "rgba(255,255,255,0.02)", border: `0.5px solid ${isExpanded ? "rgba(43,92,230,0.3)" : "rgba(255,255,255,0.05)"}`, overflow: "hidden" }}>
-                    {/* ── Header ── */}
-                    <div onClick={() => setExpandedBilan(isExpanded ? null : a.id)}
-                      style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", cursor: "pointer" }}>
-                      <div style={{ width: 42, height: 42, borderRadius: 12, background: `${color}18`, border: `0.5px solid ${color}33`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: T.h, fontWeight: 900, fontSize: 14, color, flexShrink: 0 }}>
-                        {a.global_score}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "var(--text-primary)", margin: "0 0 4px" }}>
-                          {new Date(a.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
-                        </p>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                          <span style={{ padding: "2px 8px", borderRadius: 100, background: b.bg, border: `0.5px solid ${b.border}`, fontFamily: T.b, fontSize: 10, color: b.color }}>{b.label}</span>
-                          <span style={{ padding: "2px 8px", borderRadius: 100, background: "var(--bg-card-3)", fontFamily: T.b, fontSize: 10, color: "var(--t40)" }}>
-                            {jobType === "debout" ? "🏭 Debout" : "💻 Bureau"}
-                          </span>
-                          {a.video_analysis && (
-                            <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(167,139,250,0.12)", fontFamily: T.b, fontSize: 10, color: "#a78bfa" }}>🎥 Vidéo</span>
-                          )}
-                          {delta !== null && delta !== 0 && (
-                            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 10, color: delta > 0 ? "#74c69d" : "#f09595" }}>
-                              {delta > 0 ? `↑ +${delta}` : `↓ ${delta}`}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <span style={{ fontSize: 10, color: "var(--t25)", flexShrink: 0 }}>{isExpanded ? "▲" : "▼"}</span>
-                    </div>
-
-                    {/* ── Expanded: mini-scores + actions ── */}
-                    <AnimatePresence>
-                      {isExpanded && (
-                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.22 }} style={{ overflow: "hidden" }}>
-                          <div style={{ padding: "0 16px 14px", borderTop: "0.5px solid rgba(255,255,255,0.05)" }}>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12, marginBottom: 14 }}>
-                              {Object.keys(DIM_META).map(k => {
-                                const s = a.scores[k as keyof typeof a.scores] ?? 0;
-                                const m = DIM_META[k];
-                                return (
-                                  <span key={k} style={{ padding: "3px 10px", borderRadius: 100, background: `${m.color}14`, border: `0.5px solid ${m.color}30`, fontFamily: T.b, fontSize: 11, color: m.color }}>
-                                    {m.emoji} {s}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                              <button onClick={() => loadHistoricBilan(a)}
-                                style={{ flex: 1, padding: "10px 0", borderRadius: 100, cursor: "pointer", background: "#2b5ce6", border: "none", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "#fff" }}>
-                                Voir ce bilan →
-                              </button>
-                              {a.video_analysis && (
-                                <button onClick={() => loadHistoricBilan(a, true)}
-                                  style={{ flex: 1, padding: "10px 0", borderRadius: 100, cursor: "pointer", background: "rgba(167,139,250,0.12)", border: "0.5px solid rgba(167,139,250,0.3)", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "#a78bfa" }}>
-                                  🎥 Analyse vidéo →
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-
-        {/* ── B2B SIGNALEMENT ── */}
-        {isB2B && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            style={{ padding: "20px", borderRadius: 20,
-              background: "rgba(244,162,97,0.06)", border: "0.5px solid rgba(244,162,97,0.2)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <span style={{ fontSize: 20 }}>💬</span>
-              <div>
-                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15,
-                  color: "var(--text-primary)", margin: 0 }}>
-                  Signaler un problème à votre RH
-                </p>
-                <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", margin: "2px 0 0" }}>
-                  Anonyme · Visible uniquement par votre responsable RH
-                </p>
-              </div>
-            </div>
-
-            {!signalSent ? (
-              <SignalForm
-                companyId={companyId!}
-                anonymousId={anonymousId!}
-                onSent={() => setSignalSent(true)}
-              />
-            ) : (
-              <div style={{ padding: "12px 16px", borderRadius: 12,
-                background: "rgba(116,198,157,0.1)", border: "0.5px solid rgba(116,198,157,0.25)",
-                textAlign: "center" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "#74c69d", margin: 0 }}>
-                  ✅ Signalement envoyé — votre RH en sera informé
-                </p>
-              </div>
-            )}
           </motion.div>
         )}
 
         {/* ── DELETE ACCOUNT ── */}
-        <div style={{ textAlign: "center", paddingTop: 8 }}>
+        <div style={{ textAlign: "center", paddingTop: 24 }}>
           <button
             onClick={() => setShowDeleteModal(true)}
             style={{ background: "none", border: "none", fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "rgba(240,149,149,0.45)", cursor: "pointer", textDecoration: "underline" }}
@@ -1450,3 +1088,4 @@ export default function DashboardPage() {
     </main>
   );
 }
+
