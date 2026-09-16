@@ -502,138 +502,6 @@ function DailyChecklist({ items }: { items: string[] }) {
   );
 }
 
-// ─── ExpandableSection ────────────────────────────────────────────────────────
-
-function ExpandableSection({ title, children, defaultOpen = false }: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div style={{ borderRadius: 16, overflow: "hidden", border: "0.5px solid var(--border)", marginBottom: 12 }}>
-      <button onClick={() => setOpen(!open)}
-        style={{ width: "100%", padding: "16px 18px", display: "flex", alignItems: "center",
-          justifyContent: "space-between", background: "var(--bg-card)", border: "none", cursor: "pointer" }}>
-        <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "var(--text-primary)" }}>{title}</span>
-        <span style={{ fontSize: 18, color: "var(--t50)", transform: open ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>▾</span>
-      </button>
-      {open && (
-        <div style={{ padding: "16px 18px", borderTop: "0.5px solid var(--border)", background: "var(--bg-card)" }}>
-          {children}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── TopProblems ──────────────────────────────────────────────────────────────
-
-function TopProblems({ scores, answers, personne, poste, debout }: {
-  scores: Record<string, number> | null;
-  answers: Record<string, unknown> | null;
-  personne: PersonneAnalysis | null;
-  poste: PosteAnalysis | null;
-  debout: DeboutAnalysis | null;
-}) {
-  const problems: { emoji: string; title: string; detail: string; color: string }[] = [];
-
-  const SEG_NAMES_PERSONNE: Record<string, string> = {
-    tete_cou: "Tête & cou", epaules_dos_haut: "Épaules & dos haut",
-    bas_dos_bassin: "Dos bas & bassin", membres_superieurs: "Bras & mains",
-    membres_inferieurs: "Jambes & pieds",
-  };
-  const SEG_NAMES_DEBOUT: Record<string, string> = {
-    colonne: "Colonne vertébrale", epaules: "Épaules", tete_cou: "Tête & cou",
-    appui_jambes: "Appui & jambes", membres_superieurs: "Bras & mains",
-  };
-
-  // 1. Posture — segment le plus critique
-  if (personne) {
-    const entries = Object.entries(personne.segments) as [string, PersonneSegment][];
-    const worst = entries.sort((a, b) => a[1].score - b[1].score)[0];
-    if (worst && worst[1].score < 70) {
-      problems.push({
-        emoji: "🧍",
-        title: SEG_NAMES_PERSONNE[worst[0]] ?? worst[0],
-        detail: worst[1].issues?.[0] ?? "Posture à corriger",
-        color: worst[1].score < 50 ? "#f09595" : "#f4a261",
-      });
-    }
-  } else if (debout) {
-    const entries = Object.entries(debout.posture) as [string, DeboutPostureSegment][];
-    const worst = entries.sort((a, b) => a[1].score - b[1].score)[0];
-    if (worst && worst[1].score < 70) {
-      problems.push({
-        emoji: "🧍",
-        title: SEG_NAMES_DEBOUT[worst[0]] ?? worst[0],
-        detail: worst[1].observation ?? "Posture à corriger",
-        color: worst[1].score < 50 ? "#f09595" : "#f4a261",
-      });
-    }
-  }
-
-  // 2. Setup / ergonomie (bureau)
-  const setupScore = scores?.setup ?? 100;
-  if (poste && setupScore < 65 && poste.mainIssues?.length > 0) {
-    const worst = poste.mainIssues[0];
-    problems.push({
-      emoji: "🖥️",
-      title: worst.element ?? "Ergonomie du poste",
-      detail: worst.issue ?? worst.fix ?? "",
-      color: worst.severity === "élevé" ? "#f09595" : "#f4a261",
-    });
-  }
-
-  // 3. Plainte principale / douleurs
-  const plainte = answers?.q_plainte_principale as string | undefined;
-  if (plainte && plainte.trim().length > 0) {
-    problems.push({
-      emoji: "💬",
-      title: "Ta gêne principale",
-      detail: plainte,
-      color: "#a8c0ff",
-    });
-  } else {
-    const painScore = scores?.pain ?? 100;
-    if (painScore < 60) {
-      problems.push({
-        emoji: "😣",
-        title: "Douleurs signalées",
-        detail: "Des douleurs significatives ont été identifiées dans ton questionnaire.",
-        color: "#f09595",
-      });
-    }
-  }
-
-  if (problems.length === 0) return null;
-
-  return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-      style={{ borderRadius: 20, padding: "20px 22px", marginBottom: 16,
-        background: "rgba(255,255,255,0.015)", border: "0.5px solid rgba(255,255,255,0.07)" }}>
-      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: "0 0 14px" }}>
-        🎯 Top {problems.length} point{problems.length > 1 ? "s" : ""} à traiter
-      </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {problems.map((p, i) => (
-          <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "12px 14px", borderRadius: 14,
-            background: `${p.color}0d`, border: `0.5px solid ${p.color}30` }}>
-            <div style={{ width: 32, height: 32, borderRadius: 10, background: `${p.color}1a`, border: `0.5px solid ${p.color}40`,
-              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
-              {p.emoji}
-            </div>
-            <div>
-              <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: p.color, margin: "0 0 3px" }}>{p.title}</p>
-              <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", margin: 0, lineHeight: 1.5 }}>{p.detail}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function FinalReportPage() {
@@ -647,22 +515,12 @@ export default function FinalReportPage() {
   const [deboutAnalysis, setDeboutAnalysis] = useState<DeboutAnalysis | null>(null);
 
   const [questionnaireScore, setQuestionnaireScore] = useState<number | null>(null);
-  const [questionScores, setQuestionScores] = useState<Record<string, number> | null>(null);
-  const [questionAnswers, setQuestionAnswers] = useState<Record<string, unknown> | null>(null);
   const [synthesis, setSynthesis] = useState<ReturnType<typeof buildCrossedSynthesis> | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [firstname, setFirstname] = useState("");
-  const [isMobile, setIsMobile] = useState(false);
   const savedRef = useRef(false);
   const loadedFromRemoteRef = useRef(false);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
 
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
@@ -697,18 +555,16 @@ export default function FinalReportPage() {
     const answersRaw = isExample
       ? sessionStorage.getItem("paw_example_answers")
       : sessionStorage.getItem("postureatwork_answers");
-    const parsedScores = scoresRaw ? JSON.parse(scoresRaw) : null;
-    const parsedAnswers = answersRaw ? JSON.parse(answersRaw) : null;
-    if (parsedScores) setQuestionnaireScore(parsedScores.global ?? null);
-    setQuestionScores(parsedScores);
-    setQuestionAnswers(parsedAnswers);
+    const questionScores = scoresRaw ? JSON.parse(scoresRaw) : null;
+    const questionAnswers = answersRaw ? JSON.parse(answersRaw) : null;
+    if (questionScores) setQuestionnaireScore(questionScores.global ?? null);
 
     setSynthesis(buildCrossedSynthesis(
       analysisPersonne,
       analysisPoste,
       analysisDebout,
-      parsedScores,
-      parsedAnswers,
+      questionScores,
+      questionAnswers,
     ));
 
     createClient().auth.getUser().then(async ({ data }) => {
@@ -751,62 +607,69 @@ export default function FinalReportPage() {
         remotePersonne,
         remotePoste,
         remoteDebout,
-        parsedScores,
-        parsedAnswers,
+        questionScores,
+        questionAnswers,
       ));
     });
   }, []);
 
   useEffect(() => {
-    if (savedRef.current || loadedFromRemoteRef.current) return;
-    if (!user) return;
-
-    const scoresRaw = sessionStorage.getItem("postureatwork_scores");
-    if (!scoresRaw) return;
-
+    if (!user || savedRef.current || loadedFromRemoteRef.current) return;
+    const target = report ?? personneAnalysis ?? deboutAnalysis ?? null;
+    if (!target) return;
     savedRef.current = true;
     setSaveStatus("saving");
-
-    const scores = JSON.parse(scoresRaw);
-    const answersRaw = sessionStorage.getItem("postureatwork_answers");
+    const isExample = sessionStorage.getItem("paw_example_mode") === "true";
+    const scoresRaw = isExample
+      ? sessionStorage.getItem("paw_example_scores")
+      : sessionStorage.getItem("postureatwork_scores");
+    const answersRaw = isExample
+      ? sessionStorage.getItem("paw_example_answers")
+      : sessionStorage.getItem("postureatwork_answers");
+    const scores = scoresRaw ? JSON.parse(scoresRaw) : {};
     const answers = answersRaw ? JSON.parse(answersRaw) : {};
-    const jobType = localStorage.getItem("paw_job_type") ?? "bureau";
 
-    const analysisPersonne = JSON.parse(sessionStorage.getItem("paw_analysis_personne") || "null");
-    const analysisPoste = JSON.parse(sessionStorage.getItem("paw_analysis_poste") || "null");
-    const analysisDebout = JSON.parse(sessionStorage.getItem("paw_analysis_debout") || "null");
-
-    const videoAnalysis = (analysisPersonne || analysisPoste || analysisDebout)
-      ? {
+    const saveVideoAnalysis = async () => {
+      const analysisPersonne = JSON.parse(sessionStorage.getItem("paw_analysis_personne") || "null");
+      const analysisPoste = JSON.parse(sessionStorage.getItem("paw_analysis_poste") || "null");
+      if (!analysisPersonne && !analysisPoste) return;
+      const supabase = createClient();
+      const { data: latest } = await supabase
+        .from("assessments").select("id").eq("user_id", user.id)
+        .order("created_at", { ascending: false }).limit(1);
+      if (!latest?.length) return;
+      await supabase.from("assessments").update({
+        video_analysis: {
           personne: analysisPersonne,
           poste: analysisPoste,
-          debout: analysisDebout,
           analyzed_at: new Date().toISOString(),
-        }
-      : null;
+        },
+      }).eq("id", latest[0].id);
+    };
 
-    fetch("/api/assessments/save", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ scores, answers, videoAnalysis, jobType }),
-    })
-      .then(r => r.json())
-      .then(data => {
-        if (data.success) {
-          setSaveStatus("saved");
-          console.log("[final-report] Bilan sauvegardé:", data.id);
-        } else {
-          console.error("[final-report] Erreur sauvegarde:", data.error);
-          setSaveStatus("error");
-          savedRef.current = false;
+    (async () => {
+      let companyId = localStorage.getItem("paw_company_id");
+      if (!companyId) {
+        const { data: membership } = await createClient()
+          .from("company_memberships")
+          .select("company_id")
+          .eq("user_id", user.id)
+          .eq("role", "employee")
+          .maybeSingle();
+        if (membership?.company_id) {
+          companyId = membership.company_id;
+          localStorage.setItem("paw_company_id", membership.company_id);
         }
-      })
-      .catch(err => {
-        console.error("[final-report] Erreur fetch:", err);
+      }
+      try {
+        await saveAssessmentForUser(user.id, scores, answers, target as unknown as Record<string, unknown>, companyId ?? null);
+        await saveVideoAnalysis();
+        setSaveStatus("saved");
+      } catch {
         setSaveStatus("error");
-        savedRef.current = false;
-      });
-  }, [user]);
+      }
+    })();
+  }, [user, report, personneAnalysis, deboutAnalysis]);
 
   // Sauvegarde via le token de session QR code — fonctionne même sans session
   // active sur l'appareil mobile (le desktop est connecté, pas forcément le mobile)
@@ -838,7 +701,7 @@ export default function FinalReportPage() {
   if (!report && !isDual && !deboutAnalysis) {
     return (
       <main style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
-        <div style={{ textAlign: "center", maxWidth: isMobile ? 340 : 600 }}>
+        <div style={{ textAlign: "center", maxWidth: 340 }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>📋</div>
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", marginBottom: 10 }}>Aucun rapport trouvé</h2>
           <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t50)", marginBottom: 24 }}>Tu n&apos;as pas encore effectué l&apos;analyse vidéo.</p>
@@ -872,7 +735,7 @@ export default function FinalReportPage() {
           { top: "45%", left: "-8%", color: "rgba(116,198,157,0.09)", size: 380 },
           { bottom: "-10%", right: "15%", color: "rgba(43,92,230,0.07)", size: 400 },
         ]} />
-        <div style={{ position: "relative", zIndex: 10, maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+        <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
 
           {/* Nav */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 80, paddingBottom: 32 }}>
@@ -919,18 +782,9 @@ export default function FinalReportPage() {
             <>
               <CrossedSynthesisHeader synthesis={synthesis} />
               <ConfirmationsBlock confirmations={synthesis.confirmations} />
+              <PositivePointsBlock points={synthesis.positivePoints} />
             </>
           )}
-
-          <TopProblems
-            scores={questionScores}
-            answers={questionAnswers}
-            personne={null}
-            poste={null}
-            debout={deboutAnalysis}
-          />
-
-          <ExpandableSection title="📊 Rapport détaillé complet" defaultOpen={false}>
 
           {/* Posture section */}
           <section style={{ marginBottom: 20 }}>
@@ -943,6 +797,9 @@ export default function FinalReportPage() {
                 {DEBOUT_SEGS.map(([key, label], i) => (
                   <DeboutSegCard key={key} label={label} seg={da.posture[key]} delay={i * 0.06} />
                 ))}
+              </div>
+              <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{da.overallAssessment}</p>
               </div>
               {da.mainIssues.length > 0 && (
                 <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
@@ -1056,8 +913,6 @@ export default function FinalReportPage() {
             </>
           )}
 
-          </ExpandableSection>
-
           {/* Save */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
             style={{ borderRadius: 24, padding: "24px 26px", marginBottom: 16, background: "linear-gradient(135deg, rgba(116,198,157,0.07), rgba(43,92,230,0.07))", border: "0.5px solid rgba(116,198,157,0.2)" }}>
@@ -1123,6 +978,25 @@ export default function FinalReportPage() {
     const globalScore = Math.round(pa.globalPostureScore * 0.5 + po.globalSetupScore * 0.5);
     const globalColor = scoreColor(globalScore);
 
+    // Combined top-5 recommendations
+    type CombinedRec = { priority: number; action: string; why: string; source: "posture" | "setup"; immediat?: boolean; cost?: string };
+    const combined: CombinedRec[] = [
+      ...pa.recommendations.map(r => ({ ...r, source: "posture" as const })),
+      ...po.recommendations.map(r => ({ ...r, source: "setup" as const })),
+    ].sort((a, b) => a.priority - b.priority).slice(0, 5);
+
+    // Rule-based products
+    const products: Array<{ name: string; reason: string; priority: string; amazon_search: string }> = [];
+    if (po.elements.ecran.type === "laptop_seul") products.push({ name: "Support laptop réglable", reason: "Élève l'écran à hauteur des yeux — indispensable sans écran externe.", priority: "haute", amazon_search: "support laptop ergonomique réglable aluminium" });
+    if (po.elements.ecran.hauteur === "trop_bas") products.push({ name: "Rehausseur d'écran", reason: "Corrige la hauteur de l'écran pour supprimer la flexion cervicale.", priority: "haute", amazon_search: "rehausseur ecran bureau ergonomique réglable" });
+    if (po.elements.chaise.type && !po.elements.chaise.type.toLowerCase().includes("ergo")) products.push({ name: "Coussin lombaire", reason: "Maintient la lordose naturelle quand la chaise est basique.", priority: "moyenne", amazon_search: "coussin lombaire chaise bureau ergonomique" });
+    if (po.elements.clavier_souris.repose_poignets === false) products.push({ name: "Repose-poignets clavier", reason: "Prévient le syndrome du canal carpien.", priority: "moyenne", amazon_search: "repose poignets clavier bureau ergonomique" });
+    if (po.elements.organisation.eclairage === "mauvais") products.push({ name: "Lampe bureau LED", reason: "Réduit la fatigue visuelle — éclairage insuffisant détecté.", priority: "moyenne", amazon_search: "lampe bureau LED réglable lumière naturelle" });
+
+    // Exercises from bad segments
+    const badSegments = (Object.entries(pa.segments) as [string, PersonneSegment][])
+      .filter(([, seg]) => seg.score < 65).slice(0, 3).map(([key]) => key);
+
     return (
       <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingBottom: 80, position: "relative" }}>
         <BackgroundBlobs blobs={[
@@ -1130,7 +1004,7 @@ export default function FinalReportPage() {
           { top: "45%", left: "-8%", color: "rgba(43,92,230,0.09)", size: 380 },
           { bottom: "-10%", right: "15%", color: "rgba(34,197,94,0.07)", size: 400 },
         ]} />
-        <div style={{ position: "relative", zIndex: 10, maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+        <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
 
           {/* Nav */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 80, paddingBottom: 32 }}>
@@ -1175,115 +1049,218 @@ export default function FinalReportPage() {
             </div>
           </motion.div>
 
-          <TopProblems
-            scores={questionScores}
-            answers={questionAnswers}
-            personne={personneAnalysis}
-            poste={posteAnalysis}
-            debout={null}
-          />
+          {/* Synthèse croisée questionnaire + vidéo */}
+          {synthesis && (
+            <>
+              <CrossedSynthesisHeader synthesis={synthesis} />
+              <ConfirmationsBlock confirmations={synthesis.confirmations} />
+              <PositivePointsBlock points={synthesis.positivePoints} />
+            </>
+          )}
 
-          {/* 2-column grid: left = positivePoints + checklist, right = detail */}
-          {(() => {
-            const allPositivePoints = [...new Set([
-              ...(pa.positivePoints ?? []),
-              ...(po.positivePoints ?? []),
-            ])].slice(0, 4);
-            return (
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-                gap: 16,
-                marginBottom: 20,
-              }}>
-                {/* Left column */}
-                <div>
-                  {allPositivePoints.length > 0 && (
-                    <div style={{ padding: "14px 18px", borderRadius: 14, marginBottom: 12,
-                      background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.15)" }}>
-                      <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#74c69d",
-                        textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
-                        ✅ Ce qui va bien
-                      </p>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        {allPositivePoints.map((point, i) => (
-                          <div key={i} style={{ display: "flex", gap: 8 }}>
-                            <span style={{ color: "#74c69d", flexShrink: 0 }}>✓</span>
-                            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)",
-                              margin: 0, lineHeight: 1.5 }}>{point}</p>
-                          </div>
-                        ))}
+          {/* ── SECTION 1 — POSTURE ── */}
+          <section style={{ marginBottom: 12 }}>
+            <div style={{ borderRadius: 22, padding: "20px 20px 16px", background: "rgba(167,139,250,0.05)", border: "0.5px solid rgba(167,139,250,0.15)", marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <SectionTitle emoji="🧍" title="Ta posture" />
+                <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: scoreColor(pa.globalPostureScore) }}>{pa.globalPostureScore}/100</span>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {([
+                  ["tete_cou", "Tête & cou"],
+                  ["epaules_dos_haut", "Épaules & dos haut"],
+                  ["bas_dos_bassin", "Bas du dos & bassin"],
+                  ["membres_superieurs", "Membres supérieurs"],
+                  ["membres_inferieurs", "Membres inférieurs"],
+                ] as [keyof PersonneAnalysis["segments"], string][]).map(([key, label], i) => (
+                  <SegmentBar key={key} label={label} seg={pa.segments[key]} delay={i * 0.06} />
+                ))}
+              </div>
+
+              {/* Synthesis */}
+              <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{pa.overallAssessment}</p>
+              </div>
+
+              {/* Issues */}
+              {pa.mainIssues.length > 0 && (
+                <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
+                  {pa.mainIssues.map((issue, i) => {
+                    const sevColor = issue.severity === "élevé" ? "#f09595" : issue.severity === "modéré" ? "#f4a261" : "#74c69d";
+                    return (
+                      <div key={i} style={{ borderRadius: 12, padding: "10px 14px", background: `${sevColor}10`, border: `0.5px solid ${sevColor}35` }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                          <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 12, color: sevColor }}>{issue.zone}</span>
+                          <span style={{ fontFamily: T.b, fontSize: 11, color: `${sevColor}99` }}>· {traduire(issue.severity)}</span>
+                        </div>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t60)", margin: 0 }}>{issue.issue}</p>
+                        <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: "3px 0 0" }}>→ {issue.consequence}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Positive points */}
+              {pa.positivePoints.length > 0 && (
+                <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {pa.positivePoints.map((pt, i) => (
+                    <span key={i} style={{ padding: "4px 10px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontSize: 11, color: "#74c69d" }}>
+                      ✓ {pt}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* ── SEPARATOR ── */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
+            <span style={{ padding: "6px 16px", borderRadius: 100, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--t50)" }}>+</span>
+            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
+          </div>
+
+          {/* ── SECTION 2 — SETUP ── */}
+          <section style={{ marginBottom: 20 }}>
+            <div style={{ borderRadius: 22, padding: "20px 20px 16px", background: "rgba(59,130,246,0.05)", border: "0.5px solid rgba(59,130,246,0.15)", marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <SectionTitle emoji="🖥️" title="Ton setup" />
+                <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: scoreColor(po.globalSetupScore) }}>{po.globalSetupScore}/100</span>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <ElementCard label="Écran" score={po.elements.ecran.score} issues={po.elements.ecran.issues}
+                  extra={`Hauteur : ${po.elements.ecran.hauteur.replace("_", " ")} · Distance : ${po.elements.ecran.distance.replace("_", " ")} · ${po.elements.ecran.type.replace(/_/g, " ")}`}
+                  delay={0} />
+                <ElementCard label="Clavier & souris" score={po.elements.clavier_souris.score} issues={po.elements.clavier_souris.issues}
+                  extra={po.elements.clavier_souris.repose_poignets !== null ? `Repose-poignets : ${po.elements.clavier_souris.repose_poignets ? "présent" : "absent"}` : undefined}
+                  delay={0.06} />
+                <ElementCard label="Chaise" score={po.elements.chaise.score} issues={po.elements.chaise.issues}
+                  extra={`Type : ${po.elements.chaise.type}${po.elements.chaise.accoudoirs !== null ? ` · Accoudoirs : ${po.elements.chaise.accoudoirs ? "présents" : "absents"}` : ""}`}
+                  delay={0.12} />
+                <ElementCard label="Organisation" score={po.elements.organisation.score} issues={po.elements.organisation.issues}
+                  extra={`Éclairage : ${po.elements.organisation.eclairage}`}
+                  delay={0.18} />
+              </div>
+
+              <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(59,130,246,0.07)", border: "0.5px solid rgba(59,130,246,0.18)" }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{po.overallAssessment}</p>
+              </div>
+
+              {po.positivePoints.length > 0 && (
+                <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {po.positivePoints.map((pt, i) => (
+                    <span key={i} style={{ padding: "4px 10px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontSize: 11, color: "#74c69d" }}>
+                      ✓ {pt}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* ── SECTION 3 — COMBINED RECS ── */}
+          <section style={{ marginBottom: 20 }}>
+            <SectionTitle emoji="⚡" title="Tes 5 priorités" />
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {combined.map((rec, i) => {
+                const isPosture = rec.source === "posture";
+                const accentColor = isPosture ? "#a78bfa" : "#60a5fa";
+                return (
+                  <motion.div key={i}
+                    initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.08 }}
+                    style={{ borderRadius: 18, padding: "16px 18px", background: i === 0 ? "rgba(240,149,149,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${i === 0 ? "rgba(240,149,149,0.25)" : "rgba(255,255,255,0.08)"}` }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 8 }}>
+                      <div style={{ width: 26, height: 26, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 12, color: i === 0 ? "#f09595" : "var(--t35)" }}>
+                        {i + 1}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
+                          <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{rec.action}</span>
+                          <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: `${accentColor}18`, color: accentColor }}>
+                            {isPosture ? "Posture" : "Setup"}
+                          </span>
+                          {isPosture
+                            ? <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: "rgba(116,198,157,0.12)", color: "#74c69d" }}>Gratuit — correction immédiate</span>
+                            : rec.cost && <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: "rgba(244,162,97,0.12)", color: "#f4a261" }}>{rec.cost}</span>
+                          }
+                        </div>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, margin: 0 }}>{rec.why}</p>
                       </div>
                     </div>
-                  )}
-                  {synthesis?.dailyChecklist && synthesis.dailyChecklist.length > 0 && (
-                    <div style={{ marginBottom: 12 }}>
-                      <DailyChecklist items={synthesis.dailyChecklist} />
-                    </div>
-                  )}
-                </div>
-                {/* Right column */}
-                <div>
-                  <ExpandableSection title="🔍 Voir le détail de l'analyse" defaultOpen={true}>
-
-            <div style={{ marginBottom: 16 }}>
-              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "var(--t40)",
-                textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>
-                Posture détaillée
-              </p>
-              {(Object.entries(pa.segments ?? {}) as [string, PersonneSegment][]).map(([key, seg]) => (
-                <div key={key} style={{ marginBottom: 8, padding: "10px 12px", borderRadius: 10,
-                  background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600,
-                      color: "var(--text-primary)" }}>
-                      {key.replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase())}
-                    </span>
-                    <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
-                      color: seg.score >= 70 ? "#74c69d" : seg.score >= 50 ? "#f4a261" : "#f09595" }}>
-                      {seg.score}/100
-                    </span>
-                  </div>
-                  {seg.note && (
-                    <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t50)",
-                      margin: 0, lineHeight: 1.5 }}>{seg.note}</p>
-                  )}
-                </div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </div>
+          </section>
 
-            <div>
-              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "var(--t40)",
-                textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>
-                Setup détaillé
-              </p>
-              {(Object.entries(po.elements ?? {}) as [string, { score: number; issues: string[] }][]).map(([key, el]) => (
-                <div key={key} style={{ marginBottom: 8, padding: "10px 12px", borderRadius: 10,
-                  background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600,
-                      color: "var(--text-primary)" }}>
-                      {key.replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase())}
-                    </span>
-                    <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12,
-                      color: el.score >= 70 ? "#74c69d" : el.score >= 50 ? "#f4a261" : "#f09595" }}>
-                      {el.score}/100
-                    </span>
-                  </div>
-                  {el.issues?.length > 0 && (
-                    <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t50)",
-                      margin: 0, lineHeight: 1.5 }}>
-                      {el.issues.join(" · ")}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-                  </ExpandableSection>
-                </div>
+          {/* Plan progressif + checklist */}
+          {synthesis && (
+            <>
+              <WeekPlanBlock weekPlan={synthesis.weekPlan} />
+              {synthesis.dailyChecklist.length > 0 && <DailyChecklist items={synthesis.dailyChecklist} />}
+            </>
+          )}
+
+          {/* ── SECTION 4 — PRODUCTS ── */}
+          {products.length > 0 && (
+            <section style={{ marginBottom: 20 }}>
+              <SectionTitle emoji="🛍️" title="Produits recommandés" />
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {products.map((product, i) => {
+                  const pCfg = PRIORITY_COLOR[product.priority] ?? PRIORITY_COLOR.optionnel;
+                  const amazonUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(product.amazon_search)}&tag=postureatwork-21`;
+                  return (
+                    <motion.div key={i} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.07 }}
+                      style={{ borderRadius: 18, padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                          <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{product.name}</span>
+                          <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 11, color: pCfg.color, background: `${pCfg.color}18` }}>{pCfg.label}</span>
+                        </div>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", lineHeight: 1.6, margin: 0 }}>{product.reason}</p>
+                      </div>
+                      <a href={amazonUrl} target="_blank" rel="noopener noreferrer"
+                        style={{ flexShrink: 0, padding: "8px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer" }}>
+                        Amazon →
+                      </a>
+                    </motion.div>
+                  );
+                })}
               </div>
-            );
-          })()}
+            </section>
+          )}
+
+          {/* ── SECTION 5 — EXERCISES ── */}
+          {badSegments.length > 0 && (
+            <section style={{ marginBottom: 20 }}>
+              <SectionTitle emoji="🤸" title="Exercices ciblés" />
+              <div style={{ borderRadius: 22, padding: "16px 18px", background: "rgba(45,106,79,0.08)", border: "0.5px solid rgba(45,106,79,0.20)" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                  {badSegments.map((key, i) => {
+                    const ex = SEGMENT_EXERCISE[key];
+                    if (!ex) return null;
+                    return (
+                      <div key={key} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 0", borderBottom: i < badSegments.length - 1 ? "0.5px solid rgba(255,255,255,0.05)" : "none" }}>
+                        <span style={{ fontSize: 18, width: 28, textAlign: "center", flexShrink: 0, marginTop: 1 }}>🏋️</span>
+                        <div style={{ flex: 1 }}>
+                          <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "var(--text-primary)", margin: "0 0 2px" }}>{ex.name}</p>
+                          <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0 }}>{ex.instruction}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <Link href="/mobilite" style={{ textDecoration: "none" }}>
+                  <div style={{ marginTop: 14, padding: "11px 0", borderRadius: 100, textAlign: "center", background: "#2b5ce6", boxShadow: "0 4px 16px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#fff" }}>
+                    Accéder à mon programme →
+                  </div>
+                </Link>
+              </div>
+            </section>
+          )}
 
           {/* ── SAVE ── */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
@@ -1358,7 +1335,7 @@ export default function FinalReportPage() {
         { bottom: "-10%", right: "15%", color: "rgba(116,198,157,0.08)", size: 400 },
       ]} />
 
-      <div style={{ position: "relative", zIndex: 10, maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
         {/* Nav */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 80, paddingBottom: 32 }}>
           <Link href="/results" style={{ textDecoration: "none" }}>

@@ -49,10 +49,6 @@ export interface QuestionnaireAnswers {
 
   // Cat 7 — Global feeling (formerly Cat 6)
   q25: number | null; // 1-5
-
-  // Cat 8 — Free text
-  q_plainte_principale?: string;
-  q_remarques_poste?: string;
 }
 
 export const DEFAULT_ANSWERS: QuestionnaireAnswers = {
@@ -70,7 +66,6 @@ export const DEFAULT_ANSWERS: QuestionnaireAnswers = {
   q_ecrans_soir: "",
   qn1: "", qn2: "", qn3: "", qn4: "",
   q21: [], q21_other: "", q24: "", q25: null,
-  q_plainte_principale: "", q_remarques_poste: "",
 };
 
 // ─── Score types ─────────────────────────────────────────────────────────────

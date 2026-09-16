@@ -248,9 +248,7 @@ export default function ProfileQuestionnaire({
   }
 
   const done = completedCount(categories, answers);
-  const plainteOk = typeof answers["q_plainte_principale"] === "string" && (answers["q_plainte_principale"] as string).trim().length > 0;
-  const allDone = isAllDone(categories, answers) && plainteOk;
-  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const allDone = isAllDone(categories, answers);
   const meta = JOB_META[jobType];
 
   return (
@@ -312,98 +310,6 @@ export default function ProfileQuestionnaire({
 
       {/* Questions */}
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 20px 40px" }}>
-
-        {/* Bandeau confidentialité */}
-        <div style={{ padding: "10px 16px", marginBottom: 16, borderRadius: 12,
-          background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.2)",
-          display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 16, flexShrink: 0 }}>🔒</span>
-          <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.55)",
-            margin: 0, flex: 1, lineHeight: 1.5 }}>
-            <strong style={{ color: "#f0f0fa" }}>Confidentiel</strong> —{" "}
-            ton employeur ne voit jamais tes réponses individuelles.
-          </p>
-          <button onClick={() => setShowPrivacyModal(true)}
-            style={{ fontFamily: T.b, fontSize: 12, color: "#74c69d", fontWeight: 600,
-              background: "none", border: "none", cursor: "pointer", padding: 0,
-              textDecoration: "underline", flexShrink: 0 }}>
-            En savoir plus →
-          </button>
-        </div>
-
-        {/* Modal confidentialité */}
-        {showPrivacyModal && (
-          <div style={{ position: "fixed", inset: 0, zIndex: 1000,
-            background: "rgba(0,0,0,0.7)", display: "flex",
-            alignItems: "center", justifyContent: "center", padding: 24 }}
-            onClick={() => setShowPrivacyModal(false)}>
-            <div style={{ maxWidth: 440, width: "100%", borderRadius: 20,
-              background: "#1a1a2e", border: "0.5px solid rgba(255,255,255,0.08)",
-              padding: "28px 24px" }}
-              onClick={e => e.stopPropagation()}>
-              <div style={{ display: "flex", alignItems: "center",
-                justifyContent: "space-between", marginBottom: 20 }}>
-                <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18,
-                  color: "#f0f0fa", margin: 0 }}>
-                  🔒 Tes données sont privées
-                </p>
-                <button onClick={() => setShowPrivacyModal(false)}
-                  style={{ background: "none", border: "none", cursor: "pointer",
-                    fontSize: 20, color: "rgba(220,220,245,0.40)", padding: 0 }}>✕</button>
-              </div>
-              <div style={{ marginBottom: 16, padding: "14px 16px", borderRadius: 12,
-                background: "rgba(244,162,97,0.06)", border: "0.5px solid rgba(244,162,97,0.2)" }}>
-                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
-                  color: "#f4a261", margin: "0 0 10px" }}>
-                  Ce que ton employeur VOIT
-                </p>
-                {[
-                  "Le score moyen de l'équipe par dimension",
-                  "Ton score individuel — anonymisé (ex: 'Employé #7 : 62/100')",
-                  "Les zones à risque collectives (sans savoir qui)",
-                  "Le nombre d'employés en difficulté (sans noms)",
-                ].map((item, i) => (
-                  <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
-                    <span style={{ color: "#f4a261", flexShrink: 0 }}>→</span>
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.65)",
-                      margin: 0, lineHeight: 1.5 }}>{item}</p>
-                  </div>
-                ))}
-              </div>
-              <div style={{ marginBottom: 20, padding: "14px 16px", borderRadius: 12,
-                background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.2)" }}>
-                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
-                  color: "#74c69d", margin: "0 0 10px" }}>
-                  Ce que ton employeur NE VOIT PAS
-                </p>
-                {[
-                  "Tes réponses individuelles aux questions",
-                  "Ton nom associé à un score ou résultat",
-                  "Ta plainte principale et tes remarques",
-                  "Tes scores par dimension personnels",
-                  "Ta vidéo et ton analyse posturale",
-                ].map((item, i) => (
-                  <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
-                    <span style={{ color: "#74c69d", flexShrink: 0 }}>✓</span>
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.65)",
-                      margin: 0, lineHeight: 1.5 }}>{item}</p>
-                  </div>
-                ))}
-              </div>
-              <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(220,220,245,0.35)",
-                margin: "0 0 16px", lineHeight: 1.6, textAlign: "center" }}>
-                Données hébergées en Europe · Conformité RGPD ·{" "}
-                Tu peux supprimer ton compte à tout moment
-              </p>
-              <button onClick={() => setShowPrivacyModal(false)}
-                style={{ width: "100%", padding: "13px 0", borderRadius: 100,
-                  background: "#2b5ce6", color: "#fff", border: "none", cursor: "pointer",
-                  fontFamily: T.h, fontWeight: 700, fontSize: 14 }}>
-                Compris →
-              </button>
-            </div>
-          </div>
-        )}
 
         {firstname && (
           <div style={{ textAlign: "center", paddingBottom: 12 }}>
@@ -477,61 +383,6 @@ export default function ProfileQuestionnaire({
             </section>
           );
         })}
-
-        {/* Ta situation — champs libres */}
-        <section style={{ scrollMarginTop: 80, marginBottom: 12, padding: "0 16px" }}>
-          <div style={{ borderRadius: 22, overflow: "hidden", border: "0.5px solid rgba(43,92,230,0.18)" }}>
-            <div style={{ padding: "20px 22px", background: "rgba(43,92,230,0.08)", borderBottom: "0.5px solid rgba(43,92,230,0.18)", display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
-                💬
-              </div>
-              <div>
-                <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 17, color: "#f0f0fa", margin: 0 }}>Ta situation</h2>
-                <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 12, fontFamily: T.b, margin: 0 }}>Gênes & contexte de travail</p>
-              </div>
-            </div>
-            <div style={{ padding: "16px", background: "rgba(255,255,255,0.015)", display: "flex", flexDirection: "column", gap: 10 }}>
-              {/* Plainte principale — obligatoire */}
-              <div style={{ padding: "20px", borderRadius: 18, background: plainteOk ? "rgba(43,92,230,0.08)" : "rgba(255,255,255,0.02)", border: plainteOk ? "0.5px solid rgba(43,92,230,0.18)" : "0.5px solid rgba(255,255,255,0.06)", transition: "all 0.3s ease", display: "flex", flexDirection: "column", gap: 14 }}>
-                <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                  <div style={{ width: 24, height: 24, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: T.h, fontWeight: 700, background: plainteOk ? "rgba(43,92,230,0.08)" : "rgba(255,255,255,0.05)", border: plainteOk ? "1px solid rgba(43,92,230,0.55)" : "0.5px solid rgba(255,255,255,0.10)", color: plainteOk ? "#2b5ce6" : "rgba(220,220,245,0.35)" }}>
-                    {plainteOk ? "✓" : "1"}
-                  </div>
-                  <div>
-                    <p style={{ color: "#f0f0fa", fontSize: 14, fontFamily: T.b, lineHeight: 1.5, margin: 0 }}>Quelle est ta principale gêne physique au travail ?</p>
-                    <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 11, fontFamily: T.b, lineHeight: 1.5, margin: "4px 0 0" }}>ℹ️ Décris en quelques mots ce qui te gêne le plus. Ex : &apos;douleur nuque en fin de journée&apos;, &apos;poignets qui brûlent&apos;, &apos;dos bloqué le matin&apos;</p>
-                  </div>
-                </div>
-                <textarea
-                  value={(answers["q_plainte_principale"] as string) ?? ""}
-                  onChange={e => update("q_plainte_principale", e.target.value)}
-                  placeholder="Décris ta principale gêne…"
-                  rows={3}
-                  style={{ width: "100%", padding: "12px 14px", borderRadius: 12, outline: "none", resize: "none", boxSizing: "border-box", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.10)", color: "#f0f0fa", fontFamily: T.b, fontSize: 14, lineHeight: 1.5 }}
-                />
-              </div>
-              {/* Remarques — optionnel */}
-              <div style={{ padding: "20px", borderRadius: 18, background: "rgba(43,92,230,0.04)", border: "0.5px solid rgba(43,92,230,0.12)", display: "flex", flexDirection: "column", gap: 14 }}>
-                <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                  <div style={{ width: 24, height: 24, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: T.h, fontWeight: 700, background: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.10)", color: "rgba(220,220,245,0.35)" }}>
-                    2
-                  </div>
-                  <div>
-                    <p style={{ color: "#f0f0fa", fontSize: 14, fontFamily: T.b, lineHeight: 1.5, margin: 0 }}>Des remarques sur ton poste de travail ou tes conditions ?</p>
-                    <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 11, fontFamily: T.b, lineHeight: 1.5, margin: "4px 0 0" }}>ℹ️ Optionnel — tout ce qui pourrait aider à mieux comprendre ta situation.</p>
-                  </div>
-                </div>
-                <textarea
-                  value={(answers["q_remarques_poste"] as string) ?? ""}
-                  onChange={e => update("q_remarques_poste", e.target.value)}
-                  placeholder="Optionnel — tes remarques sur ton poste ou contexte de travail…"
-                  rows={3}
-                  style={{ width: "100%", padding: "12px 14px", borderRadius: 12, outline: "none", resize: "none", boxSizing: "border-box", background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.10)", color: "#f0f0fa", fontFamily: T.b, fontSize: 14, lineHeight: 1.5 }}
-                />
-              </div>
-            </div>
-          </div>
-        </section>
       </div>
 
       {/* Floating CTA */}

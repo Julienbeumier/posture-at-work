@@ -51,11 +51,8 @@ export default function JoinPage() {
     localStorage.setItem("paw_company_id", companyId);
     localStorage.setItem("paw_is_b2b", "true");
     localStorage.setItem("paw_premium", "true");
-    // Réinitialiser le choix de profil pour que l'employé le choisisse
-    localStorage.removeItem("paw_job_type_confirmed");
-    localStorage.removeItem("paw_job_type");
     setStep("done");
-    setTimeout(() => router.push("/questionnaire"), 2000);
+    setTimeout(() => router.push("/onboarding"), 2000);
   }, [code, router, supabase]);
 
   useEffect(() => {
@@ -76,8 +73,7 @@ export default function JoinPage() {
       if (user) {
         await joinCompany(user.id, result.company.id);
       } else {
-        sessionStorage.setItem("paw_join_code", code);
-        router.push(`/auth?redirect=/questionnaire&from_join=true`);
+        setStep("welcome");
       }
     }
     if (code) checkCode();
@@ -181,29 +177,25 @@ export default function JoinPage() {
     );
   }
 
-  if (step === "done") return (
-    <main style={{ minHeight: "100vh", background: "var(--bg-primary)",
-      display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-        style={{ textAlign: "center", maxWidth: 400 }}>
-        <div style={{ fontSize: 52, marginBottom: 16 }}>🎉</div>
-        <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22,
-          color: "var(--text-primary)", marginBottom: 8 }}>
-          Bienvenue dans l&apos;équipe !
-        </p>
-        <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)",
-          lineHeight: 1.65, marginBottom: 8 }}>
-          Ton compte est lié à <strong style={{ color: "var(--text-primary)" }}>
-            {company?.name}
-          </strong>.
-          On prépare ton bilan…
-        </p>
-        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)" }}>
-          Redirection automatique dans quelques secondes
-        </p>
-      </motion.div>
-    </main>
-  );
+  if (step === "done") {
+    return (
+      <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          style={{ textAlign: "center", maxWidth: 400 }}
+        >
+          <div style={{ fontSize: 52, marginBottom: 16 }}>✅</div>
+          <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: c.textPrimary, marginBottom: 8 }}>
+            Vous avez rejoint {company?.name} !
+          </p>
+          <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted }}>
+            Redirection vers votre bilan…
+          </p>
+        </motion.div>
+      </main>
+    );
+  }
 
   return (
     <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
