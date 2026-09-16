@@ -748,34 +748,36 @@ export default function DimensionPage() {
           </div>
         </motion.div>
 
-        {/* ── BLOC B : PROGRAMME D'EXERCICES ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.32 }}
-          style={{
-            borderRadius: 20, padding: "20px 22px", marginBottom: 16,
-            background: "var(--bg-card)", border: "0.5px solid var(--border)",
-          }}
-        >
-          <SectionTitle>🧘 Ton programme d'exercices</SectionTitle>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
-            {displayExerciseIds.map(id => {
-              const ex = EXERCISES[id];
-              if (!ex) return null;
-              return <ExercisePreview key={id} ex={ex} color={meta.color} />;
-            })}
-          </div>
-          <Link href={`/mobilite?program=${displayProgramId}`} style={{ textDecoration: "none" }}>
-            <div style={{
-              padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-              background: "#2b5ce6", boxShadow: "0 4px 20px rgba(43,92,230,0.35)",
-              fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
-            }}>
-              Lancer le programme complet →
+        {/* ── BLOC B : PROGRAMME D'EXERCICES — uniquement pour douleurs ── */}
+        {dimensionParam === "douleurs" && displayExerciseIds.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.32 }}
+            style={{
+              borderRadius: 20, padding: "20px 22px", marginBottom: 16,
+              background: "var(--bg-card)", border: "0.5px solid var(--border)",
+            }}
+          >
+            <SectionTitle>🧘 Ton programme d'exercices</SectionTitle>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+              {displayExerciseIds.map(id => {
+                const ex = EXERCISES[id];
+                if (!ex) return null;
+                return <ExercisePreview key={id} ex={ex} color={meta.color} />;
+              })}
             </div>
-          </Link>
-        </motion.div>
+            <Link href={`/mobilite?program=${displayProgramId}`} style={{ textDecoration: "none" }}>
+              <div style={{
+                padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
+                background: "#2b5ce6", boxShadow: "0 4px 20px rgba(43,92,230,0.35)",
+                fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
+              }}>
+                Lancer le programme complet →
+              </div>
+            </Link>
+          </motion.div>
+        )}
 
         {/* ── BLOC C : PRODUITS ── */}
         {displayProducts.length > 0 && (
