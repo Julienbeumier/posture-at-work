@@ -77,6 +77,7 @@ export interface Scores {
   habits: number;
   sleep_energy: number;
   lifestyle: number;
+  mode_de_vie?: number; // computed: Math.round((sleep_energy + lifestyle) / 2)
   nutrition: number;
   job_type?: string;
 }
@@ -221,7 +222,7 @@ export function calculateScores(a: QuestionnaireAnswers): Scores {
   const global = clamp(
     setup * 0.2 + pain * 0.3 + habits * 0.2 + sleep_energy * 0.1 + lifestyle * 0.1 + nutrition * 0.1
   );
-  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition, job_type: "bureau" };
+  return { global, setup, pain, habits, sleep_energy, lifestyle, mode_de_vie: Math.round((sleep_energy + lifestyle) / 2), nutrition, job_type: "bureau" };
 }
 
 // ─── Display helpers ──────────────────────────────────────────────────────────
@@ -742,7 +743,7 @@ function calcDeboutScores(a: GenericAnswers): Scores {
   const global = clamp(Math.round(
     setup * 0.20 + pain * 0.30 + habits * 0.18 + sleep_energy * 0.12 + nutrition * 0.12 + lifestyle * 0.08
   ));
-  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition, job_type: "debout" };
+  return { global, setup, pain, habits, sleep_energy, lifestyle, mode_de_vie: Math.round((sleep_energy + lifestyle) / 2), nutrition, job_type: "debout" };
 }
 
 function calcArtisanScores(a: GenericAnswers): Scores {
@@ -767,7 +768,7 @@ function calcArtisanScores(a: GenericAnswers): Scores {
   lifestyle = clamp(lifestyle);
 
   const global = clamp(setup * 0.15 + pain * 0.35 + habits * 0.25 + sleep_energy * 0.15 + lifestyle * 0.1);
-  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition: 60 };
+  return { global, setup, pain, habits, sleep_energy, lifestyle, mode_de_vie: Math.round((sleep_energy + lifestyle) / 2), nutrition: 60 };
 }
 
 function calcTransportScores(a: GenericAnswers): Scores {
@@ -793,7 +794,7 @@ function calcTransportScores(a: GenericAnswers): Scores {
   lifestyle = clamp(lifestyle);
 
   const global = clamp(setup * 0.2 + pain * 0.3 + habits * 0.2 + sleep_energy * 0.15 + lifestyle * 0.15);
-  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition: 60 };
+  return { global, setup, pain, habits, sleep_energy, lifestyle, mode_de_vie: Math.round((sleep_energy + lifestyle) / 2), nutrition: 60 };
 }
 
 function calcMedicalScores(a: GenericAnswers): Scores {
@@ -817,7 +818,7 @@ function calcMedicalScores(a: GenericAnswers): Scores {
   lifestyle = clamp(lifestyle);
 
   const global = clamp(setup * 0.15 + pain * 0.3 + habits * 0.2 + sleep_energy * 0.2 + lifestyle * 0.15);
-  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition: 60 };
+  return { global, setup, pain, habits, sleep_energy, lifestyle, mode_de_vie: Math.round((sleep_energy + lifestyle) / 2), nutrition: 60 };
 }
 
 function calcEnseignementScores(a: GenericAnswers): Scores {
@@ -840,7 +841,7 @@ function calcEnseignementScores(a: GenericAnswers): Scores {
   lifestyle = clamp(lifestyle);
 
   const global = clamp(setup * 0.2 + pain * 0.25 + habits * 0.25 + sleep_energy * 0.15 + lifestyle * 0.15);
-  return { global, setup, pain, habits, sleep_energy, lifestyle, nutrition: 60 };
+  return { global, setup, pain, habits, sleep_energy, lifestyle, mode_de_vie: Math.round((sleep_energy + lifestyle) / 2), nutrition: 60 };
 }
 
 export function calculateJobScores(jobType: JobType, answers: GenericAnswers): Scores {
@@ -850,6 +851,6 @@ export function calculateJobScores(jobType: JobType, answers: GenericAnswers): S
     case "transport":    return calcTransportScores(answers);
     case "medical":      return calcMedicalScores(answers);
     case "enseignement": return calcEnseignementScores(answers);
-    default:             return { global: 50, setup: 50, pain: 50, habits: 50, sleep_energy: 50, lifestyle: 50, nutrition: 50 };
+    default:             return { global: 50, setup: 50, pain: 50, habits: 50, sleep_energy: 50, lifestyle: 50, mode_de_vie: 50, nutrition: 50 };
   }
 }

@@ -94,12 +94,11 @@ function ScoreCircle({ score, isPartial = false }: { score: number; isPartial?: 
 // ─── Inline product per dimension ────────────────────────────────────────────
 
 const DIM_INLINE_PRODUCTS: Record<string, { name: string; url: string; reason: string; price: string }> = {
-  "/conseils/setup":     { name: "Rehausseur écran GRIFEMA",           url: "https://amzn.to/3RF8Hn1", reason: "Écran trop bas → charge cervicale +12kg sur la nuque",    price: "~28€" },
-  "/conseils/douleurs":  { name: "Coussin lombaire FORTEM",             url: "https://amzn.to/4dIapg4", reason: "Soulage les douleurs lombaires dès la première utilisation", price: "~30€" },
-  "/conseils/habitudes": { name: "Bureau assis-debout SONGMICS",        url: "https://amzn.to/4dGGncw", reason: "Alterner assis/debout réduit les douleurs lombaires de 50%", price: "~200€" },
-  "/conseils/sommeil":   { name: "Lunettes anti-lumière bleue Horus X", url: "https://amzn.to/4veEs4B", reason: "Bloque la lumière bleue pour retrouver un sommeil naturel",  price: "~30€" },
-  "/conseils/lifestyle": { name: "Coussin d'équilibre BODYMATE",        url: "https://amzn.to/3Rh9avh", reason: "Active les muscles du dos sans effort conscient",           price: "~30€" },
-  "/conseils/nutrition": { name: "Gourde graduée avec horaires 1.5L",   url: "https://amzn.to/4dVZNJl", reason: "Rappel d'hydratation tout au long de la journée",          price: "~15€" },
+  "/conseils/setup":        { name: "Rehausseur écran GRIFEMA",           url: "https://amzn.to/3RF8Hn1", reason: "Écran trop bas → charge cervicale +12kg sur la nuque",    price: "~28€" },
+  "/conseils/douleurs":     { name: "Coussin lombaire FORTEM",             url: "https://amzn.to/4dIapg4", reason: "Soulage les douleurs lombaires dès la première utilisation", price: "~30€" },
+  "/conseils/habitudes":    { name: "Bureau assis-debout SONGMICS",        url: "https://amzn.to/4dGGncw", reason: "Alterner assis/debout réduit les douleurs lombaires de 50%", price: "~200€" },
+  "/conseils/mode-de-vie":  { name: "Lunettes anti-lumière bleue Horus X", url: "https://amzn.to/4veEs4B", reason: "Bloque la lumière bleue pour retrouver un sommeil naturel",  price: "~30€" },
+  "/conseils/nutrition":    { name: "Gourde graduée avec horaires 1.5L",   url: "https://amzn.to/4dVZNJl", reason: "Rappel d'hydratation tout au long de la journée",          price: "~15€" },
 };
 
 const DIM_INLINE_PRODUCTS_DEBOUT: Record<string, { name: string; url: string; reason: string; price: string }> = {
@@ -234,6 +233,10 @@ function scoreInterpretation(key: keyof Omit<Scores, "global" | "job_type">, sco
       if (score >= 70) return "Tes habitudes de travail sont saines. Tu bouges suffisamment dans ta journée.";
       if (score >= 50) return "Tu pourrais améliorer tes pauses et ton rapport au téléphone.";
       return `${answers.q13 >= 8 ? `${answers.q13}h assis/jour dépasse le seuil critique. ` : ""}Tu restes trop longtemps immobile.`;
+    case "mode_de_vie":
+      if (score >= 70) return "Ton mode de vie actif compense bien la sédentarité. Sommeil et récupération sont au rendez-vous.";
+      if (score >= 50) return "Quelques ajustements sur le sommeil, l'activité ou la récupération amélioreraient ton énergie.";
+      return `${answers.q18 === "exhausted" ? "Te réveiller épuisé est un signal fort. " : ""}Sédentarité + manque de récupération amplifient toutes les douleurs.`;
     case "sleep_energy":
       if (score >= 70) return "Ta récupération est bonne. Hydratation et sommeil sont au rendez-vous.";
       if (score >= 50) return "Quelques ajustements sur le sommeil ou l'hydratation amélioreraient ton énergie.";
@@ -254,12 +257,11 @@ function scoreInterpretation(key: keyof Omit<Scores, "global" | "job_type">, sco
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const SUB_SCORES: { key: keyof Omit<Scores, "global" | "job_type">; label: string; emoji: string; dimensionPath: string; dimensionColor: string }[] = [
-  { key: "setup",       label: "Setup & ergonomie",    emoji: "💻", dimensionPath: "/conseils/setup",     dimensionColor: "#7c9fff" },
-  { key: "pain",        label: "Douleurs",              emoji: "🩺", dimensionPath: "/conseils/douleurs",  dimensionColor: "#f09595" },
-  { key: "habits",      label: "Habitudes de travail",  emoji: "⏱️", dimensionPath: "/conseils/habitudes", dimensionColor: "#f4a261" },
-  { key: "sleep_energy",label: "Sommeil & énergie",     emoji: "🌙", dimensionPath: "/conseils/sommeil",   dimensionColor: "#74c69d" },
-  { key: "lifestyle",   label: "Mode de vie actif",     emoji: "🏃", dimensionPath: "/conseils/lifestyle", dimensionColor: "#5dcaa5" },
-  { key: "nutrition",   label: "Nutrition & énergie",   emoji: "🍽️", dimensionPath: "/conseils/nutrition", dimensionColor: "#a78bfa" },
+  { key: "setup",       label: "Setup & ergonomie",          emoji: "💻",  dimensionPath: "/conseils/setup",          dimensionColor: "#7c9fff" },
+  { key: "pain",        label: "Douleurs",                   emoji: "🩺",  dimensionPath: "/conseils/douleurs",       dimensionColor: "#f09595" },
+  { key: "habits",      label: "Habitudes de travail",       emoji: "⏱️", dimensionPath: "/conseils/habitudes",      dimensionColor: "#f4a261" },
+  { key: "mode_de_vie", label: "Mode de vie & Récupération", emoji: "🌙",  dimensionPath: "/conseils/mode-de-vie",   dimensionColor: "#74c69d" },
+  { key: "nutrition",   label: "Nutrition & énergie",        emoji: "🍽️", dimensionPath: "/conseils/nutrition",      dimensionColor: "#a78bfa" },
 ];
 
 const PRIORITY_STYLE = {
@@ -430,6 +432,10 @@ export default function ResultsPage() {
       </main>
     );
   }
+
+  const modeDeVieScore = scores.mode_de_vie ?? Math.round((scores.sleep_energy + scores.lifestyle) / 2);
+  const getDisplayScore = (key: keyof Omit<Scores, "global" | "job_type">) =>
+    key === "mode_de_vie" ? modeDeVieScore : ((scores[key] as number | undefined) ?? 0);
 
   const bureauRecs = getRecommendations(scores, answers);
   const deboutRecs: { title: string; description: string; priority: "urgent" | "important" | "good" }[] = [];
@@ -689,7 +695,7 @@ export default function ResultsPage() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-            <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)" }}>Tes 6 indicateurs</span>
+            <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)" }}>Tes 5 indicateurs</span>
             <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)" }}>Clique pour détails</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -698,8 +704,8 @@ export default function ResultsPage() {
                 key={key}
                 label={label}
                 emoji={emoji}
-                score={scores[key]}
-                interpretation={scoreInterpretation(key, scores[key], answers)}
+                score={getDisplayScore(key)}
+                interpretation={scoreInterpretation(key, getDisplayScore(key), answers)}
                 dimensionPath={dimensionPath}
                 dimensionColor={dimensionColor}
                 delay={i * 0.15}
@@ -875,7 +881,7 @@ export default function ResultsPage() {
             Tes prochaines étapes
           </p>
           {(() => {
-            const lowestDim = SUB_SCORES.reduce((a, b) => (scores[a.key] ?? 100) <= (scores[b.key] ?? 100) ? a : b);
+            const lowestDim = SUB_SCORES.reduce((a, b) => getDisplayScore(a.key) <= getDisplayScore(b.key) ? a : b);
             return (
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>

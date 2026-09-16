@@ -71,39 +71,32 @@ const IMMEDIATE_ACTIONS: Record<string, string[]> = {
     "Pose un verre d'eau sur ton bureau maintenant",
     "Lève-toi et fais 10 pas — juste maintenant",
   ],
-  sommeil: [
+  "mode-de-vie": [
     "Ce soir : téléphone en mode nuit à partir de 21h",
     "Couche-toi 30 min plus tôt ce soir",
-    "Éteins tous les écrans 45 min avant de dormir",
+    "Prends 10 minutes pour une marche après le dîner",
   ],
   nutrition: [
     "Prépare un verre d'eau et bois-le maintenant",
     "Demain midi : mange loin de ton écran, juste 20 min",
     "Remplace ton prochain grignotage par des noix ou du fruit",
   ],
-  lifestyle: [
-    "Prends 5 minutes pour une marche rapide maintenant",
-    "Planifie une séance de sport dans ton agenda cette semaine",
-    "Debout et étire-toi en lisant la prochaine action",
-  ],
 };
 
 const DIM_EXERCISE_IDS: Record<string, string[]> = {
-  setup:     ["chin_tuck", "scapular_retraction", "lumbar_extension"],
-  douleurs:  ["chin_tuck", "lumbar_flexion", "chest_opener"],
-  habitudes: ["marching", "chair_squat", "rule_20_20_20"],
-  sommeil:   ["body_scan", "coherence_cardiaque", "neck_massage"],
-  nutrition: ["coherence_cardiaque", "rule_20_20_20", "body_scan"],
-  lifestyle: ["marching", "lateral_flexion", "calf_stretch"],
+  setup:          ["chin_tuck", "scapular_retraction", "lumbar_extension"],
+  douleurs:       ["chin_tuck", "lumbar_flexion", "chest_opener"],
+  habitudes:      ["marching", "chair_squat", "rule_20_20_20"],
+  "mode-de-vie":  ["body_scan", "coherence_cardiaque", "neck_massage"],
+  nutrition:      ["coherence_cardiaque", "rule_20_20_20", "body_scan"],
 };
 
 const DIM_PROGRAM: Record<string, string> = {
-  setup:     "bureau_pause",
-  douleurs:  "cible_cervicales",
-  habitudes: "bureau_pause",
-  sommeil:   "maison_recup",
-  nutrition: "bureau_express",
-  lifestyle: "maison_reveil",
+  setup:          "bureau_pause",
+  douleurs:       "cible_cervicales",
+  habitudes:      "bureau_pause",
+  "mode-de-vie":  "maison_recup",
+  nutrition:      "bureau_express",
 };
 
 const PRIORITY_STYLE = {
@@ -171,7 +164,7 @@ function ProductCard({ p }: { p: Product }) {
 // Données de Thomas utilisées comme fallback en mode exemple
 const THOMAS_SCORES = {
   global: 45, setup: 32, pain: 48, habits: 55,
-  sleep_energy: 45, nutrition: 30, lifestyle: 60,
+  sleep_energy: 45, nutrition: 30, lifestyle: 60, mode_de_vie: 52,
 };
 const THOMAS_ANSWERS = {
   // Setup
@@ -288,7 +281,11 @@ export default function DimensionPage() {
           if (!data?.scores) { setHasBilan(false); setReady(true); return; }
           const sa = { ...DEFAULT_ANSWERS, ...(data.answers ?? {}) } as QuestionnaireAnswers;
           const ss = data.scores as Scores;
-          setScore((ss[DIMENSION_META[dimensionParam].scoreKey as keyof Scores] as number) ?? 0);
+          const ssMeta = DIMENSION_META[dimensionParam];
+          const ssRaw = ss[ssMeta.scoreKey as keyof Scores] as number | undefined;
+          setScore(ssMeta.scoreKey === "mode_de_vie"
+            ? (ssRaw ?? Math.round((ss.sleep_energy + ss.lifestyle) / 2))
+            : (ssRaw ?? 0));
           setAdvice(getDimensionAdvice(dimensionParam, sa, ss));
           setReady(true);
           return;
@@ -299,10 +296,13 @@ export default function DimensionPage() {
 
       // ── 6. Use session scores ─────────────────────────────────────────────
       const scores: Scores = parsedScores ?? {
-        global: 0, setup: 0, pain: 0, habits: 0, sleep_energy: 0, lifestyle: 0, nutrition: 0,
+        global: 0, setup: 0, pain: 0, habits: 0, sleep_energy: 0, lifestyle: 0, nutrition: 0, mode_de_vie: 0,
       };
       const meta = DIMENSION_META[dimensionParam];
-      setScore((scores[meta.scoreKey as keyof Scores] as number) ?? 0);
+      const rawScore = scores[meta.scoreKey as keyof Scores] as number | undefined;
+      setScore(meta.scoreKey === "mode_de_vie"
+        ? (rawScore ?? Math.round((scores.sleep_energy + scores.lifestyle) / 2))
+        : (rawScore ?? 0));
 
       // ── 7. Debout profile: always try job-specific content ────────────────
       //    answersRaw may be empty for fresh cross-session navigation;
@@ -527,6 +527,54 @@ export default function DimensionPage() {
           </p>
         </motion.div>
 
+        {/* ── CHECKLIST ── */}
+        {advice?.checklist && advice.checklist.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.18 }}
+            style={{ borderRadius: 20, padding: "20px 22px", marginBottom: 16, background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
+          >
+            <SectionTitle>📋 Ta checklist prioritaire</SectionTitle>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {advice.checklist.map((item, i) => {
+                const pColor = item.priority === "urgent" ? "#f09595" : item.priority === "important" ? "#f4a261" : "#74c69d";
+                const pLabel = item.priority === "urgent" ? "Urgent" : item.priority === "important" ? "Important" : "Optionnel";
+                return (
+                  <div key={i} style={{ borderRadius: 14, padding: "14px 16px", background: `${pColor}0d`, border: `0.5px solid ${pColor}30` }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                      <span style={{ padding: "2px 8px", borderRadius: 100, background: `${pColor}20`, fontFamily: T.b, fontSize: 10, fontWeight: 700, color: pColor }}>{pLabel}</span>
+                    </div>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "var(--text-primary)", margin: "0 0 4px" }}>{item.action}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.6, margin: 0 }}>{item.why}</p>
+                    {item.cost && <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", margin: "6px 0 0" }}>💰 {item.cost}</p>}
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── RED FLAGS ── */}
+        {advice?.redFlags && advice.redFlags.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.18 }}
+            style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(240,149,149,0.08)", border: "0.5px solid rgba(240,149,149,0.28)" }}
+          >
+            <SectionTitle>🚨 Points d'attention médicale</SectionTitle>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {advice.redFlags.map((flag, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                  <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>⚠️</span>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "#f09595", lineHeight: 1.65, margin: 0 }}>{flag}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* ── TES ACTIONS PRIORITAIRES ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -563,6 +611,77 @@ export default function DimensionPage() {
             ))}
           </div>
         </motion.div>
+
+        {/* ── DISCLAIMER ── */}
+        {advice?.disclaimer && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.27 }}
+            style={{ borderRadius: 14, padding: "12px 16px", marginBottom: 16, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)" }}
+          >
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, margin: 0 }}>{advice.disclaimer}</p>
+          </motion.div>
+        )}
+
+        {/* ── RITUELS ── */}
+        {advice?.rituals && advice.rituals.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.27 }}
+            style={{ borderRadius: 20, padding: "20px 22px", marginBottom: 16, background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
+          >
+            <SectionTitle>🔄 Tes rituels quotidiens</SectionTitle>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {advice.rituals.map((ritual, i) => {
+                const momentColors: Record<string, string> = { matin: "#f4a261", "journée": "#7c9fff", soir: "#74c69d", toujours: "#a78bfa" };
+                const momentEmojis: Record<string, string> = { matin: "🌅", "journée": "☀️", soir: "🌙", toujours: "🔄" };
+                const mColor = momentColors[ritual.moment] ?? "#7c9fff";
+                const mEmoji = momentEmojis[ritual.moment] ?? "🔄";
+                return (
+                  <div key={i} style={{ borderRadius: 14, padding: "14px 16px", background: `${mColor}0d`, border: `0.5px solid ${mColor}28` }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                      <span style={{ padding: "2px 8px", borderRadius: 100, background: `${mColor}20`, fontFamily: T.b, fontSize: 10, fontWeight: 600, color: mColor }}>
+                        {mEmoji} {ritual.moment.charAt(0).toUpperCase() + ritual.moment.slice(1)}
+                      </span>
+                      {ritual.duration && <span style={{ fontFamily: T.b, fontSize: 10, color: "var(--t35)" }}>⏱ {ritual.duration}</span>}
+                    </div>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "var(--text-primary)", margin: "0 0 4px" }}>{ritual.title}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t60)", lineHeight: 1.65, margin: 0 }}>{ritual.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── EXEMPLES DE REPAS ── */}
+        {advice?.mealExamples && advice.mealExamples.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.29 }}
+            style={{ borderRadius: 20, padding: "20px 22px", marginBottom: 16, background: "var(--bg-card)", border: "0.5px solid var(--border)" }}
+          >
+            <SectionTitle>🍽️ Exemples de repas adaptés</SectionTitle>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {advice.mealExamples.map((meal, i) => {
+                const mealColors: Record<string, string> = { "petit-déjeuner": "#f4a261", "déjeuner": "#7c9fff", collation: "#a78bfa" };
+                const mColor = mealColors[meal.moment] ?? "#7c9fff";
+                return (
+                  <div key={i} style={{ borderRadius: 14, padding: "14px 16px", background: `${mColor}0d`, border: `0.5px solid ${mColor}28` }}>
+                    <span style={{ padding: "2px 8px", borderRadius: 100, background: `${mColor}20`, fontFamily: T.b, fontSize: 10, fontWeight: 600, color: mColor, display: "inline-block", marginBottom: 8 }}>
+                      {meal.moment.charAt(0).toUpperCase() + meal.moment.slice(1)}
+                    </span>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "var(--text-primary)", margin: "0 0 4px" }}>{meal.example}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.6, margin: 0 }}>💡 {meal.why}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
 
         {/* ── BLOC A : ACTIONS IMMÉDIATES ── */}
         <motion.div

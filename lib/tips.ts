@@ -1,6 +1,9 @@
 // ─── Tip & dimension types ────────────────────────────────────────────────────
 
-export type Dimension = "setup" | "douleurs" | "habitudes" | "sommeil" | "nutrition" | "lifestyle";
+// User-facing conseil dimensions (5 pages)
+export type Dimension = "setup" | "douleurs" | "habitudes" | "mode-de-vie" | "nutrition";
+// Internal type used for TIPS/DIMENSION_META lookups (includes legacy sommeil/lifestyle)
+export type DimensionInternal = Dimension | "sommeil" | "lifestyle";
 
 export interface Tip {
   id: string;
@@ -29,7 +32,7 @@ export interface Product {
 
 // ─── Dimension metadata ───────────────────────────────────────────────────────
 
-export const DIMENSION_META: Record<Dimension, {
+export const DIMENSION_META: Record<DimensionInternal, {
   label: string;
   emoji: string;
   color: string;
@@ -85,11 +88,19 @@ export const DIMENSION_META: Record<Dimension, {
     colorBorder: "rgba(93,202,165,0.25)",
     scoreKey: "lifestyle",
   },
+  "mode-de-vie": {
+    label: "Mode de vie & Récupération",
+    emoji: "🌙",
+    color: "#74c69d",
+    colorBg: "rgba(116,198,157,0.10)",
+    colorBorder: "rgba(116,198,157,0.25)",
+    scoreKey: "mode_de_vie",
+  },
 };
 
 // ─── Tip database ─────────────────────────────────────────────────────────────
 
-export const TIPS: Record<Dimension, Tip[]> = {
+export const TIPS: Record<DimensionInternal, Tip[]> = {
   setup: [
     { id: "s1", icon: "📏", text: "L'écran doit être à une longueur de bras — pas moins, pas plus." },
     { id: "s2", icon: "👁️", text: "Le haut de l'écran au niveau des yeux, jamais en dessous." },
@@ -175,6 +186,16 @@ export const TIPS: Record<Dimension, Tip[]> = {
     { id: "l8", icon: "❤️", text: "Cohérence cardiaque : 6 respirations par minute, 5 min, 3× par jour. Régule le système nerveux autonome." },
     { id: "l9", icon: "📱", text: "Mode avion le soir : les notifications nocturnes fragmentent le sommeil même si tu ne les vois pas." },
     { id: "l10", icon: "🧘", text: "Même 10 minutes de yoga par jour améliorent la flexibilité lombaire en 3 semaines." },
+  ],
+  "mode-de-vie": [
+    { id: "mdv1", icon: "😴", text: "7h de sommeil réparent ce que 8h de bureau abîment." },
+    { id: "mdv2", icon: "📵", text: "Écrans off 30 min avant de dormir : la mélatonine peut enfin faire son travail." },
+    { id: "mdv3", icon: "🚶", text: "10 minutes de marche après déjeuner : glycémie stable, fatigue de l'après-midi évitée." },
+    { id: "mdv4", icon: "❤️", text: "Cohérence cardiaque 5 min × 3/jour : réduction prouvée du cortisol et des tensions musculaires." },
+    { id: "mdv5", icon: "🌡️", text: "Chambre à 17-19°C : le corps descend en température pour s'endormir — l'idéal pour le sommeil profond." },
+    { id: "mdv6", icon: "😪", text: "Sieste de 20 min l'après-midi : légale, efficace, et ne gêne pas le sommeil nocturne." },
+    { id: "mdv7", icon: "🧘", text: "10 minutes de yoga ou d'étirements par jour améliorent la flexibilité lombaire en 3 semaines." },
+    { id: "mdv8", icon: "📱", text: "Mode avion le soir : les notifications nocturnes fragmentent le sommeil même si tu ne les vois pas." },
   ],
 };
 
