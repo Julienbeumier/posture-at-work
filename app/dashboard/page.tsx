@@ -162,6 +162,155 @@ function SignalForm({ companyId, anonymousId, onSent }: {
   );
 }
 
+// ─── DailyChecklist ──────────────────────────────────────────────────────────
+
+function DailyChecklist({ scores }: { scores: Record<string, number> | null }) {
+  const allTasks: Array<{ id: string; text: string; dim: string }> = [];
+  const s = scores ?? {};
+
+  if ((s.setup ?? 100) < 75) {
+    allTasks.push({ id: "screen_height", dim: "setup",
+      text: "Vérifie que le haut de ton écran est au niveau de tes yeux" });
+    allTasks.push({ id: "chair_position", dim: "setup",
+      text: "Pieds à plat, genoux à 90°, lombaires contre le dossier" });
+  }
+  if ((s.habits ?? s.habitudes ?? 100) < 75) {
+    allTasks.push({ id: "break_alarm", dim: "habitudes",
+      text: "Programme une alarme dans 45 min pour te lever" });
+    allTasks.push({ id: "lunch_break", dim: "habitudes",
+      text: "Mange loin de ton écran aujourd'hui" });
+  }
+  if ((s.pain ?? 100) < 75) {
+    allTasks.push({ id: "chin_tuck", dim: "douleurs",
+      text: "Fais 10 rétractions cervicales maintenant (rentre le menton)" });
+    allTasks.push({ id: "stretch_break", dim: "douleurs",
+      text: "2 minutes d'étirements dos/nuque avant 12h" });
+  }
+  if ((s.nutrition ?? 100) < 75) {
+    allTasks.push({ id: "water", dim: "nutrition",
+      text: "Bois un grand verre d'eau maintenant" });
+    allTasks.push({ id: "protein_lunch", dim: "nutrition",
+      text: "Prévois une source de protéine à chaque repas aujourd'hui" });
+  }
+  if ((s.sleep_energy ?? s.mode_de_vie ?? 100) < 75) {
+    allTasks.push({ id: "screen_off", dim: "mode-de-vie",
+      text: "Coupe les écrans 30 min avant de dormir ce soir" });
+  }
+  allTasks.push({ id: "posture_check", dim: "setup",
+    text: "Fais un check de ta posture maintenant — dos droit, épaules relâchées" });
+  allTasks.push({ id: "water_2", dim: "nutrition",
+    text: "1,5L d'eau aujourd'hui — tu en es où ?" });
+
+  const tasks = allTasks.slice(0, 4);
+
+  const todayKey = `paw_checklist_${new Date().toISOString().split("T")[0]}`;
+  const [checked, setChecked] = useState<Record<string, boolean>>(() => {
+    try { return JSON.parse(localStorage.getItem(todayKey) ?? "{}"); }
+    catch { return {}; }
+  });
+
+  function toggle(id: string) {
+    const next = { ...checked, [id]: !checked[id] };
+    setChecked(next);
+    try { localStorage.setItem(todayKey, JSON.stringify(next)); } catch {}
+  }
+
+  const doneCount = Object.values(checked).filter(Boolean).length;
+  const totalCount = tasks.length;
+
+  const dimColors: Record<string, string> = {
+    setup: "#7c9fff",
+    habitudes: "#f4a261",
+    douleurs: "#f09595",
+    nutrition: "#74c69d",
+    "mode-de-vie": "#c4b5fd",
+  };
+
+  return (
+    <div style={{ padding: "20px 24px", borderRadius: 20,
+      background: "var(--bg-card)", border: "0.5px solid var(--border)",
+      marginBottom: 14 }}>
+
+      <div style={{ display: "flex", alignItems: "center",
+        justifyContent: "space-between", marginBottom: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 18 }}>✅</span>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16,
+            color: "var(--text-primary)", margin: 0 }}>
+            Checklist du jour
+          </p>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ height: 4, width: 80, borderRadius: 100,
+            background: "var(--border)", overflow: "hidden" }}>
+            <div style={{ height: "100%", borderRadius: 100,
+              background: doneCount === totalCount ? "#74c69d" : "#2b5ce6",
+              width: `${(doneCount / totalCount) * 100}%`,
+              transition: "width 0.3s ease" }} />
+          </div>
+          <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>
+            {doneCount}/{totalCount}
+          </span>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {tasks.map(task => (
+          <motion.div key={task.id}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => toggle(task.id)}
+            style={{ display: "flex", alignItems: "center", gap: 12,
+              padding: "10px 14px", borderRadius: 12, cursor: "pointer",
+              background: checked[task.id] ? "rgba(116,198,157,0.06)" : "var(--bg-card-2)",
+              border: `0.5px solid ${checked[task.id] ? "rgba(116,198,157,0.2)" : "var(--border)"}`,
+              transition: "all 0.15s" }}>
+
+            <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0,
+              border: `2px solid ${checked[task.id] ? "#74c69d" : "var(--border-2)"}`,
+              background: checked[task.id] ? "#74c69d" : "transparent",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "all 0.15s" }}>
+              {checked[task.id] && (
+                <span style={{ color: "#fff", fontSize: 11, fontWeight: 800 }}>✓</span>
+              )}
+            </div>
+
+            <p style={{ fontFamily: T.b, fontSize: 13, margin: 0,
+              flex: 1, lineHeight: 1.4,
+              color: checked[task.id] ? "var(--t40)" : "var(--t65)",
+              textDecoration: checked[task.id] ? "line-through" : "none",
+              transition: "all 0.15s" }}>
+              {task.text}
+            </p>
+
+            <span style={{ fontFamily: T.b, fontSize: 10, fontWeight: 600,
+              padding: "2px 8px", borderRadius: 100, flexShrink: 0,
+              color: dimColors[task.dim] ?? "var(--t40)",
+              background: `${dimColors[task.dim] ?? "var(--t40)"}15` }}>
+              {task.dim}
+            </span>
+          </motion.div>
+        ))}
+      </div>
+
+      {doneCount === totalCount && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ marginTop: 12, padding: "10px 14px", borderRadius: 10,
+            background: "rgba(116,198,157,0.08)",
+            border: "0.5px solid rgba(116,198,157,0.25)",
+            textAlign: "center" }}>
+          <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
+            color: "#74c69d", margin: 0 }}>
+            🎉 Checklist complète — excellent travail aujourd&apos;hui !
+          </p>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main dashboard ───────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
@@ -568,7 +717,12 @@ export default function DashboardPage() {
               </motion.div>
             </div>
 
-            {/* ── 3. CARTE ANALYSE VIDÉO ── */}
+            {/* ── 3. CHECKLIST DU JOUR ── */}
+            <motion.div {...fadeUp(0.09)}>
+              <DailyChecklist scores={latestAssessment.scores} />
+            </motion.div>
+
+            {/* ── 4. CARTE ANALYSE VIDÉO ── */}
             <motion.div {...fadeUp(0.1)} style={{ marginBottom: 14 }}>
               <Link href={latestAssessment.video_analysis ? "/final-report" : "/video-intro"}
                 style={{ textDecoration: "none" }}>
@@ -607,7 +761,7 @@ export default function DashboardPage() {
               </Link>
             </motion.div>
 
-            {/* ── 4. TIP DU JOUR ── */}
+            {/* ── 5. TIP DU JOUR ── */}
             {(() => {
               const ALL_TIPS = [
                 "Les cervicales supportent 5kg — ta tête en avant à 45° en charge 22kg.",
@@ -649,7 +803,7 @@ export default function DashboardPage() {
               );
             })()}
 
-            {/* ── 5. SIGNALEMENT B2B ── */}
+            {/* ── 6. SIGNALEMENT B2B ── */}
             {isB2B && !signalSent && (
               <motion.div {...fadeUp(0.14)} style={{ marginTop: 14 }}>
                 <SignalForm
