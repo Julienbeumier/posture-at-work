@@ -261,7 +261,7 @@ const SUB_SCORES: { key: keyof Omit<Scores, "global" | "job_type">; label: strin
   { key: "pain",        label: "Douleurs",                   emoji: "🩺",  dimensionPath: "/conseils/douleurs",       dimensionColor: "#f09595" },
   { key: "habits",      label: "Habitudes de travail",       emoji: "⏱️", dimensionPath: "/conseils/habitudes",      dimensionColor: "#f4a261" },
   { key: "mode_de_vie", label: "Mode de vie & Récupération", emoji: "🌙",  dimensionPath: "/conseils/mode-de-vie",   dimensionColor: "#74c69d" },
-  { key: "nutrition",   label: "Nutrition & énergie",        emoji: "🍽️", dimensionPath: "/conseils/nutrition",      dimensionColor: "#a78bfa" },
+  { key: "nutrition",   label: "Nutrition",                   emoji: "🍽️", dimensionPath: "/conseils/nutrition",      dimensionColor: "#a78bfa" },
 ];
 
 const PRIORITY_STYLE = {

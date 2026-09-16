@@ -65,7 +65,7 @@ export const DIMENSION_META: Record<DimensionInternal, {
     scoreKey: "habits",
   },
   sommeil: {
-    label: "Sommeil & énergie",
+    label: "Mode de vie & Récupération",
     emoji: "🌙",
     color: "#74c69d",
     colorBg: "rgba(116,198,157,0.10)",
@@ -73,7 +73,7 @@ export const DIMENSION_META: Record<DimensionInternal, {
     scoreKey: "sleep_energy",
   },
   nutrition: {
-    label: "Nutrition & énergie",
+    label: "Nutrition",
     emoji: "🍽️",
     color: "#a78bfa",
     colorBg: "rgba(167,139,250,0.10)",

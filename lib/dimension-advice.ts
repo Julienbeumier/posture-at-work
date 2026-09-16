@@ -39,6 +39,7 @@ export interface DimensionAdvice {
   // Habitudes, Mode de vie, Nutrition
   rituals?: Ritual[];
   mealExamples?: MealExample[];
+  avoidItems?: string[];
 
   // Commun
   tips?: Tip[];
@@ -446,62 +447,64 @@ function nutritionAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
   const tipIds: string[] = [];
   const mealExamples: MealExample[] = [];
   const rituals: Ritual[] = [];
+  const avoidItems: string[] = [];
 
+  // ── Détection ──
   if (answers.qn1 === "screen") {
     detected.push("Tu manges devant ton écran. Pas de vraie coupure = fatigue cognitive qui s'accumule et posture qui s'effondre l'après-midi.");
     tipIds.push("n2");
     rituals.push({
       moment: "journée",
       title: "Mange loin de ton écran",
-      description: "20 minutes sans écran pendant le repas améliore la digestion, réduit les quantités mangées et donne au cerveau une vraie pause cognitive. Ton dos se redresse quand tu manges assis correctement.",
+      description: "20 minutes sans écran pendant le repas améliore la digestion, réduit les quantités mangées et donne au cerveau une vraie pause. Ton dos se redresse quand tu manges assis correctement.",
       duration: "20 min minimum"
     });
   }
 
   if (answers.qn2 === "crash" || answers.qn2 === "unfocused") {
-    detected.push("Tu as un coup de barre systématique après le déjeuner. C'est le signe d'un repas trop riche en glucides rapides.");
+    detected.push("Tu as un coup de barre systématique après le déjeuner. Signe classique d'un repas trop riche en glucides rapides sans protéines.");
     tipIds.push("n1", "n4");
-    mealExamples.push({
-      moment: "déjeuner",
-      example: "Salade de quinoa + légumes rôtis + poulet ou thon + huile d'olive + citron",
-      why: "Le quinoa est un glucide à index bas. Combiné aux protéines, il évite le pic glycémique responsable du coup de barre à 14h."
-    });
   } else if (answers.qn2 === "slight_dip") {
-    detected.push("Tu ressens une légère baisse d'énergie après le déjeuner. Un ajustement de ton repas peut supprimer ce creux.");
+    detected.push("Tu ressens une légère baisse d'après-déjeuner. Un rééquilibrage protéines/glucides la supprimera.");
     tipIds.push("n1");
-    mealExamples.push({
-      moment: "déjeuner",
-      example: "Riz complet ou patate douce + légumes variés + protéine (poisson, légumineuses, viande blanche)",
-      why: "L'assiette idéale pour le bureau : la moitié en légumes, un quart en glucides complexes, un quart en protéines."
-    });
   }
 
   if (answers.qn3 === "always" || answers.qn3 === "afternoon") {
-    detected.push("Tu grignotes régulièrement. Les sucres rapides créent des pics glycémiques suivis de crashes d'énergie.");
+    detected.push("Tu grignotes régulièrement. Les sucres rapides créent des pics glycémiques suivis de crashes — le cercle vicieux de la fatigue de bureau.");
     tipIds.push("n8", "n6");
-    mealExamples.push({
-      moment: "collation",
-      example: "1 poignée de noix + 1 carré de chocolat noir 70%+ ou 1 yaourt grec nature",
-      why: "Les bonnes graisses et protéines calent sans créer de pic glycémique. Évite les fruits seuls l'après-midi — le fructose relance la faim."
-    });
   }
 
   if (answers.qn4 === "skip") {
-    detected.push("Tu sautes régulièrement des repas. La concentration et l'énergie en pâtissent directement en matinée.");
+    detected.push("Tu sautes des repas. Sans carburant le matin, ton cerveau fonctionne en mode dégradé dès 10h.");
     tipIds.push("n5");
+  }
+
+  if (detected.length === 0) {
+    detected.push("Tes habitudes alimentaires semblent équilibrées. Quelques optimisations peuvent encore améliorer ta concentration et ton tonus postural.");
+  }
+
+  // ── Repas types protéinés ──
+  mealExamples.push({
+    moment: "petit-déjeuner",
+    example: "3 œufs brouillés + 2 tranches de pain complet + fromage blanc 0% + café",
+    why: "30g de protéines au petit-déjeuner stabilisent la glycémie jusqu'à midi et réduisent les fringales de 60%. Les œufs sont la source protéique la plus complète."
+  });
+
+  mealExamples.push({
+    moment: "déjeuner",
+    example: "150g de poulet ou thon + riz complet ou patate douce + légumes verts + huile d'olive",
+    why: "Protéine + glucides complexes + légumes = assiette équilibrée qui évite le pic glycémique. Pas de glucides seuls — c'est eux qui provoquent le coup de barre à 14h."
+  });
+
+  if (answers.qn3 === "always" || answers.qn3 === "afternoon") {
     mealExamples.push({
-      moment: "petit-déjeuner",
-      example: "Flocons d'avoine + lait végétal + 1 poignée de fruits rouges + 1 œuf à la coque ou fromage blanc",
-      why: "Les glucides complexes (avoine) libèrent l'énergie progressivement. Les protéines évitent le pic glycémique et calent jusqu'au déjeuner."
-    });
-  } else if (mealExamples.every(m => m.moment !== "petit-déjeuner")) {
-    mealExamples.unshift({
-      moment: "petit-déjeuner",
-      example: "Pain complet + beurre d'amande + 1 fruit entier + café ou thé sans sucre",
-      why: "Un petit-déjeuner à index glycémique bas stabilise l'énergie et la concentration jusqu'à midi sans coup de barre."
+      moment: "collation",
+      example: "1 poignée de noix + 1 carré de chocolat noir 85%+ OU fromage blanc + 1 fruit",
+      why: "Les protéines et graisses calent sans pic glycémique. Évite les barres 'healthy' — souvent autant de sucre qu'une confiserie."
     });
   }
 
+  // ── Rituels ──
   rituals.push({
     moment: "toujours",
     title: "1,5 à 2L d'eau par jour",
@@ -509,15 +512,22 @@ function nutritionAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
     duration: "Permanent"
   });
 
-  if (detected.length === 0) {
-    detected.push("Tes habitudes alimentaires semblent équilibrées. Quelques optimisations peuvent encore améliorer ton énergie au bureau.");
+  // ── À éviter ──
+  if (answers.qn3 === "always") {
+    avoidItems.push("Viennoiseries et biscuits en collation → pic glycémique suivi d'un crash d'énergie");
+  }
+  if (answers.qn2 === "crash") {
+    avoidItems.push("Pâtes ou pizza au déjeuner sans protéines → coup de barre garanti à 14h");
+  }
+  if (answers.qn1 === "screen") {
+    avoidItems.push("Manger devant l'écran → tu manges 30% de plus sans t'en rendre compte");
   }
 
   tipIds.push("n3", "n7");
 
   const consequences = scores.nutrition < 50
     ? "Les pics glycémiques créent une fatigue cérébrale qui se traduit par une difficulté à se concentrer, des envies de sucre, et une posture qui s'affaisse progressivement. Le cerveau représente 20% de la consommation d'énergie — il est le premier touché par une nutrition inadaptée."
-    : "L'énergie alimentaire conditionne directement ta concentration et ton tonus musculaire postural. Un repas trop lourd et ton dos s'affaisse d'un centimètre en moins d'une heure.";
+    : "Ce que tu manges conditionne directement ta concentration et ton tonus musculaire postural. Un repas trop lourd et ton dos s'affaisse d'un centimètre en moins d'une heure.";
 
   const nutritionProducts: string[] = [];
   if ((answers.q19 ?? 0) <= 4) nutritionProducts.push("gourde_graduee");
@@ -529,6 +539,7 @@ function nutritionAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
     consequences,
     mealExamples,
     rituals,
+    avoidItems: avoidItems.length > 0 ? avoidItems : undefined,
     tips: pickTips([...new Set(tipIds)].slice(0, 2), "nutrition"),
     products: pickProducts(nutritionProducts.slice(0, 2)),
   };

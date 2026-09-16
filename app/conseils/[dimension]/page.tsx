@@ -683,6 +683,26 @@ export default function DimensionPage() {
           </motion.div>
         )}
 
+        {/* ── À ÉVITER ── */}
+        {advice?.avoidItems && advice.avoidItems.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.31 }}
+            style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(240,149,149,0.06)", border: "0.5px solid rgba(240,149,149,0.22)" }}
+          >
+            <SectionTitle>⛔ À éviter absolument</SectionTitle>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {advice.avoidItems.map((item, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                  <span style={{ color: "#f09595", fontSize: 13, flexShrink: 0, marginTop: 2 }}>✕</span>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{item}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* ── BLOC A : ACTIONS IMMÉDIATES ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
