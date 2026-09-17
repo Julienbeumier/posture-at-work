@@ -64,7 +64,7 @@ export default function AnalyzingPage() {
       if (framesPersonneRaw && !framesPosteRaw && jobType === "debout") {
         const framesPersonne: string[] = JSON.parse(framesPersonneRaw);
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 55000);
+        const timeoutId = setTimeout(() => controller.abort(), 85000);
         let res: Response;
         try {
           res = await fetch("/api/analyze-video", {
@@ -83,6 +83,7 @@ export default function AnalyzingPage() {
           clearTimeout(timeoutId);
         }
         const data = await res.json();
+        sessionStorage.setItem("paw_analysis_debout", JSON.stringify(data));
         sessionStorage.setItem("paw_analysis_personne", JSON.stringify(data));
         setTimeout(() => router.push("/final-report"), 1200);
         return;

@@ -66,7 +66,7 @@ function speak(text: string) {
 }
 
 function captureFrame(videoEl: HTMLVideoElement): string {
-  const MAX_W = 800; const MAX_H = 450;
+  const MAX_W = 640; const MAX_H = 360;
   const w = Math.min(videoEl.videoWidth || MAX_W, MAX_W);
   const h = Math.min(videoEl.videoHeight || MAX_H, MAX_H);
   const canvas = document.createElement("canvas");
@@ -74,7 +74,7 @@ function captureFrame(videoEl: HTMLVideoElement): string {
   const ctx = canvas.getContext("2d");
   if (!ctx) return "";
   ctx.drawImage(videoEl, 0, 0, w, h);
-  return canvas.toDataURL("image/jpeg", 0.8);
+  return canvas.toDataURL("image/jpeg", 0.4);
 }
 
 // ─── Countdown circle ─────────────────────────────────────────────────────────
@@ -232,9 +232,9 @@ export default function VideoCapturePage() {
       } else {
         // Debout mode: no step 2, save frames and go directly to analyzing
         try {
-          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture));
+          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture.slice(0, 3)));
         } catch {
-          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture.slice(0, 4)));
+          sessionStorage.setItem("paw_video_frames_person", JSON.stringify(framesRef.current.posture.slice(0, 3)));
         }
         if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
         setPhase("processing");
