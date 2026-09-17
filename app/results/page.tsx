@@ -298,6 +298,37 @@ export default function ResultsPage() {
   }, []);
 
   useEffect(() => {
+    async function checkVideoFromSupabase() {
+      if (
+        sessionStorage.getItem("paw_analysis_personne") ||
+        sessionStorage.getItem("paw_analysis_debout")
+      ) {
+        setHasVideoAnalysis(true);
+        return;
+      }
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("assessments")
+        .select("video_analysis")
+        .eq("user_id", user.id)
+        .not("video_analysis", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data?.video_analysis) {
+        const va = data.video_analysis as { personne?: unknown; poste?: unknown; debout?: unknown };
+        if (va.personne) sessionStorage.setItem("paw_analysis_personne", JSON.stringify(va.personne));
+        if (va.poste) sessionStorage.setItem("paw_analysis_poste", JSON.stringify(va.poste));
+        if (va.debout) sessionStorage.setItem("paw_analysis_debout", JSON.stringify(va.debout));
+        setHasVideoAnalysis(true);
+      }
+    }
+    checkVideoFromSupabase();
+  }, []);
+
+  useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
     setHasVideoAnalysis(
       !!sessionStorage.getItem("paw_analysis_personne") ||
