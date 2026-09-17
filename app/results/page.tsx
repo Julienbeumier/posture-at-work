@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient, saveAssessmentForUser } from "@/lib/supabase";
+import { checkPremium } from "@/lib/premium";
 import {
   calculateScores,
   getRecommendations,
@@ -285,6 +286,7 @@ export default function ResultsPage() {
 
   const [jobType, setJobType] = useState("bureau");
   const [hasVideoAnalysis, setHasVideoAnalysis] = useState(false);
+  const [premium, setPremium] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
@@ -294,7 +296,14 @@ export default function ResultsPage() {
     return () => window.removeEventListener("resize", check);
   }, []);
   useEffect(() => {
-    createClient().auth.getUser().then(({ data }) => setIsLoggedIn(!!data.user));
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data }) => {
+      setIsLoggedIn(!!data.user);
+      if (data.user) {
+        const hasPremium = await checkPremium(supabase, data.user.id);
+        setPremium(hasPremium);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -739,19 +748,72 @@ export default function ResultsPage() {
             <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)" }}>Clique pour détails</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-            {SUB_SCORES.map(({ key, label, emoji, dimensionPath, dimensionColor }, i) => (
-              <SubScoreBar
-                key={key}
-                label={label}
-                emoji={emoji}
-                score={getDisplayScore(key)}
-                interpretation={scoreInterpretation(key, getDisplayScore(key), answers)}
-                dimensionPath={dimensionPath}
-                dimensionColor={dimensionColor}
-                delay={i * 0.15}
-                jobType={jobType}
-              />
-            ))}
+            {SUB_SCORES.map(({ key, label, emoji, dimensionPath, dimensionColor }, i) => {
+              const isLocked = !premium && (["sleep_energy", "mode_de_vie", "nutrition", "lifestyle"] as string[]).includes(key);
+              if (isLocked) {
+                return (
+                  <motion.div key={key}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.15 }}
+                    style={{ borderRadius: 16, padding: "16px 18px",
+                      background: "var(--bg-card)", border: "0.5px solid var(--border-2)",
+                      display: "flex", alignItems: "center", gap: 12,
+                      filter: "blur(2px)", position: "relative", cursor: "pointer" }}
+                    onClick={() => router.push("/premium")}>
+                    <span style={{ fontSize: 20 }}>{emoji}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ height: 12, width: 60, borderRadius: 6,
+                        background: "var(--border-2)", marginBottom: 6 }} />
+                      <div style={{ height: 4, borderRadius: 100, background: "var(--border)" }} />
+                    </div>
+                    <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)",
+                      padding: "2px 8px", borderRadius: 100, background: "var(--bg-card-2)" }}>🔒</span>
+                  </motion.div>
+                );
+              }
+              return (
+                <SubScoreBar
+                  key={key}
+                  label={label}
+                  emoji={emoji}
+                  score={getDisplayScore(key)}
+                  interpretation={scoreInterpretation(key, getDisplayScore(key), answers)}
+                  dimensionPath={dimensionPath}
+                  dimensionColor={dimensionColor}
+                  delay={i * 0.15}
+                  jobType={jobType}
+                />
+              );
+            })}
+            {!premium && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                style={{ marginTop: 4, padding: "16px 20px", borderRadius: 16,
+                  background: "rgba(124,58,237,0.08)",
+                  border: "1px solid rgba(124,58,237,0.3)",
+                  display: "flex", alignItems: "center",
+                  justifyContent: "space-between", gap: 12, flexWrap: "wrap",
+                  cursor: "pointer" }}
+                onClick={() => router.push("/premium")}>
+                <div>
+                  <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
+                    color: "#c4b5fd", margin: "0 0 4px" }}>
+                    🔒 3 dimensions verrouillées
+                  </p>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: 0 }}>
+                    Sommeil, Nutrition, Mode de vie — débloquer pour 19,99€ à vie
+                  </p>
+                </div>
+                <div style={{ padding: "10px 20px", borderRadius: 100,
+                  background: "#7c3aed", color: "#fff",
+                  fontFamily: T.h, fontWeight: 700, fontSize: 13, flexShrink: 0 }}>
+                  Débloquer →
+                </div>
+              </motion.div>
+            )}
             {!hasVideoAnalysis && (
               <motion.div
                 initial={{ opacity: 0, y: 14 }}

@@ -407,7 +407,7 @@ export default function LandingClient() {
                   </div>
                 </Link>
                 <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", margin: 0 }}>
-                  3 scores gratuits · Analyse complète à 19,99€ · Résultats immédiats
+                  Résultats immédiats · Accès à vie · Moins cher qu'une séance kiné
                 </p>
               </div>
             </div>
@@ -570,7 +570,7 @@ export default function LandingClient() {
             </div>
           </Link>
           <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", marginTop: 12 }}>
-            3 scores gratuits · Analyse complète 19,99€ · Sans engagement
+            19,99€ · Accès à vie · Sans abonnement
           </p>
         </motion.div>
       </section>
