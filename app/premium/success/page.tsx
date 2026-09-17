@@ -25,15 +25,31 @@ async function recoverAndSavePendingAssessment(
     if (pending) {
       const data = JSON.parse(pending);
       const age = Date.now() - new Date(data.savedAt).getTime();
-      if (age < 4 * 60 * 60 * 1000) {
+      if (age < 2 * 60 * 60 * 1000) {
         scores = JSON.parse(data.scores);
         answers = data.answers ? JSON.parse(data.answers) : null;
         jobType = data.jobType ?? "bureau";
+      } else {
+        localStorage.removeItem("paw_pending_assessment");
+        console.log("[success] Bilan en attente trop vieux — ignoré");
+        return;
       }
     } else if (sessionScores) {
-      scores = JSON.parse(sessionScores);
-      answers = sessionAnswers ? JSON.parse(sessionAnswers) : null;
-      jobType = sessionJobType ?? "bureau";
+      const sessionTimestamp = sessionStorage.getItem("postureatwork_scores_timestamp");
+      if (sessionTimestamp) {
+        const age = Date.now() - Number(sessionTimestamp);
+        if (age < 2 * 60 * 60 * 1000) {
+          scores = JSON.parse(sessionScores);
+          answers = sessionAnswers ? JSON.parse(sessionAnswers) : null;
+          jobType = sessionJobType ?? "bureau";
+        } else {
+          console.log("[success] SessionStorage trop vieux — ignoré");
+          return;
+        }
+      } else {
+        console.log("[success] Pas de timestamp sessionStorage — ignoré");
+        return;
+      }
     }
 
     if (!scores) return;

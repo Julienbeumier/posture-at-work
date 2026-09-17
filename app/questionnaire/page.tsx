@@ -558,6 +558,7 @@ function BureauQuestionnaire() {
     sessionStorage.removeItem("postureatwork_answers_debout");
     sessionStorage.setItem("postureatwork_answers", JSON.stringify(answers));
     sessionStorage.setItem("postureatwork_scores", JSON.stringify(scores));
+    sessionStorage.setItem("postureatwork_scores_timestamp", Date.now().toString());
     localStorage.setItem("paw_answers", JSON.stringify(answers));
     router.push("/results");
   }
