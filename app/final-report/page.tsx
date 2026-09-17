@@ -820,23 +820,6 @@ export default function FinalReportPage() {
                   <DeboutSegCard key={key} label={label} seg={da.posture[key]} delay={i * 0.06} />
                 ))}
               </div>
-              <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {(da.overallAssessment ?? "")
-                    .split(/[.!]/)
-                    .map((s: string) => s.trim())
-                    .filter((s: string) => s.length > 20)
-                    .slice(0, 4)
-                    .map((sentence: string, i: number) => (
-                      <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                        <div style={{ width: 6, height: 6, borderRadius: "50%", flexShrink: 0,
-                          background: "#f4a261", marginTop: 6 }} />
-                        <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)",
-                          lineHeight: 1.6, margin: 0 }}>{sentence}.</p>
-                      </div>
-                    ))}
-                </div>
-              </div>
               {da.mainIssues.length > 0 && (
                 <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
                   {da.mainIssues.map((issue, i) => {
@@ -1114,25 +1097,6 @@ export default function FinalReportPage() {
                 ))}
               </div>
 
-              {/* Synthesis */}
-              <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {(pa.overallAssessment ?? "")
-                    .split(/[.!]/)
-                    .map((s: string) => s.trim())
-                    .filter((s: string) => s.length > 20)
-                    .slice(0, 4)
-                    .map((sentence: string, i: number) => (
-                      <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                        <div style={{ width: 6, height: 6, borderRadius: "50%", flexShrink: 0,
-                          background: "#f4a261", marginTop: 6 }} />
-                        <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)",
-                          lineHeight: 1.6, margin: 0 }}>{sentence}.</p>
-                      </div>
-                    ))}
-                </div>
-              </div>
-
               {/* Issues */}
               {pa.mainIssues.length > 0 && (
                 <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
@@ -1193,24 +1157,6 @@ export default function FinalReportPage() {
                 <ElementCard label="Organisation" score={po.elements.organisation.score} issues={po.elements.organisation.issues}
                   extra={`Éclairage : ${po.elements.organisation.eclairage}`}
                   delay={0.18} />
-              </div>
-
-              <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(59,130,246,0.07)", border: "0.5px solid rgba(59,130,246,0.18)" }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {(po.overallAssessment ?? "")
-                    .split(/[.!]/)
-                    .map((s: string) => s.trim())
-                    .filter((s: string) => s.length > 20)
-                    .slice(0, 4)
-                    .map((sentence: string, i: number) => (
-                      <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                        <div style={{ width: 6, height: 6, borderRadius: "50%", flexShrink: 0,
-                          background: "#f4a261", marginTop: 6 }} />
-                        <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)",
-                          lineHeight: 1.6, margin: 0 }}>{sentence}.</p>
-                      </div>
-                    ))}
-                </div>
               </div>
 
               {po.positivePoints.length > 0 && (
