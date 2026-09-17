@@ -13,8 +13,8 @@ const T = {
 const pillars = [
   {
     icon: "💻",
-    title: "Setup & Ergonomie",
-    desc: "Écran, clavier, chaise — chaque centimètre compte pour ta colonne.",
+    title: "Setup",
+    desc: "Écran, chaise, éclairage, distance — ton poste de travail est souvent la cause principale des douleurs. PAW te dit exactement quoi changer.",
     bg: "rgba(43,92,230,0.08)",
     border: "rgba(43,92,230,0.18)",
     titleColor: "#a8c0ff",
@@ -23,53 +23,53 @@ const pillars = [
   },
   {
     icon: "🩺",
-    title: "Douleurs & Inconfort",
-    desc: "Localise tes zones de tension et comprends leur origine réelle.",
-    bg: "rgba(226,75,74,0.07)",
-    border: "rgba(226,75,74,0.15)",
+    title: "Douleurs",
+    desc: "Nuque, dos, épaules, poignets — où tu as mal, depuis quand, et ce que ça révèle. Avec des exercices ciblés pour chaque zone.",
+    bg: "rgba(240,149,149,0.08)",
+    border: "rgba(240,149,149,0.18)",
     titleColor: "#f09595",
-    blob: "rgba(226,75,74,0.3)",
-    iconBg: "rgba(226,75,74,0.18)",
+    blob: "rgba(240,149,149,0.25)",
+    iconBg: "rgba(240,149,149,0.18)",
   },
   {
     icon: "⏱️",
-    title: "Habitudes de travail",
-    desc: "Pauses, posture spontanée, téléphone — tes automatismes te trahissent.",
-    bg: "rgba(212,98,42,0.07)",
-    border: "rgba(212,98,42,0.15)",
+    title: "Habitudes au travail",
+    desc: "Pauses, position, heures d'écran, stress — les comportements répétés qui construisent ou détruisent ta santé au fil des semaines.",
+    bg: "rgba(244,162,97,0.08)",
+    border: "rgba(244,162,97,0.18)",
     titleColor: "#f4a261",
-    blob: "rgba(212,98,42,0.25)",
-    iconBg: "rgba(212,98,42,0.18)",
+    blob: "rgba(244,162,97,0.25)",
+    iconBg: "rgba(244,162,97,0.18)",
   },
   {
     icon: "🌙",
-    title: "Sommeil & Énergie",
-    desc: "La fatigue amplifie toutes les douleurs. Hydratation et récupération.",
-    bg: "rgba(45,106,79,0.08)",
-    border: "rgba(45,106,79,0.18)",
-    titleColor: "#74c69d",
-    blob: "rgba(45,106,79,0.3)",
-    iconBg: "rgba(45,106,79,0.18)",
-  },
-  {
-    icon: "🍽️",
-    title: "Nutrition & Vitalité",
-    desc: "Ce que tu manges à midi conditionne ton après-midi entier.",
-    bg: "rgba(124,58,237,0.07)",
-    border: "rgba(124,58,237,0.15)",
-    titleColor: "#a78bfa",
+    title: "Mode de vie & Récupération",
+    desc: "Sommeil, activité physique, gestion du stress — le corps répare la nuit et se renforce en bougeant. Sans les deux, les douleurs s'installent.",
+    bg: "rgba(124,58,237,0.08)",
+    border: "rgba(124,58,237,0.18)",
+    titleColor: "#c4b5fd",
     blob: "rgba(124,58,237,0.25)",
     iconBg: "rgba(124,58,237,0.18)",
   },
   {
-    icon: "🏃",
-    title: "Lifestyle & Bien-être",
-    desc: "Activité physique, stress chronique, cortisol — le mode de vie amplifie ou atténue toutes les douleurs musculaires.",
-    bg: "rgba(29,158,117,0.07)",
-    border: "rgba(29,158,117,0.15)",
-    titleColor: "#1d9e75",
+    icon: "🍽️",
+    title: "Nutrition",
+    desc: "Ce que tu manges impacte directement ton énergie, ta concentration et ta récupération musculaire. Des conseils concrets, pas un régime.",
+    bg: "rgba(29,158,117,0.08)",
+    border: "rgba(29,158,117,0.18)",
+    titleColor: "#5dcaa5",
     blob: "rgba(29,158,117,0.25)",
     iconBg: "rgba(29,158,117,0.18)",
+  },
+  {
+    icon: "🎥",
+    title: "Analyse vidéo IA",
+    desc: "40 secondes de vidéo. Notre IA analyse ta posture réelle — projection de tête, épaules, alignement colonne. Ce que le questionnaire ne peut pas voir.",
+    bg: "rgba(212,162,42,0.08)",
+    border: "rgba(212,162,42,0.18)",
+    titleColor: "#f0c060",
+    blob: "rgba(212,162,42,0.25)",
+    iconBg: "rgba(212,162,42,0.18)",
   },
 ];
 
@@ -107,7 +107,7 @@ function FAQ({ isMobile }: { isMobile: boolean }) {
     },
     {
       q: "C'est gratuit ?",
-      a: "Le questionnaire complet (30 questions) et tes 3 premiers scores sont gratuits. Pour débloquer les 6 dimensions complètes, l'analyse vidéo IA, les conseils détaillés, les exercices et le rapport PDF, c'est 19,99€ en accès à vie — moins cher qu'une séance kiné."
+      a: "Le questionnaire complet (30 questions) est gratuit. Pour débloquer les conseils détaillés par dimension, l'analyse vidéo IA posturale et les exercices ciblés, c'est 19,99€ en accès à vie — moins cher qu'une séance kiné."
     },
     {
       q: "Ça fonctionne aussi si je travaille debout ?",
@@ -242,7 +242,7 @@ export default function LandingClient() {
           {[
             { value: "88%", label: "des maladies professionnelles sont des TMS", source: "Ameli, 2024" },
             { value: "5min", label: "pour un bilan complet de ta santé au travail", source: null },
-            { value: "360°", label: "posture, douleurs, sommeil, nutrition, habitudes", source: null },
+            { value: "360°", label: "setup, douleurs, habitudes, mode de vie, nutrition + vidéo IA", source: null },
           ].map((s, i) => (
             <div key={i} style={{
               padding: isMobile ? "20px 16px" : "32px 24px",
@@ -271,7 +271,7 @@ export default function LandingClient() {
         </motion.div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           {[
-            { step: "01", icon: "📋", title: "Tu réponds au questionnaire", desc: "30 questions sur ton setup, tes douleurs, ton sommeil et tes habitudes. Adapté selon ton métier — bureau ou debout.", color: "#2b5ce6" },
+            { step: "01", icon: "📋", title: "Tu réponds au questionnaire", desc: "30 questions sur ton setup, tes douleurs, tes habitudes, ton mode de vie et ta nutrition. Adapté selon ton poste — bureau ou debout.", color: "#2b5ce6" },
             { step: "02", icon: "🔬", title: "PAW analyse ta situation", desc: "Un score sur 100 par dimension, des flags cliniques détectés, et une analyse IA de ta posture via ta caméra.", color: "#7c3aed" },
             { step: "03", icon: "✅", title: "Tu reçois ton plan d'action", desc: "Des recommandations concrètes classées par priorité, des exercices ciblés et des produits adaptés à ton profil.", color: "#1d9e75" },
           ].map((item, i) => (
