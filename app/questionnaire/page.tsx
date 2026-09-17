@@ -18,49 +18,49 @@ const T = {
 const CATEGORIES = [
   {
     index: 0, id: "cat-1",
-    title: "Ton setup", subtitle: "Poste de travail & ergonomie", emoji: "💻",
+    title: "Ton setup", emoji: "💻",
     color: "#2b5ce6", colorBg: "rgba(43,92,230,0.10)", colorBorder: "rgba(43,92,230,0.20)",
     selectedBg: "rgba(43,92,230,0.18)", selectedColor: "#a8c0ff",
     requiredQ: ["q1", "q3", "q4", "q5", "q5b", "q_eclairage"],
   },
   {
     index: 1, id: "cat-2",
-    title: "Tes douleurs", subtitle: "État de ton corps", emoji: "🩺",
+    title: "Tes douleurs", emoji: "🩺",
     color: "#e24b4a", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
     selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
     requiredQ: ["q6", "q7", "q8", "q9", "q10", "q11", "q12", "q12b", "q_irradiation", "q_douleur_nuit"],
   },
   {
     index: 2, id: "cat-3",
-    title: "Habitudes de travail", subtitle: "Pauses & comportements", emoji: "⏱️",
+    title: "Habitudes de travail", emoji: "⏱️",
     color: "#d4622a", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
     selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
     requiredQ: ["q14", "q14b", "q_laptop_hors_bureau"],
   },
   {
     index: 3, id: "cat-4",
-    title: "Sommeil & énergie", subtitle: "Récupération & hydratation", emoji: "🌙",
+    title: "Sommeil & énergie", emoji: "🌙",
     color: "#2d6a4f", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
     selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
     requiredQ: ["q18", "q20", "q_ecrans_soir"],
   },
   {
     index: 4, id: "cat-5",
-    title: "Nutrition & énergie", subtitle: "Alimentation & vitalité", emoji: "🍽️",
+    title: "Nutrition & énergie", emoji: "🍽️",
     color: "#7c3aed", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
     selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
     requiredQ: ["qn1", "qn2", "qn3", "qn4"],
   },
   {
     index: 5, id: "cat-6",
-    title: "Ton corps", subtitle: "Historique & habitudes physiques", emoji: "🏃",
+    title: "Ton corps", emoji: "🏃",
     color: "#1d9e75", colorBg: "rgba(29,158,117,0.08)", colorBorder: "rgba(29,158,117,0.18)",
     selectedBg: "rgba(29,158,117,0.18)", selectedColor: "#5dcaa5",
     requiredQ: ["q21", "q24"],
   },
   {
     index: 6, id: "cat-7",
-    title: "Ressenti global", subtitle: "Comment tu te sens", emoji: "💭",
+    title: "Ressenti global", emoji: "💭",
     color: "#7c3aed", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
     selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
     requiredQ: ["q25"],
@@ -454,9 +454,6 @@ function CategorySection({
               <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 17, color: "var(--text-primary)", margin: 0, letterSpacing: "-0.3px" }}>
                 {cat.title}
               </h2>
-              <p style={{ color: "var(--t40)", fontSize: 12, fontFamily: T.b, margin: 0 }}>
-                {cat.subtitle}
-              </p>
             </div>
           </div>
           {done && (
@@ -693,7 +690,7 @@ function BureauQuestionnaire() {
               { value: "double_ecran", label: "🖥️🖥️ Double écran" },
             ]} />
           </QBlock>
-          <QBlock number="2" question="Ton écran et ton bureau sont-ils bien réglés ?" note="L'écran idéal est à hauteur des yeux à 50-70cm. Le bureau idéal permet de poser les avant-bras à plat, coudes à 90°." answered={!!answers.q3} cat={CATEGORIES[0]}>
+          <QBlock number="2" question="Ton écran et ton bureau sont-ils bien réglés ?" answered={!!answers.q3} cat={CATEGORIES[0]}>
             <ChoiceGrid cat={CATEGORIES[0]} value={answers.q3} onChange={(v) => update("q3", v)} options={[
               { value: "oui", label: "✅ Oui — écran à hauteur des yeux, coudes à 90°" },
               { value: "approx", label: "🔸 À peu près — quelques ajustements à faire" },
@@ -724,7 +721,7 @@ function BureauQuestionnaire() {
               { value: "ball", label: "🧘 Ballon / selle ergonomique" },
             ]} />
           </QBlock>
-          <QBlock number="6" question="Comment est l'éclairage de ton poste ?" note="Les reflets et le contre-jour forcent les yeux à compenser, ce qui crée des mauvaises postures (rapprochement de l'écran, inclinaison de la tête)." answered={!!answers.q_eclairage} cat={CATEGORIES[0]}>
+          <QBlock number="6" question="Comment est l'éclairage de ton poste ?" answered={!!answers.q_eclairage} cat={CATEGORIES[0]}>
             <ChoiceGrid cat={CATEGORIES[0]} value={answers.q_eclairage} onChange={(v) => update("q_eclairage", v)} options={[
               { value: "bon", label: "✅ Bon — pas de reflets sur l'écran" },
               { value: "fenetre_dos", label: "🔸 Fenêtre dans le dos ou de côté" },
@@ -782,7 +779,7 @@ function BureauQuestionnaire() {
               { value: "souvent", label: "😫 Souvent — ça perturbe mon sommeil" },
             ]} />
           </QBlock>
-          <QBlock number="16" question="As-tu des fourmillements, douleurs ou sensation de faiblesse qui descendent dans le bras ou la jambe ?" note="Ces symptômes peuvent indiquer une compression nerveuse cervicale ou lombaire — ils orientent les exercices recommandés." answered={!!answers.q_irradiation} cat={CATEGORIES[1]}>
+          <QBlock number="16" question="As-tu des fourmillements, douleurs ou sensation de faiblesse qui descendent dans le bras ou la jambe ?" answered={!!answers.q_irradiation} cat={CATEGORIES[1]}>
             <ChoiceGrid cat={CATEGORIES[1]} value={answers.q_irradiation} onChange={(v) => update("q_irradiation", v)} options={[
               { value: "non", label: "✅ Non, aucun symptôme de ce type" },
               { value: "bras", label: "💪 Oui — dans le bras ou la main" },
@@ -790,7 +787,7 @@ function BureauQuestionnaire() {
               { value: "les_deux", label: "⚡ Les deux — bras ET jambe" },
             ]} />
           </QBlock>
-          <QBlock number="17" question="As-tu des maux de tête, sensations de tête lourde ou vertiges en journée ?" note="Les céphalées cervicogènes et les vertiges posturaux sont souvent liés aux tensions des muscles de la nuque — directement influencés par ton setup." answered={!!answers.q_maux_tete_nuque} cat={CATEGORIES[1]}>
+          <QBlock number="17" question="As-tu des maux de tête, sensations de tête lourde ou vertiges en journée ?" answered={!!answers.q_maux_tete_nuque} cat={CATEGORIES[1]}>
             <ChoiceGrid cat={CATEGORIES[1]} value={answers.q_maux_tete_nuque} onChange={(v) => update("q_maux_tete_nuque", v)} options={[
               { value: "non", label: "✅ Non, aucun de ces symptômes" },
               { value: "maux_fin_journee", label: "🔸 Maux de tête en fin de journée" },
@@ -825,7 +822,7 @@ function BureauQuestionnaire() {
               { value: "none", label: "❌ Aucune activité physique" },
             ]} />
           </QBlock>
-          <QBlock number="20" question="T'arrive-t-il de travailler dans une position non ergonomique ?" note="Le laptop sur les genoux ou les visios depuis le canapé créent des tensions cervicales importantes sur la durée." answered={!!answers.q_laptop_hors_bureau} cat={CATEGORIES[2]}>
+          <QBlock number="20" question="T'arrive-t-il de travailler dans une position non ergonomique ?" answered={!!answers.q_laptop_hors_bureau} cat={CATEGORIES[2]}>
             <ChoiceGrid cat={CATEGORIES[2]} value={answers.q_laptop_hors_bureau} onChange={(v) => update("q_laptop_hors_bureau", v)} options={[
               { value: "jamais", label: "✅ Non — toujours correctement installé" },
               { value: "visio_canape", label: "🔸 Parfois en visio depuis le canapé" },
@@ -833,7 +830,7 @@ function BureauQuestionnaire() {
               { value: "principale", label: "😫 C'est ma position principale" },
             ]} />
           </QBlock>
-          <QBlock number="22" question="Comment évalues-tu ton niveau de stress au travail ?" note="Le stress chronique active en permanence les trapèzes et la nuque — travailler sur la posture sans gérer le stress donne des résultats limités." answered={true} cat={CATEGORIES[2]}>
+          <QBlock number="22" question="Comment évalues-tu ton niveau de stress au travail ?" answered={true} cat={CATEGORIES[2]}>
             <SliderInput value={answers.q_stress_travail} min={0} max={5} step={1} unit="" reference="0 = aucun stress · 5 = très important" onChange={(v) => update("q_stress_travail", v)} cat={CATEGORIES[2]} />
           </QBlock>
         </CategorySection>
@@ -843,7 +840,7 @@ function BureauQuestionnaire() {
           <QBlock number="20" question="Combien d'heures dors-tu par nuit ?" answered={true} cat={CATEGORIES[3]}>
             <SliderInput value={answers.q17} min={4} max={10} step={0.5} unit="h" reference="😴 Heures de sommeil par nuit" onChange={(v) => update("q17", v)} cat={CATEGORIES[3]} />
           </QBlock>
-          <QBlock number="24" question="Utilises-tu des écrans dans l'heure avant de dormir ?" note="La lumière bleue des écrans retarde la production de mélatonine de 1 à 2h — impact direct sur la qualité du sommeil et la récupération musculaire." answered={!!answers.q_ecrans_soir} cat={CATEGORIES[3]}>
+          <QBlock number="24" question="Utilises-tu des écrans dans l'heure avant de dormir ?" answered={!!answers.q_ecrans_soir} cat={CATEGORIES[3]}>
             <ChoiceGrid cat={CATEGORIES[3]} value={answers.q_ecrans_soir} onChange={(v) => update("q_ecrans_soir", v)} options={[
               { value: "jamais", label: "✅ Non — j'évite les écrans le soir" },
               { value: "parfois", label: "🔸 Parfois — 30 min max" },

@@ -270,7 +270,7 @@ function habitudesAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
   const rituals: Ritual[] = [];
 
   if (answers.q13 >= 8) {
-    detected.push(`Tu es assis plus de ${answers.q13}h par jour. Au-delà de 6h, les risques cardiovasculaires et musculo-squelettiques augmentent significativement.`);
+    detected.push(`Tu es assis plus de ${answers.q13}h par jour. Au-delà de 6h sans pauses, les tensions musculaires et la fatigue s'accumulent significativement.`);
     tipIds.push("h1", "h4");
     productKeys.push("coussin_equilibre");
   } else if (answers.q13 >= 6) {
