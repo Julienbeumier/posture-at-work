@@ -734,118 +734,163 @@ export default function DashboardPage() {
                     border: `1px solid ${latestAssessment?.video_analysis
                       ? "rgba(43,92,230,0.3)" : "rgba(43,92,230,0.2)"}` }}>
 
-                  <div style={{ display: "flex", alignItems: "flex-start",
-                    justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                        <span style={{ fontSize: 24 }}>🎥</span>
-                        <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18,
-                          color: "var(--text-primary)", margin: 0 }}>
-                          Analyse vidéo IA
-                        </p>
-                        {latestAssessment?.video_analysis && (
-                          <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700,
-                            padding: "3px 10px", borderRadius: 100,
-                            background: "rgba(116,198,157,0.15)", color: "#74c69d",
-                            border: "0.5px solid rgba(116,198,157,0.3)" }}>
-                            ✅ Complétée
-                          </span>
-                        )}
-                      </div>
+                  {/* Header */}
+                  <div style={{ display: "flex", alignItems: "center",
+                    justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ fontSize: 24 }}>🎥</span>
+                      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18,
+                        color: "var(--text-primary)", margin: 0 }}>
+                        Analyse vidéo IA
+                      </p>
+                    </div>
+                    {latestAssessment?.video_analysis && (
+                      <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700,
+                        padding: "4px 12px", borderRadius: 100,
+                        background: "rgba(116,198,157,0.15)", color: "#74c69d",
+                        border: "0.5px solid rgba(116,198,157,0.3)" }}>
+                        ✅ Complétée
+                      </span>
+                    )}
+                  </div>
 
-                      {latestAssessment?.video_analysis ? (
-                        <div>
-                          {(() => {
-                            const va = latestAssessment.video_analysis as {
-                              personne?: { globalPostureScore?: number; mainIssues?: Array<{ zone: string; severity: string }> };
-                              poste?: { globalSetupScore?: number; mainIssues?: Array<{ element: string; severity: string }> };
-                              debout?: { globalPostureScore?: number; mainIssues?: Array<{ zone: string; severity: string }> };
-                            };
-                            const postureScore = va?.personne?.globalPostureScore ?? va?.debout?.globalPostureScore;
-                            const setupScore = va?.poste?.globalSetupScore;
-                            const issues = [
-                              ...(va?.personne?.mainIssues ?? va?.debout?.mainIssues ?? []).slice(0, 2),
-                              ...(va?.poste?.mainIssues ?? []).slice(0, 1),
-                            ];
-                            return (
-                              <div style={{ marginBottom: 14 }}>
-                                <div style={{ display: "flex", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
-                                  {postureScore !== undefined && (
-                                    <div style={{ padding: "8px 14px", borderRadius: 10,
-                                      background: postureScore >= 70 ? "rgba(116,198,157,0.1)" : postureScore >= 50 ? "rgba(244,162,97,0.1)" : "rgba(240,149,149,0.1)",
-                                      border: `0.5px solid ${postureScore >= 70 ? "rgba(116,198,157,0.25)" : postureScore >= 50 ? "rgba(244,162,97,0.25)" : "rgba(240,149,149,0.25)"}` }}>
-                                      <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: "0 0 2px" }}>Posture</p>
-                                      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 20,
-                                        color: postureScore >= 70 ? "#74c69d" : postureScore >= 50 ? "#f4a261" : "#f09595",
-                                        margin: 0, lineHeight: 1 }}>
-                                        {postureScore}<span style={{ fontSize: 11, fontWeight: 400, color: "var(--t40)" }}>/100</span>
-                                      </p>
-                                    </div>
-                                  )}
-                                  {setupScore !== undefined && (
-                                    <div style={{ padding: "8px 14px", borderRadius: 10,
-                                      background: setupScore >= 70 ? "rgba(116,198,157,0.1)" : setupScore >= 50 ? "rgba(244,162,97,0.1)" : "rgba(240,149,149,0.1)",
-                                      border: `0.5px solid ${setupScore >= 70 ? "rgba(116,198,157,0.25)" : setupScore >= 50 ? "rgba(244,162,97,0.25)" : "rgba(240,149,149,0.25)"}` }}>
-                                      <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: "0 0 2px" }}>Setup vidéo</p>
-                                      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 20,
-                                        color: setupScore >= 70 ? "#74c69d" : setupScore >= 50 ? "#f4a261" : "#f09595",
-                                        margin: 0, lineHeight: 1 }}>
-                                        {setupScore}<span style={{ fontSize: 11, fontWeight: 400, color: "var(--t40)" }}>/100</span>
-                                      </p>
-                                    </div>
-                                  )}
-                                </div>
-                                {issues.length > 0 && (
-                                  <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
-                                    {issues.map((issue: { zone?: string; element?: string; severity: string }, i) => {
-                                      const sevColor = issue.severity === "élevé" ? "#f09595" : issue.severity === "modéré" ? "#f4a261" : "#74c69d";
-                                      return (
-                                        <div key={i} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                                          <div style={{ width: 6, height: 6, borderRadius: "50%", background: sevColor, flexShrink: 0 }} />
-                                          <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t65)" }}>
-                                            {issue.zone ?? issue.element}
-                                          </span>
-                                          <span style={{ fontFamily: T.b, fontSize: 10, fontWeight: 600, color: sevColor, marginLeft: "auto" }}>
-                                            {issue.severity}
-                                          </span>
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })()}
-                          <p style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff", fontWeight: 600, margin: 0 }}>
-                            Voir mon rapport complet →
-                          </p>
+                  {latestAssessment?.video_analysis ? (() => {
+                    const va = latestAssessment.video_analysis as {
+                      personne?: { globalPostureScore?: number; mainIssues?: Array<{ zone: string; severity: string; consequence?: string }> };
+                      poste?: { globalSetupScore?: number; mainIssues?: Array<{ element: string; severity: string; fix?: string }> };
+                      debout?: { globalPostureScore?: number; mainIssues?: Array<{ zone: string; severity: string; consequence?: string }> };
+                    };
+
+                    const postureScore = va?.personne?.globalPostureScore ?? va?.debout?.globalPostureScore;
+                    const setupScore = va?.poste?.globalSetupScore;
+                    const postureIssues = va?.personne?.mainIssues ?? va?.debout?.mainIssues ?? [];
+                    const setupIssues = va?.poste?.mainIssues ?? [];
+
+                    const getColor = (s: number) => s >= 70 ? "#74c69d" : s >= 50 ? "#f4a261" : "#f09595";
+                    const getBg = (s: number) => s >= 70 ? "rgba(116,198,157,0.08)" : s >= 50 ? "rgba(244,162,97,0.08)" : "rgba(240,149,149,0.08)";
+                    const getBorder = (s: number) => s >= 70 ? "rgba(116,198,157,0.2)" : s >= 50 ? "rgba(244,162,97,0.2)" : "rgba(240,149,149,0.2)";
+
+                    const allIssues = [...postureIssues.slice(0, 2), ...setupIssues.slice(0, 1)];
+
+                    return (
+                      <div>
+                        {/* Scores */}
+                        <div style={{ display: "grid",
+                          gridTemplateColumns: setupScore !== undefined ? "1fr 1fr" : "1fr",
+                          gap: 10, marginBottom: 16 }}>
+
+                          {postureScore !== undefined && (
+                            <div style={{ padding: "14px 16px", borderRadius: 14,
+                              background: getBg(postureScore),
+                              border: `0.5px solid ${getBorder(postureScore)}` }}>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600,
+                                color: "var(--t45)", margin: "0 0 6px",
+                                textTransform: "uppercase" as const, letterSpacing: "0.06em" }}>
+                                Posture
+                              </p>
+                              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 32,
+                                color: getColor(postureScore), margin: "0 0 4px", lineHeight: 1,
+                                letterSpacing: "-1px" }}>
+                                {postureScore}
+                                <span style={{ fontSize: 14, fontWeight: 400, color: "var(--t35)" }}>/100</span>
+                              </p>
+                              <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0 }}>
+                                {postureScore >= 70 ? "Bonne posture globale" :
+                                 postureScore >= 50 ? "Quelques corrections nécessaires" :
+                                 "Points critiques identifiés"}
+                              </p>
+                            </div>
+                          )}
+
+                          {setupScore !== undefined && (
+                            <div style={{ padding: "14px 16px", borderRadius: 14,
+                              background: getBg(setupScore),
+                              border: `0.5px solid ${getBorder(setupScore)}` }}>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600,
+                                color: "var(--t45)", margin: "0 0 6px",
+                                textTransform: "uppercase" as const, letterSpacing: "0.06em" }}>
+                                Setup
+                              </p>
+                              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 32,
+                                color: getColor(setupScore), margin: "0 0 4px", lineHeight: 1,
+                                letterSpacing: "-1px" }}>
+                                {setupScore}
+                                <span style={{ fontSize: 14, fontWeight: 400, color: "var(--t35)" }}>/100</span>
+                              </p>
+                              <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0 }}>
+                                {setupScore >= 70 ? "Poste bien configuré" :
+                                 setupScore >= 50 ? "Ajustements recommandés" :
+                                 "Poste à reconfigurer"}
+                              </p>
+                            </div>
+                          )}
                         </div>
-                      ) : (
-                        <div>
+
+                        {/* Issues */}
+                        {allIssues.length > 0 && (
                           <div style={{ marginBottom: 14 }}>
-                            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)",
-                              lineHeight: 1.65, margin: "0 0 10px" }}>
-                              Le questionnaire révèle ce que tu <em>penses</em> de ta posture.
-                              La vidéo montre ce que ton corps <em>fait réellement</em>.
+                            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700,
+                              color: "var(--t40)", textTransform: "uppercase" as const,
+                              letterSpacing: "0.06em", margin: "0 0 8px" }}>
+                              Points identifiés
                             </p>
-                            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                              {["40 secondes", "IA posturale", "Rapport détaillé"].map((tag, i) => (
-                                <span key={i} style={{ fontFamily: T.b, fontSize: 11,
-                                  fontWeight: 600, padding: "3px 10px", borderRadius: 100,
-                                  background: "rgba(43,92,230,0.12)", color: "#7c9fff",
-                                  border: "0.5px solid rgba(43,92,230,0.2)" }}>
-                                  {tag}
-                                </span>
-                              ))}
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {allIssues.map((issue: { zone?: string; element?: string; severity: string }, i) => {
+                                const sevColor = issue.severity === "élevé" ? "#f09595" :
+                                                 issue.severity === "modéré" ? "#f4a261" : "#74c69d";
+                                return (
+                                  <div key={i} style={{ display: "flex", alignItems: "center",
+                                    gap: 10, padding: "8px 12px", borderRadius: 10,
+                                    background: "var(--bg-card-2)", border: "0.5px solid var(--border)" }}>
+                                    <div style={{ width: 8, height: 8, borderRadius: "50%",
+                                      background: sevColor, flexShrink: 0 }} />
+                                    <span style={{ fontFamily: T.b, fontSize: 12,
+                                      color: "var(--t65)", flex: 1 }}>
+                                      {issue.zone ?? issue.element}
+                                    </span>
+                                    <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600,
+                                      color: sevColor, padding: "2px 8px", borderRadius: 100,
+                                      background: `${sevColor}15` }}>
+                                      {issue.severity}
+                                    </span>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
-                          <p style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff", fontWeight: 600, margin: 0 }}>
-                            Analyser ma posture maintenant →
-                          </p>
-                        </div>
-                      )}
+                        )}
+
+                        <p style={{ fontFamily: T.b, fontSize: 13, color: "#7c9fff",
+                          fontWeight: 600, margin: 0 }}>
+                          Voir mon rapport complet →
+                        </p>
+                      </div>
+                    );
+                  })() : (
+                    <div>
+                      <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)",
+                        lineHeight: 1.7, margin: "0 0 14px" }}>
+                        Le questionnaire révèle ce que tu <em>penses</em> de ta posture.
+                        La vidéo montre ce que ton corps <em>fait réellement</em> —
+                        en 40 secondes depuis ton PC ou ton mobile.
+                      </p>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
+                        {["40 secondes", "IA posturale", "Rapport immédiat", "PC ou mobile"].map((tag, i) => (
+                          <span key={i} style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600,
+                            padding: "4px 12px", borderRadius: 100,
+                            background: "rgba(43,92,230,0.12)", color: "#7c9fff",
+                            border: "0.5px solid rgba(43,92,230,0.2)" }}>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <div style={{ display: "inline-block", padding: "12px 24px",
+                        borderRadius: 100, background: "#2b5ce6", color: "#fff",
+                        fontFamily: T.h, fontWeight: 700, fontSize: 14 }}>
+                        Analyser ma posture →
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </motion.div>
               </Link>
             </motion.div>
