@@ -299,8 +299,10 @@ export default function ResultsPage() {
 
   useEffect(() => {
     setFirstname(localStorage.getItem("paw_firstname") ?? "");
-    const videoData = sessionStorage.getItem("paw_analysis_personne");
-    setHasVideoAnalysis(!!videoData);
+    setHasVideoAnalysis(
+      !!sessionStorage.getItem("paw_analysis_personne") ||
+      !!sessionStorage.getItem("paw_analysis_debout")
+    );
     const isExample = sessionStorage.getItem("paw_example_mode") === "true"
                    || localStorage.getItem("paw_example_mode") === "true";
     if (!isExample) {
@@ -379,7 +381,7 @@ export default function ResultsPage() {
       if (user) {
         const { data } = await createClient()
           .from("assessments")
-          .select("scores, answers")
+          .select("scores, answers, video_analysis")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
           .limit(1)
@@ -393,6 +395,13 @@ export default function ResultsPage() {
           setAnswers(parsedAnswers);
           sessionStorage.setItem("postureatwork_scores", JSON.stringify(data.scores));
           sessionStorage.setItem("postureatwork_answers", JSON.stringify(parsedAnswers));
+          if (data.video_analysis) {
+            const va = data.video_analysis as { personne?: unknown; poste?: unknown; debout?: unknown };
+            if (va.personne) sessionStorage.setItem("paw_analysis_personne", JSON.stringify(va.personne));
+            if (va.poste) sessionStorage.setItem("paw_analysis_poste", JSON.stringify(va.poste));
+            if (va.debout) sessionStorage.setItem("paw_analysis_debout", JSON.stringify(va.debout));
+            setHasVideoAnalysis(true);
+          }
           return;
         }
       }

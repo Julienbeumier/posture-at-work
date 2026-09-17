@@ -569,7 +569,37 @@ export default function FinalReportPage() {
 
     createClient().auth.getUser().then(async ({ data }) => {
       setUser(data.user ?? null);
-      if (foundLocal || !data.user) return;
+      if (!data.user) return;
+
+      // Si pas de scores en sessionStorage (ex: Safari iPhone ITP a vidé le stockage)
+      // → charger tout depuis Supabase et recharger la page pour que le rapport s'affiche
+      if (!scoresRaw) {
+        const supabase = createClient();
+        const { data: assessment } = await supabase
+          .from("assessments")
+          .select("scores, answers, video_analysis")
+          .eq("user_id", data.user.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (assessment?.scores) {
+          sessionStorage.setItem("postureatwork_scores", JSON.stringify(assessment.scores));
+          if (assessment.answers) {
+            sessionStorage.setItem("postureatwork_answers", JSON.stringify(assessment.answers));
+          }
+          if (assessment.video_analysis) {
+            const va = assessment.video_analysis as { personne?: unknown; poste?: unknown; debout?: unknown };
+            if (va.personne) sessionStorage.setItem("paw_analysis_personne", JSON.stringify(va.personne));
+            if (va.poste) sessionStorage.setItem("paw_analysis_poste", JSON.stringify(va.poste));
+            if (va.debout) sessionStorage.setItem("paw_analysis_debout", JSON.stringify(va.debout));
+          }
+          window.location.reload();
+          return;
+        }
+      }
+
+      if (foundLocal) return;
 
       // Rien en sessionStorage (ex: analyse vidéo faite sur un autre appareil via
       // le QR code) → charger la dernière analyse depuis Supabase
