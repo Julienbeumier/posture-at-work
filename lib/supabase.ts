@@ -83,10 +83,10 @@ export async function saveAssessment(
 
 export async function saveAssessmentForUser(
   userId: string,
-  scores: AssessmentScores,
+  scores: Record<string, number>,
   answers: Record<string, unknown>,
-  videoAnalysis?: Record<string, unknown> | null,
-  companyId?: string | null
+  videoAnalysis: Record<string, unknown> | null,
+  companyId: string | null
 ): Promise<{ error: Error | null }> {
   const client = createClient();
 
@@ -108,23 +108,23 @@ export async function saveAssessmentForUser(
       .update({
         scores,
         answers,
-        global_score: scores.global,
-        video_analysis: videoAnalysis ?? null,
-        company_id: companyId ?? null,
+        global_score: scores.global ?? 0,
+        company_id: companyId,
+        ...(videoAnalysis ? { video_analysis: videoAnalysis } : {}),
       })
       .eq("id", existing.id);
     return { error: error as Error | null };
-  } else {
-    const { error } = await client.from("assessments").insert([{
-      user_id: userId,
-      scores,
-      answers,
-      global_score: scores.global,
-      video_analysis: videoAnalysis ?? null,
-      company_id: companyId ?? null,
-    }]);
-    return { error: error as Error | null };
   }
+
+  const { error } = await client.from("assessments").insert([{
+    user_id: userId,
+    scores,
+    answers,
+    global_score: scores.global ?? 0,
+    company_id: companyId,
+    ...(videoAnalysis ? { video_analysis: videoAnalysis } : {}),
+  }]);
+  return { error: error as Error | null };
 }
 
 // ─── B2B Types ────────────────────────────────────────────────────────────────

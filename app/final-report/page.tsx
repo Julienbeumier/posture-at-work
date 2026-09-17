@@ -614,62 +614,54 @@ export default function FinalReportPage() {
   }, []);
 
   useEffect(() => {
-    if (!user || savedRef.current || loadedFromRemoteRef.current) return;
-    const target = report ?? personneAnalysis ?? deboutAnalysis ?? null;
-    if (!target) return;
+    if (savedRef.current || loadedFromRemoteRef.current) return;
+    if (!user) return;
+
+    const scoresRaw = sessionStorage.getItem("postureatwork_scores");
+    if (!scoresRaw) return;
+
     savedRef.current = true;
-    setSaveStatus("saving");
-    const isExample = sessionStorage.getItem("paw_example_mode") === "true";
-    const scoresRaw = isExample
-      ? sessionStorage.getItem("paw_example_scores")
-      : sessionStorage.getItem("postureatwork_scores");
-    const answersRaw = isExample
-      ? sessionStorage.getItem("paw_example_answers")
-      : sessionStorage.getItem("postureatwork_answers");
-    const scores = scoresRaw ? JSON.parse(scoresRaw) : {};
+
+    const scores = JSON.parse(scoresRaw);
+    const answersRaw = sessionStorage.getItem("postureatwork_answers");
     const answers = answersRaw ? JSON.parse(answersRaw) : {};
 
-    const saveVideoAnalysis = async () => {
-      const analysisPersonne = JSON.parse(sessionStorage.getItem("paw_analysis_personne") || "null");
-      const analysisPoste = JSON.parse(sessionStorage.getItem("paw_analysis_poste") || "null");
-      if (!analysisPersonne && !analysisPoste) return;
-      const supabase = createClient();
-      const { data: latest } = await supabase
-        .from("assessments").select("id").eq("user_id", user.id)
-        .order("created_at", { ascending: false }).limit(1);
-      if (!latest?.length) return;
-      await supabase.from("assessments").update({
-        video_analysis: {
-          personne: analysisPersonne,
-          poste: analysisPoste,
-          analyzed_at: new Date().toISOString(),
-        },
-      }).eq("id", latest[0].id);
-    };
+    const analysisPersonne = JSON.parse(sessionStorage.getItem("paw_analysis_personne") || "null");
+    const analysisPoste = JSON.parse(sessionStorage.getItem("paw_analysis_poste") || "null");
+    const analysisDebout = JSON.parse(sessionStorage.getItem("paw_analysis_debout") || "null");
 
-    (async () => {
-      let companyId = localStorage.getItem("paw_company_id");
-      if (!companyId) {
-        const { data: membership } = await createClient()
-          .from("company_memberships")
-          .select("company_id")
-          .eq("user_id", user.id)
-          .eq("role", "employee")
-          .maybeSingle();
-        if (membership?.company_id) {
-          companyId = membership.company_id;
-          localStorage.setItem("paw_company_id", membership.company_id);
+    const videoAnalysis = (analysisPersonne || analysisPoste || analysisDebout)
+      ? { personne: analysisPersonne, poste: analysisPoste,
+          debout: analysisDebout, analyzed_at: new Date().toISOString() }
+      : null;
+
+    createClient()
+      .from("company_memberships")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .eq("role", "employee")
+      .maybeSingle()
+      .then(({ data: membership }) => {
+        const companyId = membership?.company_id
+          ?? localStorage.getItem("paw_company_id")
+          ?? null;
+        return saveAssessmentForUser(
+          user.id, scores, answers,
+          videoAnalysis as Record<string, unknown> | null,
+          companyId
+        );
+      })
+      .then(({ error }) => {
+        if (error) {
+          console.error("[final-report] Erreur sauvegarde:", error);
+          setSaveStatus("error");
+          savedRef.current = false;
+        } else {
+          setSaveStatus("saved");
+          console.log("[final-report] Bilan sauvegardé avec vidéo:", !!videoAnalysis);
         }
-      }
-      try {
-        await saveAssessmentForUser(user.id, scores, answers, target as unknown as Record<string, unknown>, companyId ?? null);
-        await saveVideoAnalysis();
-        setSaveStatus("saved");
-      } catch {
-        setSaveStatus("error");
-      }
-    })();
-  }, [user, report, personneAnalysis, deboutAnalysis]);
+      });
+  }, [user]);
 
   // Sauvegarde via le token de session QR code — fonctionne même sans session
   // active sur l'appareil mobile (le desktop est connecté, pas forcément le mobile)
@@ -799,7 +791,21 @@ export default function FinalReportPage() {
                 ))}
               </div>
               <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{da.overallAssessment}</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {(da.overallAssessment ?? "")
+                    .split(/[.!]/)
+                    .map((s: string) => s.trim())
+                    .filter((s: string) => s.length > 20)
+                    .slice(0, 4)
+                    .map((sentence: string, i: number) => (
+                      <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                        <div style={{ width: 6, height: 6, borderRadius: "50%", flexShrink: 0,
+                          background: "#f4a261", marginTop: 6 }} />
+                        <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)",
+                          lineHeight: 1.6, margin: 0 }}>{sentence}.</p>
+                      </div>
+                    ))}
+                </div>
               </div>
               {da.mainIssues.length > 0 && (
                 <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
@@ -1080,7 +1086,21 @@ export default function FinalReportPage() {
 
               {/* Synthesis */}
               <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(167,139,250,0.07)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{pa.overallAssessment}</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {(pa.overallAssessment ?? "")
+                    .split(/[.!]/)
+                    .map((s: string) => s.trim())
+                    .filter((s: string) => s.length > 20)
+                    .slice(0, 4)
+                    .map((sentence: string, i: number) => (
+                      <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                        <div style={{ width: 6, height: 6, borderRadius: "50%", flexShrink: 0,
+                          background: "#f4a261", marginTop: 6 }} />
+                        <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)",
+                          lineHeight: 1.6, margin: 0 }}>{sentence}.</p>
+                      </div>
+                    ))}
+                </div>
               </div>
 
               {/* Issues */}
@@ -1146,7 +1166,21 @@ export default function FinalReportPage() {
               </div>
 
               <div style={{ marginTop: 12, borderRadius: 14, padding: "12px 16px", background: "rgba(59,130,246,0.07)", border: "0.5px solid rgba(59,130,246,0.18)" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{po.overallAssessment}</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {(po.overallAssessment ?? "")
+                    .split(/[.!]/)
+                    .map((s: string) => s.trim())
+                    .filter((s: string) => s.length > 20)
+                    .slice(0, 4)
+                    .map((sentence: string, i: number) => (
+                      <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                        <div style={{ width: 6, height: 6, borderRadius: "50%", flexShrink: 0,
+                          background: "#f4a261", marginTop: 6 }} />
+                        <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)",
+                          lineHeight: 1.6, margin: 0 }}>{sentence}.</p>
+                      </div>
+                    ))}
+                </div>
               </div>
 
               {po.positivePoints.length > 0 && (

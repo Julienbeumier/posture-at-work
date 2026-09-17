@@ -335,7 +335,7 @@ export default function ResultsPage() {
           }
         }
 
-        const { error } = await saveAssessmentForUser(user.id, s, a as Record<string, unknown>, null, companyId);
+        const { error } = await saveAssessmentForUser(user.id, s as unknown as Record<string, number>, a as Record<string, unknown>, null, companyId);
         if (error) console.error("[PAW] Erreur sauvegarde:", error);
         else console.log("[PAW] Bilan sauvegardé ✅");
       } catch (e) {

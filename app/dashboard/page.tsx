@@ -724,38 +724,74 @@ export default function DashboardPage() {
 
             {/* ── 4. CARTE ANALYSE VIDÉO ── */}
             <motion.div {...fadeUp(0.1)} style={{ marginBottom: 14 }}>
-              <Link href={latestAssessment.video_analysis ? "/final-report" : "/video-intro"}
+              <Link href={latestAssessment?.video_analysis ? "/final-report" : "/video-intro"}
                 style={{ textDecoration: "none" }}>
-                <motion.div whileHover={{ scale: 1.005 }}
-                  style={{ padding: "20px 24px", borderRadius: 20, cursor: "pointer",
-                    background: latestAssessment.video_analysis
-                      ? "rgba(116,198,157,0.06)" : "rgba(43,92,230,0.08)",
-                    border: `0.5px solid ${latestAssessment.video_analysis
-                      ? "rgba(116,198,157,0.2)" : "rgba(43,92,230,0.25)"}`,
-                    display: "flex", alignItems: "center",
-                    justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+                <motion.div whileHover={{ scale: 1.01, y: -2 }}
+                  style={{ padding: "24px", borderRadius: 20, cursor: "pointer",
+                    background: latestAssessment?.video_analysis
+                      ? "rgba(43,92,230,0.08)"
+                      : "rgba(43,92,230,0.06)",
+                    border: `1px solid ${latestAssessment?.video_analysis
+                      ? "rgba(43,92,230,0.3)" : "rgba(43,92,230,0.2)"}` }}>
 
-                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <span style={{ fontSize: 28 }}>🎥</span>
-                    <div>
-                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 16,
-                        color: "var(--text-primary)", margin: "0 0 4px" }}>
-                        {latestAssessment.video_analysis
-                          ? "Analyse vidéo IA — complétée"
-                          : "Analyse vidéo IA — à compléter"}
-                      </p>
-                      <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", margin: 0 }}>
-                        {latestAssessment.video_analysis
-                          ? "Posture · Setup · Corrélations · Rapport détaillé"
-                          : "40 secondes · L'IA analyse ta posture réelle · Rapport complet"}
+                  <div style={{ display: "flex", alignItems: "flex-start",
+                    justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                        <span style={{ fontSize: 24 }}>🎥</span>
+                        <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18,
+                          color: "var(--text-primary)", margin: 0 }}>
+                          Analyse vidéo IA
+                        </p>
+                        {latestAssessment?.video_analysis && (
+                          <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700,
+                            padding: "3px 10px", borderRadius: 100,
+                            background: "rgba(116,198,157,0.15)", color: "#74c69d",
+                            border: "0.5px solid rgba(116,198,157,0.3)" }}>
+                            ✅ Complétée
+                          </span>
+                        )}
+                      </div>
+
+                      {latestAssessment?.video_analysis ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
+                          {[
+                            "Posture · projection de tête · alignement colonne",
+                            "Setup · hauteur écran · position chaise",
+                            "Corrélations avec tes douleurs déclarées",
+                          ].map((item, i) => (
+                            <div key={i} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                              <span style={{ color: "#7c9fff", fontSize: 12, flexShrink: 0 }}>✓</span>
+                              <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)" }}>{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div style={{ marginBottom: 14 }}>
+                          <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)",
+                            lineHeight: 1.65, margin: "0 0 10px" }}>
+                            Le questionnaire révèle ce que tu <em>penses</em> de ta posture.
+                            La vidéo montre ce que ton corps <em>fait réellement</em>.
+                          </p>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                            {["40 secondes", "IA posturale", "Rapport détaillé"].map((tag, i) => (
+                              <span key={i} style={{ fontFamily: T.b, fontSize: 11,
+                                fontWeight: 600, padding: "3px 10px", borderRadius: 100,
+                                background: "rgba(43,92,230,0.12)", color: "#7c9fff",
+                                border: "0.5px solid rgba(43,92,230,0.2)" }}>
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff", fontWeight: 600, margin: 0 }}>
+                        {latestAssessment?.video_analysis
+                          ? "Voir mon rapport d'analyse →"
+                          : "Analyser ma posture maintenant →"}
                       </p>
                     </div>
-                  </div>
-
-                  <div style={{ padding: "10px 20px", borderRadius: 100, flexShrink: 0,
-                    background: latestAssessment.video_analysis ? "#74c69d" : "#2b5ce6",
-                    color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 14 }}>
-                    {latestAssessment.video_analysis ? "Voir le rapport →" : "Analyser ma posture →"}
                   </div>
                 </motion.div>
               </Link>
