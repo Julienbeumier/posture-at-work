@@ -326,38 +326,93 @@ function buildCrossedSynthesis(
   const scoreLabel = globalScore >= 70 ? "Bon niveau" : globalScore >= 50 ? "À améliorer" : "Attention requise";
   const scoreColor = globalScore >= 70 ? "#74c69d" : globalScore >= 50 ? "#f4a261" : "#f09595";
 
-  // Synthèse narrative croisée
+  // ─── Lecture des réponses brutes ──────────────────────────────────────────
+  const a = (answers ?? {}) as Record<string, string | number | undefined>;
   const painScore = scores?.pain ?? 50;
   const setupScore = scores?.setup ?? 50;
   const hasVideoPosture = !!personne || !!debout;
 
+  // Douleurs déclarées (1-5)
+  const douleurNuque   = Number(a.q6  ?? 0);
+  const douleurEpaules = Number(a.q7  ?? 0);
+  const douleurDos     = Number(a.q8  ?? 0);
+  const douleurPoignets= Number(a.q9  ?? 0);
+  const douleurYeux    = Number(a.q10 ?? 0);
+  const heuresAssis    = Number(a.q13 ?? 0);
+  const pauses         = String(a.q14 ?? "");
+  const sommeil        = Number(a.q17 ?? 8);
+  const stress         = String(a.q_stress_travail ?? "");
+  const activitePhys   = String(a.q14b ?? a.q12b ?? "");
+  const douleurNuit    = String(a.q_douleur_nuit ?? "");
+  const hauteurBureau  = String(a.q_hauteur_bureau ?? "");
+  const eclairage      = String(a.q_eclairage ?? "");
+  const doubleEcran    = String(a.q_double_ecran ?? "");
+
+  // Zones douloureuses majeures (≥3/5)
+  const majeurDouleurs: string[] = [];
+  if (douleurNuque   >= 3) majeurDouleurs.push("nuque");
+  if (douleurEpaules >= 3) majeurDouleurs.push("épaules");
+  if (douleurDos     >= 3) majeurDouleurs.push("bas du dos");
+  if (douleurPoignets>= 3) majeurDouleurs.push("poignets");
+  if (douleurYeux    >= 3) majeurDouleurs.push("yeux");
+
+  // Zones critiques (≥4/5)
+  const critiqueDouleurs: string[] = [];
+  if (douleurNuque   >= 4) critiqueDouleurs.push("nuque");
+  if (douleurEpaules >= 4) critiqueDouleurs.push("épaules");
+  if (douleurDos     >= 4) critiqueDouleurs.push("bas du dos");
+  if (douleurPoignets>= 4) critiqueDouleurs.push("poignets");
+  if (douleurYeux    >= 4) critiqueDouleurs.push("yeux");
+
+  const pausesMauvaises = pauses === "never" || pauses === "rarely";
+  const stressEleve     = stress === "eleve" || stress === "tres_eleve";
+  const sommeilInsuffisant = sommeil <= 6;
+  const sedentaire      = heuresAssis >= 9 || pausesMauvaises;
+
+  // ─── Synthèse narrative croisée ───────────────────────────────────────────
   let narrative = "";
+
   if (hasVideoPosture && personne) {
-    const headIssue = personne.segments.tete_cou.score < 60;
+    const headIssue     = personne.segments.tete_cou.score < 60;
     const shoulderIssue = personne.segments.epaules_dos_haut.score < 60;
-    if (headIssue && painScore < 55) {
-      narrative = `L'analyse vidéo confirme ce que tu as déclaré dans le questionnaire : une projection de tête importante génère une charge cervicale excessive. Cette combinaison explique directement tes douleurs de nuque.`;
-    } else if (shoulderIssue && painScore < 60) {
-      narrative = `Le questionnaire signale des douleurs aux épaules, et l'analyse vidéo en identifie la cause : un enroulement des épaules vers l'avant lié à ta posture de travail.`;
+
+    if (headIssue && douleurNuque >= 3) {
+      narrative = `L'analyse vidéo confirme ce que tu as déclaré : une projection de tête génère une charge cervicale excessive (jusqu'à 27 kg sur tes vertèbres C5-C6). Tes douleurs de nuque${douleurNuque >= 4 ? " sévères" : ""} ont une cause mécanique claire — corrigeable avec les ajustements prioritaires ci-dessous.`;
+    } else if (shoulderIssue && douleurEpaules >= 3) {
+      narrative = `Le questionnaire signale des tensions aux épaules (${douleurEpaules}/5), et l'analyse vidéo en identifie la cause : un enroulement des épaules vers l'avant lié à ta posture de travail${heuresAssis >= 8 ? ` et à tes ${heuresAssis}h assis par jour` : ""}.`;
     } else if (setupScore < 55 && poste) {
-      narrative = `Ton setup de bureau est la principale source de tes tensions. L'analyse vidéo et le questionnaire convergent : corriger ton poste aura un impact immédiat sur ta posture et tes douleurs.`;
+      narrative = `Ton setup de bureau est la principale source de tes tensions${majeurDouleurs.length > 0 ? ` (${majeurDouleurs.slice(0,2).join(", ")})` : ""}. L'analyse vidéo et le questionnaire convergent : corriger ton poste aura un impact immédiat.`;
     } else {
-      narrative = `Ton bilan croisé montre une posture globalement ${globalScore >= 60 ? "satisfaisante" : "à améliorer"} avec quelques points d'attention spécifiques à corriger.`;
+      narrative = `Ton bilan croisé montre une posture globalement ${globalScore >= 60 ? "satisfaisante" : "à améliorer"}${majeurDouleurs.length > 0 ? ` avec des tensions déclarées en ${majeurDouleurs.join(", ")}` : ""}. Les points d'action ci-dessous te permettront de progresser rapidement.`;
     }
   } else if (debout) {
-    narrative = `L'analyse vidéo identifie les contraintes posturales de ton poste debout. Combinées aux informations du questionnaire, elles permettent de cibler précisément les zones à travailler.`;
+    narrative = `L'analyse vidéo identifie les contraintes posturales de ton poste debout${majeurDouleurs.length > 0 ? `, confirmées par tes douleurs déclarées en ${majeurDouleurs.join(", ")}` : ""}. Les recommandations ci-dessous ciblent précisément les zones à travailler.`;
   } else {
-    narrative = `Basé sur tes réponses au questionnaire, voici un plan d'action personnalisé pour améliorer ta santé au travail.`;
+    // Questionnaire seul — narrative entièrement personnalisée
+    if (critiqueDouleurs.length >= 2) {
+      narrative = `Ton questionnaire révèle des douleurs sévères en ${critiqueDouleurs.join(" et ")}${heuresAssis >= 8 ? `, amplifiées par tes ${heuresAssis}h assis quotidiennes` : ""}${stressEleve ? " et un niveau de stress élevé" : ""}. Ce tableau clinique nécessite des ajustements rapides — les priorités sont définies ci-dessous.`;
+    } else if (critiqueDouleurs.length === 1) {
+      const zone = critiqueDouleurs[0];
+      narrative = `Ta douleur principale en ${zone} (niveau ${zone === "nuque" ? douleurNuque : zone === "épaules" ? douleurEpaules : zone === "bas du dos" ? douleurDos : zone === "poignets" ? douleurPoignets : douleurYeux}/5) est le signal à traiter en priorité${sedentaire ? ` — ${heuresAssis >= 9 ? `${heuresAssis}h assis par jour sans pauses suffisantes` : "l'absence de pauses régulières"} accentue cette tension` : ""}${sommeilInsuffisant ? ` et un sommeil de ${sommeil}h limite ta récupération` : ""}.`;
+    } else if (majeurDouleurs.length >= 1) {
+      narrative = `Tu déclares des tensions en ${majeurDouleurs.join(", ")}${heuresAssis >= 8 ? ` après ${heuresAssis}h de travail assis` : ""}. Ces inconforts sont évitables avec quelques ajustements ciblés${stressEleve ? " — le stress déclaré amplifie probablement ces sensations" : ""}.`;
+    } else if (sedentaire) {
+      narrative = `Ton questionnaire montre${heuresAssis >= 9 ? ` ${heuresAssis}h de position assise par jour` : " un manque de pauses actives"}${pausesMauvaises ? " avec très peu de pauses" : ""}. Ce facteur est le principal risque à long terme même en l'absence de douleurs actuelles.`;
+    } else if (stressEleve && sommeilInsuffisant) {
+      narrative = `Stress élevé et ${sommeil}h de sommeil seulement : ta récupération est insuffisante. Ces deux facteurs combinés surpassent souvent les effets de la posture sur l'énergie et les douleurs chroniques.`;
+    } else {
+      narrative = `Ton bilan questionnaire est globalement positif${scores?.global && scores.global >= 65 ? ` (score ${scores.global}/100)` : ""}. Les quelques points d'amélioration identifiés ci-dessous te permettront de maintenir ce niveau sur le long terme.`;
+    }
   }
 
-  // Confirmations croisées
+  // ─── Confirmations croisées ────────────────────────────────────────────────
   const confirmations: Array<{ text: string; type: "confirm" | "new" | "good" }> = [];
   if (personne) {
-    if (personne.segments.tete_cou.score < 60 && painScore < 60) {
-      confirmations.push({ text: "Douleurs cervicales confirmées par l'analyse vidéo — projection de tête mesurée", type: "confirm" });
+    if (personne.segments.tete_cou.score < 60 && douleurNuque >= 3) {
+      confirmations.push({ text: `Douleurs cervicales confirmées par l'analyse vidéo — projection de tête mesurée (tu as déclaré ${douleurNuque}/5 en nuque)`, type: "confirm" });
     }
-    if (personne.segments.epaules_dos_haut.score < 60) {
-      confirmations.push({ text: "Enroulement des épaules détecté à la vidéo — non signalé dans le questionnaire", type: "new" });
+    if (personne.segments.epaules_dos_haut.score < 60 && douleurEpaules < 3) {
+      confirmations.push({ text: "Enroulement des épaules détecté à la vidéo — non signalé dans le questionnaire, à surveiller", type: "new" });
     }
     if (personne.positivePoints?.length) {
       confirmations.push({ text: personne.positivePoints[0], type: "good" });
@@ -366,8 +421,21 @@ function buildCrossedSynthesis(
   if (poste?.mainIssues?.[0]) {
     confirmations.push({ text: `Setup : ${poste.mainIssues[0].issue} → ${poste.mainIssues[0].fix}`, type: "confirm" });
   }
+  // Confirmations issues du questionnaire seul
+  if (!personne && douleurNuque >= 4) {
+    confirmations.push({ text: `Nuque critique (${douleurNuque}/5) — zone prioritaire n°1 à traiter immédiatement`, type: "confirm" });
+  }
+  if (!personne && douleurDos >= 4) {
+    confirmations.push({ text: `Douleur bas du dos sévère (${douleurDos}/5) — souvent liée à la hauteur du bureau et la durée assise`, type: "confirm" });
+  }
+  if (!personne && stressEleve && sommeilInsuffisant) {
+    confirmations.push({ text: `Stress élevé + sommeil insuffisant (${sommeil}h) — combinaison qui amplifie toutes les douleurs musculaires`, type: "confirm" });
+  }
+  if (scores?.global && scores.global >= 70 && majeurDouleurs.length === 0) {
+    confirmations.push({ text: "Aucune douleur majeure déclarée — profil préventif, maintiens ces bonnes habitudes", type: "good" });
+  }
 
-  // Points positifs
+  // ─── Points positifs ───────────────────────────────────────────────────────
   const positivePoints: string[] = [
     ...(personne?.positivePoints ?? []),
     ...(debout?.positivePoints ?? []),
@@ -375,54 +443,103 @@ function buildCrossedSynthesis(
   ].slice(0, 3);
   if (positivePoints.length === 0) {
     if (scores?.lifestyle && scores.lifestyle >= 60) positivePoints.push("Bonne activité physique — atout majeur pour ta récupération musculaire");
-    if (scores?.sleep_energy && scores.sleep_energy >= 65) positivePoints.push("Sommeil satisfaisant — récupération correcte");
-    if (scores?.nutrition && scores.nutrition >= 60) positivePoints.push("Habitudes alimentaires correctes");
+    if (scores?.sleep_energy && scores.sleep_energy >= 65) positivePoints.push(`Sommeil satisfaisant (${sommeil >= 7 ? sommeil + "h" : "correct"}) — récupération correcte`);
+    if (scores?.nutrition && scores.nutrition >= 60) positivePoints.push("Habitudes alimentaires correctes — base solide pour la santé musculaire");
+    if (majeurDouleurs.length === 0 && scores?.pain && scores.pain >= 70) positivePoints.push("Aucune douleur significative déclarée — bilan douleur excellent");
+    if (pauses === "often" || pauses === "always") positivePoints.push("Bonnes pauses régulières — habitude protective à maintenir");
   }
 
-  // Plan semaine
-  const allRecs = [
+  // ─── Plan semaine enrichi par les réponses ────────────────────────────────
+  const allVideoRecs = [
     ...(personne?.recommendations ?? []),
     ...(poste?.recommendations ?? []),
     ...(debout?.recommendations ?? []),
   ].sort((a, b) => a.priority - b.priority);
 
+  // Actions questionnaire-driven (quand pas de vidéo ou pour compléter)
+  const qActions: Array<{ action: string; priority: number }> = [];
+
+  if (douleurNuque >= 3) qActions.push({ action: `Réajuster la hauteur de l'écran pour que le haut soit au niveau des yeux (nuque ${douleurNuque}/5)`, priority: douleurNuque >= 4 ? 0 : 1 });
+  if (douleurEpaules >= 3) qActions.push({ action: `Vérifier que tes coudes forment un angle de 90° sur ton bureau (tension épaules ${douleurEpaules}/5)`, priority: douleurEpaules >= 4 ? 0 : 1 });
+  if (douleurDos >= 3) qActions.push({ action: `Ajuster le dossier de ton siège pour soutenir le bas du dos (douleur ${douleurDos}/5)`, priority: douleurDos >= 4 ? 0 : 1 });
+  if (douleurPoignets >= 3) qActions.push({ action: `Clavier à plat ou légèrement incliné vers toi, poignets dans l'axe (douleur ${douleurPoignets}/5)`, priority: douleurPoignets >= 4 ? 0 : 1 });
+  if (douleurYeux >= 3) qActions.push({ action: `Réduire la luminosité de l'écran, activer le mode nuit, règle 20-20-20 (yeux ${douleurYeux}/5)`, priority: 1 });
+  if (pausesMauvaises) qActions.push({ action: `Programmer une alarme toutes les 45 min pour te lever 2 minutes — tu déclares ne presque jamais faire de pauses`, priority: 1 });
+  if (heuresAssis >= 9) qActions.push({ action: `Fractionner tes ${heuresAssis}h assis : debout au téléphone, réunions debout si possible`, priority: 2 });
+  if (stressEleve) qActions.push({ action: `3 min de respiration diaphragmatique en début de journée — cohérence cardiaque (stress déclaré élevé)`, priority: 2 });
+  if (sommeilInsuffisant) qActions.push({ action: `Écrans off 1h avant de dormir — ta récupération est limitée par ${sommeil}h de sommeil`, priority: 2 });
+  if (hauteurBureau === "trop_bas" || hauteurBureau === "trop_haut") qActions.push({ action: `Régler la hauteur de ton bureau : coudes à 90°, pieds à plat (déclaré ${hauteurBureau === "trop_bas" ? "trop bas" : "trop haut"})`, priority: 1 });
+  if (eclairage === "insuffisant" || eclairage === "mauvais") qActions.push({ action: "Ajouter une lampe de bureau à lumière naturelle — éclairage insuffisant déclaré", priority: 2 });
+  if (doubleEcran === "oui" || doubleEcran === "yes") qActions.push({ action: "Positionner l'écran principal face à toi, le secondaire légèrement en angle — double écran = risque de rotation cervicale", priority: 2 });
+  if (activitePhys === "never" || activitePhys === "rarely") qActions.push({ action: "Intégrer 20 min de marche quotidienne — ton niveau d'activité physique est faible, facteur aggravant des douleurs", priority: 3 });
+  if (douleurNuit === "oui" || douleurNuit === "yes") qActions.push({ action: "Consulter un kinésithérapeute — douleurs nocturnes déclarées : signe d'une tension musculaire qui nécessite un avis professionnel", priority: 0 });
+
+  const mergedRecs = hasVideoPosture
+    ? [...allVideoRecs, ...qActions.filter(q => !allVideoRecs.some(v => v.action.toLowerCase().includes(q.action.split(" ")[0].toLowerCase())))]
+    : qActions;
+
   const weekPlan = [
     {
-      week: "Cette semaine",
+      week: "Cette semaine — Priorité",
       color: "#f09595",
-      actions: allRecs
-        .filter(r => r.priority <= 1 || (r as { immediat?: boolean }).immediat)
-        .map(r => r.action)
-        .slice(0, 3),
+      actions: mergedRecs.filter(r => r.priority <= 1).map(r => r.action).slice(0, 4),
     },
     {
       week: "Dans 2 semaines",
       color: "#f4a261",
-      actions: allRecs
-        .filter(r => r.priority === 2)
-        .map(r => r.action)
-        .slice(0, 3),
+      actions: mergedRecs.filter(r => r.priority === 2).map(r => r.action).slice(0, 3),
     },
     {
-      week: "Dans le mois",
+      week: "Dans le mois — À ancrer",
       color: "#74c69d",
-      actions: allRecs
-        .filter(r => r.priority >= 3)
-        .map(r => r.action)
-        .slice(0, 3),
+      actions: mergedRecs.filter(r => r.priority >= 3).map(r => r.action).slice(0, 3),
     },
   ].filter(w => w.actions.length > 0);
 
-  // Checklist quotidienne
+  // ─── Checklist quotidienne personnalisée ──────────────────────────────────
   const dailyChecklist: string[] = [];
-  if ((personne?.segments.tete_cou.score ?? 100) < 65) {
-    dailyChecklist.push("Rétraction cervicale — 10 rép. avant de commencer à travailler");
+
+  // Zones douloureuses → exercices spécifiques
+  if (douleurNuque >= 3 || (personne?.segments.tete_cou.score ?? 100) < 65) {
+    dailyChecklist.push(`Rétraction cervicale — 10 répétitions avant de commencer (nuque${douleurNuque >= 4 ? " critique" : " tendue"})`);
   }
-  if (setupScore < 60) dailyChecklist.push("Vérifier la hauteur de l'écran avant de s'asseoir");
-  dailyChecklist.push("Pause active toutes les 45 min — se lever 2 minutes");
-  if (scores?.nutrition && scores.nutrition < 60) dailyChecklist.push("Déjeuner loin de l'écran — 20 min minimum");
-  if (scores?.sleep_energy && scores.sleep_energy < 60) dailyChecklist.push("Écrans off 1h avant de dormir");
-  dailyChecklist.push("3 respirations profondes en cas de tension dans la nuque");
+  if (douleurEpaules >= 3) {
+    dailyChecklist.push("Roulements d'épaules arrière — 10 rép. matin et soir pour dénouer les trapèzes");
+  }
+  if (douleurDos >= 3) {
+    dailyChecklist.push("Étirement chat-vache — 5 cycles debout en fin de journée (bas du dos)");
+  }
+  if (douleurPoignets >= 3) {
+    dailyChecklist.push("Étirement poignets avant chaque session prolongée au clavier");
+  }
+  // Setup
+  if (setupScore < 60 || hauteurBureau === "trop_bas" || hauteurBureau === "trop_haut") {
+    dailyChecklist.push("Vérifier la hauteur de l'écran avant de s'asseoir — 2 secondes qui changent tout");
+  }
+  // Pauses
+  if (pausesMauvaises || heuresAssis >= 8) {
+    dailyChecklist.push(`Se lever 2 min toutes les 45 min — minuterie obligatoire (${heuresAssis >= 9 ? heuresAssis + "h assis/j" : "pauses insuffisantes"})`);
+  } else {
+    dailyChecklist.push("Pause active toutes les 45 min — maintenir ce bon réflexe");
+  }
+  // Nutrition / repas
+  if (scores?.nutrition && scores.nutrition < 60) {
+    dailyChecklist.push("Déjeuner loin de l'écran — 20 min minimum, aide à réduire le stress oculaire et les tensions");
+  }
+  // Sommeil
+  if (sommeilInsuffisant) {
+    dailyChecklist.push(`Écrans off ${sommeil <= 5 ? "1h30" : "1h"} avant de dormir — ${sommeil}h de sommeil est insuffisant pour récupérer`);
+  }
+  // Yeux
+  if (douleurYeux >= 3) {
+    dailyChecklist.push("Règle 20-20-20 : toutes les 20 min, fixer un point à 6 m pendant 20 secondes (fatigue oculaire)");
+  }
+  // Stress
+  if (stressEleve) {
+    dailyChecklist.push("3 respirations profondes (4-4-6) à la moindre tension — régule le système nerveux autonome");
+  } else {
+    dailyChecklist.push("3 respirations profondes en cas de tension dans la nuque");
+  }
 
   const products = buildPersonalizedProducts(answers, scores);
 
