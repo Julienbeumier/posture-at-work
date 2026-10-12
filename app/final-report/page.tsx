@@ -231,12 +231,80 @@ const SEGMENT_EXERCISE: Record<string, { name: string; instruction: string; link
 
 // ─── Crossed synthesis (questionnaire + vidéo) ────────────────────────────────
 
+function buildPersonalizedProducts(
+  answers: Record<string, unknown> | null,
+  scores: Record<string, number> | null,
+): Array<{ name: string; reason: string; priority: string; amazon_search: string }> {
+  if (!answers) return [];
+  const a = answers;
+  const products: Array<{ name: string; reason: string; priority: string; amazon_search: string }> = [];
+
+  // Équipement : laptop seul → support laptop en priorité absolue
+  if (a.q1 === "laptop" && (a.q_double_ecran === "laptop_seul" || !a.q_double_ecran)) {
+    products.push({ name: "Support laptop réglable", reason: `Ton laptop posé à plat crée une flexion cervicale permanente de 30°+ — jusqu'à 12kg de charge supplémentaire sur la nuque. Indispensable.`, priority: "haute", amazon_search: "support laptop ergonomique réglable aluminium" });
+  }
+
+  // Écran trop bas
+  if (a.q3 === "no" || a.q_hauteur_bureau === "trop_bas") {
+    if (!products.find(p => p.name === "Support laptop réglable")) {
+      products.push({ name: "Rehausseur d'écran", reason: "L'écran trop bas oblige à baisser la tête en permanence — cause directe de tes douleurs cervicales.", priority: "haute", amazon_search: "rehausseur ecran bureau ergonomique réglable" });
+    }
+  }
+
+  // Douleurs poignets → repose-poignets
+  const poignets = Number(a.q9 ?? 0);
+  if (poignets >= 2) {
+    products.push({ name: "Repose-poignets gel clavier", reason: `Tes douleurs aux poignets (${poignets}/5) indiquent une compression des tendons fléchisseurs — le repose-poignets réduit la pression de 60%.`, priority: poignets >= 4 ? "haute" : "moyenne", amazon_search: "repose poignets clavier bureau ergonomique gel" });
+    if (poignets >= 3) {
+      products.push({ name: "Souris verticale ergonomique", reason: `Une douleur poignets à ${poignets}/5 signale un risque de syndrome du canal carpien. La souris verticale remet le poignet en position neutre.`, priority: "haute", amazon_search: "souris verticale ergonomique sans fil" });
+    }
+  }
+
+  // Chaise inadaptée → coussin lombaire
+  if (a.q5b === "couch" || a.q5b === "fixed" || a.q5b === "other") {
+    const dosBas = Number(a.q8 ?? 0);
+    products.push({ name: "Coussin lombaire mémoire de forme", reason: `Ta chaise ne soutient pas le bas du dos${dosBas >= 3 ? ` — tes douleurs lombaires à ${dosBas}/5 le confirment` : ""}. Le coussin lombaire comble le vide entre la chaise et ta lordose naturelle.`, priority: dosBas >= 3 ? "haute" : "moyenne", amazon_search: "coussin lombaire chaise bureau mémoire de forme" });
+  }
+
+  // Douleurs nuque / cou → boule cervicale ou oreiller
+  const nuque = Number(a.q6 ?? 0);
+  if (nuque >= 3 && !products.find(p => p.name.includes("Support laptop") || p.name.includes("Rehausseur"))) {
+    products.push({ name: "Oreiller cervical ergonomique", reason: `Tes douleurs cervicales (${nuque}/5) persistent le soir — un oreiller ergonomique permet de récupérer pendant la nuit.`, priority: "moyenne", amazon_search: "oreiller cervical ergonomique mémoire de forme" });
+  }
+
+  // Yeux / maux de tête → filtre lumière bleue
+  const yeux = Number(a.q10 ?? 0);
+  if (yeux >= 3) {
+    products.push({ name: "Lunettes anti-lumière bleue", reason: `Tes maux de tête / fatigue visuelle (${yeux}/5) sont souvent liés à la lumière bleue de l'écran, surtout en fin de journée.`, priority: "moyenne", amazon_search: "lunettes anti lumière bleue travail ordinateur" });
+  }
+
+  // Éclairage insuffisant → lampe bureau
+  if (a.q_eclairage === "insuffisant" || a.q_eclairage === "mauvais" || (scores?.setup && scores.setup < 55)) {
+    if (!products.find(p => p.name.includes("Lunettes"))) {
+      products.push({ name: "Lampe bureau LED réglable", reason: "Un éclairage insuffisant force tes yeux à accommoder en permanence — source de fatigue visuelle et de maux de tête.", priority: "moyenne", amazon_search: "lampe bureau LED réglable 3000K lumière naturelle" });
+    }
+  }
+
+  // Sédentarité / pas de pause → minuterie ou balle anti-stress
+  const heures = Number(a.q13 ?? 0);
+  if (heures >= 9 || a.q14 === "never" || a.q14 === "rarely") {
+    products.push({ name: "Minuterie de bureau (pause active)", reason: `${heures >= 9 ? `${heures}h assis par jour` : "Pas de pauses régulières"} — le rappel toutes les 45 min réduit de 40% les douleurs par accumulation.`, priority: "optionnel", amazon_search: "minuterie timer bureau pause active ergonomie" });
+  }
+
+  // Sommeil insuffisant → masque sommeil ou aide récupération
+  const sommeil = Number(a.q17 ?? 8);
+  if (sommeil <= 6 && scores?.sleep_energy && scores.sleep_energy < 55) {
+    products.push({ name: "Masque de sommeil contour 3D", reason: `${sommeil}h de sommeil seulement — un environnement de sommeil optimisé améliore la récupération musculaire et réduit les douleurs chroniques.`, priority: "optionnel", amazon_search: "masque sommeil 3D contour yeux récupération" });
+  }
+
+  return products.slice(0, 5);
+}
+
 function buildCrossedSynthesis(
   personne: PersonneAnalysis | null,
   poste: PosteAnalysis | null,
   debout: DeboutAnalysis | null,
   scores: Record<string, number> | null,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   answers: Record<string, unknown> | null
 ): {
   globalScore: number;
@@ -247,6 +315,7 @@ function buildCrossedSynthesis(
   weekPlan: Array<{ week: string; color: string; actions: string[] }>;
   positivePoints: string[];
   dailyChecklist: string[];
+  products: Array<{ name: string; reason: string; priority: string; amazon_search: string }>;
 } {
   const videoScore = personne?.globalPostureScore ?? debout?.globalPostureScore ?? null;
   const questionScore = scores?.global ?? null;
@@ -355,7 +424,9 @@ function buildCrossedSynthesis(
   if (scores?.sleep_energy && scores.sleep_energy < 60) dailyChecklist.push("Écrans off 1h avant de dormir");
   dailyChecklist.push("3 respirations profondes en cas de tension dans la nuque");
 
-  return { globalScore, scoreLabel, scoreColor, narrative, confirmations, weekPlan, positivePoints, dailyChecklist };
+  const products = buildPersonalizedProducts(answers, scores);
+
+  return { globalScore, scoreLabel, scoreColor, narrative, confirmations, weekPlan, positivePoints, dailyChecklist, products };
 }
 
 type CrossedSynthesis = ReturnType<typeof buildCrossedSynthesis>;
@@ -497,6 +568,41 @@ function DailyChecklist({ items }: { items: string[] }) {
             </p>
           </div>
         ))}
+      </div>
+    </motion.div>
+  );
+}
+
+function PersonalizedProductsBlock({ products }: { products: Array<{ name: string; reason: string; priority: string; amazon_search: string }> }) {
+  if (products.length === 0) return null;
+  return (
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}
+      style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
+      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)", marginBottom: 4 }}>
+        🛍️ Produits sélectionnés pour toi
+      </p>
+      <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)", marginBottom: 14 }}>
+        Basés sur tes réponses au questionnaire
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {products.map((product, i) => {
+          const pColor = product.priority === "haute" ? "#f09595" : product.priority === "moyenne" ? "#f4a261" : "var(--t35)";
+          const pLabel = product.priority === "haute" ? "Priorité haute" : product.priority === "moyenne" ? "Priorité moyenne" : "Optionnel";
+          const amazonUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(product.amazon_search)}&tag=postureatwork-21`;
+          return (
+            <div key={i} style={{ borderRadius: 16, padding: "14px 16px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{product.name}</span>
+                <span style={{ flexShrink: 0, padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 11, color: pColor, background: `${pColor}18` }}>{pLabel}</span>
+              </div>
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, margin: "0 0 10px" }}>{product.reason}</p>
+              <a href={amazonUrl} target="_blank" rel="noopener noreferrer"
+                style={{ display: "inline-block", padding: "7px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer" }}>
+                Voir sur Amazon →
+              </a>
+            </div>
+          );
+        })}
       </div>
     </motion.div>
   );
@@ -924,11 +1030,12 @@ export default function FinalReportPage() {
             </section>
           )}
 
-          {/* Plan progressif + checklist */}
+          {/* Plan progressif + checklist + produits */}
           {synthesis && (
             <>
               <WeekPlanBlock weekPlan={synthesis.weekPlan} />
               {synthesis.dailyChecklist.length > 0 && <DailyChecklist items={synthesis.dailyChecklist} />}
+              <PersonalizedProductsBlock products={synthesis.products} />
             </>
           )}
 
@@ -1225,23 +1332,32 @@ export default function FinalReportPage() {
                   return (
                     <motion.div key={i} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.07 }}
                       style={{ borderRadius: 18, padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, marginBottom: 6 }}>
                           <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{product.name}</span>
-                          <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 11, color: pCfg.color, background: `${pCfg.color}18` }}>{pCfg.label}</span>
+                          <span style={{ flexShrink: 0, padding: "3px 9px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 11, color: pCfg.color, background: `${pCfg.color}18` }}>{pCfg.label}</span>
                         </div>
-                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", lineHeight: 1.6, margin: 0 }}>{product.reason}</p>
+                        <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", lineHeight: 1.6, margin: "0 0 10px" }}>{product.reason}</p>
+                        <a href={amazonUrl} target="_blank" rel="noopener noreferrer"
+                          style={{ display: "inline-block", padding: "7px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer" }}>
+                          Voir sur Amazon →
+                        </a>
                       </div>
-                      <a href={amazonUrl} target="_blank" rel="noopener noreferrer"
-                        style={{ flexShrink: 0, padding: "8px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer" }}>
-                        Amazon →
-                      </a>
                     </motion.div>
                   );
                 })}
               </div>
             </section>
           )}
+
+          {/* Produits questionnaire complémentaires */}
+          {synthesis && synthesis.products.length > 0 && (() => {
+            const videoProductNames = products.map(p => p.name.toLowerCase().split(" ")[0]);
+            const extraQProducts = synthesis.products.filter(qp =>
+              !videoProductNames.some(vn => qp.name.toLowerCase().includes(vn) || vn.includes(qp.name.toLowerCase().split(" ")[0]))
+            );
+            return extraQProducts.length > 0 ? <PersonalizedProductsBlock products={extraQProducts} /> : null;
+          })()}
 
           {/* ── SECTION 5 — EXERCISES ── */}
           {badSegments.length > 0 && (
@@ -1472,17 +1588,17 @@ export default function FinalReportPage() {
               return (
                 <motion.div key={i} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.07 }}
                   style={{ borderRadius: 20, padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, marginBottom: 6 }}>
                       <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{product.name}</span>
-                      <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 11, color: pCfg.color, background: `${pCfg.color}18` }}>{pCfg.label}</span>
+                      <span style={{ flexShrink: 0, padding: "3px 9px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 11, color: pCfg.color, background: `${pCfg.color}18` }}>{pCfg.label}</span>
                     </div>
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", lineHeight: 1.6, margin: 0 }}>{product.reason}</p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", lineHeight: 1.6, margin: "0 0 10px" }}>{product.reason}</p>
+                    <a href={amazonUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
+                      style={{ display: "inline-block", padding: "7px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer" }}>
+                      Voir sur Amazon →
+                    </a>
                   </div>
-                  <a href={amazonUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-                    style={{ flexShrink: 0, padding: "8px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer" }}>
-                    Amazon →
-                  </a>
                 </motion.div>
               );
             })}

@@ -52,11 +52,11 @@
 
 :root[data-theme="light"] {
   /* Backgrounds */
-  --bg-primary: #F3F7FF;
-  --bg-secondary: #ECF7FF;
-  --bg-card: rgba(255,255,255,0.74);
-  --bg-card-2: rgba(255,255,255,0.60);
-  --bg-card-3: rgba(255,255,255,0.85);
+  --bg-primary: #EEF2FA;
+  --bg-secondary: #E5EDF8;
+  --bg-card: rgba(255,255,255,0.90);
+  --bg-card-2: rgba(255,255,255,0.80);
+  --bg-card-3: rgba(255,255,255,0.95);
 
   /* Textes */
   --text-primary: #0B1220;
@@ -99,7 +99,7 @@
   --t20: #8a97b8;
 
   /* Legacy */
-  --background: #F3F7FF;
+  --background: #EEF2FA;
   --foreground: #0B1220;
 }
 
@@ -131,10 +131,10 @@ body {
 
 [data-theme="light"] body {
   background:
-    radial-gradient(1100px 700px at 12% 8%, rgba(37,99,235,0.12), transparent 58%),
-    radial-gradient(900px 600px at 92% 14%, rgba(56,189,248,0.10), transparent 55%),
-    radial-gradient(850px 520px at 65% 92%, rgba(16,185,129,0.08), transparent 55%),
-    linear-gradient(180deg, #F3F7FF, #ECF7FF) !important;
+    radial-gradient(1100px 700px at 12% 8%, rgba(37,99,235,0.08), transparent 58%),
+    radial-gradient(900px 600px at 92% 14%, rgba(56,189,248,0.07), transparent 55%),
+    radial-gradient(850px 520px at 65% 92%, rgba(16,185,129,0.06), transparent 55%),
+    linear-gradient(180deg, #EEF2FA, #E5EDF8) !important;
   color: #0B1220 !important;
 }
 
@@ -224,10 +224,22 @@ body {
   border-color: rgba(15,23,42,0.10) !important;
 }
 
-/* Questionnaire options */
+/* Questionnaire options — non sélectionnées */
+[data-theme="light"] [style*="rgba(15,23,42,0.04)"],
+[data-theme="light"] [style*="rgba(15,23,42,0.03)"] {
+  background: rgba(255,255,255,0.85) !important;
+  border-color: rgba(15,23,42,0.14) !important;
+}
+
 [data-theme="light"] [style*="rgba(255,255,255,0.05)"] {
-  background: rgba(255,255,255,0.60) !important;
-  border-color: rgba(15,23,42,0.10) !important;
+  background: rgba(255,255,255,0.85) !important;
+  border-color: rgba(15,23,42,0.12) !important;
+}
+
+/* Pills navigation */
+[data-theme="light"] [style*="rgba(15,23,42,0.06)"] {
+  background: rgba(255,255,255,0.80) !important;
+  border-color: rgba(15,23,42,0.16) !important;
 }
 
 /* ─── Light mode: nav accent buttons ────────────────────────────────────────── */
