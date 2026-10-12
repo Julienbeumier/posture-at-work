@@ -112,22 +112,23 @@ function ChoiceGrid({
             whileTap={{ scale: 0.98 }}
             onClick={() => onChange(opt.value)}
             style={{
-              padding: "12px 18px",
-              borderRadius: 100,
+              padding: "14px 18px",
+              borderRadius: 14,
               background: sel ? cat.selectedBg : theme === "light" ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.06)",
-              border: sel ? `1px solid ${cat.color}55` : "0.5px solid var(--border-3)",
+              border: sel ? `1.5px solid ${cat.color}55` : "0.5px solid var(--border-3)",
               color: sel ? cat.selectedColor : "var(--t75)",
-              fontSize: 14,
+              fontSize: 15,
               fontFamily: T.b,
               cursor: "pointer",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               transition: "all 0.15s ease",
+              minHeight: 50,
             }}
           >
             <span>{opt.label}</span>
-            {sel && <span style={{ color: cat.color, fontWeight: 700, fontSize: 13 }}>✓</span>}
+            {sel && <span style={{ color: cat.color, fontWeight: 700, fontSize: 14 }}>✓</span>}
           </motion.div>
         );
       })}
@@ -163,21 +164,22 @@ function MultiSelectGrid({
             whileTap={{ scale: 0.98 }}
             onClick={() => toggle(opt.value)}
             style={{
-              padding: "12px 18px",
-              borderRadius: 100,
+              padding: "14px 18px",
+              borderRadius: 14,
               background: sel ? cat.selectedBg : theme === "light" ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.06)",
-              border: sel ? `1px solid ${cat.color}55` : "0.5px solid var(--border-3)",
+              border: sel ? `1.5px solid ${cat.color}55` : "0.5px solid var(--border-3)",
               color: sel ? cat.selectedColor : "var(--t75)",
-              fontSize: 14,
+              fontSize: 15,
               fontFamily: T.b,
               cursor: "pointer",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              minHeight: 50,
             }}
           >
             <span>{opt.label}</span>
-            {sel && <span style={{ color: cat.color, fontWeight: 700 }}>✓</span>}
+            {sel && <span style={{ color: cat.color, fontWeight: 700, fontSize: 14 }}>✓</span>}
           </motion.div>
         );
       })}
@@ -228,7 +230,7 @@ function PainScale({
     return () => window.removeEventListener("resize", check);
   }, []);
   return (
-    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(6, 1fr)", gap: 6 }}>
+    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(3, 1fr)" : "repeat(6, 1fr)", gap: isMobile ? 8 : 6 }}>
       {[0, 1, 2, 3, 4, 5].map((v) => {
         const sel = value === v;
         return (
@@ -238,22 +240,22 @@ function PainScale({
             whileTap={{ scale: 0.93 }}
             onClick={() => onChange(v)}
             style={{
-              height: 60,
-              borderRadius: 12,
+              height: isMobile ? 72 : 60,
+              borderRadius: 14,
               background: sel ? cat.selectedBg : theme === "light" ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.05)",
-              border: sel ? `1px solid ${cat.color}66` : "0.5px solid var(--border-2)",
+              border: sel ? `1.5px solid ${cat.color}66` : "0.5px solid var(--border-2)",
               cursor: "pointer",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              gap: 2,
+              gap: 3,
               overflow: "hidden",
             }}
           >
-            <span style={{ fontSize: 16 }}>{PAIN_EMOJIS[v]}</span>
-            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 11, color: sel ? cat.selectedColor : "var(--t40)" }}>{v}</span>
-            <span style={{ fontSize: 8, color: sel ? cat.selectedColor : "var(--t25)", textAlign: "center", lineHeight: 1.1, overflow: "hidden", padding: "0 2px", width: "100%" }}>
+            <span style={{ fontSize: isMobile ? 20 : 16 }}>{PAIN_EMOJIS[v]}</span>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: isMobile ? 13 : 11, color: sel ? cat.selectedColor : "var(--t40)" }}>{v}</span>
+            <span style={{ fontSize: isMobile ? 10 : 9, color: sel ? cat.selectedColor : "var(--t25)", textAlign: "center", lineHeight: 1.2, padding: "0 3px", width: "100%" }}>
               {PAIN_LABELS[v]}
             </span>
           </motion.div>
@@ -283,7 +285,7 @@ function WellbeingScale({
     return () => window.removeEventListener("resize", check);
   }, []);
   return (
-    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(5, 1fr)", gap: 6 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: isMobile ? 8 : 6 }}>
       {WELLBEING_OPTIONS.map((opt) => {
         const sel = value === opt.value;
         return (
@@ -293,10 +295,10 @@ function WellbeingScale({
             whileTap={{ scale: 0.93 }}
             onClick={() => onChange(opt.value)}
             style={{
-              height: 68,
+              height: isMobile ? 76 : 68,
               borderRadius: 14,
               background: sel ? cat.selectedBg : theme === "light" ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.05)",
-              border: sel ? `1px solid ${cat.color}55` : "0.5px solid var(--border-2)",
+              border: sel ? `1.5px solid ${cat.color}55` : "0.5px solid var(--border-2)",
               cursor: "pointer",
               display: "flex",
               flexDirection: "column",
@@ -306,8 +308,8 @@ function WellbeingScale({
               overflow: "hidden",
             }}
           >
-            <span style={{ fontSize: 22 }}>{opt.emoji}</span>
-            <span style={{ fontSize: 9, fontFamily: T.b, color: sel ? cat.selectedColor : "var(--t35)", textAlign: "center", overflow: "hidden", padding: "0 3px", width: "100%" }}>
+            <span style={{ fontSize: isMobile ? 26 : 22 }}>{opt.emoji}</span>
+            <span style={{ fontSize: isMobile ? 11 : 9, fontFamily: T.b, color: sel ? cat.selectedColor : "var(--t35)", textAlign: "center", padding: "0 3px", width: "100%", lineHeight: 1.2 }}>
               {opt.label}
             </span>
           </motion.div>
@@ -365,21 +367,21 @@ function QBlock({
   return (
     <div
       style={{
-        padding: "20px",
+        padding: "18px 16px",
         borderRadius: 18,
         background: answered ? cat.colorBg : theme === "light" ? "rgba(15,23,42,0.03)" : "rgba(255,255,255,0.02)",
         border: answered ? `0.5px solid ${cat.colorBorder}` : "0.5px solid rgba(255,255,255,0.06)",
         transition: "all 0.3s ease",
         display: "flex",
         flexDirection: "column",
-        gap: 14,
+        gap: 16,
       }}
     >
       <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
         <div
           style={{
-            width: 24,
-            height: 24,
+            width: 28,
+            height: 28,
             borderRadius: "50%",
             background: answered ? cat.colorBg : theme === "light" ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.05)",
             border: answered ? `1px solid ${cat.color}55` : "0.5px solid var(--border-3)",
@@ -387,7 +389,7 @@ function QBlock({
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
-            fontSize: 11,
+            fontSize: 12,
             fontFamily: T.h,
             fontWeight: 700,
             color: answered ? cat.color : "var(--t35)",
@@ -396,11 +398,11 @@ function QBlock({
           {answered ? "✓" : number}
         </div>
         <div style={{ flex: 1 }}>
-          <p style={{ color: "var(--text-primary)", fontSize: 14, fontFamily: T.b, lineHeight: 1.5, margin: 0 }}>
+          <p style={{ color: "var(--text-primary)", fontSize: 16, fontFamily: T.b, lineHeight: 1.6, margin: 0 }}>
             {question}
           </p>
           {note && (
-            <p style={{ color: "var(--t45)", fontSize: 11, fontFamily: T.b, lineHeight: 1.55, margin: "6px 0 0", padding: "6px 10px", borderRadius: 8, background: `${cat.color}12`, borderLeft: `2px solid ${cat.color}40` }}>
+            <p style={{ color: "var(--t45)", fontSize: 12, fontFamily: T.b, lineHeight: 1.55, margin: "8px 0 0", padding: "8px 12px", borderRadius: 10, background: `${cat.color}12`, borderLeft: `2px solid ${cat.color}40` }}>
               💡 {note}
             </p>
           )}
@@ -426,7 +428,7 @@ function CategorySection({
         {/* Header */}
         <div
           style={{
-            padding: "20px 22px",
+            padding: "16px 18px",
             background: cat.colorBg,
             borderBottom: `0.5px solid ${cat.colorBorder}`,
             display: "flex",
@@ -478,14 +480,14 @@ function CategorySection({
         {/* Body */}
         <div
           style={{
-            padding: "16px",
+            padding: "16px 12px",
             background: theme === "light" ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.015)",
             border: `0.5px solid ${cat.colorBorder}`,
             borderTop: "none",
             borderRadius: "0 0 22px 22px",
             display: "flex",
             flexDirection: "column",
-            gap: 10,
+            gap: 12,
           }}
         >
           {children}
@@ -600,7 +602,7 @@ function BureauQuestionnaire() {
             </span>
           </div>
           {/* Progress bar */}
-          <div style={{ height: 3, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden", marginBottom: 10 }}>
+          <div style={{ height: 4, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden", marginBottom: 10 }}>
             <motion.div
               style={{ height: "100%", borderRadius: 100, background: "#2b5ce6" }}
               animate={{ width: `${(done / CATEGORIES.length) * 100}%` }}
@@ -616,20 +618,21 @@ function BureauQuestionnaire() {
                   key={cat.id}
                   onClick={() => scrollTo(cat.id)}
                   style={{
-                    padding: "5px 12px",
+                    padding: "6px 13px",
                     borderRadius: 100,
                     background: isDone ? cat.colorBg : theme === "light" ? "rgba(15,23,42,0.06)" : "rgba(255,255,255,0.05)",
                     border: isDone ? `0.5px solid ${cat.colorBorder}` : "0.5px solid var(--border-2)",
                     color: isDone ? cat.selectedColor : "var(--t35)",
                     fontFamily: T.h,
                     fontWeight: 700,
-                    fontSize: 12,
+                    fontSize: 13,
                     cursor: "pointer",
                     flexShrink: 0,
                     whiteSpace: "nowrap",
+                    minHeight: 32,
                   }}
                 >
-                  {cat.emoji} {isDone ? "✓" : ""}
+                  {cat.emoji} <span style={{ fontSize: 11 }}>{isDone ? "✓" : cat.title.split(" ")[0]}</span>
                 </button>
               );
             })}
@@ -670,7 +673,7 @@ function BureauQuestionnaire() {
       </AnimatePresence>
 
       {/* Questions */}
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: isMobile ? "20px 16px 40px" : "20px 20px 40px" }}>
+      <div style={{ maxWidth: 680, margin: "0 auto", padding: isMobile ? "20px 14px 60px" : "20px 20px 40px" }}>
 
         {/* Greeting */}
         {firstname && (
