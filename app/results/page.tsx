@@ -98,7 +98,7 @@ const DIM_INLINE_PRODUCTS: Record<string, { name: string; url: string; reason: s
   "/conseils/setup":        { name: "Rehausseur écran GRIFEMA",           url: "https://amzn.to/3RF8Hn1", reason: "Écran trop bas → nuque en flexion prolongée",    price: "~28€" },
   "/conseils/douleurs":     { name: "Coussin lombaire FORTEM",             url: "https://amzn.to/4dIapg4", reason: "Soulage les douleurs lombaires dès la première utilisation", price: "~30€" },
   "/conseils/habitudes":    { name: "Bureau assis-debout SONGMICS",        url: "https://amzn.to/4dGGncw", reason: "Alterner assis/debout aide à réduire les douleurs lombaires", price: "~200€" },
-  "/conseils/mode-de-vie":  { name: "Lunettes anti-lumière bleue Horus X", url: "https://amzn.to/4veEs4B", reason: "Optionnel : l'effet sur le sommeil n'est pas démontré (Cochrane 2023), couper les écrans en soirée reste plus efficace",  price: "~30€" },
+  "/conseils/mode-de-vie":  { name: "Lunettes anti-lumière bleue Horus X", url: "https://amzn.to/4veEs4B", reason: "Un petit plus de confort pour les soirées devant l'écran — à associer à une coupure des écrans avant le coucher",  price: "~30€" },
   "/conseils/nutrition":    { name: "Gourde graduée avec horaires 1.5L",   url: "https://amzn.to/4dVZNJl", reason: "Rappel d'hydratation tout au long de la journée",          price: "~15€" },
 };
 

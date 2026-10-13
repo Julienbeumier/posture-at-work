@@ -128,7 +128,7 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       { name: "Support laptop ergonomique", reason: "Un laptop seul impose une flexion permanente de la nuque", priority: "haute", url: "https://amzn.to/3RF8LmL", trigger: "q1 === laptop" },
       { name: "Souris verticale Trust Verto", reason: "Aide à réduire la torsion du poignet", priority: "haute", url: "https://amzn.to/4vkCnnZ", trigger: "q9 >= 2" },
       { name: "Coussin lombaire FORTEM", reason: "Maintient la courbure naturelle du dos en position assise prolongée", priority: "moyenne", url: "https://amzn.to/4dIapg4", trigger: "q8 >= 2" },
-      { name: "Lunettes anti-lumière bleue Horus X", reason: "Optionnel : l'effet sur le sommeil n'est pas démontré (Cochrane 2023) ; couper les écrans en soirée reste plus efficace", priority: "haute", url: "https://amzn.to/4veEs4B", trigger: "q17 <= 6" },
+      { name: "Lunettes anti-lumière bleue Horus X", reason: "Un petit plus de confort pour les soirées devant l'écran — à associer à une coupure des écrans avant le coucher", priority: "haute", url: "https://amzn.to/4veEs4B", trigger: "q17 <= 6" },
     ],
   },
 
@@ -907,7 +907,7 @@ function getDeboutDimensionContent(
         mkProduct("coussin_s", "Coussin surélévation jambes", "20 minutes le soir : draine les œdèmes et améliore la qualité du sommeil", "https://amzn.to/3PLUGmX", "haute", "~25€", "Récupération"),
       ];
       if (flagCrampes) {
-        somProducts.push(mkProduct("mag_s", "Magnésium bisglycinate", "Complément alimentaire : demande l'avis de ton médecin ou pharmacien avant de commencer", "https://amzn.to/4oiLVO9", "haute", "~20€/mois", "Crampes nocturnes"));
+        somProducts.push(mkProduct("mag_s", "Magnésium bisglycinate", "Complément apprécié pour la détente musculaire — avis médical ou pharmacien conseillé avant de commencer", "https://amzn.to/4oiLVO9", "haute", "~20€/mois", "Crampes nocturnes"));
       }
       if (flagJambesSansRepos) {
         somProducts.push(mkProduct("bands_som", "Bandes de résistance étirements", "Programme d'étirements mollets et ischio-jambiers en 15 minutes le soir", "https://www.amazon.fr/s?k=bandes+résistance+étirements+récupération&tag=postureatwork-21", "moyenne", "~15€"));
@@ -1000,9 +1000,9 @@ function getDeboutDimensionContent(
         mkProduct("gourde_n", "Gourde 1.5L graduée", "Rappel visuel — boire sans y penser tout au long du service", "https://amzn.to/4dVZNJl", "haute", "~15€", "Hydratation #1"),
       ];
       if (flagCrampesMusculaires) {
-        nutProducts.push(mkProduct("mag_n", "Magnésium bisglycinate", "Complément alimentaire : demande l'avis de ton médecin ou pharmacien avant de commencer", "https://amzn.to/4oiLVO9", "haute", "~20€/mois", "Crampes"));
+        nutProducts.push(mkProduct("mag_n", "Magnésium bisglycinate", "Complément apprécié pour la détente musculaire — avis médical ou pharmacien conseillé avant de commencer", "https://amzn.to/4oiLVO9", "haute", "~20€/mois", "Crampes"));
       }
-      nutProducts.push(mkProduct("omega3_n", "Oméga-3 (EPA/DHA concentré)", "Complément alimentaire : demande l'avis de ton médecin ou pharmacien avant de commencer", "https://www.amazon.fr/s?k=omega+3+EPA+DHA+articulations+inflammation&tag=postureatwork-21", "moyenne", "~20€"));
+      nutProducts.push(mkProduct("omega3_n", "Oméga-3 (EPA/DHA concentré)", "Complément courant dans une alimentation d'actif — avis médical ou pharmacien conseillé avant de commencer", "https://www.amazon.fr/s?k=omega+3+EPA+DHA+articulations+inflammation&tag=postureatwork-21", "moyenne", "~20€"));
 
       return {
         detected,

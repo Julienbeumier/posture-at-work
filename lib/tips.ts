@@ -128,7 +128,7 @@ export const TIPS: Record<DimensionInternal, Tip[]> = {
     { id: "d9", icon: "💧", text: "Les maux de tête en fin de journée = souvent déshydratation ou fatigue visuelle." },
     { id: "d10", icon: "🖐️", text: "Des douleurs aux poignets qui persistent méritent un avis professionnel — plus on agit tôt, mieux c'est." },
     { id: "d11", icon: "🧊", text: "Glaçon enveloppé dans un tissu, 10 min sur une zone douloureuse : peut soulager (jamais directement sur la peau)." },
-    { id: "d12", icon: "💊", text: "Crampes fréquentes ou sommeil perturbé : parles-en à ton médecin ou à ton pharmacien avant de prendre un complément." },
+    { id: "d12", icon: "💊", text: "Crampes fréquentes ou sommeil agité : le magnésium est un complément souvent utilisé pour la récupération du soir — demande conseil à ton pharmacien." },
     { id: "d13", icon: "🧠", text: "La douleur chronique modifie le cerveau — briser le cercle douleur/évitement est aussi important que traiter la cause." },
     { id: "d14", icon: "🌡️", text: "Chaleur sur les muscles contracturés (lombaires, nuque) avant de travailler = moins de douleurs en fin de journée." },
   ],
@@ -159,7 +159,7 @@ export const TIPS: Record<DimensionInternal, Tip[]> = {
     { id: "sl10", icon: "🌡️", text: "Une chambre plutôt fraîche favorise l'endormissement : le corps doit baisser légèrement en température." },
     { id: "sl11", icon: "⏰", text: "Se lever à la même heure tous les jours (week-ends inclus) : la régularité vaut mieux que la durée." },
     { id: "sl12", icon: "☕", text: "La caféine a une demi-vie de 6h — un café à 15h = la moitié dans ton sang à 21h." },
-    { id: "sl13", icon: "🌙", text: "Un dîner léger et des écrans coupés en soirée aident à mieux dormir." },
+    { id: "sl13", icon: "🌙", text: "Un dîner léger, des écrans coupés en soirée et, si tu le souhaites, un complément de magnésium (avis pharmacien) : une routine de récupération simple." },
   ],
   nutrition: [
     { id: "n1", icon: "📈", text: "Un repas très sucré ou très riche peut provoquer un coup de barre dans l'après-midi." },
@@ -408,9 +408,9 @@ export const PRODUCTS: Record<string, Product> = {
   lunettes_horus: {
     id: "lunettes_horus",
     name: "Lunettes anti-lumière bleue Horus X",
-    reason: "Optionnel : l'effet des lunettes filtrant la lumière bleue sur le sommeil n'est pas démontré (Cochrane 2023). Couper les écrans en soirée reste plus efficace",
+    reason: "Un petit plus de confort pour les soirées devant l'écran — à associer à une coupure des écrans avant le coucher",
     url: "https://amzn.to/4veEs4B",
-    priority: "moyenne",
+    priority: "haute",
     dimension: ["sommeil"],
     triggers: ["q17 <= 6", "q18 === exhausted", "q20 === always"],
     price: "~30€",
@@ -485,7 +485,7 @@ export const PRODUCTS: Record<string, Product> = {
   magnesium: {
     id: "magnesium",
     name: "Magnésium bisglycinate",
-    reason: "Complément alimentaire : demande l'avis de ton médecin ou pharmacien avant de commencer",
+    reason: "Complément apprécié pour la détente musculaire et la récupération du soir — avis médical ou pharmacien conseillé avant de commencer",
     url: "https://amzn.to/3RF8Hn1",
     priority: "moyenne",
     dimension: ["douleurs", "sommeil", "nutrition"],

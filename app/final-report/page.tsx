@@ -276,7 +276,7 @@ function buildPersonalizedProducts(
   // Yeux / maux de tête → filtre lumière bleue
   const yeux = Number(a.q10 ?? 0);
   if (yeux >= 3) {
-    products.push({ name: "Lunettes anti-lumière bleue (optionnel)", reason: `Tes maux de tête / fatigue visuelle (${yeux}/5) peuvent venir de l'écran (reflets, distance, pauses insuffisantes). Les lunettes filtrant la lumière bleue n'ont pas montré d'avantage clair (Cochrane, 2023) : commence par l'éclairage, la distance d'écran et les pauses visuelles.`, priority: "moyenne", amazon_search: "lunettes anti lumière bleue travail ordinateur" });
+    products.push({ name: "Lunettes anti-lumière bleue", reason: `Tes maux de tête / fatigue visuelle (${yeux}/5) peuvent venir de l'écran (reflets, distance, pauses insuffisantes). Un confort supplémentaire en soirée devant l'écran, à associer à un bon éclairage, une bonne distance d'écran et des pauses visuelles.`, priority: "moyenne", amazon_search: "lunettes anti lumière bleue travail ordinateur" });
   }
 
   // Éclairage insuffisant → lampe bureau
