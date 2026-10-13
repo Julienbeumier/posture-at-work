@@ -109,27 +109,27 @@ const RESOURCES = [
 
 const PRODUCTS_BY_ISSUE: Record<string, { name: string; url: string; price: string; reason: string }[]> = {
   setup_bureau: [
-    { name: "Rehausseur écran GRIFEMA", url: "https://amzn.to/3RF8Hn1", price: "~28€", reason: "Corrige la hauteur d'écran — limite la flexion de nuque" },
-    { name: "Support laptop ergonomique", url: "https://amzn.to/3RF8LmL", price: "~30€", reason: "Indispensable pour tout usage laptop prolongé" },
-    { name: "Souris verticale Trust Verto", url: "https://amzn.to/4vkCnnZ", price: "~25€", reason: "Remet le poignet en position plus neutre (à essayer individuellement)" },
+    { name: "Rehausseur écran GRIFEMA", url: "https://www.amazon.fr/s?k=Rehausseur+%C3%A9cran+GRIFEMA&tag=postureatwo09-21", price: "~28€", reason: "Corrige la hauteur d'écran — limite la flexion de nuque" },
+    { name: "Support laptop ergonomique", url: "https://www.amazon.fr/s?k=Support+laptop+ergonomique&tag=postureatwo09-21", price: "~30€", reason: "Indispensable pour tout usage laptop prolongé" },
+    { name: "Souris verticale Trust Verto", url: "https://www.amazon.fr/s?k=Souris+verticale+Trust+Verto&tag=postureatwo09-21", price: "~25€", reason: "Remet le poignet en position plus neutre (à essayer individuellement)" },
   ],
   setup_debout: [
-    { name: "Tapis anti-fatigue", url: "https://amzn.to/4fnjrQR", price: "~45€", reason: "Aide à réduire la fatigue des jambes et lombaires en station debout prolongée" },
-    { name: "Semelles orthopédiques", url: "https://amzn.to/4eiCfP5", price: "~30€", reason: "Amorti et soutien de voûte — essentiel pour les postes debout > 4h/jour" },
-    { name: "Chaussettes de compression", url: "https://amzn.to/4vimwWT", price: "~20€", reason: "Aide à soulager les jambes lourdes" },
+    { name: "Tapis anti-fatigue", url: "https://www.amazon.fr/s?k=Tapis+anti-fatigue&tag=postureatwo09-21", price: "~45€", reason: "Aide à réduire la fatigue des jambes et lombaires en station debout prolongée" },
+    { name: "Semelles orthopédiques", url: "https://www.amazon.fr/s?k=Semelles+orthop%C3%A9diques&tag=postureatwo09-21", price: "~30€", reason: "Amorti et soutien de voûte — essentiel pour les postes debout > 4h/jour" },
+    { name: "Chaussettes de compression", url: "https://www.amazon.fr/s?k=Chaussettes+de+compression&tag=postureatwo09-21", price: "~20€", reason: "Aide à soulager les jambes lourdes" },
   ],
   douleurs_bureau: [
-    { name: "Coussin lombaire FORTEM", url: "https://amzn.to/4dIapg4", price: "~30€", reason: "Soulagement immédiat des douleurs lombaires dès la première utilisation" },
-    { name: "Balle de massage BLACKROLL", url: "https://amzn.to/43G4lyy", price: "~15€", reason: "Libère les points de tension nuque et épaules en quelques minutes" },
+    { name: "Coussin lombaire FORTEM", url: "https://www.amazon.fr/s?k=Coussin+lombaire+FORTEM&tag=postureatwo09-21", price: "~30€", reason: "Soulagement immédiat des douleurs lombaires dès la première utilisation" },
+    { name: "Balle de massage BLACKROLL", url: "https://www.amazon.fr/s?k=Balle+de+massage+BLACKROLL&tag=postureatwo09-21", price: "~15€", reason: "Libère les points de tension nuque et épaules en quelques minutes" },
   ],
   douleurs_debout: [
-    { name: "Balle massage plantaire", url: "https://amzn.to/4wZhdNP", price: "~15€", reason: "Peut soulager les tensions du pied après journée debout" },
-    { name: "Coussin surélévation jambes", url: "https://amzn.to/3PLUGmX", price: "~35€", reason: "Jambes surélevées en fin de journée — aide à soulager les jambes lourdes" },
-    { name: "Foam roller", url: "https://amzn.to/4u7mU9E", price: "~25€", reason: "5 minutes soir pour relâcher mollets, ischio-jambiers et bas du dos" },
+    { name: "Balle massage plantaire", url: "https://www.amazon.fr/s?k=Balle+massage+plantaire&tag=postureatwo09-21", price: "~15€", reason: "Peut soulager les tensions du pied après journée debout" },
+    { name: "Coussin surélévation jambes", url: "https://www.amazon.fr/s?k=Coussin+sur%C3%A9l%C3%A9vation+jambes&tag=postureatwo09-21", price: "~35€", reason: "Jambes surélevées en fin de journée — aide à soulager les jambes lourdes" },
+    { name: "Foam roller", url: "https://www.amazon.fr/s?k=Foam+roller&tag=postureatwo09-21", price: "~25€", reason: "5 minutes soir pour relâcher mollets, ischio-jambiers et bas du dos" },
   ],
   habits: [
-    { name: "Bureau assis-debout SONGMICS", url: "https://amzn.to/4dGGncw", price: "~200€", reason: "Alterner assis/debout aide à réduire les douleurs lombaires" },
-    { name: "Coussin d'équilibre BODYMATE", url: "https://amzn.to/3Rh9avh", price: "~30€", reason: "Active les muscles posturaux profonds passivement" },
+    { name: "Bureau assis-debout SONGMICS", url: "https://www.amazon.fr/s?k=Bureau+assis-debout+SONGMICS&tag=postureatwo09-21", price: "~200€", reason: "Alterner assis/debout aide à réduire les douleurs lombaires" },
+    { name: "Coussin d'équilibre BODYMATE", url: "https://www.amazon.fr/s?k=Coussin+d%27%C3%A9quilibre+BODYMATE&tag=postureatwo09-21", price: "~30€", reason: "Active les muscles posturaux profonds passivement" },
   ],
 };
 

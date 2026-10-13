@@ -124,11 +124,11 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       "Le stress chronique crée des tensions musculaires réelles et mesurables",
     ],
     products: [
-      { name: "Rehausseur écran GRIFEMA", reason: "Ton écran trop bas est la cause principale de tes tensions cervicales", priority: "haute", url: "https://amzn.to/3RF8Hn1", trigger: "setup_score < 60" },
-      { name: "Support laptop ergonomique", reason: "Un laptop seul impose une flexion permanente de la nuque", priority: "haute", url: "https://amzn.to/3RF8LmL", trigger: "q1 === laptop" },
-      { name: "Souris verticale Trust Verto", reason: "Aide à réduire la torsion du poignet", priority: "haute", url: "https://amzn.to/4vkCnnZ", trigger: "q9 >= 2" },
-      { name: "Coussin lombaire FORTEM", reason: "Maintient la courbure naturelle du dos en position assise prolongée", priority: "moyenne", url: "https://amzn.to/4dIapg4", trigger: "q8 >= 2" },
-      { name: "Lunettes anti-lumière bleue Horus X", reason: "Un petit plus de confort pour les soirées devant l'écran — à associer à une coupure des écrans avant le coucher", priority: "haute", url: "https://amzn.to/4veEs4B", trigger: "q17 <= 6" },
+      { name: "Rehausseur écran GRIFEMA", reason: "Ton écran trop bas est la cause principale de tes tensions cervicales", priority: "haute", url: "https://www.amazon.fr/s?k=Rehausseur+%C3%A9cran+GRIFEMA&tag=postureatwo09-21", trigger: "setup_score < 60" },
+      { name: "Support laptop ergonomique", reason: "Un laptop seul impose une flexion permanente de la nuque", priority: "haute", url: "https://www.amazon.fr/s?k=Support+laptop+ergonomique&tag=postureatwo09-21", trigger: "q1 === laptop" },
+      { name: "Souris verticale Trust Verto", reason: "Aide à réduire la torsion du poignet", priority: "haute", url: "https://www.amazon.fr/s?k=Souris+verticale+Trust+Verto&tag=postureatwo09-21", trigger: "q9 >= 2" },
+      { name: "Coussin lombaire FORTEM", reason: "Maintient la courbure naturelle du dos en position assise prolongée", priority: "moyenne", url: "https://www.amazon.fr/s?k=Coussin+lombaire+FORTEM&tag=postureatwo09-21", trigger: "q8 >= 2" },
+      { name: "Lunettes anti-lumière bleue Horus X", reason: "Un petit plus de confort pour les soirées devant l'écran — à associer à une coupure des écrans avant le coucher", priority: "haute", url: "https://www.amazon.fr/s?k=Lunettes+anti-lumi%C3%A8re+bleue+Horus+X&tag=postureatwo09-21", trigger: "q17 <= 6" },
     ],
   },
 
@@ -235,12 +235,12 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       "Glace sous le talon 10-15 min après le travail si douleur — peut soulager",
     ],
     products: [
-      { name: "Tapis anti-fatigue ergonomique", reason: "Peut améliorer le confort en station debout prolongée (effet variable selon les personnes)", priority: "haute", url: "https://amzn.to/4fnjrQR", trigger: "q_d2 !== oui_ergo" },
-      { name: "Semelles orthopédiques de travail", reason: "Amorties et soutien de voûte plantaire — indispensables si tu travailles sur sol dur", priority: "haute", url: "https://amzn.to/4eiCfP5", trigger: "q_d1 === dur || q_d8 >= 2" },
-      { name: "Chaussettes de compression graduée", reason: "Peut soulager les jambes lourdes — à enfiler le matin avant de se lever", priority: "haute", url: "https://amzn.to/4vimwWT", trigger: "q_d11 >= 2 || q_d14 !== normales" },
-      { name: "Balle de massage lacrosse", reason: "Auto-massage sous le pied quotidien — en phase douloureuse avec eau glacée", priority: "moyenne", url: "https://amzn.to/4wZhdNP", trigger: "q_d8 >= 2 || q_d13 === premier_pas" },
-      { name: "Repose-pieds ergonomique", reason: "Technique du pied surélevé — peut soulager le bas du dos", priority: "moyenne", url: "https://amzn.to/4uMCqZO", trigger: "q_d10 >= 2" },
-      { name: "Coussin surélévation jambes", reason: "20 minutes le soir, jambes surélevées : aide à soulager les jambes lourdes", priority: "moyenne", url: "https://amzn.to/3PLUGmX", trigger: "q_d11 >= 2 || q_d14 !== normales" },
+      { name: "Tapis anti-fatigue ergonomique", reason: "Peut améliorer le confort en station debout prolongée (effet variable selon les personnes)", priority: "haute", url: "https://www.amazon.fr/s?k=Tapis+anti-fatigue+ergonomique&tag=postureatwo09-21", trigger: "q_d2 !== oui_ergo" },
+      { name: "Semelles orthopédiques de travail", reason: "Amorties et soutien de voûte plantaire — indispensables si tu travailles sur sol dur", priority: "haute", url: "https://www.amazon.fr/s?k=Semelles+orthop%C3%A9diques+de+travail&tag=postureatwo09-21", trigger: "q_d1 === dur || q_d8 >= 2" },
+      { name: "Chaussettes de compression graduée", reason: "Peut soulager les jambes lourdes — à enfiler le matin avant de se lever", priority: "haute", url: "https://www.amazon.fr/s?k=Chaussettes+de+compression+gradu%C3%A9e&tag=postureatwo09-21", trigger: "q_d11 >= 2 || q_d14 !== normales" },
+      { name: "Balle de massage lacrosse", reason: "Auto-massage sous le pied quotidien — en phase douloureuse avec eau glacée", priority: "moyenne", url: "https://www.amazon.fr/s?k=Balle+de+massage+lacrosse&tag=postureatwo09-21", trigger: "q_d8 >= 2 || q_d13 === premier_pas" },
+      { name: "Repose-pieds ergonomique", reason: "Technique du pied surélevé — peut soulager le bas du dos", priority: "moyenne", url: "https://www.amazon.fr/s?k=Repose-pieds+ergonomique&tag=postureatwo09-21", trigger: "q_d10 >= 2" },
+      { name: "Coussin surélévation jambes", reason: "20 minutes le soir, jambes surélevées : aide à soulager les jambes lourdes", priority: "moyenne", url: "https://www.amazon.fr/s?k=Coussin+sur%C3%A9l%C3%A9vation+jambes&tag=postureatwo09-21", trigger: "q_d11 >= 2 || q_d14 !== normales" },
     ],
   },
   // ── ARTISAN ───────────────────────────────────────────────────────────────
@@ -314,10 +314,10 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       "Demander de l'aide pour une charge lourde ou encombrante n'est pas une faiblesse — c'est une règle de prévention",
     ],
     products: [
-      { name: "Ceinture lombaire de travail", reason: "Protection lombaire pour les charges ponctuelles importantes", priority: "haute", url: "https://www.amazon.fr/s?k=ceinture+lombaire+travail+artisan&tag=postureatwork-21", trigger: "q8 >= 3" },
-      { name: "Genouillères de chantier", reason: "Protection des genoux pour le travail en position agenouillée", priority: "haute", url: "https://www.amazon.fr/s?k=genouillères+travail+chantier&tag=postureatwork-21", trigger: "always" },
-      { name: "Foam roller récupération", reason: "5 minutes de foam roller le soir accélère la récupération musculaire", priority: "moyenne", url: "https://amzn.to/4u7mU9E", trigger: "pain_score < 70" },
-      { name: "Gants anti-vibrations", reason: "Protège les nerfs et articulations des mains des outils vibrants", priority: "moyenne", url: "https://www.amazon.fr/s?k=gants+anti+vibrations+travail&tag=postureatwork-21", trigger: "q9 >= 2" },
+      { name: "Ceinture lombaire de travail", reason: "Protection lombaire pour les charges ponctuelles importantes", priority: "haute", url: "https://www.amazon.fr/s?k=ceinture+lombaire+travail+artisan&tag=postureatwo09-21", trigger: "q8 >= 3" },
+      { name: "Genouillères de chantier", reason: "Protection des genoux pour le travail en position agenouillée", priority: "haute", url: "https://www.amazon.fr/s?k=genouillères+travail+chantier&tag=postureatwo09-21", trigger: "always" },
+      { name: "Foam roller récupération", reason: "5 minutes de foam roller le soir accélère la récupération musculaire", priority: "moyenne", url: "https://www.amazon.fr/s?k=Foam+roller+r%C3%A9cup%C3%A9ration&tag=postureatwo09-21", trigger: "pain_score < 70" },
+      { name: "Gants anti-vibrations", reason: "Protège les nerfs et articulations des mains des outils vibrants", priority: "moyenne", url: "https://www.amazon.fr/s?k=gants+anti+vibrations+travail&tag=postureatwo09-21", trigger: "q9 >= 2" },
     ],
   },
 
@@ -392,10 +392,10 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       "Boire régulièrement aide à rester vigilant pendant les longs trajets",
     ],
     products: [
-      { name: "Coussin lombaire voiture", reason: "Maintient la courbure naturelle du dos pendant les longues heures de conduite", priority: "haute", url: "https://www.amazon.fr/s?k=coussin+lombaire+voiture+conduite&tag=postureatwork-21", trigger: "always" },
-      { name: "Coussin coccyx siège voiture", reason: "Réduit la pression sur le coccyx en position assise prolongée", priority: "haute", url: "https://www.amazon.fr/s?k=coussin+coccyx+siège+voiture&tag=postureatwork-21", trigger: "q8 >= 2" },
-      { name: "Chaussettes de compression", reason: "Peut soulager les jambes lourdes lors de longues périodes assis", priority: "moyenne", url: "https://www.amazon.fr/s?k=chaussettes+compression+conduite&tag=postureatwork-21", trigger: "always" },
-      { name: "Gourde 1.5L graduée", reason: "L'hydratation est cruciale en conduite — la déshydratation augmente la fatigue", priority: "moyenne", url: "https://amzn.to/4dVZNJl", trigger: "always" },
+      { name: "Coussin lombaire voiture", reason: "Maintient la courbure naturelle du dos pendant les longues heures de conduite", priority: "haute", url: "https://www.amazon.fr/s?k=coussin+lombaire+voiture+conduite&tag=postureatwo09-21", trigger: "always" },
+      { name: "Coussin coccyx siège voiture", reason: "Réduit la pression sur le coccyx en position assise prolongée", priority: "haute", url: "https://www.amazon.fr/s?k=coussin+coccyx+siège+voiture&tag=postureatwo09-21", trigger: "q8 >= 2" },
+      { name: "Chaussettes de compression", reason: "Peut soulager les jambes lourdes lors de longues périodes assis", priority: "moyenne", url: "https://www.amazon.fr/s?k=chaussettes+compression+conduite&tag=postureatwo09-21", trigger: "always" },
+      { name: "Gourde 1.5L graduée", reason: "L'hydratation est cruciale en conduite — la déshydratation augmente la fatigue", priority: "moyenne", url: "https://www.amazon.fr/s?k=Gourde+1.5L+gradu%C3%A9e&tag=postureatwo09-21", trigger: "always" },
     ],
   },
 
@@ -469,9 +469,9 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       "Les chaussures professionnelles de soin sont un investissement, pas un luxe",
     ],
     products: [
-      { name: "Chaussures professionnelles de soin", reason: "Amorties et stables pour les longues heures debout en service", priority: "haute", url: "https://www.amazon.fr/s?k=chaussures+professionnelles+soignant+confort&tag=postureatwork-21", trigger: "always" },
-      { name: "Chaussettes de compression", reason: "Peut soulager les jambes lourdes après de longues heures debout", priority: "haute", url: "https://www.amazon.fr/s?k=chaussettes+compression+soignant&tag=postureatwork-21", trigger: "always" },
-      { name: "Gourde isotherme 750ml", reason: "Hydratation essentielle en service — souvent négligée par les soignants", priority: "moyenne", url: "https://amzn.to/4dVZNJl", trigger: "always" },
+      { name: "Chaussures professionnelles de soin", reason: "Amorties et stables pour les longues heures debout en service", priority: "haute", url: "https://www.amazon.fr/s?k=chaussures+professionnelles+soignant+confort&tag=postureatwo09-21", trigger: "always" },
+      { name: "Chaussettes de compression", reason: "Peut soulager les jambes lourdes après de longues heures debout", priority: "haute", url: "https://www.amazon.fr/s?k=chaussettes+compression+soignant&tag=postureatwo09-21", trigger: "always" },
+      { name: "Gourde isotherme 750ml", reason: "Hydratation essentielle en service — souvent négligée par les soignants", priority: "moyenne", url: "https://www.amazon.fr/s?k=Gourde+isotherme+750ml&tag=postureatwo09-21", trigger: "always" },
     ],
   },
 
@@ -546,9 +546,9 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       "Les périodes de correction sont les plus risquées pour les TMS — fais des pauses",
     ],
     products: [
-      { name: "Tabouret haut ergonomique", reason: "Permet de s'asseoir tout en gardant une position semi-debout en classe", priority: "haute", url: "https://www.amazon.fr/s?k=tabouret+haut+ergonomique+bureau&tag=postureatwork-21", trigger: "always" },
-      { name: "Gourde 1.5L graduée", reason: "L'hydratation est essentielle pour protéger les cordes vocales", priority: "haute", url: "https://amzn.to/4dVZNJl", trigger: "always" },
-      { name: "Coussin lombaire", reason: "Pour les longues sessions de correction assis", priority: "moyenne", url: "https://amzn.to/4dIapg4", trigger: "q8 >= 2" },
+      { name: "Tabouret haut ergonomique", reason: "Permet de s'asseoir tout en gardant une position semi-debout en classe", priority: "haute", url: "https://www.amazon.fr/s?k=tabouret+haut+ergonomique+bureau&tag=postureatwo09-21", trigger: "always" },
+      { name: "Gourde 1.5L graduée", reason: "L'hydratation est essentielle pour protéger les cordes vocales", priority: "haute", url: "https://www.amazon.fr/s?k=Gourde+1.5L+gradu%C3%A9e&tag=postureatwo09-21", trigger: "always" },
+      { name: "Coussin lombaire", reason: "Pour les longues sessions de correction assis", priority: "moyenne", url: "https://www.amazon.fr/s?k=Coussin+lombaire&tag=postureatwo09-21", trigger: "q8 >= 2" },
     ],
   },
 };
@@ -628,9 +628,9 @@ function getDeboutDimensionContent(
         exerciseIds: ["short_foot", "calf_raise_excentric", "marching", "toe_spreading", "calf_stretch"],
         programId: "debout_recovery",
         products: [
-          mkProduct("tapis_af", "Tapis anti-fatigue ergonomique", "Aide à réduire la fatigue musculaire en station debout", "https://amzn.to/4fnjrQR", "haute", "~45€", "Priorité #1"),
-          mkProduct("semelles_o", "Semelles orthopédiques de travail", "Amorties et soutien de voûte plantaire — indispensables si tu travailles sur sol dur", "https://amzn.to/4eiCfP5", "haute", "~25€"),
-          mkProduct("repose_pied", "Repose-pieds ergonomique", "Technique du pied surélevé — peut soulager le bas du dos", "https://amzn.to/4uMCqZO", "moyenne", "~30€"),
+          mkProduct("tapis_af", "Tapis anti-fatigue ergonomique", "Aide à réduire la fatigue musculaire en station debout", "https://www.amazon.fr/s?k=Tapis+anti-fatigue+ergonomique&tag=postureatwo09-21", "haute", "~45€", "Priorité #1"),
+          mkProduct("semelles_o", "Semelles orthopédiques de travail", "Amorties et soutien de voûte plantaire — indispensables si tu travailles sur sol dur", "https://www.amazon.fr/s?k=Semelles+orthop%C3%A9diques+de+travail&tag=postureatwo09-21", "haute", "~25€"),
+          mkProduct("repose_pied", "Repose-pieds ergonomique", "Technique du pied surélevé — peut soulager le bas du dos", "https://www.amazon.fr/s?k=Repose-pieds+ergonomique&tag=postureatwo09-21", "moyenne", "~30€"),
         ],
       };
     }
@@ -668,8 +668,8 @@ function getDeboutDimensionContent(
       if (flagTalon || (q_d8 >= 3 && q_d13 === "premier_pas")) {
         detected.push("⚠️ Douleur au talon au lever : signal à ne pas ignorer. Avec les bons exercices et un avis professionnel, ces douleurs peuvent diminuer. Consulte un professionnel de santé si la douleur persiste plus de 2 semaines.");
         exerciseIds.push("fascia_stretch_morning", "short_foot", "calf_raise_excentric", "plantar_massage");
-        products.push(mkProduct("semelles_f", "Semelles orthopédiques de travail", "Soutien de voûte plantaire — indispensables si douleurs au talon ou à la voûte plantaire", "https://amzn.to/4eiCfP5", "haute", "~25€", "Urgence fasciite"));
-        products.push(mkProduct("balle_m", "Balle de massage lacrosse", "Auto-massage sous le pied quotidien — en phase douloureuse avec eau glacée", "https://amzn.to/4wZhdNP", "moyenne", "~10€"));
+        products.push(mkProduct("semelles_f", "Semelles orthopédiques de travail", "Soutien de voûte plantaire — indispensables si douleurs au talon ou à la voûte plantaire", "https://www.amazon.fr/s?k=Semelles+orthop%C3%A9diques+de+travail&tag=postureatwo09-21", "haute", "~25€", "Urgence fasciite"));
+        products.push(mkProduct("balle_m", "Balle de massage lacrosse", "Auto-massage sous le pied quotidien — en phase douloureuse avec eau glacée", "https://www.amazon.fr/s?k=Balle+de+massage+lacrosse&tag=postureatwo09-21", "moyenne", "~10€"));
       } else if (q_d8 >= 1) {
         detected.push("Tu as des douleurs aux pieds ou talons. Même légères, elles méritent attention — elles méritent attention avant de s'aggraver.");
         exerciseIds.push("short_foot", "calf_raise_excentric", "toe_spreading");
@@ -683,8 +683,8 @@ function getDeboutDimensionContent(
       if (q_d11 >= 2 && q_d_jambes_soir !== "bien") {
         detected.push("Tes jambes lourdes en fin de service méritent attention : alterne les positions, bouge régulièrement, et parles-en à ton médecin si cela persiste. Les chaussettes de compression s'enfilent de préférence le matin, avant de te lever.");
         if (!exerciseIds.includes("leg_elevation")) exerciseIds.push("marching", "leg_elevation");
-        products.push(mkProduct("chaussettes_c", "Chaussettes de compression graduée", "Peut soulager les jambes lourdes — à enfiler le matin avant de se lever", "https://amzn.to/4vimwWT", "haute", "~20€"));
-        products.push(mkProduct("coussin_el", "Coussin surélévation jambes", "20 minutes le soir, jambes surélevées : aide à soulager les jambes lourdes", "https://amzn.to/3PLUGmX", "moyenne", "~30€"));
+        products.push(mkProduct("chaussettes_c", "Chaussettes de compression graduée", "Peut soulager les jambes lourdes — à enfiler le matin avant de se lever", "https://www.amazon.fr/s?k=Chaussettes+de+compression+gradu%C3%A9e&tag=postureatwo09-21", "haute", "~20€"));
+        products.push(mkProduct("coussin_el", "Coussin surélévation jambes", "20 minutes le soir, jambes surélevées : aide à soulager les jambes lourdes", "https://www.amazon.fr/s?k=Coussin+sur%C3%A9l%C3%A9vation+jambes&tag=postureatwo09-21", "moyenne", "~30€"));
       } else if (q_d11 >= 1) {
         detected.push("Tu ressens une légère lourdeur des jambes. C'est le début du syndrome veineux professionnel — agis maintenant en prévention.");
         if (!exerciseIds.includes("marching")) exerciseIds.push("marching", "calf_raise_excentric");
@@ -693,14 +693,14 @@ function getDeboutDimensionContent(
       if (q_d10 >= 2) {
         detected.push("Tes douleurs lombaires sont typiques du travail debout. L'hyperlordose compensatoire (creuser le bas du dos) est le mécanisme principal — corrigeable avec les bons exercices.");
         if (!exerciseIds.includes("lumbar_extension")) exerciseIds.push("lumbar_extension", "cat_cow");
-        products.push(mkProduct("repose_pf", "Repose-pieds ergonomique", "Alterner l'appui d'un pied peut soulager le bas du dos", "https://amzn.to/4uMCqZO", "moyenne", "~30€"));
+        products.push(mkProduct("repose_pf", "Repose-pieds ergonomique", "Alterner l'appui d'un pied peut soulager le bas du dos", "https://www.amazon.fr/s?k=Repose-pieds+ergonomique&tag=postureatwo09-21", "moyenne", "~30€"));
       }
 
       // Manutention lourde (≥15kg)
       if (q_d_charges === "lourdes" || q_d_charges === "tres_lourdes") {
         detected.push("⚠️ Port de charges lourdes régulier — la règle absolue : jamais fléchi ET en rotation simultanément. C'est la cause #1 des hernies discales chez les manutentionnaires.");
         if (!exerciseIds.includes("lumbar_flexion")) exerciseIds.push("lumbar_flexion");
-        products.push(mkProduct("ceinture_m", "Ceinture lombaire de travail", "Protection lombaire pour les charges ponctuelles importantes — non un substitut à la bonne technique", "https://www.amazon.fr/s?k=ceinture+lombaire+travail+manutention&tag=postureatwork-21", "haute", "~30€", "Manutention"));
+        products.push(mkProduct("ceinture_m", "Ceinture lombaire de travail", "Protection lombaire pour les charges ponctuelles importantes — non un substitut à la bonne technique", "https://www.amazon.fr/s?k=ceinture+lombaire+travail+manutention&tag=postureatwo09-21", "haute", "~30€", "Manutention"));
       }
 
       // Gestes répétitifs
@@ -734,7 +734,7 @@ function getDeboutDimensionContent(
       // Chaussures de sécurité sans amorti optimal
       if (q_d_protection.includes("chaussures_securite") && (q_d8 >= 2 || q_d9 >= 2)) {
         detected.push("👟 Tes chaussures de sécurité peuvent manquer d'amorti. Des semelles orthopédiques de travail glissées dedans réduisent significativement les douleurs aux pieds et aux genoux.");
-        products.push(mkProduct("semelles_secu", "Semelles orthopédiques pour chaussures de sécurité", "Semelles conçues pour s'adapter aux chaussures de sécurité embout acier — amorti renforcé plantaire et talon", "https://www.amazon.fr/s?k=semelles+orthopediques+chaussures+securite+embout+acier&tag=postureatwork-21", "haute", "~25€", "Chaussures sécu"));
+        products.push(mkProduct("semelles_secu", "Semelles orthopédiques pour chaussures de sécurité", "Semelles conçues pour s'adapter aux chaussures de sécurité embout acier — amorti renforcé plantaire et talon", "https://www.amazon.fr/s?k=semelles+orthopediques+chaussures+securite+embout+acier&tag=postureatwo09-21", "haute", "~25€", "Chaussures sécu"));
       }
 
       // Flag insuffisance_veineuse (nouvelles questions)
@@ -742,7 +742,7 @@ function getDeboutDimensionContent(
         detected.push("⚠️ Tes jambes gonflées en fin de service indiquent une circulation veineuse insuffisante typique du travail debout prolongé. Chaussettes de compression + surélévation des jambes sont tes priorités.");
         if (!exerciseIds.includes("leg_elevation")) exerciseIds.push("marching", "leg_elevation");
         if (!products.find(p => p.id === "chaussettes_c")) {
-          products.push(mkProduct("chaussettes_c", "Chaussettes de compression graduée", "Peut soulager les jambes lourdes — à enfiler le matin avant de se lever", "https://amzn.to/4vimwWT", "haute", "~20€"));
+          products.push(mkProduct("chaussettes_c", "Chaussettes de compression graduée", "Peut soulager les jambes lourdes — à enfiler le matin avant de se lever", "https://www.amazon.fr/s?k=Chaussettes+de+compression+gradu%C3%A9e&tag=postureatwo09-21", "haute", "~20€"));
         }
       }
 
@@ -850,8 +850,8 @@ function getDeboutDimensionContent(
         exerciseIds: ["short_foot", "marching", "toe_spreading", "calf_raise_excentric", "lumbar_extension"],
         programId: "debout_pause",
         products: [
-          mkProduct("tapis_h", "Tapis anti-fatigue ergonomique", "Aide à réduire la fatigue liée à l'immobilité — un aménagement simple pour les habitudes debout", "https://amzn.to/4fnjrQR", "haute", "~45€", "Essentiel"),
-          mkProduct("gourde_h", "Gourde 1.5L graduée", "Rappel visuel de l'hydratation — boire sans y penser", "https://amzn.to/4dVZNJl", "moyenne", "~15€"),
+          mkProduct("tapis_h", "Tapis anti-fatigue ergonomique", "Aide à réduire la fatigue liée à l'immobilité — un aménagement simple pour les habitudes debout", "https://www.amazon.fr/s?k=Tapis+anti-fatigue+ergonomique&tag=postureatwo09-21", "haute", "~45€", "Essentiel"),
+          mkProduct("gourde_h", "Gourde 1.5L graduée", "Rappel visuel de l'hydratation — boire sans y penser", "https://www.amazon.fr/s?k=Gourde+1.5L+gradu%C3%A9e&tag=postureatwo09-21", "moyenne", "~15€"),
         ],
       };
     }
@@ -904,13 +904,13 @@ function getDeboutDimensionContent(
       }
 
       const somProducts: DeboutProduct[] = [
-        mkProduct("coussin_s", "Coussin surélévation jambes", "20 minutes le soir : draine les œdèmes et améliore la qualité du sommeil", "https://amzn.to/3PLUGmX", "haute", "~25€", "Récupération"),
+        mkProduct("coussin_s", "Coussin surélévation jambes", "20 minutes le soir : draine les œdèmes et améliore la qualité du sommeil", "https://www.amazon.fr/s?k=Coussin+sur%C3%A9l%C3%A9vation+jambes&tag=postureatwo09-21", "haute", "~25€", "Récupération"),
       ];
       if (flagCrampes) {
-        somProducts.push(mkProduct("mag_s", "Magnésium bisglycinate", "Complément apprécié pour la détente musculaire — avis médical ou pharmacien conseillé avant de commencer", "https://amzn.to/4oiLVO9", "haute", "~20€/mois", "Crampes nocturnes"));
+        somProducts.push(mkProduct("mag_s", "Magnésium bisglycinate", "Complément apprécié pour la détente musculaire — avis médical ou pharmacien conseillé avant de commencer", "https://www.amazon.fr/s?k=Magn%C3%A9sium+bisglycinate&tag=postureatwo09-21", "haute", "~20€/mois", "Crampes nocturnes"));
       }
       if (flagJambesSansRepos) {
-        somProducts.push(mkProduct("bands_som", "Bandes de résistance étirements", "Programme d'étirements mollets et ischio-jambiers en 15 minutes le soir", "https://www.amazon.fr/s?k=bandes+résistance+étirements+récupération&tag=postureatwork-21", "moyenne", "~15€"));
+        somProducts.push(mkProduct("bands_som", "Bandes de résistance étirements", "Programme d'étirements mollets et ischio-jambiers en 15 minutes le soir", "https://www.amazon.fr/s?k=bandes+résistance+étirements+récupération&tag=postureatwo09-21", "moyenne", "~15€"));
       }
 
       return {
@@ -997,12 +997,12 @@ function getDeboutDimensionContent(
       nutTips.push({ id: "dn3", icon: "🌿", text: "Douleurs articulaires persistantes : parles-en à ton médecin plutôt que de t'automédiquer avec des compléments" });
 
       const nutProducts: DeboutProduct[] = [
-        mkProduct("gourde_n", "Gourde 1.5L graduée", "Rappel visuel — boire sans y penser tout au long du service", "https://amzn.to/4dVZNJl", "haute", "~15€", "Hydratation #1"),
+        mkProduct("gourde_n", "Gourde 1.5L graduée", "Rappel visuel — boire sans y penser tout au long du service", "https://www.amazon.fr/s?k=Gourde+1.5L+gradu%C3%A9e&tag=postureatwo09-21", "haute", "~15€", "Hydratation #1"),
       ];
       if (flagCrampesMusculaires) {
-        nutProducts.push(mkProduct("mag_n", "Magnésium bisglycinate", "Complément apprécié pour la détente musculaire — avis médical ou pharmacien conseillé avant de commencer", "https://amzn.to/4oiLVO9", "haute", "~20€/mois", "Crampes"));
+        nutProducts.push(mkProduct("mag_n", "Magnésium bisglycinate", "Complément apprécié pour la détente musculaire — avis médical ou pharmacien conseillé avant de commencer", "https://www.amazon.fr/s?k=Magn%C3%A9sium+bisglycinate&tag=postureatwo09-21", "haute", "~20€/mois", "Crampes"));
       }
-      nutProducts.push(mkProduct("omega3_n", "Oméga-3 (EPA/DHA concentré)", "Complément courant dans une alimentation d'actif — avis médical ou pharmacien conseillé avant de commencer", "https://www.amazon.fr/s?k=omega+3+EPA+DHA+articulations+inflammation&tag=postureatwork-21", "moyenne", "~20€"));
+      nutProducts.push(mkProduct("omega3_n", "Oméga-3 (EPA/DHA concentré)", "Complément courant dans une alimentation d'actif — avis médical ou pharmacien conseillé avant de commencer", "https://www.amazon.fr/s?k=omega+3+EPA+DHA+articulations+inflammation&tag=postureatwo09-21", "moyenne", "~20€"));
 
       return {
         detected,
@@ -1073,9 +1073,9 @@ function getDeboutDimensionContent(
 
       const lifeProducts: DeboutProduct[] = [];
       if (flagPasEtir) {
-        lifeProducts.push(mkProduct("bands_life", "Bandes de résistance étirements", "Programme d'étirements mollets/ischio/dos efficace en 15 min à domicile", "https://www.amazon.fr/s?k=bandes+résistance+étirements+récupération&tag=postureatwork-21", "moyenne", "~15€"));
+        lifeProducts.push(mkProduct("bands_life", "Bandes de résistance étirements", "Programme d'étirements mollets/ischio/dos efficace en 15 min à domicile", "https://www.amazon.fr/s?k=bandes+résistance+étirements+récupération&tag=postureatwo09-21", "moyenne", "~15€"));
       }
-      lifeProducts.push(mkProduct("coussin_life", "Coussin surélévation jambes", "Récupération veineuse quotidienne — 20 minutes après le service", "https://amzn.to/3PLUGmX", "haute", "~25€", "Récupération"));
+      lifeProducts.push(mkProduct("coussin_life", "Coussin surélévation jambes", "Récupération veineuse quotidienne — 20 minutes après le service", "https://www.amazon.fr/s?k=Coussin+sur%C3%A9l%C3%A9vation+jambes&tag=postureatwo09-21", "haute", "~25€", "Récupération"));
 
       return {
         detected,
