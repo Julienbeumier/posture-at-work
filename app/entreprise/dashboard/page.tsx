@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { Company } from "@/lib/supabase";
+import { buildTeamInsights, SOURCES, EVIDENCE_LABEL } from "@/lib/ergo-knowledge";
+import type { TeamInsight } from "@/lib/ergo-knowledge";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
@@ -107,9 +109,9 @@ const RESOURCES = [
 
 const PRODUCTS_BY_ISSUE: Record<string, { name: string; url: string; price: string; reason: string }[]> = {
   setup_bureau: [
-    { name: "Rehausseur écran GRIFEMA", url: "https://amzn.to/3RF8Hn1", price: "~28€", reason: "Corrige la hauteur d'écran — réduit la charge cervicale de 12kg" },
+    { name: "Rehausseur écran GRIFEMA", url: "https://amzn.to/3RF8Hn1", price: "~28€", reason: "Corrige la hauteur d'écran — limite la flexion de nuque" },
     { name: "Support laptop ergonomique", url: "https://amzn.to/3RF8LmL", price: "~30€", reason: "Indispensable pour tout usage laptop prolongé" },
-    { name: "Souris verticale Trust Verto", url: "https://amzn.to/4vkCnnZ", price: "~25€", reason: "Réduit la torsion du poignet de 60%" },
+    { name: "Souris verticale Trust Verto", url: "https://amzn.to/4vkCnnZ", price: "~25€", reason: "Remet le poignet en position plus neutre (à essayer individuellement)" },
   ],
   setup_debout: [
     { name: "Tapis anti-fatigue", url: "https://amzn.to/4fnjrQR", price: "~45€", reason: "Réduit la fatigue des jambes et lombaires de 50% en station debout prolongée" },
@@ -266,7 +268,7 @@ function analyzeEmployee(emp: EmployeeRow): {
   if (emp.job_type === "bureau") {
     if (a.q1 === "laptop" && a.q_double_ecran === "laptop_seul") {
       flags.push({ label: "Laptop seul sans rehausseur", color: "#f09595", severity: "critical" });
-      mainIssues.push("Laptop seul — charge cervicale +12kg en permanence");
+      mainIssues.push("Laptop seul — flexion de nuque prolongée");
       recommendations.push("Rehausseur d'écran + clavier externe indispensable");
     }
     if (a.q3 === "no" || a.q_hauteur_bureau === "trop_bas") {
@@ -455,7 +457,7 @@ function analyzeCollectiveVideo(employees: EmployeeRow[], assessed: EmployeeRow[
       attention: countStatus(bureauWithVideo, "head_position", "attention"),
       bon: countStatus(bureauWithVideo, "head_position", "bon"),
       total: bureauWithVideo.length,
-      consequence: "Charge cervicale +8-12kg en permanence",
+      consequence: "Flexion de nuque prolongée",
     },
     {
       zone: "Épaules enroulées",
@@ -621,6 +623,117 @@ function analyzeCollectiveVideo(employees: EmployeeRow[], assessed: EmployeeRow[
     deboutPositif,
     notFilmed: employees.filter(e => e.video_analysis === null && e.global_score !== null).length,
   };
+}
+
+const SEVERITY_STYLE: Record<TeamInsight["severity"], { color: string; label: string }> = {
+  critique: { color: "#f09595", label: "Priorité haute" },
+  eleve:    { color: "#f4a261", label: "À traiter" },
+  modere:   { color: "#74c69d", label: "À surveiller" },
+};
+
+function TeamInsightsBlock({ insights, total, c, isMobile }: {
+  insights: TeamInsight[];
+  total: number;
+  c: ReturnType<typeof useTheme>["c"];
+  isMobile: boolean;
+}) {
+  const [openId, setOpenId] = useState<string | null>(insights[0]?.id ?? null);
+  const shown = insights.slice(0, 6);
+
+  return (
+    <div style={{ borderRadius: 20, overflow: "hidden", border: "1px solid rgba(43,92,230,0.35)", marginBottom: 16, background: c.bgCard }}>
+      <div style={{ padding: isMobile ? "16px" : "20px 24px", background: "rgba(43,92,230,0.10)", borderBottom: `0.5px solid ${c.border}` }}>
+        <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: c.textPrimary, margin: "0 0 4px" }}>
+          🎯 Ce qu&apos;on a vu chez vous — et ce qu&apos;on vous conseille
+        </p>
+        <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.5 }}>
+          Constats tirés des réponses de {total} collaborateur{total > 1 ? "s" : ""}, classés par priorité. Pour chacun : ce qu&apos;on observe, l&apos;action conseillée, et ce qu&apos;elle permet d&apos;éviter.
+        </p>
+        {total < 5 && (
+          <p style={{ fontFamily: T.b, fontSize: 11, color: "#f4a261", margin: "8px 0 0" }}>
+            ⚠️ Échantillon réduit ({total} bilan{total > 1 ? "s" : ""}) : les pourcentages sont à interpréter avec prudence.
+          </p>
+        )}
+      </div>
+
+      {shown.length === 0 ? (
+        <div style={{ padding: "20px 24px" }}>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.6 }}>
+            ✅ Aucun point de vigilance collectif détecté pour l&apos;instant. Continuez à faire passer les bilans pour suivre l&apos;évolution.
+          </p>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {shown.map((ins) => {
+            const sev = SEVERITY_STYLE[ins.severity];
+            const open = openId === ins.id;
+            return (
+              <div key={ins.id} style={{ borderBottom: `0.5px solid ${c.border}` }}>
+                <button
+                  onClick={() => setOpenId(open ? null : ins.id)}
+                  style={{ width: "100%", textAlign: "left", cursor: "pointer", border: "none", background: `${sev.color}0d`, padding: isMobile ? "14px 16px" : "16px 24px", display: "flex", alignItems: "center", gap: 12 }}
+                >
+                  <span style={{ fontSize: 22, flexShrink: 0 }}>{ins.emoji}</span>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "block", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: c.textPrimary }}>{ins.zone}</span>
+                    <span style={{ display: "block", fontFamily: T.b, fontSize: 12, color: c.textMuted, marginTop: 2 }}>{ins.affected}/{ins.total} concerné{ins.affected > 1 ? "s" : ""} · {ins.pct} %</span>
+                  </span>
+                  <span style={{ padding: "3px 10px", borderRadius: 100, background: `${sev.color}22`, border: `0.5px solid ${sev.color}66`, fontFamily: T.b, fontSize: 11, fontWeight: 700, color: sev.color, flexShrink: 0 }}>{sev.label}</span>
+                  <span style={{ fontSize: 10, color: c.textMuted }}>{open ? "▲" : "▼"}</span>
+                </button>
+
+                {open && (
+                  <div style={{ padding: isMobile ? "4px 16px 18px" : "6px 24px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
+                    <div>
+                      <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 800, color: "#7c9fff", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>👁️ Ce qu&apos;on a vu</p>
+                      <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.6, margin: 0 }}>{ins.seen}</p>
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 800, color: sev.color, textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>✅ Ce qu&apos;on vous conseille</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {ins.advise.map((a, i) => (
+                          <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                            <span style={{ color: sev.color, fontSize: 12, marginTop: 2, flexShrink: 0 }}>→</span>
+                            <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.5 }}>{a}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 800, color: "#74c69d", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>🛡️ Pour éviter</p>
+                      <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.6, margin: 0 }}>{ins.prevent}</p>
+                    </div>
+                    <div style={{ padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}` }}>
+                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0, lineHeight: 1.55 }}>
+                        <strong style={{ color: c.textSecondary }}>Niveau de preuve : {EVIDENCE_LABEL[ins.evidence.level]}.</strong> {ins.evidence.note}
+                        {ins.evidence.sources.length > 0 && (
+                          <>
+                            {" "}Sources :{" "}
+                            {ins.evidence.sources.map((s, i) => (
+                              <span key={s}>
+                                {i > 0 && " · "}
+                                <a href={SOURCES[s].url} target="_blank" rel="noopener noreferrer" style={{ color: "#7c9fff" }}>{SOURCES[s].label.split(" — ")[0]}</a>
+                              </span>
+                            ))}
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div style={{ padding: isMobile ? "12px 16px" : "14px 24px", background: "rgba(43,92,230,0.05)" }}>
+        <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0, lineHeight: 1.55 }}>
+          🤖 Analyse réalisée par l&apos;IA de PAW, appuyée sur une base de connaissances en ergonomie et en prévention des TMS construite à partir de sources publiques (Cochrane, EU-OSHA, OMS) et conçue avec un kinésithérapeute. Elle oriente la prévention collective et ne remplace pas un avis médical individuel.
+        </p>
+      </div>
+    </div>
+  );
 }
 
 export default function EntrepriseDashboard() {
@@ -1235,6 +1348,16 @@ export default function EntrepriseDashboard() {
                   </div>
                 );
               })()}
+
+              {/* ── CE QU'ON A VU / CE QU'ON CONSEILLE ── */}
+              {assessed.length > 0 && (
+                <TeamInsightsBlock
+                  insights={buildTeamInsights(assessed.map(e => ({ job_type: e.job_type, answers: e.answers })))}
+                  total={assessed.length}
+                  c={c}
+                  isMobile={isMobile}
+                />
+              )}
 
               {/* ── RAPPORT DE SYNTHÈSE ── */}
               {assessed.length > 0 && (() => {

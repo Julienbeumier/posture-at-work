@@ -18,6 +18,7 @@ import type {
 import { saveAssessmentForUser, createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
+import { readSignals } from "@/lib/ergo-knowledge";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
@@ -241,7 +242,7 @@ function buildPersonalizedProducts(
 
   // Équipement : laptop seul → support laptop en priorité absolue
   if (a.q1 === "laptop" && (a.q_double_ecran === "laptop_seul" || !a.q_double_ecran)) {
-    products.push({ name: "Support laptop réglable", reason: `Ton laptop posé à plat crée une flexion cervicale permanente de 30°+ — jusqu'à 12kg de charge supplémentaire sur la nuque. Indispensable.`, priority: "haute", amazon_search: "support laptop ergonomique réglable aluminium" });
+    products.push({ name: "Support laptop réglable", reason: `Un laptop posé à plat impose une flexion de nuque prolongée : le rehausser et utiliser clavier et souris externes est la correction de base.`, priority: "haute", amazon_search: "support laptop ergonomique réglable aluminium" });
   }
 
   // Écran trop bas
@@ -254,7 +255,7 @@ function buildPersonalizedProducts(
   // Douleurs poignets → repose-poignets
   const poignets = Number(a.q9 ?? 0);
   if (poignets >= 2) {
-    products.push({ name: "Repose-poignets gel clavier", reason: `Tes douleurs aux poignets (${poignets}/5) indiquent une compression des tendons fléchisseurs — le repose-poignets réduit la pression de 60%.`, priority: poignets >= 4 ? "haute" : "moyenne", amazon_search: "repose poignets clavier bureau ergonomique gel" });
+    products.push({ name: "Repose-poignets gel clavier", reason: `Tes douleurs aux poignets (${poignets}/5) peuvent venir d'un appui sur le poignet ; un repose-poignets aide à garder l'axe neutre (le réglage de la position clavier/souris reste prioritaire).`, priority: poignets >= 4 ? "haute" : "moyenne", amazon_search: "repose poignets clavier bureau ergonomique gel" });
     if (poignets >= 3) {
       products.push({ name: "Souris verticale ergonomique", reason: `Une douleur poignets à ${poignets}/5 signale un risque de syndrome du canal carpien. La souris verticale remet le poignet en position neutre.`, priority: "haute", amazon_search: "souris verticale ergonomique sans fil" });
     }
@@ -279,7 +280,7 @@ function buildPersonalizedProducts(
   }
 
   // Éclairage insuffisant → lampe bureau
-  if (a.q_eclairage === "insuffisant" || a.q_eclairage === "mauvais" || (scores?.setup && scores.setup < 55)) {
+  if (["contre_jour", "reflets", "artificiel"].includes(String(a.q_eclairage ?? "")) || (scores?.setup && scores.setup < 55)) {
     if (!products.find(p => p.name.includes("Lunettes"))) {
       products.push({ name: "Lampe bureau LED réglable", reason: "Un éclairage insuffisant force tes yeux à accommoder en permanence — source de fatigue visuelle et de maux de tête.", priority: "moyenne", amazon_search: "lampe bureau LED réglable 3000K lumière naturelle" });
     }
@@ -287,8 +288,8 @@ function buildPersonalizedProducts(
 
   // Sédentarité / pas de pause → minuterie ou balle anti-stress
   const heures = Number(a.q13 ?? 0);
-  if (heures >= 9 || a.q14 === "never" || a.q14 === "rarely") {
-    products.push({ name: "Minuterie de bureau (pause active)", reason: `${heures >= 9 ? `${heures}h assis par jour` : "Pas de pauses régulières"} — le rappel toutes les 45 min réduit de 40% les douleurs par accumulation.`, priority: "optionnel", amazon_search: "minuterie timer bureau pause active ergonomie" });
+  if (heures >= 9 || a.q14 === "never" || a.q14 === "1x") {
+    products.push({ name: "Minuterie de bureau (pause active)", reason: `${heures >= 9 ? `${heures}h assis par jour` : "Pas de pauses régulières"} — un rappel régulier aide à interrompre la position statique (repère EU-OSHA : micro-pause toutes les 20 à 30 min).`, priority: "optionnel", amazon_search: "minuterie timer bureau pause active ergonomie" });
   }
 
   // Sommeil insuffisant → masque sommeil ou aide récupération
@@ -326,48 +327,36 @@ function buildCrossedSynthesis(
   const scoreLabel = globalScore >= 70 ? "Bon niveau" : globalScore >= 50 ? "À améliorer" : "Attention requise";
   const scoreColor = globalScore >= 70 ? "#74c69d" : globalScore >= 50 ? "#f4a261" : "#f09595";
 
-  // ─── Lecture des réponses brutes ──────────────────────────────────────────
-  const a = (answers ?? {}) as Record<string, string | number | undefined>;
+  // ─── Lecture des réponses brutes (source unique : lib/ergo-knowledge) ──────
+  const sig = readSignals(answers);
   const painScore = scores?.pain ?? 50;
   const setupScore = scores?.setup ?? 50;
   const hasVideoPosture = !!personne || !!debout;
 
-  // Douleurs déclarées (1-5)
-  const douleurNuque   = Number(a.q6  ?? 0);
-  const douleurEpaules = Number(a.q7  ?? 0);
-  const douleurDos     = Number(a.q8  ?? 0);
-  const douleurPoignets= Number(a.q9  ?? 0);
-  const douleurYeux    = Number(a.q10 ?? 0);
-  const heuresAssis    = Number(a.q13 ?? 0);
-  const pauses         = String(a.q14 ?? "");
-  const sommeil        = Number(a.q17 ?? 8);
-  const stress         = String(a.q_stress_travail ?? "");
-  const activitePhys   = String(a.q14b ?? a.q12b ?? "");
-  const douleurNuit    = String(a.q_douleur_nuit ?? "");
-  const hauteurBureau  = String(a.q_hauteur_bureau ?? "");
-  const eclairage      = String(a.q_eclairage ?? "");
-  const doubleEcran    = String(a.q_double_ecran ?? "");
+  const douleurNuque = sig.nuque;
+  const douleurEpaules = sig.epaules;
+  const douleurDos = sig.dos;
+  const douleurPoignets = sig.poignets;
+  const douleurYeux = sig.yeux;
+  const heuresAssis = sig.heuresAssis;
+  const sommeil = sig.sommeil;
+  const hauteurBureau = sig.hauteurBureauMauvaise ? "mauvaise" : "";
 
-  // Zones douloureuses majeures (≥3/5)
-  const majeurDouleurs: string[] = [];
-  if (douleurNuque   >= 3) majeurDouleurs.push("nuque");
-  if (douleurEpaules >= 3) majeurDouleurs.push("épaules");
-  if (douleurDos     >= 3) majeurDouleurs.push("bas du dos");
-  if (douleurPoignets>= 3) majeurDouleurs.push("poignets");
-  if (douleurYeux    >= 3) majeurDouleurs.push("yeux");
+  const zones: Array<[string, number]> = [
+    ["nuque", douleurNuque], ["épaules", douleurEpaules], ["bas du dos", douleurDos],
+    ["poignets", douleurPoignets], ["yeux", douleurYeux],
+  ];
+  const majeurDouleurs = zones.filter(([, v]) => v >= 3).map(([n]) => n);
+  const critiqueDouleurs = zones.filter(([, v]) => v >= 4).map(([n]) => n);
 
-  // Zones critiques (≥4/5)
-  const critiqueDouleurs: string[] = [];
-  if (douleurNuque   >= 4) critiqueDouleurs.push("nuque");
-  if (douleurEpaules >= 4) critiqueDouleurs.push("épaules");
-  if (douleurDos     >= 4) critiqueDouleurs.push("bas du dos");
-  if (douleurPoignets>= 4) critiqueDouleurs.push("poignets");
-  if (douleurYeux    >= 4) critiqueDouleurs.push("yeux");
-
-  const pausesMauvaises = pauses === "never" || pauses === "rarely";
-  const stressEleve     = stress === "eleve" || stress === "tres_eleve";
-  const sommeilInsuffisant = sommeil <= 6;
-  const sedentaire      = heuresAssis >= 9 || pausesMauvaises;
+  const pausesMauvaises = sig.pauseRare;
+  const stressEleve = sig.stressEleve;
+  const sommeilInsuffisant = sig.sommeilCourt;
+  const sedentaire = heuresAssis >= 9 || sig.pauseRare;
+  const activiteNulle = sig.activiteNulle;
+  const douleurNuitOui = sig.douleurNocturne;
+  const eclairageMauvais = sig.eclairageProbleme;
+  const laptopSeul = sig.laptopSeul;
 
   // ─── Synthèse narrative croisée ───────────────────────────────────────────
   let narrative = "";
@@ -377,7 +366,7 @@ function buildCrossedSynthesis(
     const shoulderIssue = personne.segments.epaules_dos_haut.score < 60;
 
     if (headIssue && douleurNuque >= 3) {
-      narrative = `L'analyse vidéo confirme ce que tu as déclaré : une projection de tête génère une charge cervicale excessive (jusqu'à 27 kg sur tes vertèbres C5-C6). Tes douleurs de nuque${douleurNuque >= 4 ? " sévères" : ""} ont une cause mécanique claire — corrigeable avec les ajustements prioritaires ci-dessous.`;
+      narrative = `L'analyse vidéo confirme ce que tu as déclaré : une projection de tête génère une charge cervicale excessive (la charge sur les cervicales augmente avec l'inclinaison de la tête). Tes douleurs de nuque${douleurNuque >= 4 ? " sévères" : ""} ont une cause mécanique claire — corrigeable avec les ajustements prioritaires ci-dessous.`;
     } else if (shoulderIssue && douleurEpaules >= 3) {
       narrative = `Le questionnaire signale des tensions aux épaules (${douleurEpaules}/5), et l'analyse vidéo en identifie la cause : un enroulement des épaules vers l'avant lié à ta posture de travail${heuresAssis >= 8 ? ` et à tes ${heuresAssis}h assis par jour` : ""}.`;
     } else if (setupScore < 55 && poste) {
@@ -446,7 +435,7 @@ function buildCrossedSynthesis(
     if (scores?.sleep_energy && scores.sleep_energy >= 65) positivePoints.push(`Sommeil satisfaisant (${sommeil >= 7 ? sommeil + "h" : "correct"}) — récupération correcte`);
     if (scores?.nutrition && scores.nutrition >= 60) positivePoints.push("Habitudes alimentaires correctes — base solide pour la santé musculaire");
     if (majeurDouleurs.length === 0 && scores?.pain && scores.pain >= 70) positivePoints.push("Aucune douleur significative déclarée — bilan douleur excellent");
-    if (pauses === "often" || pauses === "always") positivePoints.push("Bonnes pauses régulières — habitude protective à maintenir");
+    if (answers && (answers as Record<string, unknown>).q14 === "1h") positivePoints.push("Bonnes pauses régulières — habitude protective à maintenir");
   }
 
   // ─── Plan semaine enrichi par les réponses ────────────────────────────────
@@ -464,15 +453,15 @@ function buildCrossedSynthesis(
   if (douleurDos >= 3) qActions.push({ action: `Ajuster le dossier de ton siège pour soutenir le bas du dos (douleur ${douleurDos}/5)`, priority: douleurDos >= 4 ? 0 : 1 });
   if (douleurPoignets >= 3) qActions.push({ action: `Clavier à plat ou légèrement incliné vers toi, poignets dans l'axe (douleur ${douleurPoignets}/5)`, priority: douleurPoignets >= 4 ? 0 : 1 });
   if (douleurYeux >= 3) qActions.push({ action: `Réduire la luminosité de l'écran, activer le mode nuit, règle 20-20-20 (yeux ${douleurYeux}/5)`, priority: 1 });
-  if (pausesMauvaises) qActions.push({ action: `Programmer une alarme toutes les 45 min pour te lever 2 minutes — tu déclares ne presque jamais faire de pauses`, priority: 1 });
+  if (pausesMauvaises) qActions.push({ action: `Programmer un rappel toutes les 30 min pour te lever ou bouger 1 à 2 minutes — tu déclares peu ou pas de pauses`, priority: 1 });
   if (heuresAssis >= 9) qActions.push({ action: `Fractionner tes ${heuresAssis}h assis : debout au téléphone, réunions debout si possible`, priority: 2 });
   if (stressEleve) qActions.push({ action: `3 min de respiration diaphragmatique en début de journée — cohérence cardiaque (stress déclaré élevé)`, priority: 2 });
   if (sommeilInsuffisant) qActions.push({ action: `Écrans off 1h avant de dormir — ta récupération est limitée par ${sommeil}h de sommeil`, priority: 2 });
-  if (hauteurBureau === "trop_bas" || hauteurBureau === "trop_haut") qActions.push({ action: `Régler la hauteur de ton bureau : coudes à 90°, pieds à plat (déclaré ${hauteurBureau === "trop_bas" ? "trop bas" : "trop haut"})`, priority: 1 });
-  if (eclairage === "insuffisant" || eclairage === "mauvais") qActions.push({ action: "Ajouter une lampe de bureau à lumière naturelle — éclairage insuffisant déclaré", priority: 2 });
-  if (doubleEcran === "oui" || doubleEcran === "yes") qActions.push({ action: "Positionner l'écran principal face à toi, le secondaire légèrement en angle — double écran = risque de rotation cervicale", priority: 2 });
-  if (activitePhys === "never" || activitePhys === "rarely") qActions.push({ action: "Intégrer 20 min de marche quotidienne — ton niveau d'activité physique est faible, facteur aggravant des douleurs", priority: 3 });
-  if (douleurNuit === "oui" || douleurNuit === "yes") qActions.push({ action: "Consulter un kinésithérapeute — douleurs nocturnes déclarées : signe d'une tension musculaire qui nécessite un avis professionnel", priority: 0 });
+  if (hauteurBureau) qActions.push({ action: "Régler la hauteur de ton bureau : coudes à 90°, pieds à plat (tu as signalé une hauteur inadaptée)", priority: 1 });
+  if (eclairageMauvais) qActions.push({ action: "Corriger l'éclairage : écran perpendiculaire à la fenêtre, pas de reflets (environ 500 lux recommandés)", priority: 2 });
+  if (laptopSeul) qActions.push({ action: "Ajouter un écran externe (ou un rehausseur) avec clavier et souris externes : le laptop seul impose une flexion de nuque", priority: 1 });
+  if (activiteNulle) qActions.push({ action: "Viser 150 min d'activité modérée par semaine (repère OMS) — commence par 20 min de marche par jour", priority: 3 });
+  if (douleurNuitOui) qActions.push({ action: "Consulter un kinésithérapeute — douleurs nocturnes déclarées : signe d'une tension musculaire qui nécessite un avis professionnel", priority: 0 });
 
   const mergedRecs = hasVideoPosture
     ? [...allVideoRecs, ...qActions.filter(q => !allVideoRecs.some(v => v.action.toLowerCase().includes(q.action.split(" ")[0].toLowerCase())))]
@@ -513,7 +502,7 @@ function buildCrossedSynthesis(
     dailyChecklist.push("Étirement poignets avant chaque session prolongée au clavier");
   }
   // Setup
-  if (setupScore < 60 || hauteurBureau === "trop_bas" || hauteurBureau === "trop_haut") {
+  if (setupScore < 60 || hauteurBureau) {
     dailyChecklist.push("Vérifier la hauteur de l'écran avant de s'asseoir — 2 secondes qui changent tout");
   }
   // Pauses
