@@ -76,7 +76,7 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
     checklist.push({
       priority: "urgent",
       action: "Surélève ton laptop à hauteur des yeux",
-      why: "Un laptop à plat force ta tête à s'incliner de 30-40°, ce qui multiplie par 4 la charge sur ta nuque.",
+      why: "Un laptop à plat force ta tête à s'incliner de 30-40°, ce qui augmente la charge sur ta nuque.",
       cost: "Gratuit (2 livres suffisent) ou ~30€ (support laptop)"
     });
     checklist.push({
@@ -88,7 +88,7 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
   }
 
   if (answers.q3 === "non_bas") {
-    detected.push("Ton écran ou ton bureau est trop bas. Ta tête s'incline en permanence, ce qui charge ta nuque de 12 à 22 kg.");
+    detected.push("Ton écran ou ton bureau est trop bas. Ta tête s'incline en permanence, ce qui augmente la charge sur ta nuque.");
     tipIds.push("s2");
     if (!productKeys.includes("rehausseur_ecran")) productKeys.push("rehausseur_ecran");
     checklist.push({
@@ -107,7 +107,7 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
     tipIds.push("s1");
     checklist.push({
       priority: "important",
-      action: "Recule ton écran à 60-70cm de tes yeux",
+      action: "Recule ton écran à environ une longueur de bras",
       why: "La distance recommandée réduit la fatigue oculaire et les maux de tête de fin de journée.",
       cost: "Gratuit"
     });
@@ -121,7 +121,7 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
   checklist.push({
     priority: "important",
     action: "Règle ta chaise : pieds à plat, genoux à 90°, lombaires soutenus",
-    why: "Un réglage correct de chaise réduit la pression lombaire de 40%.",
+    why: "Un réglage correct de chaise aide à réduire la pression lombaire.",
     cost: "Gratuit"
   });
 
@@ -157,7 +157,7 @@ function setupAdvice(answers: QuestionnaireAnswers, scores: Scores): DimensionAd
   checklist.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
 
   const consequences = scores.setup < 50
-    ? "Un écran mal positionné génère une tension cervicale permanente. À force, les muscles raccourcissent et les vertèbres se compriment. Le laptop seul oblige à courber le dos pour voir l'écran, ce qui accumule des heures de compression discale chaque semaine."
+    ? "Un écran mal positionné génère une tension cervicale permanente. À la longue, les muscles de la nuque se fatiguent et se tendent. Le laptop seul oblige à courber le dos et la nuque pour voir l'écran."
     : "Même avec un setup correct, de petits déréglages s'accumulent avec la fatigue. La tension cervicale et la fatigue oculaire sont les premiers signes qu'il faut réévaluer son installation.";
 
   return {
@@ -246,7 +246,7 @@ function douleursAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensio
 
   const consequences = scores.pain < 50
     ? "Les douleurs non traitées s'installent et deviennent chroniques en quelques mois. La tension musculaire protège les zones douloureuses mais fatigue les muscles voisins. Le cercle vicieux douleur → protection → fatigue → douleur s'amplifie sans intervention."
-    : "Des douleurs modérées signalent que ton corps compense. Agir maintenant évite la chronicisation — 80% des douleurs de bureau disparaissent avec des ajustements simples.";
+    : "Des douleurs modérées signalent que ton corps compense. Agir maintenant aide à éviter la chronicisation : des ajustements simples suffisent souvent à soulager les gênes débutantes.";
 
   const disclaimer = "⚕️ Ces exercices sont préventifs et informatifs. Ils ne remplacent pas un avis médical. En cas de doute, consulte un kinésithérapeute ou ton médecin.";
 
@@ -295,7 +295,7 @@ function habitudesAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
     rituals.push({
       moment: "journée",
       title: "Règle 20-20-20",
-      description: "Toutes les 20 minutes, fixe un point à 6 mètres pendant 20 secondes. Ça relâche la tension des muscles oculaires et prévient la fatigue visuelle.",
+      description: "Toutes les 20 minutes, fixe un point à 6 mètres pendant 20 secondes. Ça relâche la tension des muscles oculaires et aide à limiter la fatigue visuelle.",
       duration: "20 secondes toutes les 20 min"
     });
   }
@@ -311,24 +311,24 @@ function habitudesAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
     rituals.push({
       moment: "journée",
       title: "Vraie pause déjeuner — sans écran",
-      description: "Mange loin de ton bureau. 20 minutes de déconnexion cognitive réduisent la fatigue musculaire de l'après-midi de 30%. Ton dos se décompresse quand tu bouges.",
+      description: "Mange loin de ton bureau. Une vraie pause de 20 minutes loin de l'écran aide à relâcher les tensions de l'après-midi. Ton dos se décompresse quand tu bouges.",
       duration: "20 min minimum"
     });
   }
 
   if ((answers.q_stress_travail ?? 0) >= 3) {
-    detected.push("Ton niveau de stress au travail est élevé. Le cortisol maintient les muscles en tension permanente — c'est une cause directe de douleurs chroniques.");
+    detected.push("Ton niveau de stress au travail est élevé. Le stress prolongé entretient la tension musculaire : c'est un facteur de risque de douleurs et de TMS reconnu par EU-OSHA.");
     tipIds.push("h11");
     rituals.push({
       moment: "journée",
       title: "Cohérence cardiaque — 5 min",
-      description: "5 minutes de respiration rythmée (5 secondes inspiration, 5 secondes expiration) réduisent le cortisol. Fais-le avant un meeting stressant ou après une période intense.",
+      description: "5 minutes de respiration rythmée (5 secondes inspiration, 5 secondes expiration) aident à se détendre. Fais-le avant un meeting stressant ou après une période intense.",
       duration: "5 min"
     });
   }
 
   if (answers.q_laptop_hors_bureau === "souvent" || answers.q_laptop_hors_bureau === "principale") {
-    detected.push("Tu travailles souvent dans une position non ergonomique. Chaque heure dans le canapé génère des tensions cervicales équivalentes à 3h de mauvaise posture.");
+    detected.push("Tu travailles souvent dans une position non ergonomique. Travailler dans un canapé ou un lit expose à des postures prolongées défavorables pour la nuque et le dos.");
     tipIds.push("h10");
   }
 
@@ -339,7 +339,7 @@ function habitudesAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
   tipIds.push("h8", "h5");
 
   const consequences = scores.habits < 50
-    ? "Rester assis sans bouger comprime les disques intervertébraux, ralentit la circulation et contracture les muscles posturaux. Après 6h assis, la pression discale lombaire équivaut à soulever 20 kg en continu."
+    ? "Rester assis sans bouger comprime les disques intervertébraux, ralentit la circulation et contracture les muscles posturaux. Plus la position assise est longue et statique, plus le dos et les disques sont sollicités."
     : "Les habitudes de mouvement protègent ton dos et ta circulation. Chaque pause active relâche la pression discale et réactive la circulation lymphatique.";
 
   return {
@@ -361,12 +361,12 @@ function modeDeVieAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
 
   // ── Sommeil ──
   if (answers.q17 <= 6) {
-    detected.push(`Tu dors moins de ${answers.q17}h par nuit. Un manque de sommeil amplifie la perception de la douleur de 25% dès la 2ème nuit courte.`);
+    detected.push(`Tu dors moins de ${answers.q17}h par nuit. Un manque de sommeil peut augmenter la sensibilité à la douleur.`);
     tipIds.push("sl4", "sl1");
     rituals.push({
       moment: "soir",
       title: "Routine de déconnexion",
-      description: "30 minutes avant de dormir, coupe les écrans et baisse la lumière. La lumière bleue retarde la mélatonine de 1 à 2 heures — tu t'endors plus tard sans t'en rendre compte.",
+      description: "30 minutes avant de dormir, coupe les écrans et baisse la lumière. Les écrans et la lumière vive en soirée peuvent retarder l'endormissement.",
       duration: "30 min avant le coucher"
     });
   } else if (answers.q17 <= 7) {
@@ -379,14 +379,14 @@ function modeDeVieAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
     rituals.push({
       moment: "soir",
       title: "Température de chambre",
-      description: "Une chambre entre 16 et 19°C favorise le sommeil profond. C'est contre-intuitif mais le corps a besoin de se refroidir pour bien récupérer.",
+      description: "Une chambre plutôt fraîche favorise le sommeil. C'est contre-intuitif mais le corps a besoin de se refroidir pour bien récupérer.",
       duration: "Permanent"
     });
     productKeys.push("magnesium");
   }
 
   if (answers.q20 === "often" || answers.q20 === "always") {
-    detected.push("Tu utilises des écrans le soir. La lumière bleue décale ton horloge biologique et réduit la durée de ton sommeil profond.");
+    detected.push("Tu utilises des écrans le soir. Les écrans en soirée peuvent retarder l'endormissement et perturber le sommeil.");
     productKeys.push("lunettes_horus");
     tipIds.push("sl3");
   }
@@ -409,11 +409,11 @@ function modeDeVieAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
 
   // ── Stress ──
   if ((answers.q_stress_travail ?? 0) >= 3 || answers.q24 === "bad") {
-    detected.push("Ton stress chronique maintient les muscles en tension permanente — c'est une cause directe de douleurs qui persistent malgré les bons gestes.");
+    detected.push("Ton stress chronique maintient les muscles en tension permanente — c'est un facteur qui peut entretenir les douleurs malgré les bons gestes.");
     rituals.push({
       moment: "journée",
       title: "Cohérence cardiaque — 3x/jour",
-      description: "5 minutes de respiration rythmée (5s inspiration, 5s expiration) 3 fois par jour. Prouvé pour réduire le cortisol et relâcher les tensions musculaires réflexes.",
+      description: "5 minutes de respiration rythmée (5s inspiration, 5s expiration) 3 fois par jour. Technique de respiration lente reconnue pour favoriser la détente et relâcher les tensions.",
       duration: "5 min × 3"
     });
     tipIds.push("l2");
@@ -487,7 +487,7 @@ function nutritionAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
   mealExamples.push({
     moment: "petit-déjeuner",
     example: "3 œufs brouillés + 2 tranches de pain complet + fromage blanc 0% + café",
-    why: "30g de protéines au petit-déjeuner stabilisent la glycémie jusqu'à midi et réduisent les fringales de 60%. Les œufs sont la source protéique la plus complète."
+    why: "Un petit-déjeuner riche en protéines stabilisent la glycémie jusqu'à midi et aident à limiter les fringales. Les œufs sont la source protéique la plus complète."
   });
 
   mealExamples.push({
@@ -508,7 +508,7 @@ function nutritionAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
   rituals.push({
     moment: "toujours",
     title: "1,5 à 2L d'eau par jour",
-    description: "La déshydratation de 1% réduit les capacités cognitives de 10%. Les disques intervertébraux sont composés de 80% d'eau — boire régulièrement les garde hydratés et résistants.",
+    description: "Une hydratation insuffisante peut favoriser la fatigue et réduire la concentration. Les disques intervertébraux contiennent beaucoup d'eau : boire régulièrement fait partie d'une bonne hygiène de vie pour le dos.",
     duration: "Permanent"
   });
 
@@ -517,10 +517,10 @@ function nutritionAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
     avoidItems.push("Viennoiseries et biscuits en collation → pic glycémique suivi d'un crash d'énergie");
   }
   if (answers.qn2 === "crash") {
-    avoidItems.push("Pâtes ou pizza au déjeuner sans protéines → coup de barre garanti à 14h");
+    avoidItems.push("Pâtes ou pizza au déjeuner sans protéines → risque de coup de barre l'après-midi");
   }
   if (answers.qn1 === "screen") {
-    avoidItems.push("Manger devant l'écran → tu manges 30% de plus sans t'en rendre compte");
+    avoidItems.push("Manger devant l'écran → tu fais moins attention à ce que tu manges");
   }
 
   tipIds.push("n3", "n7");

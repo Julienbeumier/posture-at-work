@@ -50,7 +50,7 @@ const EXERCISES_BY_PROFILE: Record<string, { name: string; duration: string; des
     { name: "Rotation thoracique", duration: "10 rép. × 2", desc: "Déverrouille le dos moyen bloqué par la position assise.", emoji: "🔄" },
   ],
   debout: [
-    { name: "Étirement mollets au mur", duration: "45 sec × 2", desc: "Prévient l'insuffisance veineuse et les crampes nocturnes.", emoji: "🦵" },
+    { name: "Étirement mollets au mur", duration: "45 sec × 2", desc: "Aide à soulager les jambes lourdes et les crampes.", emoji: "🦵" },
     { name: "Flexion lombaire debout", duration: "30 sec × 3", desc: "Soulage le bas du dos après stations debout prolongées.", emoji: "🌿" },
     { name: "Rotation des épaules", duration: "15 rép. × 2", desc: "Libère les tensions des trapèzes — manutention et postures statiques.", emoji: "💪" },
     { name: "Équilibre unipodal", duration: "30 sec × 2", desc: "Renforce les stabilisateurs de cheville et genou.", emoji: "🦅" },
@@ -124,24 +124,24 @@ const PRODUCTS_BY_ISSUE: Record<string, { name: string; url: string; price: stri
   setup_bureau: [
     { name: "Rehausseur écran GRIFEMA", url: "https://amzn.to/3RF8Hn1", price: "~28€", reason: "Corrige la hauteur d'écran — réduit la charge cervicale de 12kg" },
     { name: "Support laptop ergonomique", url: "https://amzn.to/3RF8LmL", price: "~30€", reason: "Indispensable pour tout usage laptop prolongé" },
-    { name: "Souris verticale Trust Verto", url: "https://amzn.to/4vkCnnZ", price: "~25€", reason: "Réduit la torsion du poignet de 60%" },
+    { name: "Souris verticale Trust Verto", url: "https://amzn.to/4vkCnnZ", price: "~25€", reason: "Aide à réduire la torsion du poignet" },
   ],
   setup_debout: [
-    { name: "Tapis anti-fatigue", url: "https://amzn.to/4fnjrQR", price: "~45€", reason: "Réduit la fatigue des jambes et lombaires de 50% en station debout prolongée" },
+    { name: "Tapis anti-fatigue", url: "https://amzn.to/4fnjrQR", price: "~45€", reason: "Aide à réduire la fatigue des jambes et lombaires en station debout prolongée" },
     { name: "Semelles orthopédiques", url: "https://amzn.to/4eiCfP5", price: "~30€", reason: "Amorti et soutien de voûte — essentiel pour les postes debout > 4h/jour" },
-    { name: "Chaussettes de compression", url: "https://amzn.to/4vimwWT", price: "~20€", reason: "Prévient l'insuffisance veineuse et les jambes lourdes" },
+    { name: "Chaussettes de compression", url: "https://amzn.to/4vimwWT", price: "~20€", reason: "Aide à soulager les jambes lourdes" },
   ],
   douleurs_bureau: [
     { name: "Coussin lombaire FORTEM", url: "https://amzn.to/4dIapg4", price: "~30€", reason: "Soulagement immédiat des douleurs lombaires dès la première utilisation" },
     { name: "Balle de massage BLACKROLL", url: "https://amzn.to/43G4lyy", price: "~15€", reason: "Libère les points de tension nuque et épaules en quelques minutes" },
   ],
   douleurs_debout: [
-    { name: "Balle massage plantaire", url: "https://amzn.to/4wZhdNP", price: "~15€", reason: "Soulage les fasciites plantaires et tensions du pied après journée debout" },
-    { name: "Coussin surélévation jambes", url: "https://amzn.to/3PLUGmX", price: "~35€", reason: "Drainage veineux en fin de journée — prévient varices et jambes lourdes" },
+    { name: "Balle massage plantaire", url: "https://amzn.to/4wZhdNP", price: "~15€", reason: "Peut soulager les tensions du pied après journée debout" },
+    { name: "Coussin surélévation jambes", url: "https://amzn.to/3PLUGmX", price: "~35€", reason: "Jambes surélevées en fin de journée — aide à soulager les jambes lourdes" },
     { name: "Foam roller", url: "https://amzn.to/4u7mU9E", price: "~25€", reason: "5 minutes soir pour relâcher mollets, ischio-jambiers et bas du dos" },
   ],
   habits: [
-    { name: "Bureau assis-debout SONGMICS", url: "https://amzn.to/4dGGncw", price: "~200€", reason: "Alterner assis/debout réduit les douleurs lombaires de 50%" },
+    { name: "Bureau assis-debout SONGMICS", url: "https://amzn.to/4dGGncw", price: "~200€", reason: "Alterner assis/debout aide à réduire les douleurs lombaires" },
     { name: "Coussin d'équilibre BODYMATE", url: "https://amzn.to/3Rh9avh", price: "~30€", reason: "Active les muscles posturaux profonds passivement" },
   ],
 };
@@ -160,10 +160,10 @@ const EXERCISES_BY_ISSUE: Record<string, { name: string; duration: string; desc:
   epaules_poignets: [
     { name: "Ouverture pectorale en porte", duration: "30 sec par côté", desc: "Compense l'enroulement des épaules dû au clavier", emoji: "🦅" },
     { name: "Rétraction scapulaire", duration: "15 rép. × 3 sec", desc: "Renforce les rhomboïdes et corrige l'enroulement", emoji: "🏹" },
-    { name: "Étirement fléchisseurs poignet", duration: "30 sec par côté", desc: "Prévient le syndrome du canal carpien", emoji: "🖐️" },
+    { name: "Étirement fléchisseurs poignet", duration: "30 sec par côté", desc: "Aide à soulager les poignets sollicités", emoji: "🖐️" },
   ],
   jambes_pieds: [
-    { name: "Élévation des mollets", duration: "15 rép. × 3", desc: "Active la pompe veineuse et prévient les varices", emoji: "🦵" },
+    { name: "Élévation des mollets", duration: "15 rép. × 3", desc: "Active la circulation dans les mollets", emoji: "🦵" },
     { name: "Auto-massage plantaire", duration: "2 min par pied", desc: "Relâche les tensions du fascia plantaire", emoji: "⚾" },
     { name: "Surélévation des jambes", duration: "20 minutes soir", desc: "Drainage veineux actif après journée debout", emoji: "🧘" },
   ],
@@ -295,12 +295,12 @@ function analyzeEmployee(emp: EmployeeRow): {
     }
     if (dos >= 3) {
       flags.push({ label: `Douleurs lombaires ${dos}/5`, color: "#f4a261", severity: "warning" });
-      mainIssues.push(`Lombalgies (${dos}/5) — compression discale par position assise`);
+      mainIssues.push(`Lombalgies (${dos}/5) — station assise prolongée probable facteur aggravant`);
       recommendations.push("Pauses actives toutes les 45 min + coussin lombaire");
     }
     if (poignets >= 3) {
       flags.push({ label: `Douleurs poignets ${poignets}/5`, color: "#f4a261", severity: "warning" });
-      recommendations.push("Souris verticale — risque syndrome canal carpien");
+      recommendations.push("Souris verticale à essayer (poignets douloureux)");
     }
     if (a.q_irradiation_bras === "coude" || a.q_irradiation_bras === "main") {
       flags.push({ label: "Irradiation bras", color: "#e24b4a", severity: "critical" });
@@ -308,11 +308,11 @@ function analyzeEmployee(emp: EmployeeRow): {
     }
     if (a.q_fourmillements === "permanent" || a.q_fourmillements === "travail") {
       flags.push({ label: "Fourmillements", color: "#e24b4a", severity: "critical" });
-      mainIssues.push("Fourmillements — risque canal carpien ou compression nerveuse");
+      mainIssues.push("Fourmillements — avis médical ou kiné conseillé");
     }
     if (a.q_douleur_nuit === "reveille" || a.q_douleur_nuit === "souvent") {
       flags.push({ label: "Douleurs nocturnes", color: "#e24b4a", severity: "critical" });
-      mainIssues.push("⚠️ Douleurs nocturnes — signe de pathologie évolutive");
+      mainIssues.push("⚠️ Douleurs nocturnes — avis médical ou kiné conseillé");
     }
     const heures = Number(a.q13 ?? 0);
     if (heures >= 9) {
@@ -328,7 +328,7 @@ function analyzeEmployee(emp: EmployeeRow): {
     const stress = Number(a.q_stress_travail ?? 0);
     if (stress >= 4) {
       flags.push({ label: `Stress élevé ${stress}/5`, color: "#a78bfa", severity: "warning" });
-      mainIssues.push(`Stress chronique élevé (${stress}/5) — tension musculaire permanente via cortisol`);
+      mainIssues.push(`Stress chronique élevé (${stress}/5) — le stress entretient la tension musculaire`);
     }
     const sommeil = Number(a.q17 ?? 7);
     if (sommeil <= 5) {
@@ -364,7 +364,7 @@ function analyzeEmployee(emp: EmployeeRow): {
     }
     if (jambes >= 3) {
       flags.push({ label: `Jambes lourdes ${jambes}/5`, color: "#f4a261", severity: "warning" });
-      mainIssues.push(`Fatigue des membres inférieurs (${jambes}/5) — insuffisance veineuse possible`);
+      mainIssues.push(`Fatigue des membres inférieurs (${jambes}/5) — fatigue des jambes à surveiller`);
       recommendations.push("Chaussettes de compression + tapis anti-fatigue");
     }
     if (epaules >= 3) {
@@ -391,7 +391,7 @@ function analyzeEmployee(emp: EmployeeRow): {
     }
     if (a.q_d_jambes_nuit === "souvent") {
       flags.push({ label: "Jambes agitées la nuit", color: "#a78bfa", severity: "warning" });
-      mainIssues.push("Jambes agitées nocturnes — signe d'insuffisance veineuse");
+      mainIssues.push("Jambes agitées la nuit — à signaler au médecin si cela persiste");
     }
     const profileParts: string[] = ["Poste debout"];
     if (a.q_d1 === "dur") profileParts.push("Sol dur");
@@ -1320,7 +1320,7 @@ export default function EntrepriseDemoDashboard() {
                             niveau: allHabits < 50 ? "Critique" : allHabits < 60 ? "Élevé" : "Modéré",
                             couleur: allHabits < 50 ? "#f09595" : allHabits < 60 ? "#f4a261" : "#74c69d",
                             detail: hasGroups
-                              ? `Bureau : compression discale par station assise prolongée sans pauses (${bureau.habits}/100 habitudes). Debout/entrepôt : lombalgies par manutention sans formation et postures de levage incorrectes (${debout.pain}/100 douleurs).`
+                              ? `Bureau : station assise prolongée sans pauses (${bureau.habits}/100 habitudes). Debout/entrepôt : lombalgies par manutention sans formation et postures de levage incorrectes (${debout.pain}/100 douleurs).`
                               : `Lombalgies liées aux habitudes de travail — station prolongée sans alternance posturale. Score habitudes : ${allHabits}/100`,
                             conseils: [
                               "Mettre en place une alarme toutes les 45 min pour lever les équipes",
@@ -1335,7 +1335,7 @@ export default function EntrepriseDemoDashboard() {
                             niveau: allSetup < 50 ? "Critique" : allSetup < 60 ? "Élevé" : "Modéré",
                             couleur: allSetup < 50 ? "#f09595" : allSetup < 60 ? "#f4a261" : "#74c69d",
                             detail: hasGroups
-                              ? `Bureau : syndrome d'enroulement des épaules par positionnement clavier/souris inadapté (${bureau.setup}/100). Entrepôt : tendinopathies d'épaule par gestes répétitifs au-dessus des épaules.`
+                              ? `Bureau : tensions d'épaules liées au positionnement clavier/souris (${bureau.setup}/100). Entrepôt : tensions d'épaule par gestes répétitifs au-dessus des épaules.`
                               : `TMS des membres supérieurs liés au setup ergonomique. Score setup : ${allSetup}/100`,
                             conseils: [
                               "Vérifier que clavier et souris sont à hauteur des coudes",
@@ -1350,7 +1350,7 @@ export default function EntrepriseDemoDashboard() {
                             niveau: hasGroups && (debout.pain ?? 100) < 45 ? "Critique" : "Modéré",
                             couleur: hasGroups && (debout.pain ?? 100) < 45 ? "#f09595" : hasGroups && (debout.pain ?? 100) < 55 ? "#f4a261" : "#74c69d",
                             detail: hasGroups
-                              ? `Spécifique équipe debout — jambes lourdes, œdèmes en fin de journée, risque d'insuffisance veineuse. Fatigue plantaire fréquente. Score douleurs entrepôt : ${debout.pain}/100`
+                              ? `Spécifique équipe debout — jambes lourdes, œdèmes en fin de journée, fatigue des jambes. Fatigue plantaire fréquente. Score douleurs entrepôt : ${debout.pain}/100`
                               : "Zone moins concernée pour les postes bureau.",
                             conseils: [
                               "Imposer des chaussures de travail avec semelle amortissante",

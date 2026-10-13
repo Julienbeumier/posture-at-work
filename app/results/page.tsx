@@ -95,19 +95,19 @@ function ScoreCircle({ score, isPartial = false }: { score: number; isPartial?: 
 // ─── Inline product per dimension ────────────────────────────────────────────
 
 const DIM_INLINE_PRODUCTS: Record<string, { name: string; url: string; reason: string; price: string }> = {
-  "/conseils/setup":        { name: "Rehausseur écran GRIFEMA",           url: "https://amzn.to/3RF8Hn1", reason: "Écran trop bas → charge cervicale +12kg sur la nuque",    price: "~28€" },
+  "/conseils/setup":        { name: "Rehausseur écran GRIFEMA",           url: "https://amzn.to/3RF8Hn1", reason: "Écran trop bas → nuque en flexion prolongée",    price: "~28€" },
   "/conseils/douleurs":     { name: "Coussin lombaire FORTEM",             url: "https://amzn.to/4dIapg4", reason: "Soulage les douleurs lombaires dès la première utilisation", price: "~30€" },
-  "/conseils/habitudes":    { name: "Bureau assis-debout SONGMICS",        url: "https://amzn.to/4dGGncw", reason: "Alterner assis/debout réduit les douleurs lombaires de 50%", price: "~200€" },
-  "/conseils/mode-de-vie":  { name: "Lunettes anti-lumière bleue Horus X", url: "https://amzn.to/4veEs4B", reason: "Bloque la lumière bleue pour retrouver un sommeil naturel",  price: "~30€" },
+  "/conseils/habitudes":    { name: "Bureau assis-debout SONGMICS",        url: "https://amzn.to/4dGGncw", reason: "Alterner assis/debout aide à réduire les douleurs lombaires", price: "~200€" },
+  "/conseils/mode-de-vie":  { name: "Lunettes anti-lumière bleue Horus X", url: "https://amzn.to/4veEs4B", reason: "Optionnel : l'effet sur le sommeil n'est pas démontré (Cochrane 2023), couper les écrans en soirée reste plus efficace",  price: "~30€" },
   "/conseils/nutrition":    { name: "Gourde graduée avec horaires 1.5L",   url: "https://amzn.to/4dVZNJl", reason: "Rappel d'hydratation tout au long de la journée",          price: "~15€" },
 };
 
 const DIM_INLINE_PRODUCTS_DEBOUT: Record<string, { name: string; url: string; reason: string; price: string }> = {
   "/conseils/setup":     { name: "Tapis anti-fatigue ergonomique",  url: "https://amzn.to/4fnjrQR",          reason: "Sol dur sans amorti = fatigue musculaire x3 en fin de journée",               price: "~45€" },
   "/conseils/douleurs":  { name: "Semelles orthopédiques de travail", url: "https://amzn.to/4eiCfP5", reason: "Amorties et soutien de voûte plantaire pour journées debout",                 price: "~35€" },
-  "/conseils/sommeil":   { name: "Chaussettes de compression graduée", url: "https://amzn.to/4vimwWT", reason: "À porter le matin avant de se lever — prévient jambes lourdes et varices", price: "~20€" },
+  "/conseils/sommeil":   { name: "Chaussettes de compression graduée", url: "https://amzn.to/4vimwWT", reason: "À enfiler le matin avant de se lever — peut soulager les jambes lourdes", price: "~20€" },
   "/conseils/lifestyle": { name: "Balle de massage plantaire",       url: "https://amzn.to/4wZhdNP",        reason: "Auto-massage sous le pied après le service — soulage les tensions en 5 min", price: "~15€" },
-  "/conseils/habitudes": { name: "Repose-pieds ergonomique",         url: "https://amzn.to/4uMCqZO",                                                                 reason: "Permet d'alterner l'appui et soulage le bas du dos de 25%",                   price: "~35€" },
+  "/conseils/habitudes": { name: "Repose-pieds ergonomique",         url: "https://amzn.to/4uMCqZO",                                                                 reason: "Permet d'alterner l'appui et peut soulager le bas du dos",                   price: "~35€" },
   "/conseils/nutrition": { name: "Gourde 1.5L graduée",              url: "https://amzn.to/4dVZNJl",                                                                 reason: "Hydratation critique pour les métiers debout — boire sans y penser",          price: "~15€" },
 };
 

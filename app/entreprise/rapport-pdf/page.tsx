@@ -265,7 +265,7 @@ export default function EntrepriseRapportPDF() {
                   zone: "Bas du dos & lombaires",
                   score: avgDim(assessed, "habits") ?? 0,
                   detail: hasGroups
-                    ? `Bureau : compression discale par position assise prolongée (habitudes ${avgDim(bureauGroup, "habits")}/100). Debout : lombalgies par manutention sans formation.`
+                    ? `Bureau : station assise prolongée (habitudes ${avgDim(bureauGroup, "habits")}/100). Debout : lombalgies par manutention sans formation.`
                     : `Lombalgies liées aux habitudes de travail. Score habitudes : ${avgDim(assessed, "habits")}/100`,
                 },
                 {

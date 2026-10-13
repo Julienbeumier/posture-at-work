@@ -704,9 +704,9 @@ function BureauQuestionnaire() {
           </QBlock>
           <QBlock number="3" question="Quelle distance entre toi et ton écran ?" answered={!!answers.q4} cat={CATEGORIES[0]}>
             <ChoiceGrid cat={CATEGORIES[0]} value={answers.q4} onChange={(v) => update("q4", v)} options={[
-              { value: "close", label: "📏 Moins de 50cm" },
-              { value: "ideal", label: "📏 50–70cm (idéal)" },
-              { value: "far", label: "📏 Plus de 70cm" },
+              { value: "close", label: "📏 Plus près qu'une longueur de bras" },
+              { value: "ideal", label: "📏 Environ une longueur de bras (idéal)" },
+              { value: "far", label: "📏 Plus loin qu'une longueur de bras" },
               { value: "dunno", label: "🤷 Je sais pas" },
             ]} />
           </QBlock>

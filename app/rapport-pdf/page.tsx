@@ -77,23 +77,23 @@ function getBureauDetectedIssues(dim: string, a: Answers): string[] {
       break;
     case "pain":
       if (n("q6") >= 3) issues.push(`Douleurs cervicales significatives (${n("q6")}/5) — zone la plus touchée chez les travailleurs de bureau.`);
-      if (n("q7") >= 3) issues.push(`Douleurs aux épaules importantes (${n("q7")}/5) — signe d'enroulement postural chronique.`);
-      if (n("q8") >= 3) issues.push(`Douleurs lombaires importantes (${n("q8")}/5) — compression discale par position assise prolongée.`);
-      if (n("q9") >= 3) issues.push(`Douleurs aux poignets (${n("q9")}/5) — début potentiel de syndrome du canal carpien.`);
+      if (n("q7") >= 3) issues.push(`Douleurs aux épaules importantes (${n("q7")}/5) — tensions d'épaules possiblement liées à la posture.`);
+      if (n("q8") >= 3) issues.push(`Douleurs lombaires importantes (${n("q8")}/5) — souvent liées à la station assise prolongée.`);
+      if (n("q9") >= 3) issues.push(`Douleurs aux poignets (${n("q9")}/5) — à surveiller ; avis professionnel si fourmillements.`);
       if (n("q10") >= 3) issues.push(`Fatigue visuelle significative (${n("q10")}/5) — distance d'écran et lumière à revoir.`);
       if (g("q11") === "months" || g("q11") === "year") issues.push("Douleurs installées depuis plusieurs mois — une consultation kiné est recommandée.");
       break;
     case "habits":
       if (n("q13") >= 9) issues.push(`Tu travailles ${n("q13")}h/jour — exposition prolongée aux contraintes posturales.`);
-      if (g("q14") === "never") issues.push("Aucune pause active — compression discale en continu toute la journée.");
+      if (g("q14") === "never") issues.push("Aucune pause active — charge statique continue sur le dos et la nuque.");
       if (g("q14b") === "none") issues.push("Peu ou pas d'activité physique pour compenser la sédentarité professionnelle.");
-      if (g("q15") === "hand") issues.push("Téléphone tenu à la main = nuque inclinée répétitivement de 15-30°.");
+      if (g("q15") === "hand") issues.push("Téléphone tenu à la main = nuque inclinée de façon répétée.");
       break;
     case "sleep_energy":
       if (n("q17") < 7) issues.push(`Tu dors ${n("q17")}h — en dessous des 7-8h nécessaires à la récupération musculaire.`);
       if (g("q18") === "exhausted") issues.push("Tu te réveilles épuisé — ton sommeil ne remplit pas sa fonction réparatrice.");
       if (g("q18") === "tired") issues.push("Tu te réveilles fatigué — qualité de sommeil insuffisante.");
-      if (g("q20") === "always" || g("q20") === "often") issues.push("Fatigue chronique en journée — signe d'une récupération incomplète.");
+      if (g("q20") === "always" || g("q20") === "often") issues.push("Fatigue chronique en journée — possible récupération incomplète.");
       break;
     case "nutrition":
       if (g("qn2") === "crash") issues.push("Crash énergétique post-repas — probablement lié à un excès de glucides simples.");
@@ -113,20 +113,20 @@ function getBureauDetectedIssues(dim: string, a: Answers): string[] {
 
 const GENERIC_ACTIONS: Record<string, JobPriorityAction[]> = {
   habits: [
-    { title: "Alarme toutes les 90 minutes", why: "Au-delà de 50 minutes assis, la compression discale augmente exponentiellement.", how: "À chaque alarme : lève-toi, marche 2-3 minutes dans la pièce.", impact: "Réduit de 40% l'accumulation de tension journalière" },
-    { title: "Marche pendant tes appels téléphoniques", why: "Transformer le temps téléphonique en temps de mouvement, sans organisation.", how: "Lève-toi à chaque appel. Sans exception.", impact: "20-30 min de mouvement en plus par jour automatiquement" },
+    { title: "Un rappel pour te lever régulièrement", why: "Rester longtemps assis sans bouger charge le dos et la nuque (EU-OSHA : micro-pause toutes les 20 à 30 min).", how: "À chaque alarme : lève-toi, marche 2-3 minutes dans la pièce.", impact: "Aide à réduire l'accumulation de tension journalière" },
+    { title: "Marche pendant tes appels téléphoniques", why: "Transformer le temps téléphonique en temps de mouvement, sans organisation.", how: "Lève-toi à chaque appel. Sans exception.", impact: "Plus de mouvement dans la journée, sans organisation particulière" },
   ],
   sleep_energy: [
-    { title: "Déconnecte les écrans à 21h", why: "La lumière bleue décale l'horloge biologique de 2 heures.", how: "Mode nuit sur tous les écrans. Idéalement aucun écran 1h avant le coucher.", impact: "Améliore la qualité du sommeil en 5-7 jours" },
-    { title: "Heure de coucher fixe", why: "La régularité du cycle sommeil-réveil est plus importante que la durée seule.", how: "Même heure de coucher week-end et semaine. 21h30-22h recommandé.", impact: "Récupération complète restaurée en 2-3 semaines" },
+    { title: "Déconnecte les écrans à 21h", why: "Les écrans le soir peuvent retarder l'endormissement.", how: "Mode nuit sur tous les écrans. Idéalement aucun écran 1h avant le coucher.", impact: "Peut faciliter l'endormissement" },
+    { title: "Heure de coucher fixe", why: "La régularité du cycle sommeil-réveil est plus importante que la durée seule.", how: "Garde des horaires de coucher réguliers, week-end compris.", impact: "Un sommeil plus régulier aide la récupération" },
   ],
   nutrition: [
-    { title: "Protéines au déjeuner (25g minimum)", why: "Les protéines stabilisent la glycémie et éliminent le coup de barre de 14h.", how: "Légumineuses, œufs, viande blanche ou poisson. Évite le repas 100% glucides.", impact: "Élimine le crash énergétique de l'après-midi" },
-    { title: "2 verres d'eau avant le café", why: "La déshydratation matinale amplifie la fatigue et les tensions musculaires.", how: "Verre d'eau posé à côté du lit. Boire avant de se lever.", impact: "Amélioration énergie et concentration en 3-5 jours" },
+    { title: "Des protéines au déjeuner", why: "Un repas équilibré avec des protéines aide à limiter le coup de barre de l'après-midi.", how: "Légumineuses, œufs, viande blanche ou poisson. Évite le repas 100% glucides.", impact: "Aide à garder une énergie plus stable l'après-midi" },
+    { title: "Un verre d'eau avant le café", why: "S'hydrater tôt dans la journée aide à limiter la fatigue.", how: "Verre d'eau posé à côté du lit. Boire avant de se lever.", impact: "Un geste simple pour bien démarrer la journée" },
   ],
   lifestyle: [
-    { title: "20 minutes de marche quotidienne", why: "La marche réduit le risque lombalgique de 30% et régule le cortisol.", how: "Déjeuner, trajets, soirée. Pas besoin d'équipement.", impact: "Amélioration progressive sur 2-3 semaines" },
-    { title: "Gainage 3x/semaine — 10 minutes", why: "Les muscles du tronc sont les amortisseurs naturels de la colonne.", how: "Planche, bird-dog, glute bridge. 10 min. YouTube suffit.", impact: "Réduit les douleurs lombaires de 50% en 6 semaines" },
+    { title: "20 minutes de marche quotidienne", why: "Marcher régulièrement fait partie des recommandations pour la santé du dos et le bien-être (OMS : au moins 150 min d'activité modérée par semaine).", how: "Déjeuner, trajets, soirée. Pas besoin d'équipement.", impact: "Un geste simple, bénéfique s'il est régulier" },
+    { title: "Gainage 3x/semaine — 10 minutes", why: "Les muscles du tronc sont les amortisseurs naturels de la colonne.", how: "Planche, bird-dog, glute bridge. 10 min. YouTube suffit.", impact: "Un tronc plus gainé aide à soutenir le bas du dos" },
   ],
 };
 

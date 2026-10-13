@@ -227,9 +227,10 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
 }) {
   const [arrets, setArrets] = useState(2);
   const [employees, setEmployees] = useState(30);
-  const coutArret = 8000;
+  const [coutArret, setCoutArret] = useState(8000);
+  const [tauxReduction, setTauxReduction] = useState(10);
   const coutTotal = arrets * coutArret;
-  const reductionTMS = Math.round(coutTotal * 0.4);
+  const reductionTMS = Math.round(coutTotal * (tauxReduction / 100));
   const coutPAW = employees < 50 ? employees * 25 : employees * 20;
   const roi = reductionTMS - coutPAW;
   const roiMultiple = Math.round((reductionTMS / Math.max(coutPAW, 1)) * 10) / 10;
@@ -243,7 +244,7 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
         Combien vous coûte l&apos;inaction ?
       </h2>
       <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textMuted, marginBottom: 28, lineHeight: 1.65 }}>
-        Estimez le coût de vos arrêts TMS et comparez avec le coût de la prévention.
+        Estimez le coût de vos arrêts TMS et comparez avec le coût de la prévention. Les deux hypothèses du bas sont à ajuster selon votre situation.
       </p>
 
       <div style={{ borderRadius: 24, overflow: "hidden", border: `0.5px solid ${c.border}`, background: c.bgCard }}>
@@ -284,6 +285,32 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
           </div>
         </div>
 
+        {/* Hypothèses modifiables */}
+        <div style={{
+          padding: isMobile ? "0 20px 24px" : "0 36px 28px",
+          borderBottom: `0.5px solid ${c.border}`,
+          display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 24,
+        }}>
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
+              <span style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, fontWeight: 600 }}>Coût d&apos;un arrêt (votre estimation)</span>
+              <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 20, color: c.textPrimary }}>{coutArret.toLocaleString("fr-FR")}€</span>
+            </div>
+            <input type="range" min={2000} max={20000} step={500} value={coutArret}
+              onChange={e => setCoutArret(Number(e.target.value))}
+              style={{ width: "100%", accentColor: "#f4a261", cursor: "pointer" }} />
+          </div>
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
+              <span style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, fontWeight: 600 }}>Réduction d&apos;arrêts visée (hypothèse)</span>
+              <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 20, color: c.textPrimary }}>{tauxReduction} %</span>
+            </div>
+            <input type="range" min={5} max={30} step={5} value={tauxReduction}
+              onChange={e => setTauxReduction(Number(e.target.value))}
+              style={{ width: "100%", accentColor: "#74c69d", cursor: "pointer" }} />
+          </div>
+        </div>
+
         {/* Résultats */}
         <div style={{ padding: isMobile ? "24px 20px" : "32px 36px" }}>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 14, marginBottom: 20 }}>
@@ -292,7 +319,7 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
               <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 26, color: "#f09595", margin: "0 0 4px" }}>
                 {coutTotal.toLocaleString("fr-FR")}€
               </p>
-              <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: 0 }}>/an (estimation INRS)</p>
+              <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: 0 }}>/an (selon vos hypothèses)</p>
             </div>
 
             <div style={{ padding: "18px", borderRadius: 16, textAlign: "center", background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
@@ -316,7 +343,7 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
               <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 26, color: roi > 0 ? "#74c69d" : "#f4a261", margin: "0 0 4px" }}>
                 {reductionTMS.toLocaleString("fr-FR")}€
               </p>
-              <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: 0 }}>-40% TMS (études INRS)</p>
+              <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: 0 }}>hypothèse : -{tauxReduction} % d&apos;arrêts TMS</p>
             </div>
           </div>
 
@@ -331,14 +358,13 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
               {roi > 0 ? (
                 <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, margin: 0, lineHeight: 1.65 }}>
                   Pour <strong style={{ color: c.textPrimary }}>{employees} employés</strong> avec{" "}
-                  <strong style={{ color: "#f09595" }}>{arrets} arrêts TMS/an</strong>, PAW peut vous faire économiser{" "}
+                  <strong style={{ color: "#f09595" }}>{arrets} arrêts TMS/an</strong>, PAW pourrait vous faire économiser, selon vos hypothèses,{" "}
                   <strong style={{ color: "#74c69d" }}>{roi.toLocaleString("fr-FR")}€/an</strong> nets.
                   Soit un retour sur investissement de <strong style={{ color: "#74c69d" }}>x{roiMultiple}</strong>.
                 </p>
               ) : (
                 <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, margin: 0, lineHeight: 1.65 }}>
-                  Même avec peu d&apos;arrêts, PAW agit avant que les TMS deviennent des arrêts.
-                  La prévention coûte toujours moins cher que le curatif.
+                  Même avec peu d&apos;arrêts, PAW agit en amont, avant que les gênes ne deviennent des arrêts.
                 </p>
               )}
             </div>
@@ -350,7 +376,7 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
           </div>
 
           <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, textAlign: "center", marginTop: 10 }}>
-            Estimation basée sur les données INRS. Coût moyen d&apos;un arrêt TMS : 8 000€ (salaire maintenu + remplacement + perte productivité). Réduction TMS avec prévention active : -40%.
+            Simulation indicative : le coût d&apos;un arrêt et la réduction visée sont des hypothèses que vous pouvez modifier, sans garantie de résultat.
           </p>
         </div>
       </div>
@@ -400,7 +426,7 @@ export default function EntrepriseClient() {
           }}>
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#f09595", flexShrink: 0 }} />
             <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#f09595" }}>
-              Les TMS représentent 87% des maladies professionnelles en France
+              Les TMS représentent plus de 80 % des maladies professionnelles reconnues en France
             </span>
           </div>
 
@@ -490,9 +516,9 @@ export default function EntrepriseClient() {
           {/* Stats rapides sous les cards douleurs */}
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 8, marginTop: 16 }}>
             {[
-              { value: "87%", label: "des maladies pro sont des TMS", source: "INRS" },
-              { value: "73j", label: "d'arrêt moyen par TMS", source: "Assurance Maladie" },
-              { value: "~8 000€", label: "coût moyen d'un arrêt TMS", source: "INRS" },
+              { value: "+80 %", label: "des maladies pro reconnues sont des TMS", source: "INRS" },
+              { value: "~40 000", label: "TMS du membre supérieur reconnus par an", source: "INRS" },
+              { value: "+11 M", label: "de journées de travail perdues en 2021", source: "INRS" },
             ].map((s, i) => (
               <div key={i} style={{ padding: "14px 16px", borderRadius: 14,
                 background: "rgba(226,75,74,0.04)",
@@ -586,7 +612,7 @@ export default function EntrepriseClient() {
               <div style={{ marginBottom: 12 }}>
                 {[
                   { color: "rgba(240,149,149,0.08)", border: "rgba(240,149,149,0.2)", text: "🔴 Douleurs lombaires critiques — 8 employés entrepôt. Formation gestes et postures urgente." },
-                  { color: "rgba(244,162,97,0.06)", border: "rgba(244,162,97,0.18)", text: "🟠 11 employés bureau sur laptop sans rehausseur — charge cervicale +12kg permanente." },
+                  { color: "rgba(244,162,97,0.06)", border: "rgba(244,162,97,0.18)", text: "🟠 11 employés bureau sur laptop sans rehausseur — flexion de nuque prolongée." },
                 ].map((a, i) => (
                   <div key={i} style={{ padding: "10px 12px", borderRadius: 10, background: a.color, border: `0.5px solid ${a.border}`, marginBottom: 6, fontFamily: T.b, fontSize: 11, color: "rgba(255,255,255,0.6)", lineHeight: 1.4 }}>
                     {a.text}
@@ -684,7 +710,7 @@ export default function EntrepriseClient() {
                 step: "02", icon: "📱", color: "#7c3aed",
                 title: "Vos employés font leur bilan",
                 desc: "5 à 10 minutes sur mobile ou PC. Questionnaire + analyse vidéo IA posturale. Chaque employé reçoit son propre rapport personnalisé.",
-                detail: "→ Taux de participation moyen : 87%",
+                detail: "→ Chaque collaborateur reçoit son propre bilan",
               },
               {
                 step: "03", icon: "📊", color: "#1d9e75",
@@ -728,10 +754,10 @@ export default function EntrepriseClient() {
                 &quot;Est-ce que mes employés vont vraiment le faire ?&quot;
               </p>
               <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.65 }}>
-                C&apos;est la question qu&apos;on nous pose le plus souvent. La réponse : oui, parce que chaque employé reçoit
+                C&apos;est une question légitime. Notre réponse : la participation repose sur le fait que chaque employé reçoit
                 {" "}<strong style={{ color: c.textPrimary }}>son propre bilan personnel</strong> —
                 pas un rapport collectif anonyme. Quand les gens savent qu&apos;ils vont avoir des réponses sur{" "}
-                <em>leurs</em> douleurs, ils participent. Taux moyen constaté : <strong style={{ color: "#74c69d" }}>87%</strong>.
+                <em>leurs</em> douleurs, ils ont une vraie raison de participer.
               </p>
             </div>
           </div>

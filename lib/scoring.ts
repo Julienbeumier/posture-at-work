@@ -303,7 +303,7 @@ export function getRecommendations(
 
   // Setup recommendations
   if (scores.setup < 50) {
-    let desc = "🖥️ Un écran mal placé génère jusqu'à 4x plus de tension cervicale. ";
+    let desc = "🖥️ Un écran mal placé augmente la tension sur la nuque. ";
     if (a.q5b === "couch")
       desc += "🛋️ Travailler depuis le canapé est la cause #1 des lombalgies en télétravail — investis dans une chaise de bureau même basique. ";
     if (a.q1 === "laptop_seul")
@@ -313,7 +313,7 @@ export function getRecommendations(
     if (a.q3 === "non_haut")
       desc += "Ton bureau est trop haut : tes épaules sont surélevées en permanence — abaisse-le ou ajuste ta chaise. ";
     if (a.q4 === "close")
-      desc += "Tu es trop proche de ton écran — recule à 50-70cm. ";
+      desc += "Tu es trop proche de ton écran — recule à environ une longueur de bras. ";
     candidates.push({
       title: "Ton setup est ton problème #1",
       description: desc.trim(),
@@ -343,7 +343,7 @@ export function getRecommendations(
     if (a.q11 === "year" || a.q11 === "months")
       desc += "Après plusieurs mois, consulte un kinésithérapeute pour éviter la chronicisation. ";
     if (a.q12 === "always")
-      desc += "Des douleurs permanentes signalent une inflammation active.";
+      desc += "Des douleurs permanentes méritent un avis professionnel.";
     candidates.push({
       title: "🔴 Tes douleurs nécessitent une action immédiate",
       description: desc.trim(),
@@ -439,7 +439,7 @@ export function getRecommendations(
     candidates.push({
       title: "🛋️ Laptop dans le canapé — cause principale de cervicalgies en télétravail",
       description:
-        "Le laptop sur les genoux ou dans le lit est la pire position pour la colonne cervicale. Le dos s'arrondit, la tête se projette en avant de 5 à 8 cm — multipliant la charge sur la nuque par 4. Une surface stable + support laptop à moins de 30€ change tout.",
+        "Le laptop sur les genoux ou dans le lit est la pire position pour la colonne cervicale. Le dos s'arrondit, la tête se projette en avant, ce qui augmente la charge sur la nuque. Une surface stable et un support laptop changent beaucoup de choses.",
       priority: a.q_laptop_hors_bureau === "principale" ? "urgent" : "important",
       score: scores.setup + 5,
     });
@@ -546,7 +546,7 @@ export function getExercises(
       name: "Marche active post-déjeuner",
       duration: "10 min — après chaque repas",
       description:
-        "10 minutes de marche après le déjeuner réduisent la glycémie, améliorent la digestion et rechargent l'énergie pour l'après-midi. Sans écran, à l'air libre si possible.",
+        "Une courte marche après le déjeuner aide la digestion et relance l'énergie pour l'après-midi. Sans écran, à l'air libre si possible.",
       emoji: "🚶",
       targets: "Énergie & métabolisme",
     });

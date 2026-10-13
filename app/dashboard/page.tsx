@@ -898,21 +898,21 @@ export default function DashboardPage() {
             {/* ── 5. TIP DU JOUR ── */}
             {(() => {
               const ALL_TIPS = [
-                "Les cervicales supportent 5kg — ta tête en avant à 45° en charge 22kg.",
-                "2 minutes de marche toutes les 45 min réduisent la pression discale de 40%.",
+                "Plus ta tête est inclinée vers l'avant, plus la charge sur tes cervicales augmente.",
+                "Se lever et marcher quelques minutes régulièrement soulage le dos (EU-OSHA : micro-pause toutes les 20 à 30 min).",
                 "Un écran trop bas force ta nuque en flexion permanente. Le haut de l'écran doit être au niveau des yeux.",
                 "La règle 20-20-20 : toutes les 20 min, fixe un point à 6m pendant 20 secondes.",
-                "Dormir 7h+ réduit la perception de la douleur de 25% dès la première nuit.",
-                "Manger devant l'écran = 30% de calories en plus sans s'en rendre compte.",
-                "Un manque d'eau de 1% réduit les capacités cognitives de 10%.",
-                "Travailler depuis le canapé = 3h de tension musculaire pour 1h de travail.",
-                "Le stress chronique maintient les muscles en tension — cause directe de TMS.",
-                "30g de protéines au petit-déjeuner stabilisent la glycémie jusqu'à midi.",
-                "Les disques intervertébraux sont composés à 80% d'eau — boire régulièrement les protège.",
-                "Une vraie pause déjeuner sans écran réduit la fatigue musculaire de l'après-midi de 30%.",
-                "Régler sa chaise correctement réduit la pression lombaire de 40%.",
-                "5 min de cohérence cardiaque (5s inspiration, 5s expiration) réduisent le cortisol.",
-                "Un laptop seul sans rehausseur génère 30-40° de flexion cervicale permanente.",
+                "Un sommeil insuffisant peut augmenter la sensibilité à la douleur.",
+                "Manger devant l'écran réduit l'attention portée au repas.",
+                "Une hydratation insuffisante peut favoriser la fatigue et réduire la concentration.",
+                "Travailler depuis le canapé expose à des postures prolongées défavorables pour la nuque et le dos.",
+                "Le stress chronique maintient les muscles en tension : c'est un facteur de risque de TMS reconnu (EU-OSHA).",
+                "Un petit-déjeuner riche en protéines aide à tenir jusqu'au déjeuner.",
+                "Les disques intervertébraux contiennent beaucoup d'eau : boire régulièrement fait partie d'une bonne hygiène de vie pour le dos.",
+                "Une vraie pause déjeuner sans écran aide à réduire la fatigue musculaire de l'après-midi.",
+                "Régler sa chaise correctement aide à réduire la pression lombaire.",
+                "5 min de cohérence cardiaque (respiration lente) : une technique simple pour favoriser la détente.",
+                "Un laptop seul sans rehausseur impose une flexion de nuque prolongée.",
               ];
               const tip = ALL_TIPS[Math.floor(Date.now() / 86400000) % ALL_TIPS.length];
               return (

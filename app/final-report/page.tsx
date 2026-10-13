@@ -248,7 +248,7 @@ function buildPersonalizedProducts(
   // Écran trop bas
   if (a.q3 === "no" || a.q_hauteur_bureau === "trop_bas") {
     if (!products.find(p => p.name === "Support laptop réglable")) {
-      products.push({ name: "Rehausseur d'écran", reason: "L'écran trop bas oblige à baisser la tête en permanence — cause directe de tes douleurs cervicales.", priority: "haute", amazon_search: "rehausseur ecran bureau ergonomique réglable" });
+      products.push({ name: "Rehausseur d'écran", reason: "L'écran trop bas oblige à baisser la tête en permanence — peut contribuer à tes douleurs cervicales.", priority: "haute", amazon_search: "rehausseur ecran bureau ergonomique réglable" });
     }
   }
 
@@ -257,7 +257,7 @@ function buildPersonalizedProducts(
   if (poignets >= 2) {
     products.push({ name: "Repose-poignets gel clavier", reason: `Tes douleurs aux poignets (${poignets}/5) peuvent venir d'un appui sur le poignet ; un repose-poignets aide à garder l'axe neutre (le réglage de la position clavier/souris reste prioritaire).`, priority: poignets >= 4 ? "haute" : "moyenne", amazon_search: "repose poignets clavier bureau ergonomique gel" });
     if (poignets >= 3) {
-      products.push({ name: "Souris verticale ergonomique", reason: `Une douleur poignets à ${poignets}/5 signale un risque de syndrome du canal carpien. La souris verticale remet le poignet en position neutre.`, priority: "haute", amazon_search: "souris verticale ergonomique sans fil" });
+      products.push({ name: "Souris verticale ergonomique", reason: `Une douleur poignets à ${poignets}/5 peut venir d'une mauvaise position du poignet. La souris verticale aide certaines personnes à le garder dans l'axe (à essayer).`, priority: "haute", amazon_search: "souris verticale ergonomique sans fil" });
     }
   }
 
@@ -276,7 +276,7 @@ function buildPersonalizedProducts(
   // Yeux / maux de tête → filtre lumière bleue
   const yeux = Number(a.q10 ?? 0);
   if (yeux >= 3) {
-    products.push({ name: "Lunettes anti-lumière bleue", reason: `Tes maux de tête / fatigue visuelle (${yeux}/5) sont souvent liés à la lumière bleue de l'écran, surtout en fin de journée.`, priority: "moyenne", amazon_search: "lunettes anti lumière bleue travail ordinateur" });
+    products.push({ name: "Lunettes anti-lumière bleue (optionnel)", reason: `Tes maux de tête / fatigue visuelle (${yeux}/5) peuvent venir de l'écran (reflets, distance, pauses insuffisantes). Les lunettes filtrant la lumière bleue n'ont pas montré d'avantage clair (Cochrane, 2023) : commence par l'éclairage, la distance d'écran et les pauses visuelles.`, priority: "moyenne", amazon_search: "lunettes anti lumière bleue travail ordinateur" });
   }
 
   // Éclairage insuffisant → lampe bureau
@@ -461,7 +461,7 @@ function buildCrossedSynthesis(
   if (eclairageMauvais) qActions.push({ action: "Corriger l'éclairage : écran perpendiculaire à la fenêtre, pas de reflets (environ 500 lux recommandés)", priority: 2 });
   if (laptopSeul) qActions.push({ action: "Ajouter un écran externe (ou un rehausseur) avec clavier et souris externes : le laptop seul impose une flexion de nuque", priority: 1 });
   if (activiteNulle) qActions.push({ action: "Viser 150 min d'activité modérée par semaine (repère OMS) — commence par 20 min de marche par jour", priority: 3 });
-  if (douleurNuitOui) qActions.push({ action: "Consulter un kinésithérapeute — douleurs nocturnes déclarées : signe d'une tension musculaire qui nécessite un avis professionnel", priority: 0 });
+  if (douleurNuitOui) qActions.push({ action: "Consulter un kinésithérapeute — douleurs nocturnes déclarées : à ne pas négliger : un avis professionnel est recommandé", priority: 0 });
 
   const mergedRecs = hasVideoPosture
     ? [...allVideoRecs, ...qActions.filter(q => !allVideoRecs.some(v => v.action.toLowerCase().includes(q.action.split(" ")[0].toLowerCase())))]
@@ -1222,7 +1222,7 @@ export default function FinalReportPage() {
     if (po.elements.ecran.type === "laptop_seul") products.push({ name: "Support laptop réglable", reason: "Élève l'écran à hauteur des yeux — indispensable sans écran externe.", priority: "haute", amazon_search: "support laptop ergonomique réglable aluminium" });
     if (po.elements.ecran.hauteur === "trop_bas") products.push({ name: "Rehausseur d'écran", reason: "Corrige la hauteur de l'écran pour supprimer la flexion cervicale.", priority: "haute", amazon_search: "rehausseur ecran bureau ergonomique réglable" });
     if (po.elements.chaise.type && !po.elements.chaise.type.toLowerCase().includes("ergo")) products.push({ name: "Coussin lombaire", reason: "Maintient la lordose naturelle quand la chaise est basique.", priority: "moyenne", amazon_search: "coussin lombaire chaise bureau ergonomique" });
-    if (po.elements.clavier_souris.repose_poignets === false) products.push({ name: "Repose-poignets clavier", reason: "Prévient le syndrome du canal carpien.", priority: "moyenne", amazon_search: "repose poignets clavier bureau ergonomique" });
+    if (po.elements.clavier_souris.repose_poignets === false) products.push({ name: "Repose-poignets clavier", reason: "Aide à garder le poignet dans l'axe.", priority: "moyenne", amazon_search: "repose poignets clavier bureau ergonomique" });
     if (po.elements.organisation.eclairage === "mauvais") products.push({ name: "Lampe bureau LED", reason: "Réduit la fatigue visuelle — éclairage insuffisant détecté.", priority: "moyenne", amazon_search: "lampe bureau LED réglable lumière naturelle" });
 
     // Exercises from bad segments

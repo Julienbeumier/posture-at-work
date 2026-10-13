@@ -240,7 +240,7 @@ export default function LandingClient() {
           gap: isMobile ? 1 : 0,
         }}>
           {[
-            { value: "88%", label: "des maladies professionnelles sont des TMS", source: "Ameli, 2024" },
+            { value: "+80 %", label: "des maladies professionnelles reconnues sont des TMS", source: "INRS" },
             { value: "5min", label: "pour un bilan complet de ta santé au travail", source: null },
             { value: "360°", label: "setup, douleurs, habitudes, mode de vie, nutrition + vidéo IA", source: null },
           ].map((s, i) => (
@@ -475,7 +475,7 @@ export default function LandingClient() {
               donner à tous mes patients faute de temps.&quot;
             </p>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
-              {["Validé cliniquement", "Modèle biopsychosocial", "Données RGPD"].map((badge, i) => (
+              {["Conçu par un kinésithérapeute", "Modèle biopsychosocial", "Données RGPD"].map((badge, i) => (
                 <span key={i} style={{
                   padding: "4px 12px", borderRadius: 100,
                   background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)",
@@ -503,9 +503,9 @@ export default function LandingClient() {
           {/* Stats */}
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", borderBottom: "0.5px solid rgba(124,58,237,0.15)" }}>
             {[
-              { value: "88%", label: "des maladies professionnelles reconnues sont des TMS", source: "Ameli, 2024" },
-              { value: "73 jours", label: "d'arrêt de travail en moyenne par cas de TMS", source: "StopTMS, 2025" },
-              { value: "10,4M", label: "de journées de travail perdues chaque année en France", source: "Assurance Maladie, 2024" },
+              { value: "+80 %", label: "des maladies professionnelles reconnues sont des TMS", source: "INRS" },
+              { value: "~40 000", label: "TMS du membre supérieur reconnus chaque année en France", source: "INRS" },
+              { value: "+11 M", label: "de journées de travail perdues en 2021 à cause des TMS reconnus", source: "INRS, 2021" },
             ].map((s, i) => (
               <div key={i} style={{
                 padding: "28px 24px",

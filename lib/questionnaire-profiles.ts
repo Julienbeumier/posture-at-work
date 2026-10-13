@@ -177,7 +177,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
       ]},
       { id: "q_d_position_var", type: "choice",
         label: "Peux-tu t'asseoir ou changer de position pendant ta journée ?",
-        note: "Les pauses assises réduisent de 40% la charge lombaire cumulée sur une journée debout.",
+        note: "S'asseoir de temps en temps soulage le dos et les jambes sur une journée debout.",
         options: [
           { value: "oui_siège_utilise", label: "✅ Oui, j'ai un siège et je l'utilise" },
           { value: "oui_siège_pas_ose", label: "🔸 Oui, j'ai un siège mais j'ose pas l'utiliser" },
@@ -193,7 +193,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
       ]},
       { id: "q_d_posture_tete", type: "choice",
         label: "Pendant le travail, ta tête/nuque est souvent ?",
-        note: "Une tête inclinée en avant de 30° multiplie par 3 la charge sur les vertèbres cervicales.",
+        note: "Plus la tête est inclinée vers l'avant, plus la charge sur les vertèbres cervicales augmente.",
         options: [
           { value: "neutre", label: "✅ Droite et neutre" },
           { value: "bas", label: "⬇️ Inclinée vers le bas (caissier, plan de travail bas)" },
@@ -326,7 +326,7 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
       ]},
       { id: "q_d_ecrans_soir", type: "choice",
         label: "Utilises-tu des écrans dans l'heure avant de dormir ?",
-        note: "La lumière bleue retarde la production de mélatonine de 1 à 2h — particulièrement important pour les travailleurs debout qui ont besoin d'une récupération musculaire optimale.",
+        note: "Les écrans le soir peuvent retarder l'endormissement — particulièrement important pour les travailleurs debout qui ont besoin d'une récupération musculaire optimale.",
         options: [
           { value: "jamais", label: "✅ Non — j'évite les écrans le soir" },
           { value: "parfois", label: "🔸 Parfois — 30 min max" },

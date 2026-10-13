@@ -4,6 +4,18 @@ import type { AnalysisReport, PersonneAnalysis, PosteAnalysis, DeboutAnalysis } 
 
 export const maxDuration = 60;
 
+// ─── Règles de contenu communes à toutes les analyses ────────────────────────
+const CONTENT_RULES = `
+
+RÈGLES DE CONTENU (obligatoires) :
+- N'invente AUCUN chiffre : pas de pourcentage d'amélioration, pas de charge en kg sur la nuque ou le dos, pas de multiplicateur ("x fois plus"), pas de délai de guérison ou de résultat ("en 2 semaines").
+- N'affirme pas qu'une recommandation "réduit X %" ou "est prouvée" : formule de façon qualitative ("peut aider à", "limite la contrainte sur").
+- Les seuls repères chiffrés autorisés sont ceux-ci : micro-pause toutes les 20 à 30 minutes (EU-OSHA) ; au moins 150 minutes d'activité modérée par semaine (OMS) ; écran à environ une longueur de bras, haut de l'écran au niveau des yeux ; coudes environ à angle droit.
+- Ne pose aucun diagnostic et ne nomme aucune pathologie comme certaine : parle de "risque", de "contrainte", de "tension" ; en cas de signes d'alerte (douleur nocturne, fourmillements, irradiation), recommande un avis médical ou kinésithérapique.
+- Ne recommande aucun complément alimentaire ni médicament.
+- Ne base les observations que sur ce qui est visible sur les images.
+`;
+
 // ─── System prompt ────────────────────────────────────────────────────────────
 
 const SYSTEM_PROMPT = `Tu es un kinésithérapeute expert en ergonomie du travail.
@@ -154,7 +166,7 @@ function buildFallbackReport(): AnalysisReport {
       head_position: {
         status: "attention",
         observation: "Position de la tête non clairement évaluable sur les images.",
-        impact: "Une projection antérieure de la tête de 2.5cm augmente le poids ressenti de la tête de 100%.",
+        impact: "Plus la tête est projetée vers l'avant, plus la charge sur les cervicales augmente.",
       },
       neck_position: {
         status: "attention",
@@ -183,7 +195,7 @@ function buildFallbackReport(): AnalysisReport {
       screen_distance: {
         status: "bon",
         observation: "La distance écran semble correcte.",
-        recommendation: "Maintiens une distance de 50-70cm (longueur d'un bras tendu).",
+        recommendation: "Place l'écran à environ une longueur de bras.",
       },
       keyboard_mouse: {
         status: "attention",
@@ -204,7 +216,7 @@ function buildFallbackReport(): AnalysisReport {
         title: "Ajuster la hauteur de l'écran",
         why: "Un écran trop bas force la flexion cervicale et génère des douleurs nuque/épaules.",
         how: "Pose l'écran sur un support (livres, carton, support réglable) pour que le haut soit à hauteur des yeux. Distance : longueur d'un bras tendu.",
-        impact: "Réduction de la tension cervicale de 60% en quelques jours.",
+        impact: "Peut aider à relâcher la tension cervicale.",
       },
       {
         rank: 2,
@@ -265,7 +277,7 @@ function buildFallbackReport(): AnalysisReport {
       },
     ],
     final_message:
-      "Ton profil est très représentatif des travailleurs sédentaires modernes : quelques mauvaises habitudes accumulées, mais rien d'irréversible. Avec les 3 ajustements prioritaires, tu devrais ressentir une amélioration notable en moins de 2 semaines. L'essentiel est la régularité — mieux vaut 5 minutes par jour que 30 minutes une fois par semaine.",
+      "Ton profil est très représentatif des travailleurs sédentaires modernes : quelques mauvaises habitudes accumulées, mais rien d'irréversible. Les ajustements prioritaires peuvent soulager progressivement tes tensions. L'essentiel est la régularité : de courtes pauses de mouvement dans la journée valent mieux qu'une longue séance occasionnelle.",
   };
 }
 
@@ -453,7 +465,7 @@ function buildFallbackPoste(): PosteAnalysis {
     positivePoints: ["Espace de travail disponible", "Éclairage naturel présent"],
     recommendations: [
       { priority: 1, action: "Rehausser l'écran", why: "Prévenir les douleurs cervicales", cost: "< 30€" },
-      { priority: 2, action: "Ajouter un repose-poignets", why: "Prévenir le syndrome du canal carpien", cost: "< 30€" },
+      { priority: 2, action: "Ajouter un repose-poignets", why: "Garder le poignet dans l'axe", cost: "< 30€" },
       { priority: 3, action: "Régler la hauteur de la chaise", why: "Aligner coudes et plan de travail", cost: "gratuit" },
     ],
     overallAssessment: "Setup avec plusieurs améliorations simples à apporter pour une ergonomie optimale.",
@@ -663,7 +675,7 @@ export async function POST(req: NextRequest) {
       const msg = await client.messages.create({
         model: "claude-sonnet-4-5",
         max_tokens: 3000,
-        system: PERSONNE_PROMPT,
+        system: PERSONNE_PROMPT + CONTENT_RULES,
         messages: [{
           role: "user",
           content: [
@@ -687,7 +699,7 @@ export async function POST(req: NextRequest) {
       const msg = await client.messages.create({
         model: "claude-sonnet-4-5",
         max_tokens: 3000,
-        system: POSTE_PROMPT,
+        system: POSTE_PROMPT + CONTENT_RULES,
         messages: [{
           role: "user",
           content: [
@@ -712,7 +724,7 @@ export async function POST(req: NextRequest) {
       const msg = await client.messages.create({
         model: "claude-sonnet-4-5",
         max_tokens: 3000,
-        system: DEBOUT_ANALYSIS_PROMPT,
+        system: DEBOUT_ANALYSIS_PROMPT + CONTENT_RULES,
         messages: [{
           role: "user",
           content: [
@@ -744,7 +756,7 @@ export async function POST(req: NextRequest) {
     const message = await client.messages.create({
       model: "claude-sonnet-4-5",
       max_tokens: 4096,
-      system: activePrompt,
+      system: activePrompt + CONTENT_RULES,
       messages: [{ role: "user", content: [...imageBlocks, { type: "text", text: userText }] }],
     });
 

@@ -32,6 +32,10 @@ export const SOURCES = {
     label: "EU-OSHA — TMS et télétravail",
     url: "https://oshwiki.osha.europa.eu/en/themes/musculoskeletal-disorders-and-telework",
   },
+  cochraneBlueLight: {
+    label: "Cochrane — Lunettes filtrant la lumière bleue (Singh et al., 2023)",
+    url: "https://www.cochrane.org/CD013244/",
+  },
   who: {
     label: "OMS — Activité physique (fiche d'information)",
     url: "https://www.who.int/news-room/fact-sheets/detail/physical-activity",

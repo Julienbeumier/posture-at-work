@@ -135,8 +135,8 @@ export const EXERCISES: Record<string, Exercise> = {
     reps: "30 sec par côté", frequency: "Toutes les 2h",
     location: ["bureau", "maison", "voiture", "voyage"],
     difficulty: "facile", discreet: true, emoji: "🖐️",
-    instruction: "Bras tendu devant toi, paume vers le haut. Avec l'autre main, tire doucement les doigts vers le bas. Sens l'étirement dans l'avant-bras. Change de côté. Essentiel pour prévenir le syndrome du canal carpien.",
-    benefit: "Prévient le syndrome du canal carpien",
+    instruction: "Bras tendu devant toi, paume vers le haut. Avec l'autre main, tire doucement les doigts vers le bas. Sens l'étirement dans l'avant-bras. Change de côté. Aide à soulager les poignets sollicités par le clavier.",
+    benefit: "Aide à soulager les poignets sollicités par le clavier",
   },
   wrist_rotation: {
     id: "wrist_rotation", name: "Rotation poignet", subtitle: null,
@@ -191,7 +191,7 @@ export const EXERCISES: Record<string, Exercise> = {
     location: ["bureau", "maison", "voyage"],
     difficulty: "facile", discreet: false, emoji: "🦵",
     instruction: "Debout, fais un grand pas en avant. Plie le genou avant, garde le genou arrière tendu, talon arrière au sol. Sens l'étirement dans le mollet arrière. Change de côté.",
-    benefit: "Prévient les crampes et améliore la circulation",
+    benefit: "Aide à soulager les crampes et active la circulation",
   },
   lateral_flexion: {
     id: "lateral_flexion", name: "Flexion latérale debout", subtitle: null,
@@ -210,7 +210,7 @@ export const EXERCISES: Record<string, Exercise> = {
     location: ["bureau", "maison", "voiture", "voyage"],
     difficulty: "facile", discreet: true, emoji: "👁️",
     instruction: "Toutes les 20 minutes, pose les yeux sur un objet à au moins 6 mètres (fenêtre, mur lointain). Regarde sans forcer pendant 20 secondes. Cligne des yeux plusieurs fois. Relâche la tension oculaire accumulée.",
-    benefit: "Réduit la fatigue visuelle de 40%",
+    benefit: "Aide à réduire la fatigue visuelle",
   },
   palming: {
     id: "palming", name: "Palming yeux", subtitle: null,
@@ -274,8 +274,8 @@ export const EXERCISES: Record<string, Exercise> = {
     reps: "2 minutes (6 cycles)", frequency: "3x par jour idéalement",
     location: ["bureau", "maison", "voiture", "voyage"],
     difficulty: "facile", discreet: true, emoji: "💜",
-    instruction: "Inspire par le nez pendant 4 secondes. Retiens 4 secondes. Expire par la bouche pendant 4 secondes. Retiens 4 secondes. Répète 6 fois. Réduit le cortisol en 2 minutes.",
-    benefit: "Réduit le cortisol de 20% en 2 minutes",
+    instruction: "Inspire par le nez pendant 4 secondes. Retiens 4 secondes. Expire par la bouche pendant 4 secondes. Retiens 4 secondes. Répète 6 fois.",
+    benefit: "Respiration lente pour favoriser la détente",
   },
   body_scan: {
     id: "body_scan", name: "Body scan rapide", subtitle: null,
@@ -305,7 +305,7 @@ export const EXERCISES: Record<string, Exercise> = {
     location: ["debout", "maison"],
     difficulty: "moyen", discreet: false, emoji: "🦵",
     instruction: "Debout sur une marche (avant-pied). Monte sur les deux pieds (2 sec). En haut, soulève le pied sain — redescends lentement sur le pied travaillé uniquement (4 sec). La phase de descente est la plus importante. Renforce mollet ET fascia plantaire.",
-    benefit: "Protocole validé contre les douleurs au talon et tendinopathie achilléenne",
+    benefit: "Exercice de renforcement excentrique couramment utilisé pour les douleurs du talon et du tendon d'Achille",
     jobTypes: ["debout"],
   },
   fascia_stretch_morning: {
@@ -314,8 +314,8 @@ export const EXERCISES: Record<string, Exercise> = {
     reps: "10 × 10 sec", frequency: "Chaque matin avant de se lever",
     location: ["maison"],
     difficulty: "facile", discreet: true, emoji: "🛏️",
-    instruction: "Assis au bord du lit, croise le pied douloureux sur le genou. Attrape les orteils et tire-les vers toi. Tu dois sentir l'étirement sous le pied. Tiens 10 secondes. Répète 10 fois AVANT de poser le pied au sol. Réduit la douleur du premier pas de 75%.",
-    benefit: "Réduit les douleurs au talon le matin de 75%",
+    instruction: "Assis au bord du lit, croise le pied douloureux sur le genou. Attrape les orteils et tire-les vers toi. Tu dois sentir l'étirement sous le pied. Tiens 10 secondes. Répète 10 fois AVANT de poser le pied au sol. Aide à réduire la douleur du premier pas.",
+    benefit: "Aide à réduire les douleurs au talon le matin",
     jobTypes: ["debout"],
   },
   leg_elevation: {
@@ -324,8 +324,8 @@ export const EXERCISES: Record<string, Exercise> = {
     reps: "20 minutes", frequency: "Chaque soir après le travail",
     location: ["maison"],
     difficulty: "facile", discreet: false, emoji: "🧘",
-    instruction: "Allongé sur le dos. Place tes jambes à 45° contre un mur ou sur des coussins empilés. Les pieds doivent être au-dessus du niveau du cœur. Reste ainsi 20 minutes. Écoute un podcast, lis. Draine activement les œdèmes et soulage l'insuffisance veineuse.",
-    benefit: "Draine les œdèmes et prévient les varices professionnelles",
+    instruction: "Allongé sur le dos. Place tes jambes à 45° contre un mur ou sur des coussins empilés. Les pieds doivent être au-dessus du niveau du cœur. Reste ainsi 20 minutes. Écoute un podcast, lis. Aide à soulager les jambes lourdes.",
+    benefit: "Aide à soulager les jambes lourdes",
     jobTypes: ["debout", "medical"],
   },
   toe_spreading: {
@@ -344,8 +344,8 @@ export const EXERCISES: Record<string, Exercise> = {
     reps: "2 min par pied", frequency: "Soir après travail",
     location: ["maison", "bureau"],
     difficulty: "facile", discreet: false, emoji: "⚾",
-    instruction: "Assis, pose le pied sur une balle de tennis ou une bouteille d'eau. Roule lentement toute la voûte plantaire du talon vers les orteils. Insiste sur les zones tendues. En phase aiguë : utilise une bouteille d'eau GLACÉE — anti-inflammatoire et massage simultanément.",
-    benefit: "Relâche les tensions du fascia et réduit l'inflammation",
+    instruction: "Assis, pose le pied sur une balle de tennis ou une bouteille d'eau. Roule lentement toute la voûte plantaire du talon vers les orteils. Insiste sur les zones tendues. En phase aiguë : utilise une bouteille d'eau GLACÉE — le froid soulage et le roulement masse la voûte plantaire en même temps.",
+    benefit: "Auto-massage pour relâcher les tensions de la voûte plantaire",
     jobTypes: ["debout"],
   },
 
@@ -367,19 +367,19 @@ export const EXERCISES: Record<string, Exercise> = {
     location: ["bureau", "maison"],
     difficulty: "facile", discreet: false, emoji: "🦵",
     instruction: "Assis au bord de ta chaise, dos légèrement arrondi. Tends une jambe vers l'avant, orteil vers toi (pied en flexion). Sens l'étirement dans l'arrière de la jambe. Maintiens 3 secondes. Relâche et plie le genou. Change de jambe. STOP si douleur électrique.",
-    benefit: "Libère le nerf sciatique — réduit les douleurs de jambe",
+    benefit: "Mobilisation douce du nerf sciatique — peut soulager la gêne dans la jambe",
     jobTypes: ["bureau", "debout"],
   },
 
   // ── Poignets & mains ──
   wrist_stretch: {
-    id: "wrist_stretch", name: "Étirement poignets", subtitle: "Prévention canal carpien",
+    id: "wrist_stretch", name: "Étirement poignets", subtitle: "Confort des poignets",
     zone: "Poignets & mains", zoneColor: "#f4a261", duration: 60,
     reps: "30 sec par côté × 2", frequency: "Après chaque heure de clavier",
     location: ["bureau", "maison", "voyage"],
     difficulty: "facile", discreet: true, emoji: "🖐️",
     instruction: "Tends le bras devant toi, paume vers le bas. Avec l'autre main, tire doucement les doigts vers toi (paume en flexion) pendant 15 sec. Puis retourne la paume vers le haut et tire les doigts vers le bas pendant 15 sec. Change de bras.",
-    benefit: "Prévient le syndrome du canal carpien",
+    benefit: "Aide à soulager les poignets sollicités par le clavier",
     jobTypes: ["bureau"],
   },
 
@@ -391,7 +391,7 @@ export const EXERCISES: Record<string, Exercise> = {
     location: ["bureau", "maison", "voyage"],
     difficulty: "facile", discreet: true, emoji: "👁️",
     instruction: "Toutes les 20 minutes, détourne le regard de l'écran. Fixe un point à au moins 6 mètres (fenêtre, mur lointain). Garde ce point fixé pendant 20 secondes. Cligne des yeux lentement 5 fois pour hydrater.",
-    benefit: "Réduit la fatigue oculaire et les maux de tête de 35%",
+    benefit: "Aide à réduire la fatigue oculaire et les maux de tête",
     jobTypes: ["bureau"],
   },
 
@@ -413,7 +413,7 @@ export const EXERCISES: Record<string, Exercise> = {
     location: ["bureau", "maison", "voiture", "voyage"],
     difficulty: "facile", discreet: true, emoji: "🌬️",
     instruction: "Pose une main à plat sur le ventre, une autre sur la poitrine. Inspire lentement par le nez en 4 secondes — seul le ventre doit se soulever, la main sur la poitrine reste immobile. Expire doucement par la bouche en 6 secondes. La main sur la poitrine ne doit pas bouger.",
-    benefit: "Active le système parasympathique — réduit cortisol et tensions musculaires",
+    benefit: "Respiration abdominale lente pour favoriser la détente et relâcher les tensions",
     jobTypes: ["bureau", "debout"],
   },
 

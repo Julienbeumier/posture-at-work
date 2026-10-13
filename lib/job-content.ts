@@ -52,20 +52,20 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
   bureau: {
     label: "Bureau / télétravail",
     emoji: "💻",
-    intro: "Le travail de bureau est l'une des activités les plus sous-estimées en termes de risques physiques. L'immobilité prolongée est plus dangereuse que la plupart des travaux physiques légers.",
+    intro: "Le travail de bureau est l'une des activités les plus sous-estimées en termes de risques physiques. L'immobilité prolongée est un facteur de risque reconnu pour la santé (OMS : limiter la sédentarité).",
     risk_profile: {
       main_risks: [
         "Syndrome de la tête en avant (forward head posture)",
-        "Syndrome du canal carpien",
-        "Lombalgies chroniques par compression discale",
+        "Douleurs et fourmillements des mains et poignets",
+        "Lombalgies liées à la station assise prolongée",
         "Syndrome de l'épaule douloureuse",
         "Fatigue visuelle chronique",
         "Troubles métaboliques liés à la sédentarité",
       ],
       did_you_know: [
         "Rester assis 8h brûle moins de calories que dormir 8h debout",
-        "La compression discale lombaire est 40% plus élevée assis que debout",
-        "Un écran trop bas pendant 8h équivaut à porter un enfant de 12kg sur la nuque",
+        "La pression sur les disques lombaires est plus élevée assis que debout (EU-OSHA)",
+        "Un écran trop bas maintient la nuque fléchie toute la journée : la charge sur les cervicales augmente avec l'inclinaison de la tête",
         "Le travail sur laptop seul est la configuration la plus risquée pour la colonne",
       ],
     },
@@ -98,27 +98,27 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
     },
     priority_actions: {
       setup_critical: [
-        { title: "Surélève ton écran aujourd'hui", why: "Le haut de l'écran doit être à hauteur des yeux. Chaque centimètre trop bas ajoute des kilos de charge sur ta nuque.", how: "Utilise des livres, une boîte ou un support écran. Tu dois regarder droit devant toi, pas vers le bas.", impact: "Réduit la tension cervicale de 60% immédiatement" },
-        { title: "Abandonne le laptop seul", why: "Il est physiquement impossible d'avoir une bonne posture sur laptop seul.", how: "Connecte un clavier externe et surélève le laptop, ou branche un écran externe.", impact: "Élimine la source principale de tension cervicale" },
-        { title: "Règle ta chaise", why: "La hauteur de chaise détermine tout le reste de ta posture.", how: "Pieds à plat au sol, genoux à 90°, coudes à hauteur du bureau.", impact: "Réduit la compression lombaire de 30%" },
+        { title: "Surélève ton écran aujourd'hui", why: "Le haut de l'écran doit être à hauteur des yeux. Plus l'écran est bas, plus la tête s'incline et plus la nuque travaille.", how: "Utilise des livres, une boîte ou un support écran. Tu dois regarder droit devant toi, pas vers le bas.", impact: "Aide à réduire la tension cervicale" },
+        { title: "Abandonne le laptop seul", why: "Sur un laptop seul, l'écran et le clavier sont trop proches l'un de l'autre pour être bien placés tous les deux.", how: "Connecte un clavier externe et surélève le laptop, ou branche un écran externe.", impact: "Supprime une source majeure de tension cervicale" },
+        { title: "Règle ta chaise", why: "La hauteur de chaise détermine tout le reste de ta posture.", how: "Pieds à plat au sol, genoux à 90°, coudes à hauteur du bureau.", impact: "Aide à réduire la compression lombaire" },
       ],
       pain_critical: [
-        { title: "Lève-toi maintenant et marche 2 minutes", why: "La compression discale diminue immédiatement lors du mouvement.", how: "Lève-toi, marche dans la pièce, fais quelques rotations du buste. 2 minutes suffisent.", impact: "Décompression discale immédiate" },
-        { title: "Programme une alarme toutes les heures", why: "Au-delà de 50 minutes assis, la compression discale et la tension musculaire augmentent exponentiellement.", how: "À chaque alarme : lever, 2 min de mouvement minimum.", impact: "Réduit de 40% l'accumulation de tension journalière" },
+        { title: "Lève-toi maintenant et marche 2 minutes", why: "Bouger relâche le dos et la nuque après une longue période assise.", how: "Lève-toi, marche dans la pièce, fais quelques rotations du buste. 2 minutes suffisent.", impact: "Soulage le dos et la nuque" },
+        { title: "Programme une alarme toutes les heures", why: "Rester longtemps assis sans bouger charge le dos et la nuque (EU-OSHA : micro-pause toutes les 20 à 30 min).", how: "À chaque alarme : lever, 2 min de mouvement minimum.", impact: "Aide à réduire l'accumulation de tension journalière" },
       ],
     },
     exercises: [
       { id: "bureau_chin_tuck", name: "Rétraction cervicale", target: "Nuque & cervicales", duration: "30 sec × 10 reps", frequency: "Toutes les heures", instruction: "Rentre le menton vers la gorge sans baisser la tête. Tiens 3 secondes. Contre directement la projection de tête en avant.", when: "pain_score < 60 || setup_score < 60" },
       { id: "bureau_scapular", name: "Rétraction scapulaire", target: "Épaules & dos haut", duration: "15 reps × 3 sec", frequency: "Toutes les 2h", instruction: "Pince les omoplates ensemble comme pour tenir un crayon entre elles. Tiens 3 secondes. Contre l'enroulement des épaules.", when: "always" },
       { id: "bureau_lumbar", name: "Flexion lombaire assise", target: "Bas du dos", duration: "45 sec × 2", frequency: "Toutes les 2h", instruction: "Assis, penche-toi vers l'avant bras entre les jambes. Laisse le dos s'arrondir. Décompresse les disques lombaires.", when: "pain_score < 70" },
-      { id: "bureau_eyes", name: "Règle 20-20-20", target: "Yeux & vision", duration: "20 secondes", frequency: "Toutes les 20 min", instruction: "Regarde à 6 mètres pendant 20 secondes. Cligne des yeux plusieurs fois. Réduit la fatigue visuelle de 40%.", when: "always" },
-      { id: "bureau_wrist", name: "Étirement poignets", target: "Poignets & avant-bras", duration: "30 sec par côté", frequency: "Toutes les 2h", instruction: "Bras tendu, tire les doigts vers le bas avec l'autre main. Prévient le syndrome du canal carpien.", when: "pain_score < 60" },
+      { id: "bureau_eyes", name: "Règle 20-20-20", target: "Yeux & vision", duration: "20 secondes", frequency: "Toutes les 20 min", instruction: "Regarde à 6 mètres pendant 20 secondes. Cligne des yeux plusieurs fois. Aide à réduire la fatigue visuelle.", when: "always" },
+      { id: "bureau_wrist", name: "Étirement poignets", target: "Poignets & avant-bras", duration: "30 sec par côté", frequency: "Toutes les 2h", instruction: "Bras tendu, tire les doigts vers le bas avec l'autre main. Aide à soulager les poignets sollicités.", when: "pain_score < 60" },
     ],
     tips: [
       "L'écran doit être à une longueur de bras — ni plus, ni moins",
-      "Un laptop seul = garantie de mauvaise posture, toujours",
-      "La règle 20-20-20 réduit la fatigue visuelle de 40%",
-      "Se lever toutes les 30 min réduit le risque cardiovasculaire de 17%",
+      "Un laptop utilisé seul impose une posture de nuque ou de bras défavorable : écran externe, clavier et souris externes sont la base",
+      "Règle 20-20-20 : toutes les 20 min, regarder au loin 20 secondes — une habitude simple pour reposer les yeux",
+      "Interrompre la position assise régulièrement (micro-pause toutes les 20 à 30 min, repère EU-OSHA) limite la charge statique sur le dos et la nuque",
       "La caféine après 14h perturbe le sommeil même si tu t'endors bien",
       "Manger devant l'écran = pas de vraie pause cognitive",
       "Le stress chronique crée des tensions musculaires réelles et mesurables",
@@ -126,9 +126,9 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
     products: [
       { name: "Rehausseur écran GRIFEMA", reason: "Ton écran trop bas est la cause principale de tes tensions cervicales", priority: "haute", url: "https://amzn.to/3RF8Hn1", trigger: "setup_score < 60" },
       { name: "Support laptop ergonomique", reason: "Un laptop seul impose une flexion permanente de la nuque", priority: "haute", url: "https://amzn.to/3RF8LmL", trigger: "q1 === laptop" },
-      { name: "Souris verticale Trust Verto", reason: "Réduit la torsion du poignet de 60%", priority: "haute", url: "https://amzn.to/4vkCnnZ", trigger: "q9 >= 2" },
+      { name: "Souris verticale Trust Verto", reason: "Aide à réduire la torsion du poignet", priority: "haute", url: "https://amzn.to/4vkCnnZ", trigger: "q9 >= 2" },
       { name: "Coussin lombaire FORTEM", reason: "Maintient la courbure naturelle du dos en position assise prolongée", priority: "moyenne", url: "https://amzn.to/4dIapg4", trigger: "q8 >= 2" },
-      { name: "Lunettes anti-lumière bleue Horus X", reason: "La lumière bleue le soir décale ton horloge biologique de 2h", priority: "haute", url: "https://amzn.to/4veEs4B", trigger: "q17 <= 6" },
+      { name: "Lunettes anti-lumière bleue Horus X", reason: "Optionnel : l'effet sur le sommeil n'est pas démontré (Cochrane 2023) ; couper les écrans en soirée reste plus efficace", priority: "haute", url: "https://amzn.to/4veEs4B", trigger: "q17 <= 6" },
     ],
   },
 
@@ -139,8 +139,8 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
     intro: "Le travail en station debout prolongée est l'un des plus éprouvants pour le système musculo-squelettique. Contrairement aux idées reçues, rester debout immobile est plus fatiguant que marcher — les muscles se contractent en permanence sans se détendre.",
     risk_profile: {
       main_risks: [
-        "Fasciite plantaire — 40% des travailleurs debout en souffrent",
-        "Insuffisance veineuse et varices professionnelles",
+        "La fasciite plantaire est une cause fréquente de douleur du talon chez les personnes debout longtemps",
+        "Jambes lourdes et inconfort veineux",
         "Lombalgies par hyperlordose compensatoire",
         "Gonarthrose (usure des genoux) par station debout prolongée",
         "Œdèmes chroniques des membres inférieurs",
@@ -148,20 +148,20 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       ],
       did_you_know: [
         "Rester debout immobile est plus fatigant que marcher — les muscles se contractent sans relâche",
-        "Les douleurs au talon / au pied touchent 10% de la population mais 40% des travailleurs debout",
-        "Après 4h debout sur sol dur, la pression sur les pieds équivaut à 20kg supplémentaires",
-        "Les chaussettes de compression portées AVANT de se lever sont 3x plus efficaces que portées après",
-        "Un tapis anti-fatigue de qualité se rembourse en arrêts maladie évités en moins de 3 mois",
+        "Les douleurs au talon et au pied sont plus fréquentes chez les personnes qui travaillent longtemps debout",
+        "Une station debout prolongée sur sol dur fatigue les pieds, les jambes et le dos : alterner les positions et soigner les chaussures aide",
+        "Les chaussettes de compression s'enfilent de préférence le matin, avant de se lever, quand les jambes sont les moins gonflées",
+        "Un tapis anti-fatigue peut améliorer le confort au poste fixe ; l'alternance des positions reste la mesure principale",
       ],
     },
     score_interpretations: {
       setup: {
-        critical: "Ton environnement debout est très risqué. Sol dur + chaussures inadaptées + absence de tapis anti-fatigue = la combinaison la plus génératrice de douleurs au talon/au pied et d'insuffisance veineuse. Ces facteurs s'accumulent chaque jour.",
-        attention: "Ton setup debout a des failles importantes. Quelques investissements simples (tapis, semelles, chaussettes) peuvent réduire ta fatigue de fin de journée de 40%.",
+        critical: "Ton environnement debout est très risqué. Sol dur + chaussures inadaptées + absence de tapis anti-fatigue = une combinaison qui favorise les douleurs au talon, aux pieds et les jambes lourdes. Ces facteurs s'accumulent chaque jour.",
+        attention: "Ton setup debout a des failles importantes. Quelques investissements simples (tapis, semelles, chaussettes) peuvent améliorer ton confort en fin de journée.",
         good: "Ton environnement debout est bien adapté. Continue à surveiller l'état de tes semelles et de ton tapis anti-fatigue — ils s'usent et perdent leurs propriétés.",
       },
       pain: {
-        critical: "Tes douleurs sont sévères. Ce niveau pour un travailleur debout indique souvent une pathologie installée (douleurs chroniques aux pieds, insuffisance veineuse). Une consultation médicale ou kiné est urgente — ces douleurs ne disparaissent pas d'elles-mêmes.",
+        critical: "Tes douleurs sont sévères. Ce niveau de douleur mérite un avis professionnel rapide : une consultation médicale ou kinésithérapique est conseillée pour comprendre l'origine de ces douleurs.",
         attention: "Tes douleurs sont modérées mais typiques d'un travailleur debout. Elles sont encore réversibles — agis maintenant plutôt que d'attendre qu'elles s'installent chroniquement.",
         good: "Tu n'as pas de douleurs significatives. C'est le meilleur moment pour agir en prévention avec les exercices de renforcement du pied.",
       },
@@ -183,16 +183,16 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
     },
     priority_actions: {
       always: [
-        { title: "Vérifie la hauteur de ton plan de travail", why: "Un plan trop bas force une flexion permanente du dos et des épaules enroulées.", how: "Idéal : coudes légèrement fléchis quand les bras sont posés. Demande un réglage si possible.", impact: "Réduit les tensions d'épaules et de dos de 40%" },
-        { title: "Demande un tapis anti-fatigue", why: "C'est l'investissement ergonomique le plus rentable pour le travail debout.", how: "Parle à ton employeur — c'est son obligation légale de prévention. Un tapis de 50€ vaut mieux qu'un arrêt maladie.", impact: "Réduit la fatigue musculaire des jambes de 50% après 4h" },
+        { title: "Vérifie la hauteur de ton plan de travail", why: "Un plan trop bas force une flexion permanente du dos et des épaules enroulées.", how: "Idéal : coudes légèrement fléchis quand les bras sont posés. Demande un réglage si possible.", impact: "Aide à réduire les tensions d'épaules et de dos" },
+        { title: "Demande un tapis anti-fatigue", why: "C'est un aménagement simple et peu coûteux pour le travail debout.", how: "Parle à ton employeur — c'est son obligation légale de prévention. Un tapis anti-fatigue est un premier aménagement simple.", impact: "Aide à réduire la fatigue musculaire des jambes" },
         { title: "Short foot 3x par jour", why: "L'exercice le plus efficace pour renforcer la voûte plantaire et protéger les pieds.", how: "Raccourcis ton pied sans fléchir les orteils. Tiens 3 secondes. 10 répétitions. Faisable au poste debout.", impact: "Protège et renforce la voûte plantaire" },
       ],
       fasciite: [
         {
           title: "Fasciite plantaire — agis maintenant",
-          why: "La douleur au talon au lever est le signe classique. Sans traitement, elle peut durer 12 mois. Avec les bons exercices, 6 à 12 semaines suffisent.",
+          why: "La douleur au talon au lever est le signe classique. Elle peut durer longtemps sans prise en charge ; les exercices d'étirement et de renforcement, avec un avis professionnel, sont le traitement de première intention.",
           how: "1. Étire le fascia avant le premier pas (10 × 10 sec assis au lit). 2. Glace sous le talon 10-15 min après chaque journée. 3. Ne marche jamais pieds nus sur sol dur le matin.",
-          impact: "Réduit la durée des douleurs au talon de 12 mois à 6-8 semaines",
+          impact: "Aide à faire diminuer la douleur du premier pas du matin",
         },
       ],
       veines: [
@@ -200,7 +200,7 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
           title: "Insuffisance veineuse — ta priorité #1",
           why: "Tes jambes ne drainent plus correctement. La pompe veineuse des mollets est insuffisante.",
           how: "1. Porte des chaussettes de compression dès le matin AVANT de te lever. 2. Surélève les jambes 20 min en rentrant. 3. 20 montées sur pointes toutes les 30 minutes.",
-          impact: "Réduit les œdèmes et prévient l'aggravation variqueuse",
+          impact: "Aide à soulager les jambes lourdes",
         },
       ],
       plan_trop_bas: [
@@ -208,7 +208,7 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
           title: "Ton plan de travail te courbe le dos",
           why: "Un plan trop bas force une flexion permanente du tronc — tendinite d'épaule et lombalgie assurées.",
           how: "Demande une surélévation du plan. En attendant : penche-toi depuis les hanches, pas depuis le dos.",
-          impact: "Réduit les tensions d'épaules et de dos de 40%",
+          impact: "Aide à réduire les tensions d'épaules et de dos",
         },
       ],
     },
@@ -226,21 +226,21 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       "Porte tes chaussettes de compression le matin AVANT de te lever — pas après",
       "Surélève les jambes 20 min en rentrant — plus efficace que 1h de massage",
       "Rester debout immobile est plus fatigant que marcher — micro-mouvements en continu",
-      "Un tapis anti-fatigue de 5cm d'épaisseur réduit la fatigue musculaire de 50%",
+      "Un tapis anti-fatigue adapté peut améliorer le confort en station debout (effet variable selon les personnes)",
       "Le sol dur + chaussures plates = combinaison la plus risquée pour les douleurs au pied",
       "Si douleur au genou : ne bloque jamais le genou en hyperextension debout",
-      "Alterner l'appui d'un pied sur une marche soulage le bas du dos de 25%",
+      "Alterner l'appui d'un pied sur une marche peut soulager le bas du dos",
       "La déshydratation aggrave les jambes lourdes — bois même si tu n'as pas soif",
       "Si sport intensif après le travail et douleurs au talon : passe au vélo ou natation",
-      "Glace sous le talon 10-15 min après le travail si douleur — anti-inflammatoire naturel",
+      "Glace sous le talon 10-15 min après le travail si douleur — peut soulager",
     ],
     products: [
-      { name: "Tapis anti-fatigue ergonomique", reason: "Réduit de 50% la fatigue musculaire en station debout — validé scientifiquement", priority: "haute", url: "https://amzn.to/4fnjrQR", trigger: "q_d2 !== oui_ergo" },
+      { name: "Tapis anti-fatigue ergonomique", reason: "Peut améliorer le confort en station debout prolongée (effet variable selon les personnes)", priority: "haute", url: "https://amzn.to/4fnjrQR", trigger: "q_d2 !== oui_ergo" },
       { name: "Semelles orthopédiques de travail", reason: "Amorties et soutien de voûte plantaire — indispensables si tu travailles sur sol dur", priority: "haute", url: "https://amzn.to/4eiCfP5", trigger: "q_d1 === dur || q_d8 >= 2" },
-      { name: "Chaussettes de compression graduée", reason: "Prévient varices et insuffisance veineuse — à porter dès le matin avant de se lever", priority: "haute", url: "https://amzn.to/4vimwWT", trigger: "q_d11 >= 2 || q_d14 !== normales" },
+      { name: "Chaussettes de compression graduée", reason: "Peut soulager les jambes lourdes — à enfiler le matin avant de se lever", priority: "haute", url: "https://amzn.to/4vimwWT", trigger: "q_d11 >= 2 || q_d14 !== normales" },
       { name: "Balle de massage lacrosse", reason: "Auto-massage sous le pied quotidien — en phase douloureuse avec eau glacée", priority: "moyenne", url: "https://amzn.to/4wZhdNP", trigger: "q_d8 >= 2 || q_d13 === premier_pas" },
-      { name: "Repose-pieds ergonomique", reason: "Technique du pied surélevé — soulage le bas du dos de 25%", priority: "moyenne", url: "https://amzn.to/4uMCqZO", trigger: "q_d10 >= 2" },
-      { name: "Coussin surélévation jambes", reason: "20 minutes le soir : draine les œdèmes et prévient les varices professionnelles", priority: "moyenne", url: "https://amzn.to/3PLUGmX", trigger: "q_d11 >= 2 || q_d14 !== normales" },
+      { name: "Repose-pieds ergonomique", reason: "Technique du pied surélevé — peut soulager le bas du dos", priority: "moyenne", url: "https://amzn.to/4uMCqZO", trigger: "q_d10 >= 2" },
+      { name: "Coussin surélévation jambes", reason: "20 minutes le soir, jambes surélevées : aide à soulager les jambes lourdes", priority: "moyenne", url: "https://amzn.to/3PLUGmX", trigger: "q_d11 >= 2 || q_d14 !== normales" },
     ],
   },
   // ── ARTISAN ───────────────────────────────────────────────────────────────
@@ -258,15 +258,15 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
         "Syndrome des vibrations main-bras",
       ],
       did_you_know: [
-        "80% des artisans développent au moins un TMS au cours de leur carrière",
+        "Les TMS sont très fréquents dans les métiers manuels",
         "La flexion + rotation simultanée du dos est le geste le plus dangereux pour la colonne",
-        "Soulever 25kg avec le dos courbé équivaut à 250kg de charge sur les disques lombaires",
-        "Les TMS coûtent en moyenne 4 semaines d'arrêt par an aux artisans touchés",
+        "Soulever avec le dos arrondi et la charge loin du corps augmente fortement la contrainte sur les disques lombaires",
+        "Les TMS sont une cause majeure d'arrêt de travail et de maladie professionnelle dans les métiers manuels",
       ],
     },
     score_interpretations: {
       setup: {
-        critical: "Tes conditions de travail sont très contraignantes. L'absence d'EPI adaptés et de bonnes techniques de manutention multiplie considérablement tes risques de TMS graves.",
+        critical: "Tes conditions de travail sont très contraignantes. L'absence d'EPI adaptés et de bonnes techniques de manutention augmente tes risques de TMS.",
         attention: "Certaines de tes conditions méritent attention. Des ajustements dans tes techniques et équipements réduiraient tes risques.",
         good: "Tu travailles dans de bonnes conditions avec de bonnes pratiques. Continue — ils protègent ta carrière sur le long terme.",
       },
@@ -293,9 +293,9 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
     },
     priority_actions: {
       always: [
-        { title: "La règle d'or du dos : jamais fléchi ET en rotation", why: "La combinaison flexion + rotation est responsable de 70% des hernies discales.", how: "Pour ramasser au sol : plie les genoux, garde le dos droit, tourne avec les pieds — pas avec le dos.", impact: "Réduit de 70% le risque de hernie discale" },
-        { title: "Rapproche le travail de toi", why: "La distance entre toi et ta tâche détermine la courbure de ton dos.", how: "Toujours travailler le plus près possible. Utilise des tréteaux pour travailler à hauteur. Évite de travailler à bout de bras.", impact: "Réduit la charge sur les disques de 40%" },
-        { title: "5 minutes d'étirements après le chantier", why: "Les muscles artisanaux accumulent des tensions qui se cristallisent sans étirement actif.", how: "Flexion lombaire + rotation thoracique + étirement épaules. 5 minutes au camion avant de rentrer.", impact: "Réduit de 60% les courbatures du lendemain" },
+        { title: "La règle d'or du dos : jamais fléchi ET en rotation", why: "Combiner flexion et rotation du tronc sous charge est particulièrement contraignant pour les disques lombaires.", how: "Pour ramasser au sol : plie les genoux, garde le dos droit, tourne avec les pieds — pas avec le dos.", impact: "Aide à réduire le risque de hernie discale" },
+        { title: "Rapproche le travail de toi", why: "La distance entre toi et ta tâche détermine la courbure de ton dos.", how: "Toujours travailler le plus près possible. Utilise des tréteaux pour travailler à hauteur. Évite de travailler à bout de bras.", impact: "Aide à réduire la charge sur les disques" },
+        { title: "5 minutes d'étirements après le chantier", why: "Les muscles artisanaux accumulent des tensions qui se cristallisent sans étirement actif.", how: "Flexion lombaire + rotation thoracique + étirement épaules. 5 minutes au camion avant de rentrer.", impact: "Aide à réduire les courbatures du lendemain" },
       ],
     },
     exercises: [
@@ -310,8 +310,8 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       "Ceinture lombaire : utile pour les charges ponctuelles, pas en permanence",
       "S'agenouiller plutôt que se pencher — toujours quand c'est possible",
       "5 min d'étirements après le chantier = moins de courbatures demain",
-      "Rapprocher le travail de soi réduit de 40% la charge sur les disques",
-      "Un collègue pour les charges > 25kg n'est pas une faiblesse — c'est la norme",
+      "Garder la charge près du corps réduit la contrainte sur le dos",
+      "Demander de l'aide pour une charge lourde ou encombrante n'est pas une faiblesse — c'est une règle de prévention",
     ],
     products: [
       { name: "Ceinture lombaire de travail", reason: "Protection lombaire pour les charges ponctuelles importantes", priority: "haute", url: "https://www.amazon.fr/s?k=ceinture+lombaire+travail+artisan&tag=postureatwork-21", trigger: "q8 >= 3" },
@@ -331,15 +331,15 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
         "Lombalgies chroniques par vibrations et position assise",
         "Sciatique par compression du nerf",
         "Hernie discale cervicale",
-        "Syndrome du canal carpien par tenue du volant",
-        "Varices et thrombose par immobilité",
+        "Douleurs des poignets liées à la tenue du volant",
+        "Jambes lourdes liées à l'immobilité",
         "Fatigue chronique et troubles du sommeil",
       ],
       did_you_know: [
         "Les vibrations du véhicule sont transmises directement aux disques intervertébraux",
-        "La sciatique est 3x plus fréquente chez les conducteurs professionnels",
-        "Conduire 4h d'affilée sans pause augmente le risque d'accident de 400%",
-        "Un mauvais réglage de siège peut générer 30% de charge lombaire supplémentaire",
+        "La conduite prolongée est un facteur de risque reconnu de lombalgie et de douleurs sciatiques",
+        "Conduire longtemps sans pause augmente la fatigue et les raideurs : prévoir des arrêts réguliers pour marcher et s'étirer",
+        "Un siège mal réglé augmente la contrainte sur le bas du dos pendant la conduite",
       ],
     },
     score_interpretations: {
@@ -371,9 +371,9 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
     },
     priority_actions: {
       always: [
-        { title: "Règle ton siège en 3 minutes", why: "Le bon réglage de siège est l'action la plus impactante pour un conducteur.", how: "Distance volant : bras légèrement fléchis. Dossier : 100-110°. Appui lombaire dans le creux du dos.", impact: "Réduit la charge lombaire de 30% en conduite" },
-        { title: "Pause obligatoire toutes les 2h", why: "La loi l'impose et ton corps en a besoin.", how: "Sors du véhicule, marche 5 minutes, fais des rotations du buste. Pas question de rester assis.", impact: "Réduit de 60% l'accumulation de tension lombaire" },
-        { title: "Ajoute un coussin lombaire", why: "Les sièges de véhicule sont rarement ergonomiques pour la conduite prolongée.", how: "Un coussin dans le creux du dos maintient la courbure naturelle. Essaie-le 1 semaine.", impact: "Réduit la fatigue lombaire de 40% en conduite" },
+        { title: "Règle ton siège en 3 minutes", why: "Le bon réglage de siège est l'action la plus impactante pour un conducteur.", how: "Distance volant : bras légèrement fléchis. Dossier légèrement incliné, pas à la verticale. Appui lombaire dans le creux du dos.", impact: "Limite les contraintes sur le bas du dos en conduite" },
+        { title: "Pause obligatoire toutes les 2h", why: "La loi l'impose et ton corps en a besoin.", how: "Sors du véhicule, marche 5 minutes, fais des rotations du buste. Pas question de rester assis.", impact: "Aide à réduire l'accumulation de tension lombaire" },
+        { title: "Ajoute un coussin lombaire", why: "Les sièges de véhicule sont rarement ergonomiques pour la conduite prolongée.", how: "Un coussin dans le creux du dos maintient la courbure naturelle. Essaie-le 1 semaine.", impact: "Peut limiter la fatigue lombaire en conduite (à essayer individuellement)" },
       ],
     },
     exercises: [
@@ -387,14 +387,14 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
       "Régler son siège prend 3 min et change tout pour 8h de conduite",
       "S'arrêter toutes les 2h n'est pas optionnel — c'est légal et vital",
       "Rotations de chevilles aux feux rouges relance la circulation",
-      "Un coussin lombaire dans le siège = investissement <30€ très rentable",
+      "Un coussin lombaire dans le siège est un aménagement simple et peu coûteux",
       "La somnolence en conduite est un symptôme médical — pas de la fatigue normale",
-      "Hydrater correctement réduit la fatigue de conduite de 25%",
+      "Boire régulièrement aide à rester vigilant pendant les longs trajets",
     ],
     products: [
       { name: "Coussin lombaire voiture", reason: "Maintient la courbure naturelle du dos pendant les longues heures de conduite", priority: "haute", url: "https://www.amazon.fr/s?k=coussin+lombaire+voiture+conduite&tag=postureatwork-21", trigger: "always" },
       { name: "Coussin coccyx siège voiture", reason: "Réduit la pression sur le coccyx en position assise prolongée", priority: "haute", url: "https://www.amazon.fr/s?k=coussin+coccyx+siège+voiture&tag=postureatwork-21", trigger: "q8 >= 2" },
-      { name: "Chaussettes de compression", reason: "Prévient les varices et thromboses liées à l'immobilité en conduite", priority: "moyenne", url: "https://www.amazon.fr/s?k=chaussettes+compression+conduite&tag=postureatwork-21", trigger: "always" },
+      { name: "Chaussettes de compression", reason: "Peut soulager les jambes lourdes lors de longues périodes assis", priority: "moyenne", url: "https://www.amazon.fr/s?k=chaussettes+compression+conduite&tag=postureatwork-21", trigger: "always" },
       { name: "Gourde 1.5L graduée", reason: "L'hydratation est cruciale en conduite — la déshydratation augmente la fatigue", priority: "moyenne", url: "https://amzn.to/4dVZNJl", trigger: "always" },
     ],
   },
@@ -403,7 +403,7 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
   medical: {
     label: "Médical / paramédical",
     emoji: "🏥",
-    intro: "Les professionnels de santé cumulent les risques du travail debout, de la manutention de patients et d'une charge émotionnelle intense. Le burn-out et les TMS touchent plus de 50% des soignants en cours de carrière.",
+    intro: "Les professionnels de santé cumulent les risques du travail debout, de la manutention de patients et d'une charge émotionnelle intense. Le burn-out et les TMS sont des risques reconnus chez les soignants.",
     risk_profile: {
       main_risks: [
         "Lombalgies par manutention de patients",
@@ -414,15 +414,15 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
         "Fatigue compassionnelle",
       ],
       did_you_know: [
-        "Les infirmiers soulèvent l'équivalent de 1.8 tonne par journée de travail",
-        "Le burn-out touche 40% des infirmiers dans les 5 premières années",
+        "Les soignants cumulent de nombreuses manutentions de patients au cours d'une journée",
+        "Le burn-out est un risque reconnu chez les soignants, notamment en début de carrière",
         "Les accidents d'exposition au sang représentent 700 000 cas par an en Europe",
         "La hauteur du lit de soin est le facteur ergonomique le plus impactant pour les soignants",
       ],
     },
     score_interpretations: {
       setup: {
-        critical: "Tes conditions de travail sont très contraignantes. L'absence de matériel de manutention adapté multiplie ta charge lombaire quotidienne.",
+        critical: "Tes conditions de travail sont très contraignantes. L'absence de matériel de manutention adapté augmente ta charge lombaire quotidienne.",
         attention: "Certaines de tes conditions méritent d'être améliorées. Des adaptations simples font une grande différence.",
         good: "Tu travailles dans de bonnes conditions ergonomiques. Continue à utiliser le matériel disponible.",
       },
@@ -449,28 +449,28 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
     },
     priority_actions: {
       always: [
-        { title: "Règle la hauteur du lit avant chaque soin", why: "C'est la règle d'or ergonomique du soin — souvent ignorée faute de temps.", how: "Lit à hauteur des hanches pour les soins debout. 5 secondes pour régler = dos protégé.", impact: "Réduit de 60% la charge lombaire lors des soins" },
-        { title: "Ne mobilise jamais seul un patient >50kg", why: "La manutention à deux n'est pas une faiblesse — c'est la norme légale et ergonomique.", how: "Demande systématiquement de l'aide. Utilise le matériel disponible.", impact: "Réduit de 80% le risque de lombalgie aiguë" },
-        { title: "5 minutes de décompression entre patients", why: "La charge émotionnelle s'accumule et se traduit en tensions musculaires réelles.", how: "Respiration en cohérence cardiaque (4-4-4-4). 2 minutes suffisent à réduire le cortisol.", impact: "Réduit de 30% la tension musculaire liée au stress" },
+        { title: "Règle la hauteur du lit avant chaque soin", why: "C'est la règle d'or ergonomique du soin — souvent ignorée faute de temps.", how: "Lit à hauteur des hanches pour les soins debout. 5 secondes pour régler, c'est du dos épargné.", impact: "Aide à réduire la charge lombaire lors des soins" },
+        { title: "Ne mobilise pas seul(e) un patient lourd ou peu coopérant", why: "La manutention à deux n'est pas une faiblesse — c'est la norme légale et ergonomique.", how: "Demande systématiquement de l'aide. Utilise le matériel de transfert disponible.", impact: "Réduit l'exposition aux lombalgies liées à la manutention de patients" },
+        { title: "5 minutes de décompression entre patients", why: "La charge émotionnelle s'accumule et se traduit en tensions musculaires réelles.", how: "Respiration en cohérence cardiaque (4-4-4-4). Quelques minutes de respiration lente aident à se détendre.", impact: "Aide à réduire la tension musculaire liée au stress" },
       ],
     },
     exercises: [
       { id: "medical_lumbar", name: "Décompression lombaire post-garde", target: "Bas du dos", duration: "2 minutes", frequency: "Après chaque shift", instruction: "Allongé sur le dos, genoux fléchis. Bascule le bassin pour aplatir le bas du dos. Tiens 5 secondes, relâche. 10 répétitions. Décompresse après la manutention.", when: "always" },
-      { id: "medical_breathing", name: "Cohérence cardiaque", target: "Stress & mental", duration: "2 minutes", frequency: "Entre les patients", instruction: "Inspire 4 secondes. Retiens 4. Expire 4. Retiens 4. 6 cycles. Réduit le cortisol de 20% en 2 minutes.", when: "always" },
+      { id: "medical_breathing", name: "Cohérence cardiaque", target: "Stress & mental", duration: "2 minutes", frequency: "Entre les patients", instruction: "Inspire 4 secondes. Retiens 4. Expire 4. Retiens 4. 6 cycles. Aide à se détendre.", when: "always" },
       { id: "medical_shoulder", name: "Décompression épaules", target: "Épaules & coiffe", duration: "30 sec par côté", frequency: "Pauses", instruction: "Bras croisé devant la poitrine. Attrape le coude avec l'autre main et tire doucement. Libère les tensions de manipulation.", when: "q7 >= 2" },
-      { id: "medical_calf", name: "Montées sur pointes", target: "Mollets & circulation", duration: "20 répétitions", frequency: "Toutes les 30 min", instruction: "Monte sur les pointes des pieds, tiens 2 secondes, redescends lentement. Active la pompe veineuse. Prévient les varices professionnelles.", when: "always" },
+      { id: "medical_calf", name: "Montées sur pointes", target: "Mollets & circulation", duration: "20 répétitions", frequency: "Toutes les 30 min", instruction: "Monte sur les pointes des pieds, tiens 2 secondes, redescends lentement. Active la circulation dans les mollets.", when: "always" },
     ],
     tips: [
       "La hauteur du lit de soin est le facteur ergonomique le plus impactant",
       "La manutention à deux n'est pas une faiblesse — c'est la norme légale",
       "5 min de décompression entre patients protège ta santé mentale",
       "Hydrate-toi même si tu n'as pas le temps — une gourde dans ta poche",
-      "Le burn-out se prévient, pas se guérit — parler tôt est la meilleure arme",
+      "Le burn-out se prévient mieux qu'il ne se soigne — en parler tôt aide",
       "Les chaussures professionnelles de soin sont un investissement, pas un luxe",
     ],
     products: [
       { name: "Chaussures professionnelles de soin", reason: "Amorties et stables pour les longues heures debout en service", priority: "haute", url: "https://www.amazon.fr/s?k=chaussures+professionnelles+soignant+confort&tag=postureatwork-21", trigger: "always" },
-      { name: "Chaussettes de compression", reason: "Prévient les varices professionnelles liées aux longues heures debout", priority: "haute", url: "https://www.amazon.fr/s?k=chaussettes+compression+soignant&tag=postureatwork-21", trigger: "always" },
+      { name: "Chaussettes de compression", reason: "Peut soulager les jambes lourdes après de longues heures debout", priority: "haute", url: "https://www.amazon.fr/s?k=chaussettes+compression+soignant&tag=postureatwork-21", trigger: "always" },
       { name: "Gourde isotherme 750ml", reason: "Hydratation essentielle en service — souvent négligée par les soignants", priority: "moyenne", url: "https://amzn.to/4dVZNJl", trigger: "always" },
     ],
   },
@@ -490,9 +490,9 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
         "TMS des membres supérieurs (correction de copies)",
       ],
       did_you_know: [
-        "Les enseignants utilisent leur voix 6x plus qu'un locuteur normal",
-        "1 enseignant sur 3 développe une dysphonie dans sa carrière",
-        "Le burn-out enseignant touche 30% de la profession",
+        "Les enseignants sollicitent beaucoup leur voix : hydratation et pauses vocales protègent la gorge",
+        "Les troubles de la voix sont une plainte fréquente dans l'enseignement",
+        "Le burn-out est un risque reconnu dans l'enseignement",
         "Les enseignants regardent vers le haut des milliers de fois par jour — source majeure de tensions cervicales",
       ],
     },
@@ -525,8 +525,8 @@ export const JOB_CONTENT: Record<JobType, JobData> = {
     },
     priority_actions: {
       always: [
-        { title: "Protège ta voix — c'est ton outil principal", why: "Une dysphonie peut mettre fin à une carrière d'enseignant.", how: "Parle depuis le diaphragme, pas depuis la gorge. Ne crie jamais. Hydrate-toi constamment.", impact: "Prévient la dysphonie professionnelle" },
-        { title: "Varie ta position en classe", why: "Rester debout immobile devant le tableau est épuisant et inutile.", how: "Circule dans la classe. Assieds-toi parfois. Utilise un tabouret haut. Change toutes les 20 minutes.", impact: "Réduit de 40% la fatigue physique en fin de journée" },
+        { title: "Protège ta voix — c'est ton outil principal", why: "Les troubles de la voix sont une plainte fréquente chez les enseignants.", how: "Parle depuis le diaphragme, pas depuis la gorge. Ne crie jamais. Hydrate-toi constamment.", impact: "Ménage la voix" },
+        { title: "Varie ta position en classe", why: "Rester debout immobile devant le tableau est épuisant et inutile.", how: "Circule dans la classe. Assieds-toi parfois. Utilise un tabouret haut. Change toutes les 20 minutes.", impact: "Aide à réduire la fatigue physique en fin de journée" },
         { title: "Centre le tableau à hauteur des yeux", why: "Regarder en haut des milliers de fois par jour crée des tensions cervicales chroniques.", how: "Le centre du tableau doit être à hauteur des yeux ou légèrement en dessous. Demande un réglage si possible.", impact: "Réduit les tensions cervicales liées au tableau" },
       ],
     },
@@ -596,7 +596,7 @@ function getDeboutDimensionContent(
         detected.push("Tu travailles sur sol dur (carrelage/béton). C'est la surface la plus génératrice de douleurs au talon et au pied et de fatigue musculaire des membres inférieurs.");
       }
       if (a("q_d2") !== "oui_ergo") {
-        detected.push("Tu n'as pas de tapis anti-fatigue ergonomique. Après 4h debout sur sol dur sans amorti, la pression sur tes pieds équivaut à 20 kg supplémentaires.");
+        detected.push("Tu n'as pas de tapis anti-fatigue ergonomique. Une station debout prolongée sur sol dur sans amorti fatigue les pieds, les jambes et le dos.");
       }
       if (a("q_d3") === "ville" || a("q_d3") === "plates") {
         detected.push("Tes chaussures ne sont pas adaptées au travail debout prolongé. C'est le facteur de risque #1 des douleurs au pied prolongées.");
@@ -617,8 +617,8 @@ function getDeboutDimensionContent(
         consequences: "Le travail debout sur sol dur sans équipement adapté provoque une fatigue musculaire accélérée, des micro-traumatismes plantaires répétés et des compensations posturales (dos cambré, genoux bloqués) qui mènent aux TMS chroniques.",
         tips: [
           { id: "dt1", icon: "🪑", text: "Demande un tapis anti-fatigue à ton employeur — c'est son obligation légale de prévention" },
-          { id: "dt2", icon: "👟", text: "Change de chaussures si elles n'ont pas de semelles amortissantes — c'est ton investissement #1" },
-          { id: "dt3", icon: "🦶", text: "Alterne l'appui d'un pied sur une marche ou repose-pieds toutes les 20 minutes — soulage le bas du dos de 25%" },
+          { id: "dt2", icon: "👟", text: "Change de chaussures si elles n'ont pas de semelles amortissantes — c'est un des aménagements les plus utiles" },
+          { id: "dt3", icon: "🦶", text: "Alterne l'appui d'un pied sur une marche ou repose-pieds toutes les 20 minutes — peut soulager le bas du dos" },
         ],
         immediateActions: [
           "Fais 20 montées sur pointes maintenant — relance la circulation veineuse immédiatement",
@@ -628,9 +628,9 @@ function getDeboutDimensionContent(
         exerciseIds: ["short_foot", "calf_raise_excentric", "marching", "toe_spreading", "calf_stretch"],
         programId: "debout_recovery",
         products: [
-          mkProduct("tapis_af", "Tapis anti-fatigue ergonomique", "Réduit de 50% la fatigue musculaire en station debout — validé scientifiquement", "https://amzn.to/4fnjrQR", "haute", "~45€", "Priorité #1"),
+          mkProduct("tapis_af", "Tapis anti-fatigue ergonomique", "Aide à réduire la fatigue musculaire en station debout", "https://amzn.to/4fnjrQR", "haute", "~45€", "Priorité #1"),
           mkProduct("semelles_o", "Semelles orthopédiques de travail", "Amorties et soutien de voûte plantaire — indispensables si tu travailles sur sol dur", "https://amzn.to/4eiCfP5", "haute", "~25€"),
-          mkProduct("repose_pied", "Repose-pieds ergonomique", "Technique du pied surélevé — soulage le bas du dos de 25%", "https://amzn.to/4uMCqZO", "moyenne", "~30€"),
+          mkProduct("repose_pied", "Repose-pieds ergonomique", "Technique du pied surélevé — peut soulager le bas du dos", "https://amzn.to/4uMCqZO", "moyenne", "~30€"),
         ],
       };
     }
@@ -666,7 +666,7 @@ function getDeboutDimensionContent(
       const flagDouleurIrradiante = q_d_irradiation === "fesse_cuisse" || q_d_irradiation === "jusqu_genou" || q_d_irradiation === "jusqu_pied";
 
       if (flagTalon || (q_d8 >= 3 && q_d13 === "premier_pas")) {
-        detected.push("⚠️ Douleur au talon au lever : signal à ne pas ignorer. Avec les bons exercices, ces douleurs peuvent diminuer significativement en 6 à 12 semaines. Consulte un professionnel de santé si la douleur persiste plus de 2 semaines.");
+        detected.push("⚠️ Douleur au talon au lever : signal à ne pas ignorer. Avec les bons exercices et un avis professionnel, ces douleurs peuvent diminuer. Consulte un professionnel de santé si la douleur persiste plus de 2 semaines.");
         exerciseIds.push("fascia_stretch_morning", "short_foot", "calf_raise_excentric", "plantar_massage");
         products.push(mkProduct("semelles_f", "Semelles orthopédiques de travail", "Soutien de voûte plantaire — indispensables si douleurs au talon ou à la voûte plantaire", "https://amzn.to/4eiCfP5", "haute", "~25€", "Urgence fasciite"));
         products.push(mkProduct("balle_m", "Balle de massage lacrosse", "Auto-massage sous le pied quotidien — en phase douloureuse avec eau glacée", "https://amzn.to/4wZhdNP", "moyenne", "~10€"));
@@ -676,15 +676,15 @@ function getDeboutDimensionContent(
       }
 
       if (q_d9 >= 2) {
-        detected.push("Tes genoux subissent une compression continue. La gonarthrose est 3x plus fréquente chez les travailleurs debout.");
+        detected.push("Tes genoux subissent une compression continue. La station debout prolongée et le port de charges sollicitent les genoux en continu.");
         if (!exerciseIds.includes("calf_stretch")) exerciseIds.push("chair_squat", "calf_stretch");
       }
 
       if (q_d11 >= 2 && q_d_jambes_soir !== "bien") {
-        detected.push("Tes jambes lourdes en fin de service indiquent une insuffisance veineuse professionnelle. Les chaussettes de compression portées LE MATIN (avant de se lever) sont 3x plus efficaces que portées après.");
+        detected.push("Tes jambes lourdes en fin de service méritent attention : alterne les positions, bouge régulièrement, et parles-en à ton médecin si cela persiste. Les chaussettes de compression s'enfilent de préférence le matin, avant de te lever.");
         if (!exerciseIds.includes("leg_elevation")) exerciseIds.push("marching", "leg_elevation");
-        products.push(mkProduct("chaussettes_c", "Chaussettes de compression graduée", "Prévient varices et insuffisance veineuse — à porter dès le matin avant de se lever", "https://amzn.to/4vimwWT", "haute", "~20€"));
-        products.push(mkProduct("coussin_el", "Coussin surélévation jambes", "20 minutes le soir : draine les œdèmes et prévient les varices professionnelles", "https://amzn.to/3PLUGmX", "moyenne", "~30€"));
+        products.push(mkProduct("chaussettes_c", "Chaussettes de compression graduée", "Peut soulager les jambes lourdes — à enfiler le matin avant de se lever", "https://amzn.to/4vimwWT", "haute", "~20€"));
+        products.push(mkProduct("coussin_el", "Coussin surélévation jambes", "20 minutes le soir, jambes surélevées : aide à soulager les jambes lourdes", "https://amzn.to/3PLUGmX", "moyenne", "~30€"));
       } else if (q_d11 >= 1) {
         detected.push("Tu ressens une légère lourdeur des jambes. C'est le début du syndrome veineux professionnel — agis maintenant en prévention.");
         if (!exerciseIds.includes("marching")) exerciseIds.push("marching", "calf_raise_excentric");
@@ -693,7 +693,7 @@ function getDeboutDimensionContent(
       if (q_d10 >= 2) {
         detected.push("Tes douleurs lombaires sont typiques du travail debout. L'hyperlordose compensatoire (creuser le bas du dos) est le mécanisme principal — corrigeable avec les bons exercices.");
         if (!exerciseIds.includes("lumbar_extension")) exerciseIds.push("lumbar_extension", "cat_cow");
-        products.push(mkProduct("repose_pf", "Repose-pieds ergonomique", "Alterner l'appui d'un pied soulage le bas du dos de 25%", "https://amzn.to/4uMCqZO", "moyenne", "~30€"));
+        products.push(mkProduct("repose_pf", "Repose-pieds ergonomique", "Alterner l'appui d'un pied peut soulager le bas du dos", "https://amzn.to/4uMCqZO", "moyenne", "~30€"));
       }
 
       // Manutention lourde (≥15kg)
@@ -705,7 +705,7 @@ function getDeboutDimensionContent(
 
       // Gestes répétitifs
       if (q_d_repetitif === "toute_la_journee") {
-        detected.push("⚠️ Gestes répétitifs toute la journée — risque élevé de tendinopathies et de syndrome du canal carpien. Les micro-pauses gestuelles sont indispensables.");
+        detected.push("⚠️ Gestes répétitifs toute la journée — risque de surcharge des tendons et des poignets. Des micro-pauses et des changements de geste sont recommandés.");
         if (!exerciseIds.includes("wrist_rotation")) exerciseIds.push("wrist_rotation", "forearm_massage");
       }
 
@@ -742,7 +742,7 @@ function getDeboutDimensionContent(
         detected.push("⚠️ Tes jambes gonflées en fin de service indiquent une circulation veineuse insuffisante typique du travail debout prolongé. Chaussettes de compression + surélévation des jambes sont tes priorités.");
         if (!exerciseIds.includes("leg_elevation")) exerciseIds.push("marching", "leg_elevation");
         if (!products.find(p => p.id === "chaussettes_c")) {
-          products.push(mkProduct("chaussettes_c", "Chaussettes de compression graduée", "Prévient varices et insuffisance veineuse — à porter dès le matin avant de se lever", "https://amzn.to/4vimwWT", "haute", "~20€"));
+          products.push(mkProduct("chaussettes_c", "Chaussettes de compression graduée", "Peut soulager les jambes lourdes — à enfiler le matin avant de se lever", "https://amzn.to/4vimwWT", "haute", "~20€"));
         }
       }
 
@@ -759,15 +759,15 @@ function getDeboutDimensionContent(
       const tips: DeboutTip[] = [];
       if (q_d8 >= 3 && (q_d13 === "premier_pas" || q_d13 === "lever_et_service")) {
         tips.push({ id: "dp1", icon: "🦶", text: "Ne marche jamais pieds nus sur sol dur le matin — met tes chaussures avant le premier pas" });
-        tips.push({ id: "dp2", icon: "🧊", text: "Glace sous le talon 10-15 min après chaque journée — anti-inflammatoire gratuit et efficace" });
+        tips.push({ id: "dp2", icon: "🧊", text: "Glace sous le talon 10-15 min après la journée si la zone est douloureuse — soulage chez beaucoup de personnes" });
         tips.push({ id: "dp3", icon: "🧘", text: "Étire le fascia avant le premier pas : attrape tes orteils, tire 10 sec × 10 reps au lit" });
-        tips.push({ id: "dp3b", icon: "🦵", text: "Mollet excentrique 2×/jour : montée sur 2 pieds, descente lente sur 1 — renforce le fascia en 4 semaines" });
+        tips.push({ id: "dp3b", icon: "🦵", text: "Mollet excentrique 2×/jour : montée sur 2 pieds, descente lente sur 1 — exercice de renforcement du mollet et du pied, à pratiquer progressivement" });
       } else if (q_d11 >= 2 && q_d_jambes_soir !== "bien") {
-        tips.push({ id: "dp4", icon: "🧦", text: "Porte les chaussettes de compression LE MATIN avant de te lever — 3x plus efficaces qu'après" });
+        tips.push({ id: "dp4", icon: "🧦", text: "Porte les chaussettes de compression LE MATIN avant de te lever — plus faciles à enfiler avant que les jambes ne gonflent" });
         tips.push({ id: "dp5", icon: "🦵", text: "Surélève les jambes 20 min en rentrant — draine les mollets et les pieds plus efficacement qu'1h de massage" });
         tips.push({ id: "dp6", icon: "🏊", text: "Natation ou vélo après le travail : circulation veineuse sans impact sur les pieds" });
       } else if (q_d10 >= 2) {
-        tips.push({ id: "dp7", icon: "🦶", text: "Alterne l'appui d'un pied sur une marche toutes les 20 min — soulage le bas du dos de 25%" });
+        tips.push({ id: "dp7", icon: "🦶", text: "Alterne l'appui d'un pied sur une marche toutes les 20 min — peut soulager le bas du dos" });
         tips.push({ id: "dp8", icon: "🪑", text: "Demande un repose-pieds si tu n'en as pas — c'est l'équipement lombaire #1 pour les debout" });
         tips.push({ id: "dp9", icon: "🧘", text: "Flexion lombaire 30 sec toutes les 2h : assis, bras entre les jambes, laisse le dos s'arrondir" });
       } else {
@@ -782,13 +782,13 @@ function getDeboutDimensionContent(
         tips.push({ id: "dm2", icon: "🦵", text: "Plie les genoux, garde le dos droit, retourne-toi avec les pieds — pas avec le dos" });
       }
       if (q_d_repetitif === "toute_la_journee") {
-        tips.push({ id: "drep1", icon: "🔄", text: "Varie la main ou le bras utilisé si possible — réduit la charge répétitive de 50%" });
+        tips.push({ id: "drep1", icon: "🔄", text: "Varie la main ou le bras utilisé si possible — répartir l'effort limite la répétition sur une même zone" });
         tips.push({ id: "drep2", icon: "✋", text: "Micro-pause gestuelle 30 sec toutes les heures : secoue les mains, étire les poignets" });
       }
 
       return {
         detected,
-        consequences: "Les douleurs des membres inférieurs chez les travailleurs debout s'installent progressivement et deviennent chroniques sans intervention. Fasciite, insuffisance veineuse et lombalgies par hyperlordose sont les trois pathologies les plus fréquentes — toutes évitables avec les bons gestes.",
+        consequences: "Les douleurs des membres inférieurs chez les travailleurs debout peuvent s'installer progressivement. Douleurs du talon, jambes lourdes et lombalgies sont des plaintes fréquentes en station debout prolongée : alterner les positions et bouger régulièrement aide à les limiter.",
         tips,
         immediateActions: [
           q_d8 >= 2 ? "Fais l'étirement du fascia maintenant : attrape tes orteils, tire 10 secondes × 5 reps" : "Fais 20 montées sur pointes maintenant — relance la circulation immédiatement",
@@ -834,7 +834,7 @@ function getDeboutDimensionContent(
         { id: "dh4", icon: "📦", text: "Port de charges : dos droit, charge proche du corps, jamais en flexion + rotation simultanées" },
       ];
       if (q_d_repetitif_h === "toute_la_journee") {
-        habitudesTips.push({ id: "dh5", icon: "🔄", text: "Varie la main ou le bras utilisé si possible — réduit la charge répétitive de 50%" });
+        habitudesTips.push({ id: "dh5", icon: "🔄", text: "Varie la main ou le bras utilisé si possible — répartir l'effort limite la répétition sur une même zone" });
         habitudesTips.push({ id: "dh6", icon: "✋", text: "Micro-pause gestuelle 30 sec toutes les heures : secoue les mains, étire les poignets" });
       }
 
@@ -850,7 +850,7 @@ function getDeboutDimensionContent(
         exerciseIds: ["short_foot", "marching", "toe_spreading", "calf_raise_excentric", "lumbar_extension"],
         programId: "debout_pause",
         products: [
-          mkProduct("tapis_h", "Tapis anti-fatigue ergonomique", "Réduit de 50% la fatigue liée à l'immobilité — investissement #1 pour les habitudes debout", "https://amzn.to/4fnjrQR", "haute", "~45€", "Essentiel"),
+          mkProduct("tapis_h", "Tapis anti-fatigue ergonomique", "Aide à réduire la fatigue liée à l'immobilité — un aménagement simple pour les habitudes debout", "https://amzn.to/4fnjrQR", "haute", "~45€", "Essentiel"),
           mkProduct("gourde_h", "Gourde 1.5L graduée", "Rappel visuel de l'hydratation — boire sans y penser", "https://amzn.to/4dVZNJl", "moyenne", "~15€"),
         ],
       };
@@ -870,7 +870,7 @@ function getDeboutDimensionContent(
       const flagConsultSommeil = q_d_crampes_global === "service_et_nuit" || q_d_jambes_nuit === "perturbe_sommeil" || q_d_recuperation_s === "pas_du_tout";
 
       if (flagCrampes) {
-        detected.push("Tes crampes nocturnes de mollets ont une cause identifiable : déshydratation + carence en magnésium + muscles épuisés non étirés après le service. Ces 3 facteurs se corrigent facilement.");
+        detected.push("Les crampes nocturnes de mollets ont souvent plusieurs facteurs possibles : hydratation insuffisante, muscles fatigués et non étirés après le service, parfois d'autres causes. Hydratation, étirements et, si elles persistent, avis de ton médecin.");
       }
       if (flagJambesSansRepos) {
         detected.push("Tes jambes agitées la nuit indiquent une circulation veineuse insuffisante après une journée debout. Ce n'est pas du stress — c'est physique et traitable.");
@@ -890,24 +890,24 @@ function getDeboutDimensionContent(
 
       const somTips: DeboutTip[] = [
         { id: "ds1", icon: "🦵", text: "Surélève les jambes 20 min avant de dormir — draine les œdèmes, améliore le sommeil" },
-        { id: "ds2", icon: "🧊", text: "Bain de pieds froid (15°C) 10 min avant le lit — réduit les inflammations et facilite l'endormissement" },
+        { id: "ds2", icon: "🧊", text: "Un bain de pieds frais en fin de journée peut soulager les jambes lourdes" },
         { id: "ds4", icon: "🛏️", text: "Dors avec un oreiller sous les mollets si jambes lourdes — légère élévation toute la nuit" },
       ];
       if (flagCrampes) {
-        somTips.push({ id: "ds5", icon: "🧴", text: "Magnésium bisglycinate 300mg le soir — forme la plus absorbable, réduit les crampes en 2 semaines" });
+        somTips.push({ id: "ds5", icon: "🧴", text: "Crampes nocturnes fréquentes : parle-en à ton médecin ou à ton pharmacien avant de prendre un complément" });
         somTips.push({ id: "ds6", icon: "💧", text: "Bois 500ml d'eau supplémentaires dans les 2h avant de dormir — avec une pincée de sel" });
         somTips.push({ id: "ds7", icon: "🤸", text: "Étire tes mollets 2 min avant de dormir : position murale, talon au sol, genou tendu" });
       }
       if (flagJambesSansRepos) {
         somTips.push({ id: "ds8", icon: "🧦", text: "Porte les chaussettes de compression jusqu'au soir — enlève-les au lit" });
-        somTips.push({ id: "ds9", icon: "⚕️", text: "Si l'agitation nocturne persiste 3 semaines : consulte ton médecin — le syndrome des jambes sans repos est traitable" });
+        somTips.push({ id: "ds9", icon: "⚕️", text: "Si l'agitation nocturne des jambes persiste : consulte ton médecin — le syndrome des jambes sans repos se prend en charge" });
       }
 
       const somProducts: DeboutProduct[] = [
         mkProduct("coussin_s", "Coussin surélévation jambes", "20 minutes le soir : draine les œdèmes et améliore la qualité du sommeil", "https://amzn.to/3PLUGmX", "haute", "~25€", "Récupération"),
       ];
       if (flagCrampes) {
-        somProducts.push(mkProduct("mag_s", "Magnésium bisglycinate 300mg", "Forme hautement absorbable — réduit crampes, tensions musculaires et fatigue nerveuse", "https://amzn.to/4oiLVO9", "haute", "~20€/mois", "Crampes nocturnes"));
+        somProducts.push(mkProduct("mag_s", "Magnésium bisglycinate", "Complément alimentaire : demande l'avis de ton médecin ou pharmacien avant de commencer", "https://amzn.to/4oiLVO9", "haute", "~20€/mois", "Crampes nocturnes"));
       }
       if (flagJambesSansRepos) {
         somProducts.push(mkProduct("bands_som", "Bandes de résistance étirements", "Programme d'étirements mollets et ischio-jambiers en 15 minutes le soir", "https://www.amazon.fr/s?k=bandes+résistance+étirements+récupération&tag=postureatwork-21", "moyenne", "~15€"));
@@ -919,7 +919,7 @@ function getDeboutDimensionContent(
         tips: somTips,
         immediateActions: [
           flagCrampes ? "Ce soir : étire tes mollets 2 min contre le mur AVANT de te coucher" : "Ce soir : surélève les jambes 20 min contre le mur avant de dormir",
-          "Bois un grand verre d'eau avec une pincée de sel ou de magnésium",
+          "Bois un grand verre d'eau avant de te coucher",
           "Masse les mollets avec les pouces vers le haut pendant 2 minutes",
         ],
         exerciseIds: ["leg_elevation", "plantar_massage", "body_scan", "coherence_cardiaque", flagCrampes ? "calf_stretch" : "toe_spreading"],
@@ -949,7 +949,7 @@ function getDeboutDimensionContent(
         detected.push("Sans petit-déjeuner ou avec juste un café, tes muscles démarrent en déficit. Pour un travailleur debout, ça se traduit par une posture qui s'effondre dès 10h et une fatigue 2h plus tôt.");
       }
       if (flagCrampesMusculaires) {
-        detected.push(`Tes crampes musculaires fréquentes (${q_d_crampes_global === "service_et_nuit" ? "nocturnes ET en service" : q_d_crampes_global === "nocturnes" ? "surtout la nuit" : "pendant le service"}) indiquent presque toujours une combinaison déshydratation + carence magnésium/potassium + muscles surmenés.`);
+        detected.push(`Tes crampes musculaires fréquentes (${q_d_crampes_global === "service_et_nuit" ? "nocturnes ET en service" : q_d_crampes_global === "nocturnes" ? "surtout la nuit" : "pendant le service"}) peuvent avoir plusieurs causes (hydratation, fatigue musculaire, etc.). Si elles sont fréquentes, parles-en à ton médecin.`);
       }
       if (flagDependanceEnergie) {
         detected.push("Tu dépends des boissons énergisantes pour tenir. Ce cycle pic → crash épuise les surrénales et aggrave les douleurs musculaires à long terme.");
@@ -958,13 +958,13 @@ function getDeboutDimensionContent(
         detected.push(`Ta pause repas ${q_d_repas_service === "saute_pause" ? "est souvent sautée" : "est prise en travaillant"} — c'est le seul moment de la journée où ton corps peut vraiment récupérer. L'ignorer accumule une dette physique.`);
       }
       if (q_d19 === "rarement" || q_d19 === "interdit") {
-        detected.push("Tu t'hydrates insuffisamment. Une déshydratation de seulement 2% aggrave les jambes lourdes et la fatigue musculaire — bois avant d'avoir soif.");
+        detected.push("Tu t'hydrates insuffisamment. Bien s'hydrater aide à limiter la fatigue — bois régulièrement dans la journée, sans attendre d'avoir soif.");
       }
       if (q_d_charges_n === "lourdes" || q_d_charges_n === "tres_lourdes") {
-        detected.push("Ton travail physique intensif augmente tes besoins caloriques de 20-30% par rapport à un travailleur assis.");
+        detected.push("Ton travail physique augmente tes besoins énergétiques par rapport à un poste sédentaire : ne saute pas de repas.");
       }
       if (q_d8 >= 2) {
-        detected.push("Les anti-inflammatoires naturels (curcuma + pipérine, oméga-3) peuvent réduire l'inflammation des pieds et des articulations.");
+        detected.push("Une alimentation variée, riche en légumes et en poisson, fait partie d'une bonne hygiène de vie pour les articulations.");
       }
       if (detected.length === 0) {
         detected.push("Ton alimentation est globalement adaptée. Continue à t'hydrater régulièrement — c'est le levier nutritionnel #1 du travail debout.");
@@ -976,7 +976,7 @@ function getDeboutDimensionContent(
       ];
       if (flagCrampesMusculaires) {
         nutTips.push({ id: "dn5", icon: "🍌", text: "Une banane avant le service = potassium + énergie stable sans pic glycémique" });
-        nutTips.push({ id: "dn6", icon: "🍫", text: "Chocolat noir > 70% : magnésium + antioxydants anti-inflammatoires" });
+        nutTips.push({ id: "dn6", icon: "🍫", text: "Un peu de chocolat noir (70 % de cacao ou plus) peut remplacer un snack sucré" });
         if (flagCarenceMineraux) {
           nutTips.push({ id: "dn7", icon: "🥥", text: "Eau de coco après le service : réhydratation et électrolytes naturels" });
         }
@@ -994,15 +994,15 @@ function getDeboutDimensionContent(
         nutTips.push({ id: "dn13", icon: "🪑", text: "Impose-toi 20 min assis pour ta pause repas — c'est ton droit légal de récupération" });
         nutTips.push({ id: "dn14", icon: "🏢", text: "Éloigne-toi physiquement de ton poste — le changement d'environnement est une récupération mentale" });
       }
-      nutTips.push({ id: "dn3", icon: "🌿", text: "Curcuma + pipérine quotidien si douleurs articulaires — anti-inflammatoire naturel validé" });
+      nutTips.push({ id: "dn3", icon: "🌿", text: "Douleurs articulaires persistantes : parles-en à ton médecin plutôt que de t'automédiquer avec des compléments" });
 
       const nutProducts: DeboutProduct[] = [
         mkProduct("gourde_n", "Gourde 1.5L graduée", "Rappel visuel — boire sans y penser tout au long du service", "https://amzn.to/4dVZNJl", "haute", "~15€", "Hydratation #1"),
       ];
       if (flagCrampesMusculaires) {
-        nutProducts.push(mkProduct("mag_n", "Magnésium bisglycinate 300mg", "Réduit crampes, tensions musculaires et fatigue — carence très fréquente chez les travailleurs debout", "https://amzn.to/4oiLVO9", "haute", "~20€/mois", "Crampes"));
+        nutProducts.push(mkProduct("mag_n", "Magnésium bisglycinate", "Complément alimentaire : demande l'avis de ton médecin ou pharmacien avant de commencer", "https://amzn.to/4oiLVO9", "haute", "~20€/mois", "Crampes"));
       }
-      nutProducts.push(mkProduct("omega3_n", "Oméga-3 (EPA/DHA concentré)", "Réduit l'inflammation articulaire et plantaire", "https://www.amazon.fr/s?k=omega+3+EPA+DHA+articulations+inflammation&tag=postureatwork-21", "moyenne", "~20€"));
+      nutProducts.push(mkProduct("omega3_n", "Oméga-3 (EPA/DHA concentré)", "Complément alimentaire : demande l'avis de ton médecin ou pharmacien avant de commencer", "https://www.amazon.fr/s?k=omega+3+EPA+DHA+articulations+inflammation&tag=postureatwork-21", "moyenne", "~20€"));
 
       return {
         detected,
@@ -1010,7 +1010,7 @@ function getDeboutDimensionContent(
         tips: nutTips,
         immediateActions: [
           "Bois 500ml d'eau maintenant et prépare une bouteille pour les prochaines heures",
-          flagCrampesMusculaires ? "Ce soir : prends du magnésium bisglycinate 300mg avec ton repas" : "Ce soir : repas avec protéines (viande, poisson, œufs, légumineuses)",
+          flagCrampesMusculaires ? "Ce soir : bois suffisamment d'eau et étire tes mollets avant de te coucher" : "Ce soir : repas avec protéines (viande, poisson, œufs, légumineuses)",
           flagDependanceEnergie ? "Remplace ta prochaine boisson énergisante par eau + sel + citron" : "Prépare un en-cas protéiné pour demain matin",
         ],
         exerciseIds: ["coherence_cardiaque", "body_scan", "marching", "leg_elevation"],
@@ -1059,7 +1059,7 @@ function getDeboutDimensionContent(
         lifeTips.push({ id: "dl5", icon: "🚶", text: "Marche de 20 min après le repas du soir : décharge veineuse + récupération active" });
         lifeTips.push({ id: "dl6", icon: "🌙", text: "15 min de programme de récupération PAW chaque soir — le minimum pour récupérer" });
       } else if (flagSportImpact && q_d8_l >= 2) {
-        lifeTips.push({ id: "dl7", icon: "🏊", text: "Phase aiguë : remplace la course par natation ou vélo pendant 4 semaines" });
+        lifeTips.push({ id: "dl7", icon: "🏊", text: "Phase douloureuse : remplace la course par de la natation ou du vélo, selon l'avis de ton kiné" });
         lifeTips.push({ id: "dl8", icon: "👟", text: "Reprends la course avec de bonnes chaussures de running (différentes des chaussures de travail)" });
         lifeTips.push({ id: "dl9", icon: "🔄", text: "Alterne : 1 jour course, 1 jour faible impact" });
       } else {
