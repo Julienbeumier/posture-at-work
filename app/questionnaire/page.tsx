@@ -18,49 +18,49 @@ const T = {
 const CATEGORIES = [
   {
     index: 0, id: "cat-1",
-    title: "Ton setup", emoji: "💻",
+    title: "Ton setup", short: "Setup", emoji: "💻",
     color: "#2b5ce6", colorBg: "rgba(43,92,230,0.10)", colorBorder: "rgba(43,92,230,0.20)",
     selectedBg: "rgba(43,92,230,0.18)", selectedColor: "#a8c0ff",
     requiredQ: ["q1", "q3", "q4", "q5", "q5b", "q_eclairage"],
   },
   {
     index: 1, id: "cat-2",
-    title: "Tes douleurs", emoji: "🩺",
+    title: "Tes douleurs", short: "Douleurs", emoji: "🩺",
     color: "#e24b4a", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
     selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
     requiredQ: ["q6", "q7", "q8", "q9", "q10", "q11", "q12", "q12b", "q_irradiation", "q_douleur_nuit"],
   },
   {
     index: 2, id: "cat-3",
-    title: "Habitudes de travail", emoji: "⏱️",
+    title: "Habitudes de travail", short: "Habitudes", emoji: "⏱️",
     color: "#d4622a", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
     selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
     requiredQ: ["q14", "q14b", "q_laptop_hors_bureau"],
   },
   {
     index: 3, id: "cat-4",
-    title: "Sommeil & énergie", emoji: "🌙",
+    title: "Sommeil & énergie", short: "Sommeil", emoji: "🌙",
     color: "#2d6a4f", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
     selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
     requiredQ: ["q18", "q20", "q_ecrans_soir"],
   },
   {
     index: 4, id: "cat-5",
-    title: "Nutrition & énergie", emoji: "🍽️",
+    title: "Nutrition & énergie", short: "Nutrition", emoji: "🍽️",
     color: "#7c3aed", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
     selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
     requiredQ: ["qn1", "qn2", "qn3", "qn4"],
   },
   {
     index: 5, id: "cat-6",
-    title: "Ton corps", emoji: "🏃",
+    title: "Ton corps", short: "Corps", emoji: "🏃",
     color: "#1d9e75", colorBg: "rgba(29,158,117,0.08)", colorBorder: "rgba(29,158,117,0.18)",
     selectedBg: "rgba(29,158,117,0.18)", selectedColor: "#5dcaa5",
     requiredQ: ["q21", "q24"],
   },
   {
     index: 6, id: "cat-7",
-    title: "Ressenti global", emoji: "💭",
+    title: "Ressenti global", short: "Ressenti", emoji: "💭",
     color: "#7c3aed", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
     selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
     requiredQ: ["q25"],
@@ -632,7 +632,7 @@ function BureauQuestionnaire() {
                     minHeight: 32,
                   }}
                 >
-                  {cat.emoji} <span style={{ fontSize: 11 }}>{isDone ? "✓" : cat.title.split(" ")[0]}</span>
+                  {cat.emoji} <span style={{ fontSize: 11 }}>{isDone ? "✓" : cat.short}</span>
                 </button>
               );
             })}
