@@ -160,32 +160,25 @@ export function emailTip(d: TipTemplateData): { subject: string; html: string } 
   };
 }
 
-// ─── Template 3 — J+7 Témoignage ─────────────────────────────────────────────
+// ─── Template 3 — J+7 Plan d'action (3 gestes) ───────────────────────────────
 
-export interface TestimonialTemplateData {
+export interface ActionPlanTemplateData {
   firstname: string;
   email: string;
 }
 
-export function emailTestimonial(d: TestimonialTemplateData): { subject: string; html: string } {
+export function emailActionPlan(d: ActionPlanTemplateData): { subject: string; html: string } {
   const content = `
     <p style="color:rgba(220,220,245,0.55);font-size:14px;margin:0 0 24px;">Salut ${d.firstname} 👋</p>
-    <h1 style="color:#f0f0fa;font-size:22px;font-weight:900;margin:0 0 24px;">Marie a progressé de +23 pts en 3 semaines</h1>
+    <h1 style="color:#f0f0fa;font-size:22px;font-weight:900;margin:0 0 16px;">3 gestes simples à tester cette semaine</h1>
+    <p style="color:rgba(220,220,245,0.65);font-size:14px;line-height:1.7;margin:0 0 24px;">
+      Pas besoin de tout changer d&apos;un coup : ces trois petits ajustements sont faciles à mettre en place et ciblent les zones les plus sollicitées au bureau.
+    </p>
 
-    <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:28px;">
-      <tr><td style="padding:24px;background:rgba(116,198,157,0.07);border:0.5px solid rgba(116,198,157,0.20);border-radius:16px;">
-        <p style="color:rgba(220,220,245,0.80);font-size:15px;font-style:italic;line-height:1.7;margin:0 0 16px;">
-          "En 3 semaines j&apos;ai arrêté d&apos;avoir mal au cou. Juste en suivant les reco PAW — sans rien acheter."
-        </p>
-        <p style="color:#74c69d;font-size:12px;font-weight:700;margin:0;">— Marie A., UX Designer, Paris</p>
-      </td></tr>
-    </table>
-
-    <p style="color:#f0f0fa;font-size:15px;font-weight:800;margin:0 0 16px;">Ce qu'elle a changé :</p>
     ${[
-      "Elle a surélevé son écran avec 3 livres posés dessus",
-      "Elle fait la rétraction cervicale toutes les heures (30 sec)",
-      "Elle mange loin de son écran le midi — juste 20 min",
+      "Surélève ton écran (quelques livres suffisent) pour que le haut soit au niveau de tes yeux",
+      "Fais quelques rétractions cervicales dans la journée (30 sec) pour relâcher la nuque",
+      "Mange loin de ton écran le midi — une vraie pause de 20 min",
     ].map((a, i) => `
     <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:10px;">
       <tr>
@@ -195,12 +188,12 @@ export function emailTestimonial(d: TestimonialTemplateData): { subject: string;
     </table>`).join("")}
 
     <div style="text-align:center;margin-top:24px;">
-      ${btn("Refaire mon bilan pour voir ma progression →", `${APP_URL}/questionnaire`)}
+      ${btn("Refaire mon bilan pour suivre ma progression →", `${APP_URL}/questionnaire`)}
     </div>
   `;
 
   return {
-    subject: "Marie a amélioré son score de +23 pts — voici comment",
+    subject: "3 gestes simples à tester cette semaine",
     html: base(content, d.email),
   };
 }
@@ -360,7 +353,7 @@ export function emailPremium(d: { firstname: string; email: string }): { subject
         <p style="color:#a78bfa;font-size:13px;font-weight:700;margin:0 0 14px;text-transform:uppercase;letter-spacing:0.08em;">Ce que l&apos;analyse vidéo révèle</p>
         ${[
           ["🦆", "Position réelle de ta tête", "L'angle exact mesuré en temps réel"],
-          ["💪", "Tension cervicale mesurée", "En kg de charge sur ta nuque"],
+          ["💪", "Tension cervicale analysée", "À partir de ta posture en vidéo"],
           ["💻", "Setup bureau analysé", "Écran, chaise, distances — tout"],
           ["🛒", "Recommandations produits", "Personnalisées selon tes observations"],
         ].map(([emoji, title, desc]) => `

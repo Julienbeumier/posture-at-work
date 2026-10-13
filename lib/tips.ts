@@ -486,7 +486,7 @@ export const PRODUCTS: Record<string, Product> = {
     id: "magnesium",
     name: "Magnésium bisglycinate",
     reason: "Complément apprécié pour la détente musculaire et la récupération du soir — avis médical ou pharmacien conseillé avant de commencer",
-    url: "https://amzn.to/3RF8Hn1",
+    url: "https://www.amazon.fr/s?k=magnesium+bisglycinate&tag=postureatwork-21",
     priority: "moyenne",
     dimension: ["douleurs", "sommeil", "nutrition"],
     triggers: ["q_d_crampes_global !== non", "sommeil_score < 60"],

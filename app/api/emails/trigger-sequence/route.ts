@@ -130,7 +130,7 @@ function reminderJ1Email(firstName?: string): string {
     </div>
     <div style="background:#fff;border-radius:16px;padding:18px 22px;border:1px solid #e5e7eb;margin-bottom:20px;">
       <p style="font-size:13px;color:#374151;line-height:1.65;margin:0;">
-        💡 <strong>87% des douleurs au travail ont une cause identifiable.</strong>
+        💡 <strong>La plupart des douleurs liées au travail ont des causes identifiables.</strong>
         Le questionnaire PAW te dit exactement d'où ça vient — et quoi faire en priorité.
       </p>
     </div>

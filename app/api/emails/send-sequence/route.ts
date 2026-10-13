@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
-import { emailTip, emailTestimonial, emailRappel, emailPremium } from "@/lib/emails/templates";
+import { emailTip, emailActionPlan, emailRappel, emailPremium } from "@/lib/emails/templates";
 import { createClient } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -30,12 +30,12 @@ export async function POST(req: NextRequest) {
 
     if (step === 2) {
       const tips: Record<string, string> = {
-        setup: "Règle 20-20-20 : toutes les 20 min, regarde à 6m pendant 20 secondes",
-        pain: "Les cervicales supportent 5kg — ta tête en avant à 45° en charge 22kg",
-        habits: "2 minutes de marche toutes les heures réduisent le risque cardiovasculaire de 17%",
+        setup: "Règle 20-20-20 : toutes les 20 min, regarde au loin pendant 20 secondes pour reposer tes yeux",
+        pain: "Plus ta tête est inclinée vers l'avant, plus ta nuque travaille : garde le haut de l'écran au niveau des yeux",
+        habits: "Lève-toi quelques minutes toutes les 20 à 30 min : une micro-pause régulière soulage le dos et la nuque (repère EU-OSHA)",
         sleep_energy: "La caféine après 14h perturbe ton sommeil même si tu t'endors bien",
         nutrition: "Un déjeuner riche en protéines = énergie stable tout l'après-midi",
-        lifestyle: "Le stress chronique crée des tensions musculaires réelles et mesurables",
+        lifestyle: "Le stress prolongé entretient la tension musculaire : quelques minutes de respiration lente peuvent aider à relâcher",
       };
       const sc = scores ?? {};
       const lowest = Object.entries(tips).reduce((a, b) =>
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       });
       subject = r.subject; html = r.html;
     } else if (step === 3) {
-      const r = emailTestimonial({ email, firstname: name });
+      const r = emailActionPlan({ email, firstname: name });
       subject = r.subject; html = r.html;
     } else if (step === 4) {
       const r = emailRappel({ email, firstname: name });
