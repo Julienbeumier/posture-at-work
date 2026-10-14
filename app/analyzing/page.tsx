@@ -203,7 +203,7 @@ export default function AnalyzingPage() {
               setTimeout(() => runAnalysis(), 100);
             }}
               className="flex-1 py-3 rounded-xl text-sm font-bold text-white"
-              style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)" }}>
+              style={{ background: "linear-gradient(135deg, #8b5cf6, #4f46e5)" }}>
               Réessayer
             </button>
           </div>
@@ -247,7 +247,7 @@ export default function AnalyzingPage() {
               style={{ background: personneDone ? "rgba(116,198,157,0.10)" : "rgba(167,139,250,0.08)", border: `1px solid ${personneDone ? "rgba(116,198,157,0.3)" : "rgba(167,139,250,0.2)"}` }}>
               <span className="text-xl flex-shrink-0">{personneDone ? "✅" : "🧍"}</span>
               <div className="flex-1 text-left">
-                <p className="text-sm font-semibold" style={{ color: personneDone ? "#74c69d" : "rgba(220,220,245,0.85)" }}>
+                <p className="text-sm font-semibold" style={{ color: personneDone ? "#2ee6a6" : "rgba(220,220,245,0.85)" }}>
                   {personneDone ? "Posture analysée" : "Analyse posture…"}
                 </p>
               </div>
@@ -267,7 +267,7 @@ export default function AnalyzingPage() {
               style={{ background: posteDone ? "rgba(116,198,157,0.10)" : "rgba(59,130,246,0.08)", border: `1px solid ${posteDone ? "rgba(116,198,157,0.3)" : "rgba(59,130,246,0.2)"}` }}>
               <span className="text-xl flex-shrink-0">{posteDone ? "✅" : "🖥️"}</span>
               <div className="flex-1 text-left">
-                <p className="text-sm font-semibold" style={{ color: posteDone ? "#74c69d" : "rgba(220,220,245,0.85)" }}>
+                <p className="text-sm font-semibold" style={{ color: posteDone ? "#2ee6a6" : "rgba(220,220,245,0.85)" }}>
                   {posteDone ? "Setup analysé" : "Analyse setup…"}
                 </p>
               </div>

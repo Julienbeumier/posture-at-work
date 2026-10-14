@@ -13,11 +13,11 @@ const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-s
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const FEATURES = [
-  { emoji: "📋", title: "Conseils détaillés", color: "#7c9fff", bg: "rgba(43,92,230,0.08)", border: "rgba(43,92,230,0.20)", desc: "Des conseils vraiment personnalisés selon tes réponses. Pas des conseils génériques — des actions concrètes pour TON profil, TON métier, TES douleurs." },
-  { emoji: "🧘", title: "Hub exercices complet", color: "#74c69d", bg: "rgba(45,106,79,0.08)", border: "rgba(45,106,79,0.20)", desc: "30 exercices avec timer, guide vocal et programmes adaptés à ton métier. Au bureau, à la maison, en voiture, en voyage. 15 minutes par jour." },
-  { emoji: "🎥", title: "Analyse vidéo IA", color: "#a78bfa", bg: "rgba(124,58,237,0.08)", border: "rgba(124,58,237,0.20)", desc: "Claude Vision analyse ta posture réelle en 60 secondes. Détecte ce que tu ne vois pas toi-même. Rapport complet immédiat." },
-  { emoji: "📈", title: "Dashboard & historique", color: "#f4a261", bg: "rgba(212,98,42,0.08)", border: "rgba(212,98,42,0.20)", desc: "Suit ton évolution bilan après bilan. Graphique de progression, delta par dimension, streak d'exercices. Vois tes progrès." },
-  { emoji: "📄", title: "Rapport PDF pro", color: "#5dcaa5", bg: "rgba(29,158,117,0.08)", border: "rgba(29,158,117,0.20)", desc: "Un rapport complet et professionnel à télécharger. Questionnaire + analyse vidéo en un seul document. Partageable avec ton médecin ou kiné." },
+  { emoji: "📋", title: "Conseils détaillés", color: "#5b9dff", bg: "rgba(61,123,255,0.08)", border: "rgba(61,123,255,0.20)", desc: "Des conseils vraiment personnalisés selon tes réponses. Pas des conseils génériques — des actions concrètes pour TON profil, TON métier, TES douleurs." },
+  { emoji: "🧘", title: "Hub exercices complet", color: "#2ee6a6", bg: "rgba(45,106,79,0.08)", border: "rgba(45,106,79,0.20)", desc: "30 exercices avec timer, guide vocal et programmes adaptés à ton métier. Au bureau, à la maison, en voiture, en voyage. 15 minutes par jour." },
+  { emoji: "🎥", title: "Analyse vidéo IA", color: "#9b7bff", bg: "rgba(139,92,246,0.08)", border: "rgba(139,92,246,0.20)", desc: "Claude Vision analyse ta posture réelle en 60 secondes. Détecte ce que tu ne vois pas toi-même. Rapport complet immédiat." },
+  { emoji: "📈", title: "Dashboard & historique", color: "#ffb020", bg: "rgba(255,138,61,0.08)", border: "rgba(255,138,61,0.20)", desc: "Suit ton évolution bilan après bilan. Graphique de progression, delta par dimension, streak d'exercices. Vois tes progrès." },
+  { emoji: "📄", title: "Rapport PDF pro", color: "#3eddb0", bg: "rgba(29,158,117,0.08)", border: "rgba(29,158,117,0.20)", desc: "Un rapport complet et professionnel à télécharger. Questionnaire + analyse vidéo en un seul document. Partageable avec ton médecin ou kiné." },
   { emoji: "♾️", title: "Accès à vie", color: "#d4a22a", bg: "rgba(212,162,42,0.08)", border: "rgba(212,162,42,0.20)", desc: "Un seul paiement. Accès pour toujours. Pas d'abonnement, pas de surprise. Tous les futurs bilans inclus." },
 ];
 
@@ -170,7 +170,7 @@ export default function PremiumPage() {
 
       {/* Background blobs */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: "-10%", right: "-15%", width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(43,92,230,0.12) 0%, transparent 70%)", filter: "blur(60px)" }} />
+        <div style={{ position: "absolute", top: "-10%", right: "-15%", width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(61,123,255,0.12) 0%, transparent 70%)", filter: "blur(60px)" }} />
         <div style={{ position: "absolute", top: "40%", left: "-10%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(116,198,157,0.07) 0%, transparent 70%)", filter: "blur(50px)" }} />
         <div style={{ position: "absolute", bottom: "10%", right: "10%", width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.08) 0%, transparent 70%)", filter: "blur(50px)" }} />
       </div>
@@ -182,14 +182,14 @@ export default function PremiumPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: "center", paddingTop: 40 }}>
             <div style={{ borderRadius: 20, padding: "40px 32px", background: "rgba(45,106,79,0.12)", border: "0.5px solid rgba(116,198,157,0.30)", marginBottom: 24 }}>
               <div style={{ fontSize: 56, marginBottom: 16 }}>✨</div>
-              <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#74c69d", marginBottom: 12 }}>
+              <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#2ee6a6", marginBottom: 12 }}>
                 Tu as déjà le premium activé !
               </h1>
               <p style={{ fontFamily: T.b, fontSize: 15, color: "var(--t65)", lineHeight: 1.7, marginBottom: 28 }}>
                 Tous les accès sont débloqués.<br />Conseils détaillés, analyse vidéo IA, dashboard, rapport PDF — tout est à toi.
               </p>
               <Link href="/dashboard" style={{ textDecoration: "none" }}>
-                <div style={{ display: "inline-block", padding: "15px 32px", borderRadius: 100, background: "#74c69d", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--bg-primary)", cursor: "pointer" }}>
+                <div style={{ display: "inline-block", padding: "15px 32px", borderRadius: 100, background: "#2ee6a6", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--bg-primary)", cursor: "pointer" }}>
                   ← Retour au dashboard
                 </div>
               </Link>
@@ -217,8 +217,8 @@ export default function PremiumPage() {
             <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 28 : 36,
               color: "var(--text-primary)", marginBottom: 16, letterSpacing: "-0.5px", lineHeight: 1.2 }}>
               {hasBilanComplet
-                ? <>Tu as répondu aux questions.<br /><span style={{ color: "#2b5ce6" }}>Voici ce que tu n&apos;as pas encore vu.</span></>
-                : <>Ton corps mérite une analyse<br /><span style={{ color: "#2b5ce6" }}>vraiment complète.</span></>
+                ? <>Tu as répondu aux questions.<br /><span style={{ color: "#3d7bff" }}>Voici ce que tu n&apos;as pas encore vu.</span></>
+                : <>Ton corps mérite une analyse<br /><span style={{ color: "#3d7bff" }}>vraiment complète.</span></>
               }
             </h1>
 
@@ -233,7 +233,7 @@ export default function PremiumPage() {
                     background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
                     <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)" }}>{d.emoji} {d.label}</span>
                     <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 20,
-                      color: d.score < 50 ? "#f09595" : d.score < 70 ? "#f4a261" : "#74c69d",
+                      color: d.score < 50 ? "#ff6b6b" : d.score < 70 ? "#ffb020" : "#2ee6a6",
                       margin: "2px 0 0" }}>{d.score}/100</p>
                   </div>
                 ))}
@@ -265,19 +265,19 @@ export default function PremiumPage() {
             </p>
 
             <motion.div
-              animate={{ boxShadow: ["0 0 30px rgba(43,92,230,0.3)", "0 0 50px rgba(43,92,230,0.5)", "0 0 30px rgba(43,92,230,0.3)"] }}
+              animate={{ boxShadow: ["0 0 30px rgba(61,123,255,0.3)", "0 0 50px rgba(61,123,255,0.5)", "0 0 30px rgba(61,123,255,0.3)"] }}
               transition={{ duration: 2.5, repeat: Infinity }}
               onClick={handleCheckout}
               style={{ display: "inline-block", padding: "15px 32px", borderRadius: 100,
                 cursor: checkoutLoading ? "default" : "pointer",
                 opacity: checkoutLoading ? 0.7 : 1,
-                background: "linear-gradient(135deg, #2b5ce6, #7c3aed)",
+                background: "linear-gradient(135deg, #3d7bff, #8b5cf6)",
                 fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 12 }}>
               {checkoutLoading ? "Redirection vers le paiement…" : "🔓 Débloquer mon analyse complète — 19,99€ →"}
             </motion.div>
 
             {checkoutError && (
-              <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595",
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "#ff6b6b",
                 textAlign: "center", marginBottom: 8 }}>{checkoutError}</p>
             )}
 
@@ -299,15 +299,15 @@ export default function PremiumPage() {
                     icon: "🩺",
                     title: "Pourquoi tu as vraiment mal",
                     desc: "Le bilan complet croise tes douleurs avec ton sommeil, ta nutrition et ton stress — les 3 amplificateurs que le bilan partiel ne voit pas.",
-                    color: "#f09595",
-                    bg: "rgba(240,149,149,0.06)",
-                    border: "rgba(240,149,149,0.2)",
+                    color: "#ff6b6b",
+                    bg: "rgba(255,107,107,0.06)",
+                    border: "rgba(255,107,107,0.2)",
                   }] : []),
                   {
                     icon: "🌙",
                     title: "Ton score Sommeil — actuellement caché",
                     desc: "La récupération musculaire pendant le sommeil détermine si tes douleurs s'améliorent ou empirent. Tu vas enfin voir ton score.",
-                    color: "#74c69d",
+                    color: "#2ee6a6",
                     bg: "rgba(116,198,157,0.06)",
                     border: "rgba(116,198,157,0.2)",
                   },
@@ -315,17 +315,17 @@ export default function PremiumPage() {
                     icon: "🎥",
                     title: "Ta posture réelle — filmée et analysée par l'IA",
                     desc: "En 40 secondes, Claude Vision analyse ce que tu ne vois pas toi-même : projection de tête, épaules, lombaires. Aucun questionnaire ne peut faire ça.",
-                    color: "#a78bfa",
-                    bg: "rgba(124,58,237,0.06)",
-                    border: "rgba(124,58,237,0.2)",
+                    color: "#9b7bff",
+                    bg: "rgba(139,92,246,0.06)",
+                    border: "rgba(139,92,246,0.2)",
                   },
                   {
                     icon: "📋",
                     title: "Ton plan d'action personnalisé",
                     desc: "3 actions prioritaires pour cette semaine, basées sur TON profil. Pas des conseils génériques — des actions pour tes douleurs, ton métier, ton mode de vie.",
-                    color: "#7c9fff",
-                    bg: "rgba(43,92,230,0.06)",
-                    border: "rgba(43,92,230,0.2)",
+                    color: "#5b9dff",
+                    bg: "rgba(61,123,255,0.06)",
+                    border: "rgba(61,123,255,0.2)",
                   },
                 ].map((item, i) => (
                   <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
@@ -355,8 +355,8 @@ export default function PremiumPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 80px 80px", background: "rgba(255,255,255,0.03)" }}>
                 <div style={{ padding: "14px 20px", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "var(--t40)", letterSpacing: "0.05em" }}>FONCTIONNALITÉ</div>
                 <div style={{ padding: "14px 8px", textAlign: "center", fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "var(--t40)" }}>Bilan gratuit</div>
-                <div style={{ padding: "14px 8px", textAlign: "center", background: "rgba(43,92,230,0.08)", borderLeft: "0.5px solid rgba(43,92,230,0.15)" }}>
-                  <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#7c9fff" }}>Premium</span>
+                <div style={{ padding: "14px 8px", textAlign: "center", background: "rgba(61,123,255,0.08)", borderLeft: "0.5px solid rgba(61,123,255,0.15)" }}>
+                  <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#5b9dff" }}>Premium</span>
                   <br />
                   <span style={{ fontFamily: T.b, fontSize: 9, color: "#d4a22a" }}>19,99€ à vie</span>
                 </div>
@@ -371,7 +371,7 @@ export default function PremiumPage() {
                     <div key={ri} style={{ display: "grid", gridTemplateColumns: "1fr 80px 80px", borderTop: "0.5px solid rgba(255,255,255,0.04)", background: ri % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)" }}>
                       <div style={{ padding: "11px 20px", fontFamily: T.b, fontSize: 12, color: "var(--t65)" }}>{row.label}</div>
                       <div style={{ padding: "11px 8px", textAlign: "center" }}><Check val={row.free} /></div>
-                      <div style={{ padding: "11px 8px", textAlign: "center", background: "rgba(43,92,230,0.06)", borderLeft: "0.5px solid rgba(43,92,230,0.10)" }}><Check val={row.premium} /></div>
+                      <div style={{ padding: "11px 8px", textAlign: "center", background: "rgba(61,123,255,0.06)", borderLeft: "0.5px solid rgba(61,123,255,0.10)" }}><Check val={row.premium} /></div>
                     </div>
                   ))}
                 </div>
@@ -399,7 +399,7 @@ export default function PremiumPage() {
           {/* ── SECTION 5 : CTA INTERMÉDIAIRE ── */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ marginBottom: 48 }}>
             <div style={{ borderRadius: 20, padding: "32px 28px", textAlign: "center",
-              background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
+              background: "rgba(61,123,255,0.08)", border: "0.5px solid rgba(61,123,255,0.2)" }}>
               <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "var(--text-primary)", marginBottom: 8 }}>
                 Prêt à voir l&apos;analyse complète ?
               </p>
@@ -416,13 +416,13 @@ export default function PremiumPage() {
                 style={{ display: "inline-block", padding: "15px 32px", borderRadius: 100,
                   cursor: checkoutLoading ? "default" : "pointer",
                   opacity: checkoutLoading ? 0.7 : 1,
-                  background: "#2b5ce6",
-                  boxShadow: "0 4px 24px rgba(43,92,230,0.4)",
+                  background: "#3d7bff",
+                  boxShadow: "0 4px 24px rgba(61,123,255,0.4)",
                   fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff" }}>
                 {checkoutLoading ? "Redirection vers le paiement…" : "🔓 Débloquer maintenant — 19,99€ →"}
               </motion.div>
               {checkoutError && (
-                <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595",
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "#ff6b6b",
                   textAlign: "center", marginTop: 8 }}>{checkoutError}</p>
               )}
               <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", marginTop: 10 }}>
@@ -447,12 +447,12 @@ export default function PremiumPage() {
               style={{ display: "inline-block", padding: "15px 32px", borderRadius: 100,
                 cursor: checkoutLoading ? "default" : "pointer",
                 opacity: checkoutLoading ? 0.7 : 1,
-                background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.4)",
+                background: "#3d7bff", boxShadow: "0 4px 24px rgba(61,123,255,0.4)",
                 fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 12 }}>
               {checkoutLoading ? "Redirection vers le paiement…" : "🚀 Débloquer — 19,99€ à vie →"}
             </div>
             {checkoutError && (
-              <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595",
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "#ff6b6b",
                 textAlign: "center", marginBottom: 8 }}>{checkoutError}</p>
             )}
             <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t30)" }}>Paiement sécurisé · Sans abonnement</p>

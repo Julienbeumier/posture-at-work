@@ -19,9 +19,9 @@ const T = {
 };
 
 function scoreBadge(score: number) {
-  if (score >= 70) return { label: "Bonne santé", color: "#74c69d", bg: "rgba(116,198,157,0.12)", border: "rgba(116,198,157,0.3)" };
-  if (score >= 50) return { label: "À améliorer", color: "#f4a261", bg: "rgba(244,162,97,0.12)", border: "rgba(244,162,97,0.3)" };
-  return { label: "Attention requise", color: "#f09595", bg: "rgba(240,149,149,0.12)", border: "rgba(240,149,149,0.3)" };
+  if (score >= 70) return { label: "Bonne santé", color: "#2ee6a6", bg: "rgba(116,198,157,0.12)", border: "rgba(116,198,157,0.3)" };
+  if (score >= 50) return { label: "À améliorer", color: "#ffb020", bg: "rgba(255,176,32,0.12)", border: "rgba(255,176,32,0.3)" };
+  return { label: "Attention requise", color: "#ff6b6b", bg: "rgba(255,107,107,0.12)", border: "rgba(255,107,107,0.3)" };
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -100,9 +100,9 @@ const DIM_PROGRAM: Record<string, string> = {
 };
 
 const PRIORITY_STYLE = {
-  haute:   { color: "#f09595", label: "Priorité haute" },
-  moyenne: { color: "#f4a261", label: "Priorité moyenne" },
-  premium: { color: "#a78bfa", label: "Premium" },
+  haute:   { color: "#ff6b6b", label: "Priorité haute" },
+  moyenne: { color: "#ffb020", label: "Priorité moyenne" },
+  premium: { color: "#9b7bff", label: "Premium" },
 };
 
 function ProductCard({ p }: { p: Product }) {
@@ -118,14 +118,14 @@ function ProductCard({ p }: { p: Product }) {
           position: "absolute", top: 12, right: 12,
           padding: "2px 9px", borderRadius: 100,
           fontFamily: T.b, fontWeight: 700, fontSize: 10,
-          color: "#74c69d", background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)",
+          color: "#2ee6a6", background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)",
         }}>
           {p.badge}
         </span>
       )}
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
         {/* Icône Amazon */}
-        <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(43,92,230,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
+        <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(61,123,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
           🛒
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -148,7 +148,7 @@ function ProductCard({ p }: { p: Product }) {
               rel="noopener noreferrer"
               style={{
                 padding: "8px 16px", borderRadius: 100, textDecoration: "none",
-                background: "#2b5ce6", boxShadow: "0 2px 12px rgba(43,92,230,0.35)",
+                background: "#3d7bff", boxShadow: "0 2px 12px rgba(61,123,255,0.35)",
                 fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#fff", cursor: "pointer", flexShrink: 0,
               }}
             >
@@ -340,7 +340,7 @@ export default function DimensionPage() {
       <main style={{ minHeight: "100vh", background: c.mainBg, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
         <div style={{ textAlign: "center" }}>
           <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", marginBottom: 12 }}>Dimension inconnue</p>
-          <Link href="/results" style={{ textDecoration: "none", color: "#7c9fff", fontFamily: T.b, fontSize: 14 }}>← Retour aux résultats</Link>
+          <Link href="/results" style={{ textDecoration: "none", color: "#5b9dff", fontFamily: T.b, fontSize: 14 }}>← Retour aux résultats</Link>
         </div>
       </main>
     );
@@ -372,7 +372,7 @@ export default function DimensionPage() {
             Fais ton bilan en 5 minutes pour découvrir ton score {m.label.toLowerCase()} et recevoir des conseils vraiment personnalisés.
           </p>
           <Link href="/onboarding" style={{ textDecoration: "none" }}>
-            <div style={{ padding: "14px 0", borderRadius: 100, background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.4)", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 14 }}>
+            <div style={{ padding: "14px 0", borderRadius: 100, background: "#3d7bff", boxShadow: "0 4px 24px rgba(61,123,255,0.4)", fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 14 }}>
               Faire mon bilan maintenant →
             </div>
           </Link>
@@ -391,7 +391,7 @@ export default function DimensionPage() {
     <main style={{ minHeight: "100vh", background: c.mainBg, paddingBottom: 80, position: "relative" }}>
       <BackgroundBlobs blobs={[
         { top: "-5%", right: "-5%", color: `${meta.colorBg}`, size: 500 },
-        { bottom: "-10%", left: "-5%", color: "rgba(43,92,230,0.08)", size: 400 },
+        { bottom: "-10%", left: "-5%", color: "rgba(61,123,255,0.08)", size: 400 },
       ]} />
 
       <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
@@ -409,7 +409,7 @@ export default function DimensionPage() {
         {isExampleMode && (
           <div style={{
             marginBottom: 20, padding: "10px 16px", borderRadius: 12,
-            background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.20)",
+            background: "rgba(61,123,255,0.10)", border: "0.5px solid rgba(61,123,255,0.20)",
             display: "flex", alignItems: "center", gap: 8,
           }}>
             <span style={{ fontSize: 14 }}>📋</span>
@@ -478,7 +478,7 @@ export default function DimensionPage() {
           const jc = getJobContent(jobType);
           return (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
-              style={{ borderRadius: 16, padding: "14px 18px", marginBottom: 16, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)", display: "flex", alignItems: "flex-start", gap: 10 }}>
+              style={{ borderRadius: 16, padding: "14px 18px", marginBottom: 16, background: "rgba(61,123,255,0.08)", border: "0.5px solid rgba(61,123,255,0.18)", display: "flex", alignItems: "flex-start", gap: 10 }}>
               <span style={{ fontSize: 20, flexShrink: 0 }}>{jc.emoji}</span>
               <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t70)", lineHeight: 1.65, margin: 0 }}>{jc.intro}</p>
             </motion.div>
@@ -538,7 +538,7 @@ export default function DimensionPage() {
             <SectionTitle>📋 Ta checklist prioritaire</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {advice.checklist.map((item, i) => {
-                const pColor = item.priority === "urgent" ? "#f09595" : item.priority === "important" ? "#f4a261" : "#74c69d";
+                const pColor = item.priority === "urgent" ? "#ff6b6b" : item.priority === "important" ? "#ffb020" : "#2ee6a6";
                 const pLabel = item.priority === "urgent" ? "Urgent" : item.priority === "important" ? "Important" : "Optionnel";
                 return (
                   <div key={i} style={{ borderRadius: 14, padding: "14px 16px", background: `${pColor}0d`, border: `0.5px solid ${pColor}30` }}>
@@ -561,14 +561,14 @@ export default function DimensionPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18 }}
-            style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(240,149,149,0.08)", border: "0.5px solid rgba(240,149,149,0.28)" }}
+            style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(255,107,107,0.08)", border: "0.5px solid rgba(255,107,107,0.28)" }}
           >
             <SectionTitle>🚨 Points d'attention médicale</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {advice.redFlags.map((flag, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                   <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>⚠️</span>
-                  <p style={{ fontFamily: T.b, fontSize: 13, color: "#f09595", lineHeight: 1.65, margin: 0 }}>{flag}</p>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "#ff6b6b", lineHeight: 1.65, margin: 0 }}>{flag}</p>
                 </div>
               ))}
             </div>
@@ -618,7 +618,7 @@ export default function DimensionPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.27 }}
-            style={{ borderRadius: 14, padding: "12px 16px", marginBottom: 16, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)" }}
+            style={{ borderRadius: 14, padding: "12px 16px", marginBottom: 16, background: "rgba(61,123,255,0.06)", border: "0.5px solid rgba(61,123,255,0.18)" }}
           >
             <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, margin: 0 }}>{advice.disclaimer}</p>
           </motion.div>
@@ -635,9 +635,9 @@ export default function DimensionPage() {
             <SectionTitle>🔄 Tes rituels quotidiens</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {advice.rituals.map((ritual, i) => {
-                const momentColors: Record<string, string> = { matin: "#f4a261", "journée": "#7c9fff", soir: "#74c69d", toujours: "#a78bfa" };
+                const momentColors: Record<string, string> = { matin: "#ffb020", "journée": "#5b9dff", soir: "#2ee6a6", toujours: "#9b7bff" };
                 const momentEmojis: Record<string, string> = { matin: "🌅", "journée": "☀️", soir: "🌙", toujours: "🔄" };
-                const mColor = momentColors[ritual.moment] ?? "#7c9fff";
+                const mColor = momentColors[ritual.moment] ?? "#5b9dff";
                 const mEmoji = momentEmojis[ritual.moment] ?? "🔄";
                 return (
                   <div key={i} style={{ borderRadius: 14, padding: "14px 16px", background: `${mColor}0d`, border: `0.5px solid ${mColor}28` }}>
@@ -667,8 +667,8 @@ export default function DimensionPage() {
             <SectionTitle>🍽️ Exemples de repas adaptés</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {advice.mealExamples.map((meal, i) => {
-                const mealColors: Record<string, string> = { "petit-déjeuner": "#f4a261", "déjeuner": "#7c9fff", collation: "#a78bfa" };
-                const mColor = mealColors[meal.moment] ?? "#7c9fff";
+                const mealColors: Record<string, string> = { "petit-déjeuner": "#ffb020", "déjeuner": "#5b9dff", collation: "#9b7bff" };
+                const mColor = mealColors[meal.moment] ?? "#5b9dff";
                 return (
                   <div key={i} style={{ borderRadius: 14, padding: "14px 16px", background: `${mColor}0d`, border: `0.5px solid ${mColor}28` }}>
                     <span style={{ padding: "2px 8px", borderRadius: 100, background: `${mColor}20`, fontFamily: T.b, fontSize: 10, fontWeight: 600, color: mColor, display: "inline-block", marginBottom: 8 }}>
@@ -689,13 +689,13 @@ export default function DimensionPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.31 }}
-            style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(240,149,149,0.06)", border: "0.5px solid rgba(240,149,149,0.22)" }}
+            style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(255,107,107,0.06)", border: "0.5px solid rgba(255,107,107,0.22)" }}
           >
             <SectionTitle>⛔ À éviter absolument</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {advice.avoidItems.map((item, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                  <span style={{ color: "#f09595", fontSize: 13, flexShrink: 0, marginTop: 2 }}>✕</span>
+                  <span style={{ color: "#ff6b6b", fontSize: 13, flexShrink: 0, marginTop: 2 }}>✕</span>
                   <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{item}</p>
                 </div>
               ))}
@@ -710,7 +710,7 @@ export default function DimensionPage() {
           transition={{ delay: 0.28 }}
           style={{
             borderRadius: 20, padding: "20px 22px", marginBottom: 16,
-            background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)",
+            background: "rgba(61,123,255,0.08)", border: "0.5px solid rgba(61,123,255,0.18)",
           }}
         >
           <SectionTitle>⚡ Actions immédiates</SectionTitle>
@@ -731,7 +731,7 @@ export default function DimensionPage() {
                 >
                   <div style={{
                     width: 22, height: 22, borderRadius: 6, flexShrink: 0,
-                    background: isChecked ? "#74c69d" : "rgba(255,255,255,0.06)",
+                    background: isChecked ? "#2ee6a6" : "rgba(255,255,255,0.06)",
                     border: isChecked ? "none" : "0.5px solid rgba(255,255,255,0.15)",
                     display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
@@ -770,7 +770,7 @@ export default function DimensionPage() {
             <Link href={`/mobilite?program=${displayProgramId}`} style={{ textDecoration: "none" }}>
               <div style={{
                 padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-                background: "#2b5ce6", boxShadow: "0 4px 20px rgba(43,92,230,0.35)",
+                background: "#3d7bff", boxShadow: "0 4px 20px rgba(61,123,255,0.35)",
                 fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
               }}>
                 Lancer le programme complet →
@@ -808,7 +808,7 @@ export default function DimensionPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {facts.map((fact, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                    <span style={{ color: "#a78bfa", fontSize: 14, flexShrink: 0, marginTop: 1 }}>•</span>
+                    <span style={{ color: "#9b7bff", fontSize: 14, flexShrink: 0, marginTop: 1 }}>•</span>
                     <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.6, margin: 0 }}>{fact}</p>
                   </div>
                 ))}

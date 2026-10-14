@@ -22,7 +22,7 @@ export default function AdminPage() {
     <main style={{ minHeight: "100vh", background: "var(--main-bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
       <div style={{ maxWidth: 320, width: "100%" }}>
         <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "var(--text-primary)", textAlign: "center", marginBottom: 20 }}>
-          PAW<span style={{ color: "#2b5ce6" }}>.</span> Admin
+          PAW<span style={{ color: "#3d7bff" }}>.</span> Admin
         </p>
         <input type="password" placeholder="Mot de passe admin" value={password}
           onChange={e => setPassword(e.target.value)}
@@ -30,7 +30,7 @@ export default function AdminPage() {
           style={{ width: "100%", padding: "12px 14px", borderRadius: 12, outline: "none", marginBottom: 10, boxSizing: "border-box",
             background: "var(--bg-card2)", border: "1px solid var(--border2)", color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }} />
         <button onClick={() => setAuthenticated(password === ADMIN_PASSWORD)}
-          style={{ width: "100%", padding: "13px 0", borderRadius: 100, border: "none", background: "#2b5ce6", color: "#fff",
+          style={{ width: "100%", padding: "13px 0", borderRadius: 100, border: "none", background: "#3d7bff", color: "#fff",
             fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
           Accéder →
         </button>
@@ -57,7 +57,7 @@ export default function AdminPage() {
     <main style={{ minHeight: "100vh", background: "var(--main-bg)", padding: "80px 24px 40px" }}>
       <div style={{ maxWidth: 560, margin: "0 auto" }}>
         <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "var(--text-primary)", marginBottom: 6 }}>
-          PAW<span style={{ color: "#2b5ce6" }}>.</span> Administration
+          PAW<span style={{ color: "#3d7bff" }}>.</span> Administration
         </p>
         <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", marginBottom: 28 }}>
           Créer une nouvelle entreprise B2B
@@ -103,13 +103,13 @@ export default function AdminPage() {
                   const plan = n < 50 ? "pme" : n < 150 ? "croissance" : "entreprise";
                   setForm(prev => ({ ...prev, maxEmployees: n, plan }));
                 }}
-                style={{ flex: 1, accentColor: "#2b5ce6", cursor: "pointer" }} />
+                style={{ flex: 1, accentColor: "#3d7bff", cursor: "pointer" }} />
             </div>
 
             <div style={{ padding: "10px 14px", borderRadius: 10,
-              background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
+              background: "rgba(61,123,255,0.08)", border: "0.5px solid rgba(61,123,255,0.2)" }}>
               {form.maxEmployees >= 150 ? (
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "#c4b5fd", margin: 0 }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "#b79cff", margin: 0 }}>
                   Sur devis — 150+ employés
                 </p>
               ) : (
@@ -117,7 +117,7 @@ export default function AdminPage() {
                   <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)" }}>
                     {form.maxEmployees} × {form.maxEmployees < 50 ? "25" : "20"}€/an
                   </span>
-                  <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#2b5ce6" }}>
+                  <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#3d7bff" }}>
                     {form.maxEmployees < 50
                       ? form.maxEmployees * 25
                       : form.maxEmployees * 20}€/an
@@ -130,7 +130,7 @@ export default function AdminPage() {
 
         <button onClick={handleCreate} disabled={loading || !form.companyName || !form.contactEmail}
           style={{ width: "100%", marginTop: 20, padding: "15px 0", borderRadius: 100, border: "none",
-            background: form.companyName && form.contactEmail ? "#2b5ce6" : "var(--bg-card2)",
+            background: form.companyName && form.contactEmail ? "#3d7bff" : "var(--bg-card2)",
             color: form.companyName && form.contactEmail ? "#fff" : "var(--t40)",
             fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer", opacity: loading ? 0.7 : 1 }}>
           {loading ? "Création en cours…" : "Créer l'entreprise →"}
@@ -141,16 +141,16 @@ export default function AdminPage() {
             background: result.success ? "rgba(116,198,157,0.08)" : "rgba(226,75,74,0.08)",
             border: `0.5px solid ${result.success ? "rgba(116,198,157,0.25)" : "rgba(226,75,74,0.25)"}` }}>
             <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
-              color: result.success ? "#74c69d" : "#f09595", margin: "0 0 8px" }}>
+              color: result.success ? "#2ee6a6" : "#ff6b6b", margin: "0 0 8px" }}>
               {result.success ? "✅ Entreprise créée !" : "❌ Erreur"}
             </p>
             <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", margin: 0, lineHeight: 1.6 }}>
               {result.message}
             </p>
             {result.success && result.inviteCode && (
-              <div style={{ marginTop: 10, padding: "10px 12px", borderRadius: 10, background: "rgba(43,92,230,0.08)" }}>
+              <div style={{ marginTop: 10, padding: "10px 12px", borderRadius: 10, background: "rgba(61,123,255,0.08)" }}>
                 <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: "0 0 4px" }}>Lien d&apos;invitation employés :</p>
-                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#7c9fff", margin: 0 }}>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#5b9dff", margin: 0 }}>
                   postureatwork.com/join/{result.inviteCode}
                 </p>
                 <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: "4px 0 0" }}>

@@ -1,7 +1,7 @@
 export default function BackgroundBlobs({
   blobs = [
-    { top: "-10%", right: "-5%", color: "rgba(43,92,230,0.18)", size: 500 },
-    { top: "40%", left: "-8%", color: "rgba(124,58,237,0.12)", size: 400 },
+    { top: "-10%", right: "-5%", color: "rgba(61,123,255,0.18)", size: 500 },
+    { top: "40%", left: "-8%", color: "rgba(139,92,246,0.12)", size: 400 },
     { bottom: "-10%", right: "20%", color: "rgba(29,158,117,0.10)", size: 450 },
   ],
 }: {

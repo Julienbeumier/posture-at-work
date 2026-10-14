@@ -40,7 +40,7 @@ export default function ResetPasswordPage() {
       <div style={{ width: "100%", maxWidth: 380 }}>
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", marginBottom: 6 }}>
-            PAW<span style={{ color: "#2b5ce6" }}>.</span>
+            PAW<span style={{ color: "#3d7bff" }}>.</span>
           </p>
           <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "var(--text-primary)", marginBottom: 6 }}>Nouveau mot de passe</h1>
           <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)" }}>Choisis un mot de passe sécurisé</p>
@@ -56,13 +56,13 @@ export default function ResetPasswordPage() {
             style={{ padding: "12px 14px", borderRadius: 12, outline: "none",
               background: "var(--bg-card2)", border: "1px solid var(--border2)",
               color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }} />
-          {error && <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595", textAlign: "center" }}>{error}</p>}
+          {error && <p style={{ fontFamily: T.b, fontSize: 12, color: "#ff6b6b", textAlign: "center" }}>{error}</p>}
           <button onClick={handleReset} disabled={!password || !confirm || loading}
             style={{ padding: "14px 0", borderRadius: 100, border: "none",
-              background: password && confirm ? "#2b5ce6" : "var(--bg-card2)",
+              background: password && confirm ? "#3d7bff" : "var(--bg-card2)",
               color: password && confirm ? "#fff" : "var(--t40)",
               fontFamily: T.h, fontWeight: 800, fontSize: 15, cursor: "pointer",
-              boxShadow: password && confirm ? "0 4px 24px rgba(43,92,230,0.35)" : "none",
+              boxShadow: password && confirm ? "0 4px 24px rgba(61,123,255,0.35)" : "none",
               opacity: loading ? 0.7 : 1, transition: "all 0.2s" }}>
             {loading ? "Mise à jour…" : "Mettre à jour →"}
           </button>

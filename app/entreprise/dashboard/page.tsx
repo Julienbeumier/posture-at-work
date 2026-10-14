@@ -12,12 +12,12 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
 const DIM_META: Record<string, { label: string; emoji: string; color: string; type: "employeur" | "employe" }> = {
-  setup:        { label: "Setup & ergonomie",  emoji: "💻", color: "#7c9fff",  type: "employeur" },
-  habits:       { label: "Habitudes de travail", emoji: "⏱️", color: "#f4a261", type: "employeur" },
-  pain:         { label: "Douleurs",            emoji: "🩺", color: "#f09595", type: "employeur" },
-  sleep_energy: { label: "Sommeil & énergie",   emoji: "🌙", color: "#74c69d", type: "employe" },
-  nutrition:    { label: "Nutrition",           emoji: "🍽️", color: "#a78bfa", type: "employe" },
-  lifestyle:    { label: "Mode de vie actif",   emoji: "🏃", color: "#5dcaa5", type: "employe" },
+  setup:        { label: "Setup & ergonomie",  emoji: "💻", color: "#5b9dff",  type: "employeur" },
+  habits:       { label: "Habitudes de travail", emoji: "⏱️", color: "#ffb020", type: "employeur" },
+  pain:         { label: "Douleurs",            emoji: "🩺", color: "#ff6b6b", type: "employeur" },
+  sleep_energy: { label: "Sommeil & énergie",   emoji: "🌙", color: "#2ee6a6", type: "employe" },
+  nutrition:    { label: "Nutrition",           emoji: "🍽️", color: "#9b7bff", type: "employe" },
+  lifestyle:    { label: "Mode de vie actif",   emoji: "🏃", color: "#3eddb0", type: "employe" },
 };
 
 const ACTIONS_BY_DIM: Record<string, { action: string; impact: string }> = {
@@ -47,7 +47,7 @@ const EXERCISES_BY_PROFILE: Record<string, { name: string; duration: string; des
 const RESOURCES = [
   {
     category: "Ergonomie bureau",
-    color: "#2b5ce6",
+    color: "#3d7bff",
     items: [
       {
         title: "Ergonomie du poste de travail — réglages et posture",
@@ -67,7 +67,7 @@ const RESOURCES = [
   },
   {
     category: "Manutention & postures debout",
-    color: "#d4622a",
+    color: "#ff8a3d",
     items: [
       {
         title: "5 principes de manutention manuelle — série complète",
@@ -87,7 +87,7 @@ const RESOURCES = [
   },
   {
     category: "Guides pratiques",
-    color: "#1d9e75",
+    color: "#12c48b",
     items: [
       {
         title: "Guide ergonomie du poste de travail",
@@ -157,7 +157,7 @@ const EXERCISES_BY_ISSUE: Record<string, { name: string; duration: string; desc:
 };
 
 function scoreColor(s: number) {
-  return s >= 70 ? "#74c69d" : s >= 50 ? "#f4a261" : "#f09595";
+  return s >= 70 ? "#2ee6a6" : s >= 50 ? "#ffb020" : "#ff6b6b";
 }
 
 function scoreZone(s: number) {
@@ -267,15 +267,15 @@ function analyzeEmployee(emp: EmployeeRow): {
 
   if (emp.job_type === "bureau") {
     if (a.q1 === "laptop" && a.q_double_ecran === "laptop_seul") {
-      flags.push({ label: "Laptop seul sans rehausseur", color: "#f09595", severity: "critical" });
+      flags.push({ label: "Laptop seul sans rehausseur", color: "#ff6b6b", severity: "critical" });
       mainIssues.push("Laptop seul — flexion de nuque prolongée");
       recommendations.push("Rehausseur d'écran + clavier externe indispensable");
     }
     if (a.q3 === "no" || a.q_hauteur_bureau === "trop_bas") {
-      flags.push({ label: "Écran trop bas", color: "#f09595", severity: "critical" });
+      flags.push({ label: "Écran trop bas", color: "#ff6b6b", severity: "critical" });
     }
     if (a.q5b === "couch" || a.q5b === "fixed") {
-      flags.push({ label: "Chaise inadaptée", color: "#f4a261", severity: "warning" });
+      flags.push({ label: "Chaise inadaptée", color: "#ffb020", severity: "warning" });
       mainIssues.push("Chaise sans soutien lombaire — posture effondrée en fin de journée");
       recommendations.push("Coussin lombaire ou chaise ergonomique réglable");
     }
@@ -284,58 +284,58 @@ function analyzeEmployee(emp: EmployeeRow): {
     const dos = Number(a.q8 ?? 0);
     const poignets = Number(a.q9 ?? 0);
     if (nuque >= 3) {
-      flags.push({ label: `Douleurs nuque ${nuque}/5`, color: "#f09595", severity: nuque >= 4 ? "critical" : "warning" });
+      flags.push({ label: `Douleurs nuque ${nuque}/5`, color: "#ff6b6b", severity: nuque >= 4 ? "critical" : "warning" });
       mainIssues.push(`Douleurs cervicales significatives (${nuque}/5)`);
     }
     if (epaules >= 3) {
-      flags.push({ label: `Douleurs épaules ${epaules}/5`, color: "#f09595", severity: "warning" });
+      flags.push({ label: `Douleurs épaules ${epaules}/5`, color: "#ff6b6b", severity: "warning" });
       mainIssues.push(`Douleurs épaules (${epaules}/5) — enroulement postural probable`);
     }
     if (dos >= 3) {
-      flags.push({ label: `Douleurs lombaires ${dos}/5`, color: "#f4a261", severity: "warning" });
+      flags.push({ label: `Douleurs lombaires ${dos}/5`, color: "#ffb020", severity: "warning" });
       mainIssues.push(`Lombalgies (${dos}/5) — station assise prolongée probable facteur aggravant`);
       recommendations.push("Pauses actives toutes les 45 min + coussin lombaire");
     }
     if (poignets >= 3) {
-      flags.push({ label: `Douleurs poignets ${poignets}/5`, color: "#f4a261", severity: "warning" });
+      flags.push({ label: `Douleurs poignets ${poignets}/5`, color: "#ffb020", severity: "warning" });
       recommendations.push("Souris verticale à essayer (poignets douloureux)");
     }
     if (a.q_irradiation_bras === "coude" || a.q_irradiation_bras === "main") {
-      flags.push({ label: "Irradiation bras", color: "#e24b4a", severity: "critical" });
+      flags.push({ label: "Irradiation bras", color: "#ff4d5e", severity: "critical" });
       mainIssues.push("⚠️ Irradiation dans le bras — consultation kiné recommandée");
     }
     if (a.q_fourmillements === "permanent" || a.q_fourmillements === "travail") {
-      flags.push({ label: "Fourmillements", color: "#e24b4a", severity: "critical" });
+      flags.push({ label: "Fourmillements", color: "#ff4d5e", severity: "critical" });
       mainIssues.push("Fourmillements — avis médical ou kiné conseillé");
     }
     if (a.q_douleur_nuit === "reveille" || a.q_douleur_nuit === "souvent") {
-      flags.push({ label: "Douleurs nocturnes", color: "#e24b4a", severity: "critical" });
+      flags.push({ label: "Douleurs nocturnes", color: "#ff4d5e", severity: "critical" });
       mainIssues.push("⚠️ Douleurs nocturnes — avis médical ou kiné conseillé");
     }
     const heures = Number(a.q13 ?? 0);
     if (heures >= 9) {
-      flags.push({ label: `${heures}h/jour assis`, color: "#f4a261", severity: "warning" });
+      flags.push({ label: `${heures}h/jour assis`, color: "#ffb020", severity: "warning" });
       mainIssues.push(`${heures}h assis par jour — sédentarité excessive`);
       recommendations.push("Alarme toutes les 45 min pour se lever");
     }
-    if (a.q14 === "never") flags.push({ label: "Aucune pause active", color: "#f09595", severity: "critical" });
+    if (a.q14 === "never") flags.push({ label: "Aucune pause active", color: "#ff6b6b", severity: "critical" });
     if (a.q14b === "none") {
-      flags.push({ label: "Aucune activité physique", color: "#f4a261", severity: "warning" });
+      flags.push({ label: "Aucune activité physique", color: "#ffb020", severity: "warning" });
       recommendations.push("Encourager activité physique minimale 2x/semaine");
     }
     const stress = Number(a.q_stress_travail ?? 0);
     if (stress >= 4) {
-      flags.push({ label: `Stress élevé ${stress}/5`, color: "#a78bfa", severity: "warning" });
+      flags.push({ label: `Stress élevé ${stress}/5`, color: "#9b7bff", severity: "warning" });
       mainIssues.push(`Stress chronique élevé (${stress}/5) — le stress entretient la tension musculaire`);
     }
     const sommeil = Number(a.q17 ?? 7);
     if (sommeil <= 5) {
-      flags.push({ label: `${sommeil}h de sommeil`, color: "#f09595", severity: "critical" });
+      flags.push({ label: `${sommeil}h de sommeil`, color: "#ff6b6b", severity: "critical" });
       mainIssues.push(`Manque de sommeil (${sommeil}h) — récupération musculaire insuffisante`);
     }
-    if (a.qn1 === "screen") flags.push({ label: "Repas devant écran", color: "#f4a261", severity: "info" });
+    if (a.qn1 === "screen") flags.push({ label: "Repas devant écran", color: "#ffb020", severity: "info" });
     if (a.qn2 === "crash") {
-      flags.push({ label: "Crash post-repas", color: "#f4a261", severity: "warning" });
+      flags.push({ label: "Crash post-repas", color: "#ffb020", severity: "warning" });
       recommendations.push("Pause déjeuner loin de l'écran — repas protéiné");
     }
     const profileParts: string[] = [];
@@ -356,39 +356,39 @@ function analyzeEmployee(emp: EmployeeRow): {
     const epaules = Number(a.q_d_doul_epaules ?? 0);
     const pieds = Number(a.q_d_doul_pieds ?? 0);
     if (dos >= 3) {
-      flags.push({ label: `Douleurs dos ${dos}/5`, color: "#f09595", severity: dos >= 4 ? "critical" : "warning" });
+      flags.push({ label: `Douleurs dos ${dos}/5`, color: "#ff6b6b", severity: dos >= 4 ? "critical" : "warning" });
       mainIssues.push(`Lombalgies significatives (${dos}/5) — manutention et station debout prolongée`);
       recommendations.push("Formation gestes et postures de levage");
     }
     if (jambes >= 3) {
-      flags.push({ label: `Jambes lourdes ${jambes}/5`, color: "#f4a261", severity: "warning" });
+      flags.push({ label: `Jambes lourdes ${jambes}/5`, color: "#ffb020", severity: "warning" });
       mainIssues.push(`Fatigue des membres inférieurs (${jambes}/5) — fatigue des jambes à surveiller`);
       recommendations.push("Chaussettes de compression + tapis anti-fatigue");
     }
     if (epaules >= 3) {
-      flags.push({ label: `Épaules ${epaules}/5`, color: "#f4a261", severity: "warning" });
+      flags.push({ label: `Épaules ${epaules}/5`, color: "#ffb020", severity: "warning" });
       mainIssues.push(`Douleurs épaules (${epaules}/5) — gestes répétitifs ou port de charges en hauteur`);
     }
     if (pieds >= 3) {
-      flags.push({ label: `Douleurs pieds ${pieds}/5`, color: "#f4a261", severity: "warning" });
+      flags.push({ label: `Douleurs pieds ${pieds}/5`, color: "#ffb020", severity: "warning" });
       recommendations.push("Semelles orthopédiques de travail");
     }
     if (a.q_d_posture_levage === "mauvaise") {
-      flags.push({ label: "Mauvaise technique levage", color: "#e24b4a", severity: "critical" });
+      flags.push({ label: "Mauvaise technique levage", color: "#ff4d5e", severity: "critical" });
       mainIssues.push("⚠️ Technique de levage incorrecte — risque lombalgie aiguë");
       recommendations.push("Formation urgente gestes et postures — risque arrêt de travail");
     }
     if (a.q_d_tapis === "non") {
-      flags.push({ label: "Pas de tapis anti-fatigue", color: "#f4a261", severity: "warning" });
+      flags.push({ label: "Pas de tapis anti-fatigue", color: "#ffb020", severity: "warning" });
       recommendations.push("Tapis anti-fatigue au poste fixe — impact immédiat");
     }
     const sommeil = Number(a.q_d_sommeil ?? 7);
     if (sommeil <= 5) {
-      flags.push({ label: `${sommeil}h de sommeil`, color: "#f09595", severity: "critical" });
+      flags.push({ label: `${sommeil}h de sommeil`, color: "#ff6b6b", severity: "critical" });
       mainIssues.push(`Manque de sommeil (${sommeil}h) — récupération insuffisante après journée physique`);
     }
     if (a.q_d_jambes_nuit === "souvent") {
-      flags.push({ label: "Jambes agitées la nuit", color: "#a78bfa", severity: "warning" });
+      flags.push({ label: "Jambes agitées la nuit", color: "#9b7bff", severity: "warning" });
       mainIssues.push("Jambes agitées la nuit — à signaler au médecin si cela persiste");
     }
     const profileParts: string[] = ["Poste debout"];
@@ -626,9 +626,9 @@ function analyzeCollectiveVideo(employees: EmployeeRow[], assessed: EmployeeRow[
 }
 
 const SEVERITY_STYLE: Record<TeamInsight["severity"], { color: string; label: string }> = {
-  critique: { color: "#f09595", label: "Priorité haute" },
-  eleve:    { color: "#f4a261", label: "À traiter" },
-  modere:   { color: "#74c69d", label: "À surveiller" },
+  critique: { color: "#ff6b6b", label: "Priorité haute" },
+  eleve:    { color: "#ffb020", label: "À traiter" },
+  modere:   { color: "#2ee6a6", label: "À surveiller" },
 };
 
 function TeamInsightsBlock({ insights, total, c, isMobile }: {
@@ -641,8 +641,8 @@ function TeamInsightsBlock({ insights, total, c, isMobile }: {
   const shown = insights.slice(0, 6);
 
   return (
-    <div style={{ borderRadius: 20, overflow: "hidden", border: "1px solid rgba(43,92,230,0.35)", marginBottom: 16, background: c.bgCard }}>
-      <div style={{ padding: isMobile ? "16px" : "20px 24px", background: "rgba(43,92,230,0.10)", borderBottom: `0.5px solid ${c.border}` }}>
+    <div style={{ borderRadius: 20, overflow: "hidden", border: "1px solid rgba(61,123,255,0.35)", marginBottom: 16, background: c.bgCard }}>
+      <div style={{ padding: isMobile ? "16px" : "20px 24px", background: "rgba(61,123,255,0.10)", borderBottom: `0.5px solid ${c.border}` }}>
         <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: c.textPrimary, margin: "0 0 4px" }}>
           🎯 Ce qu&apos;on a vu chez vous — et ce qu&apos;on vous conseille
         </p>
@@ -650,7 +650,7 @@ function TeamInsightsBlock({ insights, total, c, isMobile }: {
           Constats tirés des réponses de {total} collaborateur{total > 1 ? "s" : ""}, classés par priorité. Pour chacun : ce qu&apos;on observe, l&apos;action conseillée, et ce qu&apos;elle permet d&apos;éviter.
         </p>
         {total < 5 && (
-          <p style={{ fontFamily: T.b, fontSize: 11, color: "#f4a261", margin: "8px 0 0" }}>
+          <p style={{ fontFamily: T.b, fontSize: 11, color: "#ffb020", margin: "8px 0 0" }}>
             ⚠️ Échantillon réduit ({total} bilan{total > 1 ? "s" : ""}) : les pourcentages sont à interpréter avec prudence.
           </p>
         )}
@@ -685,7 +685,7 @@ function TeamInsightsBlock({ insights, total, c, isMobile }: {
                 {open && (
                   <div style={{ padding: isMobile ? "4px 16px 18px" : "6px 24px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
                     <div>
-                      <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 800, color: "#7c9fff", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>👁️ Ce qu&apos;on a vu</p>
+                      <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 800, color: "#5b9dff", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>👁️ Ce qu&apos;on a vu</p>
                       <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.6, margin: 0 }}>{ins.seen}</p>
                     </div>
                     <div>
@@ -700,7 +700,7 @@ function TeamInsightsBlock({ insights, total, c, isMobile }: {
                       </div>
                     </div>
                     <div>
-                      <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 800, color: "#74c69d", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>🛡️ Pour éviter</p>
+                      <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 800, color: "#2ee6a6", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>🛡️ Pour éviter</p>
                       <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.6, margin: 0 }}>{ins.prevent}</p>
                     </div>
                     <div style={{ padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}` }}>
@@ -712,7 +712,7 @@ function TeamInsightsBlock({ insights, total, c, isMobile }: {
                             {ins.evidence.sources.map((s, i) => (
                               <span key={s}>
                                 {i > 0 && " · "}
-                                <a href={SOURCES[s].url} target="_blank" rel="noopener noreferrer" style={{ color: "#7c9fff" }}>{SOURCES[s].label.split(" — ")[0]}</a>
+                                <a href={SOURCES[s].url} target="_blank" rel="noopener noreferrer" style={{ color: "#5b9dff" }}>{SOURCES[s].label.split(" — ")[0]}</a>
                               </span>
                             ))}
                           </>
@@ -727,7 +727,7 @@ function TeamInsightsBlock({ insights, total, c, isMobile }: {
         </div>
       )}
 
-      <div style={{ padding: isMobile ? "12px 16px" : "14px 24px", background: "rgba(43,92,230,0.05)" }}>
+      <div style={{ padding: isMobile ? "12px 16px" : "14px 24px", background: "rgba(61,123,255,0.05)" }}>
         <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0, lineHeight: 1.55 }}>
           🤖 Analyse réalisée par l&apos;IA de PAW, appuyée sur une base de connaissances en ergonomie et en prévention des TMS construite à partir de sources publiques (Cochrane, EU-OSHA, OMS) et conçue avec un kinésithérapeute. Elle oriente la prévention collective et ne remplace pas un avis médical individuel.
         </p>
@@ -877,7 +877,7 @@ export default function EntrepriseDashboard() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 28 }}>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "stretch" : "flex-start", justifyContent: "space-between", gap: 12 }}>
             <div>
-              <p style={{ fontFamily: T.b, fontSize: 11, color: "#7c9fff", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>
+              <p style={{ fontFamily: T.b, fontSize: 11, color: "#5b9dff", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>
                 🏢 Dashboard RH
               </p>
               <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: c.textPrimary, margin: "0 0 4px" }}>
@@ -891,8 +891,8 @@ export default function EntrepriseDashboard() {
               {inviteUrl && (
                 <button onClick={copyInviteUrl} style={{
                   padding: "9px 16px", borderRadius: 100, border: "none",
-                  background: copied ? "#1d9e75" : "rgba(43,92,230,0.15)",
-                  color: copied ? "#fff" : "#7c9fff",
+                  background: copied ? "#12c48b" : "rgba(61,123,255,0.15)",
+                  color: copied ? "#fff" : "#5b9dff",
                   fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer",
                 }}>
                   {copied ? "✓ Lien copié !" : "🔗 Inviter des employés"}
@@ -901,7 +901,7 @@ export default function EntrepriseDashboard() {
               <a href="/entreprise/rapport-pdf" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
                 <button style={{
                   padding: "9px 16px", borderRadius: 100, border: "none",
-                  background: "rgba(29,158,117,0.15)", color: "#1d9e75",
+                  background: "rgba(29,158,117,0.15)", color: "#12c48b",
                   fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer",
                 }}>
                   📄 Exporter PDF
@@ -955,10 +955,10 @@ export default function EntrepriseDashboard() {
             gap: 8,
           }}>
             {[
-              { label: "Zone critique", value: zoneCounts.critique, color: "#f09595", bg: "rgba(240,149,149,0.10)" },
-              { label: "À améliorer", value: zoneCounts.ameliorer, color: "#f4a261", bg: "rgba(244,162,97,0.10)" },
-              { label: "Bon niveau", value: zoneCounts.bon, color: "#74c69d", bg: "rgba(116,198,157,0.10)" },
-              { label: "Participation", value: `${participation}%`, color: "#2b5ce6", bg: c.bgCard2 },
+              { label: "Zone critique", value: zoneCounts.critique, color: "#ff6b6b", bg: "rgba(255,107,107,0.10)" },
+              { label: "À améliorer", value: zoneCounts.ameliorer, color: "#ffb020", bg: "rgba(255,176,32,0.10)" },
+              { label: "Bon niveau", value: zoneCounts.bon, color: "#2ee6a6", bg: "rgba(116,198,157,0.10)" },
+              { label: "Participation", value: `${participation}%`, color: "#3d7bff", bg: c.bgCard2 },
             ].map((z, i) => (
               <div key={i} style={{ textAlign: "center", padding: isMobile ? "10px 8px" : "12px 16px", borderRadius: 14, background: z.bg }}>
                 <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 20 : 24, color: z.color, margin: "0 0 4px" }}>{z.value}</p>
@@ -985,7 +985,7 @@ export default function EntrepriseDashboard() {
           ] as const).map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
               flex: 1, padding: "10px 0", borderRadius: 10, border: "none",
-              background: activeTab === tab.key ? "#2b5ce6" : "transparent",
+              background: activeTab === tab.key ? "#3d7bff" : "transparent",
               color: activeTab === tab.key ? "#fff" : c.textMuted,
               fontFamily: T.b, fontWeight: 600, fontSize: 13,
               cursor: "pointer", transition: "all 0.2s",
@@ -1095,8 +1095,8 @@ export default function EntrepriseDashboard() {
                       </div>
                     ))}
                   </div>
-                  <div style={{ marginTop: 16, padding: "12px 14px", borderRadius: 10, background: "rgba(124,58,237,0.06)", border: "0.5px solid rgba(124,58,237,0.15)" }}>
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "#a78bfa", margin: 0, lineHeight: 1.55 }}>
+                  <div style={{ marginTop: 16, padding: "12px 14px", borderRadius: 10, background: "rgba(139,92,246,0.06)", border: "0.5px solid rgba(139,92,246,0.15)" }}>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "#9b7bff", margin: 0, lineHeight: 1.55 }}>
                       💡 Ces dimensions sont personnelles — PAW accompagne chaque employé avec des conseils adaptés et des exercices ciblés dans son espace individuel.
                     </p>
                   </div>
@@ -1107,11 +1107,11 @@ export default function EntrepriseDashboard() {
               {(() => {
                 const collective = analyzeCollectiveVideo(employees, assessed);
                 if (!collective) return (
-                  <div style={{ borderRadius: 20, padding: "20px 24px", marginBottom: 16, background: "rgba(124,58,237,0.05)", border: "0.5px dashed rgba(124,58,237,0.25)" }}>
+                  <div style={{ borderRadius: 20, padding: "20px 24px", marginBottom: 16, background: "rgba(139,92,246,0.05)", border: "0.5px dashed rgba(139,92,246,0.25)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       <span style={{ fontSize: 24 }}>🎥</span>
                       <div>
-                        <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#c4b5fd", margin: "0 0 4px" }}>
+                        <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#b79cff", margin: "0 0 4px" }}>
                           Analyse posturale collective
                         </p>
                         <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0 }}>
@@ -1123,15 +1123,15 @@ export default function EntrepriseDashboard() {
                 );
 
                 return (
-                  <div style={{ borderRadius: 20, overflow: "hidden", border: "0.5px solid rgba(124,58,237,0.25)", marginBottom: 16 }}>
+                  <div style={{ borderRadius: 20, overflow: "hidden", border: "0.5px solid rgba(139,92,246,0.25)", marginBottom: 16 }}>
 
                     {/* Header */}
-                    <div style={{ padding: "18px 20px", background: "rgba(124,58,237,0.07)", borderBottom: "0.5px solid rgba(124,58,237,0.15)" }}>
+                    <div style={{ padding: "18px 20px", background: "rgba(139,92,246,0.07)", borderBottom: "0.5px solid rgba(139,92,246,0.15)" }}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                           <span style={{ fontSize: 20 }}>🎥</span>
                           <div>
-                            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#c4b5fd", margin: 0 }}>
+                            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#b79cff", margin: 0 }}>
                               Analyse posturale collective
                             </p>
                             <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>
@@ -1142,14 +1142,14 @@ export default function EntrepriseDashboard() {
                         </div>
                         <div style={{ display: "flex", gap: 8 }}>
                           {collective.avgScoreBureau && (
-                            <div style={{ textAlign: "center", padding: "6px 12px", borderRadius: 10, background: "rgba(124,58,237,0.12)" }}>
-                              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#c4b5fd", margin: 0 }}>{collective.avgScoreBureau}</p>
+                            <div style={{ textAlign: "center", padding: "6px 12px", borderRadius: 10, background: "rgba(139,92,246,0.12)" }}>
+                              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#b79cff", margin: 0 }}>{collective.avgScoreBureau}</p>
                               <p style={{ fontFamily: T.b, fontSize: 10, color: c.textMuted, margin: 0 }}>Score bureau</p>
                             </div>
                           )}
                           {collective.avgScoreDebout && (
-                            <div style={{ textAlign: "center", padding: "6px 12px", borderRadius: 10, background: "rgba(124,58,237,0.12)" }}>
-                              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#c4b5fd", margin: 0 }}>{collective.avgScoreDebout}</p>
+                            <div style={{ textAlign: "center", padding: "6px 12px", borderRadius: 10, background: "rgba(139,92,246,0.12)" }}>
+                              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#b79cff", margin: 0 }}>{collective.avgScoreDebout}</p>
                               <p style={{ fontFamily: T.b, fontSize: 10, color: c.textMuted, margin: 0 }}>Score debout</p>
                             </div>
                           )}
@@ -1158,15 +1158,15 @@ export default function EntrepriseDashboard() {
 
                       {/* Narrative bureau */}
                       {collective.bureauNarrative && (
-                        <div style={{ marginTop: 12, padding: "14px 16px", borderRadius: 10, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
-                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#7c9fff", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+                        <div style={{ marginTop: 12, padding: "14px 16px", borderRadius: 10, background: "rgba(61,123,255,0.06)", border: "0.5px solid rgba(61,123,255,0.2)" }}>
+                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#5b9dff", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
                             💻 Équipe bureau — Observation vidéo
                           </p>
                           <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.7, margin: "0 0 10px" }}>
                             {collective.bureauNarrative}
                           </p>
                           {collective.bureauPositif && (
-                            <p style={{ fontFamily: T.b, fontSize: 13, color: "#74c69d", lineHeight: 1.6, margin: "0 0 10px" }}>
+                            <p style={{ fontFamily: T.b, fontSize: 13, color: "#2ee6a6", lineHeight: 1.6, margin: "0 0 10px" }}>
                               {collective.bureauPositif}
                             </p>
                           )}
@@ -1174,7 +1174,7 @@ export default function EntrepriseDashboard() {
                             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                               {collective.bureauActions.map((action, i) => (
                                 <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                                  <span style={{ color: "#7c9fff", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
+                                  <span style={{ color: "#5b9dff", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
                                   <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary }}>{action}</span>
                                 </div>
                               ))}
@@ -1185,15 +1185,15 @@ export default function EntrepriseDashboard() {
 
                       {/* Narrative debout */}
                       {collective.deboutNarrative && (
-                        <div style={{ marginTop: 10, padding: "14px 16px", borderRadius: 10, background: "rgba(212,98,42,0.06)", border: "0.5px solid rgba(212,98,42,0.2)" }}>
-                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#f4a261", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+                        <div style={{ marginTop: 10, padding: "14px 16px", borderRadius: 10, background: "rgba(255,138,61,0.06)", border: "0.5px solid rgba(255,138,61,0.2)" }}>
+                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffb020", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
                             🏭 Équipe debout — Observation vidéo
                           </p>
                           <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.7, margin: "0 0 10px" }}>
                             {collective.deboutNarrative}
                           </p>
                           {collective.deboutPositif && (
-                            <p style={{ fontFamily: T.b, fontSize: 13, color: "#74c69d", lineHeight: 1.6, margin: "0 0 10px" }}>
+                            <p style={{ fontFamily: T.b, fontSize: 13, color: "#2ee6a6", lineHeight: 1.6, margin: "0 0 10px" }}>
                               {collective.deboutPositif}
                             </p>
                           )}
@@ -1201,7 +1201,7 @@ export default function EntrepriseDashboard() {
                             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                               {collective.deboutActions.map((action, i) => (
                                 <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                                  <span style={{ color: "#f4a261", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
+                                  <span style={{ color: "#ffb020", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
                                   <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary }}>{action}</span>
                                 </div>
                               ))}
@@ -1218,7 +1218,7 @@ export default function EntrepriseDashboard() {
                         {/* Bureau */}
                         {collective.bureauTrends.length > 0 && (
                           <div>
-                            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#7c9fff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
+                            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#5b9dff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
                               💻 Équipe bureau ({collective.bureauCount} filmés)
                             </p>
                             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1226,7 +1226,7 @@ export default function EntrepriseDashboard() {
                                 const critiquePct = Math.round((trend.critique / trend.total) * 100);
                                 const attentionPct = Math.round((trend.attention / trend.total) * 100);
                                 const bonPct = Math.round((trend.bon / trend.total) * 100);
-                                const mainColor = trend.critique > trend.bon ? "#f09595" : trend.attention > trend.bon ? "#f4a261" : "#74c69d";
+                                const mainColor = trend.critique > trend.bon ? "#ff6b6b" : trend.attention > trend.bon ? "#ffb020" : "#2ee6a6";
 
                                 return (
                                   <div key={i} style={{ padding: "12px 14px", borderRadius: 12, background: `${mainColor}06`, border: `0.5px solid ${mainColor}25` }}>
@@ -1241,24 +1241,24 @@ export default function EntrepriseDashboard() {
 
                                     {/* Barre de répartition */}
                                     <div style={{ height: 8, borderRadius: 100, overflow: "hidden", display: "flex", marginBottom: 8 }}>
-                                      {trend.critique > 0 && <div style={{ width: `${critiquePct}%`, background: "#f09595" }} />}
-                                      {trend.attention > 0 && <div style={{ width: `${attentionPct}%`, background: "#f4a261" }} />}
-                                      {trend.bon > 0 && <div style={{ width: `${bonPct}%`, background: "#74c69d" }} />}
+                                      {trend.critique > 0 && <div style={{ width: `${critiquePct}%`, background: "#ff6b6b" }} />}
+                                      {trend.attention > 0 && <div style={{ width: `${attentionPct}%`, background: "#ffb020" }} />}
+                                      {trend.bon > 0 && <div style={{ width: `${bonPct}%`, background: "#2ee6a6" }} />}
                                     </div>
 
                                     <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
                                       {trend.critique > 0 && (
-                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#f09595" }}>
+                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#ff6b6b" }}>
                                           ⚠️ {trend.critique} critique{trend.critique > 1 ? "s" : ""}
                                         </span>
                                       )}
                                       {trend.attention > 0 && (
-                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#f4a261" }}>
+                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#ffb020" }}>
                                           🟠 {trend.attention} à surveiller
                                         </span>
                                       )}
                                       {trend.bon > 0 && (
-                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#74c69d" }}>
+                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#2ee6a6" }}>
                                           ✅ {trend.bon} correct{trend.bon > 1 ? "s" : ""}
                                         </span>
                                       )}
@@ -1277,7 +1277,7 @@ export default function EntrepriseDashboard() {
                         {/* Debout */}
                         {collective.deboutTrends.length > 0 && (
                           <div>
-                            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#f4a261", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
+                            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffb020", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
                               🏭 Équipe debout ({collective.deboutCount} filmés)
                             </p>
                             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1285,7 +1285,7 @@ export default function EntrepriseDashboard() {
                                 const critiquePct = Math.round((trend.critique / trend.total) * 100);
                                 const attentionPct = Math.round((trend.attention / trend.total) * 100);
                                 const bonPct = Math.round((trend.bon / trend.total) * 100);
-                                const mainColor = trend.critique > trend.bon ? "#f09595" : trend.attention > trend.bon ? "#f4a261" : "#74c69d";
+                                const mainColor = trend.critique > trend.bon ? "#ff6b6b" : trend.attention > trend.bon ? "#ffb020" : "#2ee6a6";
 
                                 return (
                                   <div key={i} style={{ padding: "12px 14px", borderRadius: 12, background: `${mainColor}06`, border: `0.5px solid ${mainColor}25` }}>
@@ -1298,14 +1298,14 @@ export default function EntrepriseDashboard() {
                                       </span>
                                     </div>
                                     <div style={{ height: 8, borderRadius: 100, overflow: "hidden", display: "flex", marginBottom: 8 }}>
-                                      {trend.critique > 0 && <div style={{ width: `${critiquePct}%`, background: "#f09595" }} />}
-                                      {trend.attention > 0 && <div style={{ width: `${attentionPct}%`, background: "#f4a261" }} />}
-                                      {trend.bon > 0 && <div style={{ width: `${bonPct}%`, background: "#74c69d" }} />}
+                                      {trend.critique > 0 && <div style={{ width: `${critiquePct}%`, background: "#ff6b6b" }} />}
+                                      {trend.attention > 0 && <div style={{ width: `${attentionPct}%`, background: "#ffb020" }} />}
+                                      {trend.bon > 0 && <div style={{ width: `${bonPct}%`, background: "#2ee6a6" }} />}
                                     </div>
                                     <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
-                                      {trend.critique > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#f09595" }}>⚠️ {trend.critique} critique{trend.critique > 1 ? "s" : ""}</span>}
-                                      {trend.attention > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#f4a261" }}>🟠 {trend.attention} à surveiller</span>}
-                                      {trend.bon > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#74c69d" }}>✅ {trend.bon} correct{trend.bon > 1 ? "s" : ""}</span>}
+                                      {trend.critique > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#ff6b6b" }}>⚠️ {trend.critique} critique{trend.critique > 1 ? "s" : ""}</span>}
+                                      {trend.attention > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#ffb020" }}>🟠 {trend.attention} à surveiller</span>}
+                                      {trend.bon > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#2ee6a6" }}>✅ {trend.bon} correct{trend.bon > 1 ? "s" : ""}</span>}
                                     </div>
                                     <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0, fontStyle: "italic" }}>
                                       {trend.consequence}
@@ -1320,8 +1320,8 @@ export default function EntrepriseDashboard() {
 
                       {/* CTA si des employés n'ont pas filmé */}
                       {collective.notFilmed > 0 && (
-                        <div style={{ marginTop: 14, padding: "12px 14px", borderRadius: 10, background: "rgba(124,58,237,0.06)", border: "0.5px solid rgba(124,58,237,0.18)" }}>
-                          <p style={{ fontFamily: T.b, fontSize: 13, color: "#c4b5fd", margin: "0 0 10px" }}>
+                        <div style={{ marginTop: 14, padding: "12px 14px", borderRadius: 10, background: "rgba(139,92,246,0.06)", border: "0.5px solid rgba(139,92,246,0.18)" }}>
+                          <p style={{ fontFamily: T.b, fontSize: 13, color: "#b79cff", margin: "0 0 10px" }}>
                             📢 {collective.notFilmed} employé{collective.notFilmed > 1 ? "s n'ont " : " n'a "}pas encore effectué l&apos;analyse vidéo.
                           </p>
                           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -1331,7 +1331,7 @@ export default function EntrepriseDashboard() {
                                 setCopied(true);
                                 setTimeout(() => setCopied(false), 2000);
                               }}
-                              style={{ padding: "7px 14px", borderRadius: 100, border: "none", background: "#7c3aed", color: "#fff", fontFamily: T.b, fontWeight: 600, fontSize: 12, cursor: "pointer" }}
+                              style={{ padding: "7px 14px", borderRadius: 100, border: "none", background: "#8b5cf6", color: "#fff", fontFamily: T.b, fontWeight: 600, fontSize: 12, cursor: "pointer" }}
                             >
                               {copied ? "✓ Copié !" : "📋 Copier le lien vidéo →"}
                             </button>
@@ -1369,14 +1369,14 @@ export default function EntrepriseDashboard() {
                   <div style={{ borderRadius: 20, overflow: "hidden", border: `0.5px solid ${c.border}`, marginBottom: 16 }}>
 
                     {/* Header */}
-                    <div style={{ padding: "20px 24px", background: "rgba(43,92,230,0.06)", borderBottom: `0.5px solid ${c.border}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+                    <div style={{ padding: "20px 24px", background: "rgba(61,123,255,0.06)", borderBottom: `0.5px solid ${c.border}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
                       <div>
                         <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: "0 0 4px" }}>📋 Rapport de synthèse ergonomique</p>
                         <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>
                           Basé sur {assessed.length} bilan{assessed.length > 1 ? "s" : ""} · {hasGroups ? `${bureau.count} postes bureau · ${debout.count} postes debout` : "Profil mixte"}
                         </p>
                       </div>
-                      <span style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)", fontFamily: T.b, fontSize: 11, fontWeight: 600, color: "#7c9fff" }}>
+                      <span style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(61,123,255,0.12)", border: "0.5px solid rgba(61,123,255,0.25)", fontFamily: T.b, fontSize: 11, fontWeight: 600, color: "#5b9dff" }}>
                         🩺 Validé par un kinésithérapeute
                       </span>
                     </div>
@@ -1405,10 +1405,10 @@ export default function EntrepriseDashboard() {
                         <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 14 }}>📊 Comparaison bureau vs entrepôt</p>
                         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
                           {/* Bureau */}
-                          <div style={{ padding: "16px", borderRadius: 14, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
+                          <div style={{ padding: "16px", borderRadius: 14, background: "rgba(61,123,255,0.06)", border: "0.5px solid rgba(61,123,255,0.2)" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                               <span style={{ fontSize: 18 }}>💻</span>
-                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#7c9fff" }}>Équipe bureau ({bureau.count})</span>
+                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#5b9dff" }}>Équipe bureau ({bureau.count})</span>
                               <span style={{ marginLeft: "auto", fontFamily: T.h, fontWeight: 900, fontSize: 18, color: bureau.global ? scoreColor(bureau.global) : c.textMuted }}>{bureau.global ?? "—"}</span>
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -1427,18 +1427,18 @@ export default function EntrepriseDashboard() {
                                 </div>
                               ))}
                             </div>
-                            <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10, background: "rgba(240,149,149,0.08)", border: "0.5px solid rgba(240,149,149,0.2)" }}>
-                              <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595", margin: 0, lineHeight: 1.5 }}>
+                            <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10, background: "rgba(255,107,107,0.08)", border: "0.5px solid rgba(255,107,107,0.2)" }}>
+                              <p style={{ fontFamily: T.b, fontSize: 12, color: "#ff6b6b", margin: 0, lineHeight: 1.5 }}>
                                 ⚠️ Principale problématique : <strong>{bureauMainIssue}</strong>
                               </p>
                             </div>
                           </div>
 
                           {/* Debout */}
-                          <div style={{ padding: "16px", borderRadius: 14, background: "rgba(212,98,42,0.06)", border: "0.5px solid rgba(212,98,42,0.2)" }}>
+                          <div style={{ padding: "16px", borderRadius: 14, background: "rgba(255,138,61,0.06)", border: "0.5px solid rgba(255,138,61,0.2)" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                               <span style={{ fontSize: 18 }}>🏭</span>
-                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#f4a261" }}>Équipe debout ({debout.count})</span>
+                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#ffb020" }}>Équipe debout ({debout.count})</span>
                               <span style={{ marginLeft: "auto", fontFamily: T.h, fontWeight: 900, fontSize: 18, color: debout.global ? scoreColor(debout.global) : c.textMuted }}>{debout.global ?? "—"}</span>
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -1457,8 +1457,8 @@ export default function EntrepriseDashboard() {
                                 </div>
                               ))}
                             </div>
-                            <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10, background: "rgba(244,162,97,0.08)", border: "0.5px solid rgba(244,162,97,0.2)" }}>
-                              <p style={{ fontFamily: T.b, fontSize: 12, color: "#f4a261", margin: 0, lineHeight: 1.5 }}>
+                            <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10, background: "rgba(255,176,32,0.08)", border: "0.5px solid rgba(255,176,32,0.2)" }}>
+                              <p style={{ fontFamily: T.b, fontSize: 12, color: "#ffb020", margin: 0, lineHeight: 1.5 }}>
                                 ⚠️ Principale problématique : <strong>{deboutMainIssue}</strong>
                               </p>
                             </div>
@@ -1477,7 +1477,7 @@ export default function EntrepriseDashboard() {
                             emoji: "🦆",
                             risk: allPain < 55 && allSetup < 65,
                             niveau: allPain < 45 ? "Critique" : allPain < 55 ? "Élevé" : "Modéré",
-                            couleur: allPain < 45 ? "#f09595" : allPain < 55 ? "#f4a261" : "#74c69d",
+                            couleur: allPain < 45 ? "#ff6b6b" : allPain < 55 ? "#ffb020" : "#2ee6a6",
                             detail: hasGroups
                               ? `Bureau : douleurs cervicales liées aux écrans trop bas et laptops sans support (score setup ${bureau.setup}/100). Debout : tensions cervicales par port de charges en hauteur.`
                               : `Douleurs cervicales liées à la posture de travail — charge sur les vertèbres cervicales augmentée par la flexion de tête. Score douleurs : ${allPain}/100`,
@@ -1492,7 +1492,7 @@ export default function EntrepriseDashboard() {
                             emoji: "🌿",
                             risk: allHabits < 60 || allPain < 55,
                             niveau: allHabits < 50 ? "Critique" : allHabits < 60 ? "Élevé" : "Modéré",
-                            couleur: allHabits < 50 ? "#f09595" : allHabits < 60 ? "#f4a261" : "#74c69d",
+                            couleur: allHabits < 50 ? "#ff6b6b" : allHabits < 60 ? "#ffb020" : "#2ee6a6",
                             detail: hasGroups
                               ? `Bureau : station assise prolongée sans pauses (${bureau.habits}/100 habitudes). Debout/entrepôt : lombalgies par manutention sans formation et postures de levage incorrectes (${debout.pain}/100 douleurs).`
                               : `Lombalgies liées aux habitudes de travail — station prolongée sans alternance posturale. Score habitudes : ${allHabits}/100`,
@@ -1507,7 +1507,7 @@ export default function EntrepriseDashboard() {
                             emoji: "🦅",
                             risk: allSetup < 65,
                             niveau: allSetup < 50 ? "Critique" : allSetup < 60 ? "Élevé" : "Modéré",
-                            couleur: allSetup < 50 ? "#f09595" : allSetup < 60 ? "#f4a261" : "#74c69d",
+                            couleur: allSetup < 50 ? "#ff6b6b" : allSetup < 60 ? "#ffb020" : "#2ee6a6",
                             detail: hasGroups
                               ? `Bureau : tensions d'épaules liées au positionnement clavier/souris (${bureau.setup}/100). Entrepôt : tensions d'épaule par gestes répétitifs au-dessus des épaules.`
                               : `TMS des membres supérieurs liés au setup ergonomique. Score setup : ${allSetup}/100`,
@@ -1522,7 +1522,7 @@ export default function EntrepriseDashboard() {
                             emoji: "🦵",
                             risk: hasGroups && (debout.pain ?? 100) < 55,
                             niveau: hasGroups && (debout.pain ?? 100) < 45 ? "Critique" : "Modéré",
-                            couleur: hasGroups && (debout.pain ?? 100) < 45 ? "#f09595" : hasGroups && (debout.pain ?? 100) < 55 ? "#f4a261" : "#74c69d",
+                            couleur: hasGroups && (debout.pain ?? 100) < 45 ? "#ff6b6b" : hasGroups && (debout.pain ?? 100) < 55 ? "#ffb020" : "#2ee6a6",
                             detail: hasGroups
                               ? `Spécifique équipe debout — jambes lourdes, œdèmes en fin de journée, fatigue des jambes. Fatigue plantaire fréquente. Score douleurs entrepôt : ${debout.pain}/100`
                               : "Zone moins concernée pour les postes bureau.",
@@ -1565,7 +1565,7 @@ export default function EntrepriseDashboard() {
                         {[
                           {
                             horizon: "Cette semaine",
-                            color: "#f09595",
+                            color: "#ff6b6b",
                             actions: [
                               allSetup < 60 ? "Faire l'inventaire des postes sans rehausseur d'écran et sans clavier externe" : null,
                               allPain < 55 ? "Identifier les 3 employés avec les scores douleurs les plus bas et les rencontrer" : null,
@@ -1574,7 +1574,7 @@ export default function EntrepriseDashboard() {
                           },
                           {
                             horizon: "Dans le mois",
-                            color: "#f4a261",
+                            color: "#ffb020",
                             actions: [
                               allSetup < 60 ? "Équiper les postes bureau critiques : rehausseur + clavier externe (budget ~60€/poste)" : null,
                               hasGroups && (debout.pain ?? 100) < 55 ? "Installer des tapis anti-fatigue aux postes debout fixes (budget ~45€/poste)" : null,
@@ -1584,7 +1584,7 @@ export default function EntrepriseDashboard() {
                           },
                           {
                             horizon: "Dans les 3 mois",
-                            color: "#74c69d",
+                            color: "#2ee6a6",
                             actions: [
                               "Refaire passer les bilans PAW aux équipes pour mesurer l'évolution",
                               "Intégrer les résultats dans votre reporting social (CPPT, EcoVadis)",
@@ -1619,7 +1619,7 @@ export default function EntrepriseDashboard() {
                         {hasGroups ? (
                           <>
                             <div>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#7c9fff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>💻 Postes bureau</p>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#5b9dff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>💻 Postes bureau</p>
                               {[
                                 ...(allSetup < 65 ? PRODUCTS_BY_ISSUE.setup_bureau : []),
                                 ...(allPain < 55 ? PRODUCTS_BY_ISSUE.douleurs_bureau : []),
@@ -1636,7 +1636,7 @@ export default function EntrepriseDashboard() {
                               ))}
                             </div>
                             <div>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#f4a261", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>🏭 Postes debout</p>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffb020", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>🏭 Postes debout</p>
                               {[
                                 ...PRODUCTS_BY_ISSUE.setup_debout,
                                 ...PRODUCTS_BY_ISSUE.douleurs_debout,
@@ -1662,7 +1662,7 @@ export default function EntrepriseDashboard() {
                                   <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: "0 0 2px" }}>{prod.name}</p>
                                   <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>{prod.reason}</p>
                                 </div>
-                                <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#2b5ce6", flexShrink: 0 }}>{prod.price}</span>
+                                <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#3d7bff", flexShrink: 0 }}>{prod.price}</span>
                               </div>
                             </a>
                           ))
@@ -1678,7 +1678,7 @@ export default function EntrepriseDashboard() {
                         {hasGroups ? (
                           <>
                             <div>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#7c9fff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>💻 Équipe bureau</p>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#5b9dff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>💻 Équipe bureau</p>
                               {EXERCISES_BY_ISSUE.nuque_cervicales.concat(EXERCISES_BY_ISSUE.epaules_poignets).slice(0, 3).map((ex, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 6, minHeight: 56 }}>
                                   <span style={{ fontSize: 18, flexShrink: 0 }}>{ex.emoji}</span>
@@ -1690,7 +1690,7 @@ export default function EntrepriseDashboard() {
                               ))}
                             </div>
                             <div>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#f4a261", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>🏭 Équipe debout</p>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffb020", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>🏭 Équipe debout</p>
                               {EXERCISES_BY_ISSUE.dos_lombaires.concat(EXERCISES_BY_ISSUE.jambes_pieds).slice(0, 3).map((ex, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 6, minHeight: 56 }}>
                                   <span style={{ fontSize: 18, flexShrink: 0 }}>{ex.emoji}</span>
@@ -1710,7 +1710,7 @@ export default function EntrepriseDashboard() {
                                 <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: "0 0 2px" }}>{ex.name}</p>
                                 <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>{ex.desc}</p>
                               </div>
-                              <span style={{ padding: "3px 10px", borderRadius: 100, background: "rgba(43,92,230,0.10)", fontFamily: T.b, fontSize: 11, color: "#7c9fff", flexShrink: 0 }}>{ex.duration}</span>
+                              <span style={{ padding: "3px 10px", borderRadius: 100, background: "rgba(61,123,255,0.10)", fontFamily: T.b, fontSize: 11, color: "#5b9dff", flexShrink: 0 }}>{ex.duration}</span>
                             </div>
                           ))
                         )}
@@ -1722,7 +1722,7 @@ export default function EntrepriseDashboard() {
               })()}
 
               {/* Invitation */}
-              <div style={{ borderRadius: 20, padding: "22px 24px", background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)" }}>
+              <div style={{ borderRadius: 20, padding: "22px 24px", background: "rgba(61,123,255,0.06)", border: "0.5px solid rgba(61,123,255,0.18)" }}>
                 <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}>
                   🔗 Lien d&apos;invitation
                 </p>
@@ -1736,19 +1736,19 @@ export default function EntrepriseDashboard() {
                     <div style={{ flex: 1, padding: "11px 14px", borderRadius: 12, background: c.bgCard, border: `1px solid ${c.border2}`, fontFamily: T.b, fontSize: 13, color: c.textSecondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {inviteUrl}
                     </div>
-                    <button onClick={copyInviteUrl} style={{ padding: "11px 18px", borderRadius: 12, border: "none", background: copied ? "#1d9e75" : "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 13, cursor: "pointer", transition: "background 0.2s", flexShrink: 0 }}>
+                    <button onClick={copyInviteUrl} style={{ padding: "11px 18px", borderRadius: 12, border: "none", background: copied ? "#12c48b" : "#3d7bff", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 13, cursor: "pointer", transition: "background 0.2s", flexShrink: 0 }}>
                       {copied ? "✓ Copié !" : "Copier"}
                     </button>
                   </div>
                 ) : (
-                  <button onClick={generateNewCode} disabled={generatingCode} style={{ padding: "12px 24px", borderRadius: 100, border: "none", background: "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 14, cursor: "pointer", opacity: generatingCode ? 0.7 : 1 }}>
+                  <button onClick={generateNewCode} disabled={generatingCode} style={{ padding: "12px 24px", borderRadius: 100, border: "none", background: "#3d7bff", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 14, cursor: "pointer", opacity: generatingCode ? 0.7 : 1 }}>
                     {generatingCode ? "Génération…" : "Générer un lien d'invitation"}
                   </button>
                 )}
                 {inviteCode && (
                   <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, marginTop: 8 }}>
                     Code : <strong>{inviteCode}</strong> · Valable 30 jours ·{" "}
-                    <span onClick={generateNewCode} style={{ color: "#7c9fff", cursor: "pointer", textDecoration: "underline" }}>Générer un nouveau code</span>
+                    <span onClick={generateNewCode} style={{ color: "#5b9dff", cursor: "pointer", textDecoration: "underline" }}>Générer un nouveau code</span>
                   </p>
                 )}
               </div>
@@ -1768,8 +1768,8 @@ export default function EntrepriseDashboard() {
                   </span>
                 </div>
                 {employees.filter(e => !e.global_score).length > 0 && (
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, padding: "14px 16px", borderRadius: 12, background: "rgba(244,162,97,0.08)", border: "0.5px solid rgba(244,162,97,0.2)" }}>
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: "#f4a261", margin: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, padding: "14px 16px", borderRadius: 12, background: "rgba(255,176,32,0.08)", border: "0.5px solid rgba(255,176,32,0.2)" }}>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: "#ffb020", margin: 0 }}>
                       ⏳ {employees.filter(e => !e.global_score).length} employé{employees.filter(e => !e.global_score).length > 1 ? "s n'ont" : " n'a"} pas encore complété son bilan.
                     </p>
                     <button
@@ -1777,7 +1777,7 @@ export default function EntrepriseDashboard() {
                       disabled={relanceSent}
                       style={{
                         padding: "8px 16px", borderRadius: 100, border: "none",
-                        background: relanceSent ? "#1d9e75" : "#f4a261",
+                        background: relanceSent ? "#12c48b" : "#ffb020",
                         color: "#fff", fontFamily: T.b, fontWeight: 600, fontSize: 12,
                         cursor: relanceSent ? "default" : "pointer",
                       }}
@@ -1795,10 +1795,10 @@ export default function EntrepriseDashboard() {
                     ] as const).map(f => (
                       <button key={f.key} onClick={() => setEmployeeFilter(f.key)} style={{
                         padding: "7px 14px", borderRadius: 100,
-                        background: employeeFilter === f.key ? "#2b5ce6" : c.bgCard2,
+                        background: employeeFilter === f.key ? "#3d7bff" : c.bgCard2,
                         color: employeeFilter === f.key ? "#fff" : c.textMuted,
                         fontFamily: T.b, fontWeight: 600, fontSize: 12,
-                        border: `0.5px solid ${employeeFilter === f.key ? "#2b5ce6" : c.border}`,
+                        border: `0.5px solid ${employeeFilter === f.key ? "#3d7bff" : c.border}`,
                         cursor: "pointer",
                       }}>
                         {f.label}
@@ -1860,7 +1860,7 @@ export default function EntrepriseDashboard() {
                                   <span style={{
                                     padding: "3px 8px", borderRadius: 100, fontSize: 11, fontFamily: T.b, fontWeight: 600,
                                     background: hasCritical ? "rgba(226,75,74,0.15)" : "rgba(29,158,117,0.12)",
-                                    color: hasCritical ? "#e24b4a" : "#1d9e75",
+                                    color: hasCritical ? "#ff4d5e" : "#12c48b",
                                     border: `0.5px solid ${hasCritical ? "rgba(226,75,74,0.3)" : "rgba(29,158,117,0.25)"}`,
                                   }}>
                                     {hasCritical ? "⚠️ Vidéo critique" : "🎥 Vidéo OK"}
@@ -1951,7 +1951,7 @@ export default function EntrepriseDashboard() {
                                           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                             {analysis.mainIssues.map((issue, ii) => (
                                               <div key={ii} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                                                <span style={{ color: "#f09595", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
+                                                <span style={{ color: "#ff6b6b", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
                                                 <p style={{ fontFamily: T.b, fontSize: 12, color: c.textSecondary, margin: 0, lineHeight: 1.55 }}>{issue}</p>
                                               </div>
                                             ))}
@@ -1963,15 +1963,15 @@ export default function EntrepriseDashboard() {
                                       {analysis.recommendations.length > 0 && (
                                         <div style={{
                                           padding: "12px 14px", borderRadius: 10,
-                                          background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)",
+                                          background: "rgba(61,123,255,0.06)", border: "0.5px solid rgba(61,123,255,0.18)",
                                         }}>
-                                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#7c9fff", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+                                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#5b9dff", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
                                             Actions recommandées
                                           </p>
                                           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                             {analysis.recommendations.map((rec, ri) => (
                                               <div key={ri} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                                                <span style={{ color: "#7c9fff", fontSize: 12, flexShrink: 0, marginTop: 2 }}>✓</span>
+                                                <span style={{ color: "#5b9dff", fontSize: 12, flexShrink: 0, marginTop: 2 }}>✓</span>
                                                 <p style={{ fontFamily: T.b, fontSize: 12, color: c.textSecondary, margin: 0, lineHeight: 1.55 }}>{rec}</p>
                                               </div>
                                             ))}
@@ -1995,12 +1995,12 @@ export default function EntrepriseDashboard() {
                                         <div style={{ marginTop: 12 }}>
                                           <div style={{
                                             padding: "12px 14px", borderRadius: 10,
-                                            background: "rgba(124,58,237,0.08)", border: "0.5px solid rgba(124,58,237,0.25)",
+                                            background: "rgba(139,92,246,0.08)", border: "0.5px solid rgba(139,92,246,0.25)",
                                             marginBottom: 10,
                                           }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                                               <span style={{ fontSize: 16 }}>🎥</span>
-                                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#c4b5fd" }}>
+                                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#b79cff" }}>
                                                 Analyse vidéo IA posturale
                                               </span>
                                               {postureScore && (
@@ -2024,11 +2024,11 @@ export default function EntrepriseDashboard() {
                                               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                                 {actions.slice(0, 2).map((action, ai) => (
                                                   <div key={ai} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                                                    <span style={{ color: "#c4b5fd", fontSize: 11, flexShrink: 0, marginTop: 2 }}>
+                                                    <span style={{ color: "#b79cff", fontSize: 11, flexShrink: 0, marginTop: 2 }}>
                                                       {ai + 1}.
                                                     </span>
                                                     <div>
-                                                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "#c4b5fd", margin: "0 0 2px" }}>
+                                                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: "#b79cff", margin: "0 0 2px" }}>
                                                         {action.title as string}
                                                       </p>
                                                       <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0, lineHeight: 1.5 }}>
@@ -2048,7 +2048,7 @@ export default function EntrepriseDashboard() {
                                     {!emp.video_analysis && emp.global_score && (
                                       <div style={{
                                         marginTop: 12, padding: "10px 14px", borderRadius: 10,
-                                        background: "rgba(124,58,237,0.04)", border: "0.5px dashed rgba(124,58,237,0.25)",
+                                        background: "rgba(139,92,246,0.04)", border: "0.5px dashed rgba(139,92,246,0.25)",
                                         display: "flex", alignItems: "center", gap: 8,
                                       }}>
                                         <span style={{ fontSize: 14 }}>🎥</span>
@@ -2096,11 +2096,11 @@ export default function EntrepriseDashboard() {
                       <div style={{
                         display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 16px",
                         borderRadius: 100, marginBottom: 16,
-                        background: diff >= 0 ? "rgba(29,158,117,0.10)" : "rgba(240,149,149,0.10)",
-                        border: `0.5px solid ${diff >= 0 ? "rgba(29,158,117,0.3)" : "rgba(240,149,149,0.3)"}`,
+                        background: diff >= 0 ? "rgba(29,158,117,0.10)" : "rgba(255,107,107,0.10)",
+                        border: `0.5px solid ${diff >= 0 ? "rgba(29,158,117,0.3)" : "rgba(255,107,107,0.3)"}`,
                       }}>
                         <span style={{ fontSize: 16 }}>{diff >= 0 ? "📈" : "📉"}</span>
-                        <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: diff >= 0 ? "#1d9e75" : "#f09595" }}>
+                        <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: diff >= 0 ? "#12c48b" : "#ff6b6b" }}>
                           {diff >= 0 ? "+" : ""}{diff} pts vs mois précédent
                         </span>
                         <span style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted }}>
@@ -2129,9 +2129,9 @@ export default function EntrepriseDashboard() {
                           itemStyle={{ color: c.textSecondary }}
                         />
                         <Legend wrapperStyle={{ fontFamily: T.b, fontSize: 12, paddingTop: 12 }} />
-                        <Line type="monotone" dataKey="global" name="Global" stroke="#2b5ce6" strokeWidth={2.5} dot={{ r: 4, fill: "#2b5ce6" }} activeDot={{ r: 6 }} connectNulls />
-                        <Line type="monotone" dataKey="bureau" name="Bureau" stroke="#7c9fff" strokeWidth={1.5} strokeDasharray="5 3" dot={{ r: 3 }} connectNulls />
-                        <Line type="monotone" dataKey="debout" name="Debout" stroke="#f4a261" strokeWidth={1.5} strokeDasharray="5 3" dot={{ r: 3 }} connectNulls />
+                        <Line type="monotone" dataKey="global" name="Global" stroke="#3d7bff" strokeWidth={2.5} dot={{ r: 4, fill: "#3d7bff" }} activeDot={{ r: 6 }} connectNulls />
+                        <Line type="monotone" dataKey="bureau" name="Bureau" stroke="#5b9dff" strokeWidth={1.5} strokeDasharray="5 3" dot={{ r: 3 }} connectNulls />
+                        <Line type="monotone" dataKey="debout" name="Debout" stroke="#ffb020" strokeWidth={1.5} strokeDasharray="5 3" dot={{ r: 3 }} connectNulls />
                       </LineChart>
                     </ResponsiveContainer>
 
@@ -2151,9 +2151,9 @@ export default function EntrepriseDashboard() {
                       const avgVideo = avgVideoScore.length ? Math.round(avgVideoScore.reduce((a, b) => a + b, 0) / avgVideoScore.length) : null;
 
                       return avgVideo ? (
-                        <div style={{ marginTop: 12, padding: "12px 16px", borderRadius: 12, background: "rgba(124,58,237,0.06)", border: "0.5px solid rgba(124,58,237,0.18)", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                        <div style={{ marginTop: 12, padding: "12px 16px", borderRadius: 12, background: "rgba(139,92,246,0.06)", border: "0.5px solid rgba(139,92,246,0.18)", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#c4b5fd", margin: 0 }}>{avgVideo}</p>
+                            <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#b79cff", margin: 0 }}>{avgVideo}</p>
                             <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>Score posture vidéo</p>
                           </div>
                           <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, flex: 1 }}>
@@ -2191,12 +2191,12 @@ export default function EntrepriseDashboard() {
                               </td>
                               <td style={{ padding: "10px 12px" }}>
                                 {row.bureau !== null ? (
-                                  <span style={{ color: "#7c9fff" }}>{row.bureau}/100</span>
+                                  <span style={{ color: "#5b9dff" }}>{row.bureau}/100</span>
                                 ) : <span style={{ color: c.textMuted }}>—</span>}
                               </td>
                               <td style={{ padding: "10px 12px" }}>
                                 {row.debout !== null ? (
-                                  <span style={{ color: "#f4a261" }}>{row.debout}/100</span>
+                                  <span style={{ color: "#ffb020" }}>{row.debout}/100</span>
                                 ) : <span style={{ color: c.textMuted }}>—</span>}
                               </td>
                             </tr>
@@ -2225,8 +2225,8 @@ export default function EntrepriseDashboard() {
                 if (!showBureauAlert && !showDeboutAlert) return null;
 
                 return (
-                  <div style={{ marginBottom: 16, padding: "14px 16px", borderRadius: 14, background: "rgba(124,58,237,0.06)", border: "0.5px solid rgba(124,58,237,0.2)" }}>
-                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#c4b5fd", marginBottom: 8 }}>
+                  <div style={{ marginBottom: 16, padding: "14px 16px", borderRadius: 14, background: "rgba(139,92,246,0.06)", border: "0.5px solid rgba(139,92,246,0.2)" }}>
+                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#b79cff", marginBottom: 8 }}>
                       🎥 Programme adapté selon vos résultats vidéo
                     </p>
                     {showBureauAlert && (
@@ -2246,10 +2246,10 @@ export default function EntrepriseDashboard() {
                 {(["bureau", "debout"] as const).map(p => (
                   <button key={p} onClick={() => setActiveProfile(p)} style={{
                     padding: "9px 20px", borderRadius: 100,
-                    background: activeProfile === p ? "#2b5ce6" : c.bgCard2,
+                    background: activeProfile === p ? "#3d7bff" : c.bgCard2,
                     color: activeProfile === p ? "#fff" : c.textMuted,
                     fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer",
-                    border: `0.5px solid ${activeProfile === p ? "#2b5ce6" : c.border}`,
+                    border: `0.5px solid ${activeProfile === p ? "#3d7bff" : c.border}`,
                   }}>
                     {p === "bureau" ? "💻 Postes bureau" : "🏭 Postes debout"}
                   </button>
@@ -2271,7 +2271,7 @@ export default function EntrepriseDashboard() {
                         <div style={{ flex: 1 }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
                             <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, margin: 0 }}>{ex.name}</p>
-                            <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.2)", fontFamily: T.b, fontSize: 11, color: "#7c9fff", flexShrink: 0, marginLeft: 8 }}>{ex.duration}</span>
+                            <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(61,123,255,0.12)", border: "0.5px solid rgba(61,123,255,0.2)", fontFamily: T.b, fontSize: 11, color: "#5b9dff", flexShrink: 0, marginLeft: 8 }}>{ex.duration}</span>
                           </div>
                           <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.55 }}>{ex.desc}</p>
                         </div>
@@ -2279,7 +2279,7 @@ export default function EntrepriseDashboard() {
                     </a>
                   ))}
                   <a href={`/mobilite?program=${activeProfile === "bureau" ? "nuque" : "dos"}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                    <div style={{ marginTop: 8, padding: "14px 0", borderRadius: 100, textAlign: "center", background: "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 800, fontSize: 14, cursor: "pointer", boxShadow: "0 4px 16px rgba(43,92,230,0.3)" }}>
+                    <div style={{ marginTop: 8, padding: "14px 0", borderRadius: 100, textAlign: "center", background: "#3d7bff", color: "#fff", fontFamily: T.h, fontWeight: 800, fontSize: 14, cursor: "pointer", boxShadow: "0 4px 16px rgba(61,123,255,0.3)" }}>
                       Lancer le programme complet dans PAW →
                     </div>
                   </a>
@@ -2287,7 +2287,7 @@ export default function EntrepriseDashboard() {
               </div>
 
               <div style={{ borderRadius: 16, padding: "18px 20px", background: "rgba(29,158,117,0.06)", border: "0.5px solid rgba(29,158,117,0.2)" }}>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "#5dcaa5", margin: 0, lineHeight: 1.6 }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "#3eddb0", margin: 0, lineHeight: 1.6 }}>
                   💡 <strong>Conseil d&apos;implémentation :</strong> Affichez ce programme en salle de pause ou envoyez-le par email à vos équipes. Une routine de 10 min, 3x/semaine, réduit significativement les TMS chroniques sur 3 mois.
                 </p>
               </div>
@@ -2329,7 +2329,7 @@ export default function EntrepriseDashboard() {
                   </div>
                 ))}
 
-                <div style={{ borderRadius: 16, padding: "20px", background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)", textAlign: "center" }}>
+                <div style={{ borderRadius: 16, padding: "20px", background: "rgba(61,123,255,0.06)", border: "0.5px solid rgba(61,123,255,0.18)", textAlign: "center" }}>
                   <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, marginBottom: 6 }}>
                     📞 Besoin d&apos;aller plus loin ?
                   </p>
@@ -2337,7 +2337,7 @@ export default function EntrepriseDashboard() {
                     Votre call de restitution avec Julien Beumier, kinésithérapeute fondateur de PAW, est inclus dans votre plan. Une heure pour analyser vos résultats collectifs et définir les actions prioritaires.
                   </p>
                   <a href="mailto:hello@postureatwork.com?subject=Demande de call de restitution" style={{ textDecoration: "none" }}>
-                    <button style={{ padding: "12px 24px", borderRadius: 100, border: "none", background: "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+                    <button style={{ padding: "12px 24px", borderRadius: 100, border: "none", background: "#3d7bff", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
                       Planifier mon call kiné →
                     </button>
                   </a>
@@ -2380,9 +2380,9 @@ export default function EntrepriseDashboard() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     {signals.map(signal => {
                       const typeConfig: Record<string, { emoji: string; color: string; bg: string; border: string }> = {
-                        douleur: { emoji: "🩺", color: "#f09595", bg: "rgba(240,149,149,0.06)", border: "rgba(240,149,149,0.2)" },
-                        equipement: { emoji: "🪑", color: "#7c9fff", bg: "rgba(43,92,230,0.06)", border: "rgba(43,92,230,0.2)" },
-                        contrainte: { emoji: "⚠️", color: "#f4a261", bg: "rgba(244,162,97,0.06)", border: "rgba(244,162,97,0.2)" },
+                        douleur: { emoji: "🩺", color: "#ff6b6b", bg: "rgba(255,107,107,0.06)", border: "rgba(255,107,107,0.2)" },
+                        equipement: { emoji: "🪑", color: "#5b9dff", bg: "rgba(61,123,255,0.06)", border: "rgba(61,123,255,0.2)" },
+                        contrainte: { emoji: "⚠️", color: "#ffb020", bg: "rgba(255,176,32,0.06)", border: "rgba(255,176,32,0.2)" },
                         autre: { emoji: "💬", color: c.textMuted, bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.08)" },
                       };
                       const cfg = typeConfig[signal.type] ?? typeConfig.autre;
@@ -2412,7 +2412,7 @@ export default function EntrepriseDashboard() {
                                   </span>
                                 )}
                                 {signal.intensity && (
-                                  <span style={{ fontFamily: T.b, fontSize: 11, color: "#f09595" }}>
+                                  <span style={{ fontFamily: T.b, fontSize: 11, color: "#ff6b6b" }}>
                                     Intensité {signal.intensity}/5
                                   </span>
                                 )}
@@ -2422,9 +2422,9 @@ export default function EntrepriseDashboard() {
                               </span>
                             </div>
                             <div style={{ padding: "3px 10px", borderRadius: 100, flexShrink: 0,
-                              background: signal.status === "nouveau" ? "rgba(43,92,230,0.15)" : "rgba(116,198,157,0.15)",
+                              background: signal.status === "nouveau" ? "rgba(61,123,255,0.15)" : "rgba(116,198,157,0.15)",
                               fontFamily: T.b, fontSize: 10, fontWeight: 700,
-                              color: signal.status === "nouveau" ? "#7c9fff" : "#74c69d" }}>
+                              color: signal.status === "nouveau" ? "#5b9dff" : "#2ee6a6" }}>
                               {signal.status === "nouveau" ? "Nouveau" : "Traité"}
                             </div>
                           </div>

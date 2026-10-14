@@ -79,7 +79,7 @@ function captureFrame(videoEl: HTMLVideoElement): string {
 
 // ─── Countdown circle ─────────────────────────────────────────────────────────
 
-function CountdownCircle({ elapsed, total, color = "#a78bfa" }: { elapsed: number; total: number; color?: string }) {
+function CountdownCircle({ elapsed, total, color = "#9b7bff" }: { elapsed: number; total: number; color?: string }) {
   const SIZE = 200; const STROKE = 10;
   const r = (SIZE - STROKE) / 2;
   const circ = 2 * Math.PI * r;
@@ -321,7 +321,7 @@ export default function VideoCapturePage() {
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
               onClick={() => requestCamera()}
               className="w-full py-4 rounded-2xl font-bold text-white text-base"
-              style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)", boxShadow: "0 0 40px rgba(124,58,237,0.4)" }}
+              style={{ background: "linear-gradient(135deg, #8b5cf6, #4f46e5)", boxShadow: "0 0 40px rgba(139,92,246,0.4)" }}
             >
               Activer la caméra →
             </motion.button>
@@ -365,9 +365,9 @@ export default function VideoCapturePage() {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 20px 0" }}>
               <span style={{
                 fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100,
-                background: isBureau ? "rgba(43,92,230,0.20)" : "rgba(167,139,250,0.20)",
-                color: isBureau ? "#7c9fff" : "#a78bfa",
-                border: `1px solid ${isBureau ? "rgba(43,92,230,0.35)" : "rgba(167,139,250,0.35)"}`,
+                background: isBureau ? "rgba(61,123,255,0.20)" : "rgba(167,139,250,0.20)",
+                color: isBureau ? "#5b9dff" : "#9b7bff",
+                border: `1px solid ${isBureau ? "rgba(61,123,255,0.35)" : "rgba(167,139,250,0.35)"}`,
               }}>
                 {isBureau ? "📹 Phase 1/2 — Analyse posture" : "📹 Analyse posture debout"}
               </span>
@@ -413,7 +413,7 @@ export default function VideoCapturePage() {
                       "Pas besoin de PC ou de bureau visible",
                     ].map((item, i) => (
                       <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 5 }}>
-                        <span style={{ color: "#a78bfa", flexShrink: 0 }}>›</span>
+                        <span style={{ color: "#9b7bff", flexShrink: 0 }}>›</span>
                         <span style={{ color: "rgba(255,255,255,0.65)", fontSize: 12 }}>{item}</span>
                       </div>
                     ))}
@@ -435,7 +435,7 @@ export default function VideoCapturePage() {
 
             <div style={{ padding: "0 20px 40px" }}>
               <button onClick={startStep1}
-                style={{ width: "100%", padding: "17px 0", borderRadius: 100, background: isBureau ? "linear-gradient(135deg, #2563eb, #4f46e5)" : "linear-gradient(135deg, #7c3aed, #4f46e5)", boxShadow: isBureau ? "0 0 30px rgba(43,92,230,0.45)" : "0 0 30px rgba(124,58,237,0.45)", color: "#fff", fontWeight: 800, fontSize: 16, border: "none", cursor: "pointer" }}>
+                style={{ width: "100%", padding: "17px 0", borderRadius: 100, background: isBureau ? "linear-gradient(135deg, #2563eb, #4f46e5)" : "linear-gradient(135deg, #8b5cf6, #4f46e5)", boxShadow: isBureau ? "0 0 30px rgba(61,123,255,0.45)" : "0 0 30px rgba(139,92,246,0.45)", color: "#fff", fontWeight: 800, fontSize: 16, border: "none", cursor: "pointer" }}>
                 C&apos;est bon, je lance →
               </button>
             </div>
@@ -449,28 +449,28 @@ export default function VideoCapturePage() {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 20px 0" }}>
               <span style={{
                 fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100,
-                background: isBureau ? "rgba(43,92,230,0.20)" : "rgba(167,139,250,0.20)",
-                color: isBureau ? "#7c9fff" : "#a78bfa",
-                border: `1px solid ${isBureau ? "rgba(43,92,230,0.35)" : "rgba(167,139,250,0.35)"}`,
+                background: isBureau ? "rgba(61,123,255,0.20)" : "rgba(167,139,250,0.20)",
+                color: isBureau ? "#5b9dff" : "#9b7bff",
+                border: `1px solid ${isBureau ? "rgba(61,123,255,0.35)" : "rgba(167,139,250,0.35)"}`,
               }}>
                 {isBureau ? "📹 Phase 1/2 — Analyse posture" : "📹 Analyse posture debout"}
               </span>
-              <span style={{ fontSize: 11, fontWeight: 800, color: "#f09595", display: "flex", alignItems: "center", gap: 5 }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f09595", display: "inline-block", animation: "pulse 1s infinite" }} />
+              <span style={{ fontSize: 11, fontWeight: 800, color: "#ff6b6b", display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff6b6b", display: "inline-block", animation: "pulse 1s infinite" }} />
                 REC
               </span>
             </div>
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <CountdownCircle elapsed={elapsed} total={STEP1_DURATION} color={isBureau ? "#3b82f6" : "#a78bfa"} />
+              <CountdownCircle elapsed={elapsed} total={STEP1_DURATION} color={isBureau ? "#3b82f6" : "#9b7bff"} />
             </div>
             <div style={{ padding: "0 20px 40px", display: "flex", flexDirection: "column", gap: 12 }}>
-              <div style={{ borderRadius: 16, padding: "14px 18px", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(10px)", border: `1px solid ${isBureau ? "rgba(43,92,230,0.25)" : "rgba(167,139,250,0.25)"}`, minHeight: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ borderRadius: 16, padding: "14px 18px", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(10px)", border: `1px solid ${isBureau ? "rgba(61,123,255,0.25)" : "rgba(167,139,250,0.25)"}`, minHeight: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <p style={{ color: "rgba(220,220,245,0.90)", fontSize: 13, textAlign: "center", fontWeight: 600, lineHeight: 1.5 }}>
                   {currentInstruction || "Prends ta position de travail habituelle…"}
                 </p>
               </div>
               <div style={{ height: 4, background: "rgba(255,255,255,0.10)", borderRadius: 100, overflow: "hidden" }}>
-                <div style={{ height: "100%", background: isBureau ? "#3b82f6" : "#a78bfa", width: `${Math.min((elapsed / STEP1_DURATION) * 100, 100)}%`, transition: "width 0.1s linear", borderRadius: 100 }} />
+                <div style={{ height: "100%", background: isBureau ? "#3b82f6" : "#9b7bff", width: `${Math.min((elapsed / STEP1_DURATION) * 100, 100)}%`, transition: "width 0.1s linear", borderRadius: 100 }} />
               </div>
             </div>
           </motion.div>
@@ -530,8 +530,8 @@ export default function VideoCapturePage() {
               <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100, background: "rgba(59,130,246,0.20)", color: "#60a5fa", border: "1px solid rgba(59,130,246,0.35)" }}>
                 Étape 2 / 2 — Vue bureau
               </span>
-              <span style={{ fontSize: 11, fontWeight: 800, color: "#f09595", display: "flex", alignItems: "center", gap: 5 }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f09595", display: "inline-block" }} />
+              <span style={{ fontSize: 11, fontWeight: 800, color: "#ff6b6b", display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff6b6b", display: "inline-block" }} />
                 REC
               </span>
             </div>

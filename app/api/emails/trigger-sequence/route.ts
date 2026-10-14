@@ -112,7 +112,7 @@ function reminderJ1Email(firstName?: string): string {
   <div style="max-width:560px;margin:0 auto;padding:32px 16px;">
     <div style="text-align:center;margin-bottom:24px;">
       <div style="background:#111827;display:inline-block;padding:10px 20px;border-radius:10px;">
-        <p style="font-size:20px;font-weight:900;color:#fff;margin:0;">PAW<span style="color:#2b5ce6;">.</span></p>
+        <p style="font-size:20px;font-weight:900;color:#fff;margin:0;">PAW<span style="color:#3d7bff;">.</span></p>
       </div>
     </div>
     <div style="background:#fff;border-radius:20px;padding:28px;border:1px solid #e5e7eb;margin-bottom:16px;">
@@ -124,7 +124,7 @@ function reminderJ1Email(firstName?: string): string {
         Ça prend 5 minutes — et tu vas peut-être comprendre pourquoi tu as mal.
       </p>
       <a href="https://postureatwork.com/onboarding"
-         style="display:inline-block;padding:14px 28px;border-radius:100px;background:#2b5ce6;color:#fff;font-size:15px;font-weight:700;text-decoration:none;">
+         style="display:inline-block;padding:14px 28px;border-radius:100px;background:#3d7bff;color:#fff;font-size:15px;font-weight:700;text-decoration:none;">
         Faire mon bilan maintenant →
       </a>
     </div>
@@ -146,7 +146,7 @@ function reminderJ7Email(firstName?: string, score?: number): string {
   const displayName = (firstName && firstName !== "toi")
     ? firstName.charAt(0).toUpperCase() + firstName.slice(1) + ","
     : "";
-  const scoreText = score ? `Ton score global est de <strong style="color:#2b5ce6;">${score}/100</strong>. ` : "";
+  const scoreText = score ? `Ton score global est de <strong style="color:#3d7bff;">${score}/100</strong>. ` : "";
   return `
 <!DOCTYPE html>
 <html lang="fr">
@@ -155,7 +155,7 @@ function reminderJ7Email(firstName?: string, score?: number): string {
   <div style="max-width:560px;margin:0 auto;padding:32px 16px;">
     <div style="text-align:center;margin-bottom:24px;">
       <div style="background:#111827;display:inline-block;padding:10px 20px;border-radius:10px;">
-        <p style="font-size:20px;font-weight:900;color:#fff;margin:0;">PAW<span style="color:#2b5ce6;">.</span></p>
+        <p style="font-size:20px;font-weight:900;color:#fff;margin:0;">PAW<span style="color:#3d7bff;">.</span></p>
       </div>
     </div>
     <div style="background:#fff;border-radius:20px;padding:28px;border:1px solid #e5e7eb;margin-bottom:16px;">
@@ -172,14 +172,14 @@ function reminderJ7Email(firstName?: string, score?: number): string {
             <span style="font-size:14px;">${d.split(" ")[0]}</span>
             <span style="font-size:13px;color:#374151;flex:1;">${d.split(" ").slice(1).join(" ")}</span>
             <div style="width:60px;height:6px;border-radius:3px;background:#e5e7eb;position:relative;overflow:hidden;">
-              <div style="position:absolute;inset:0;background:linear-gradient(90deg,#2b5ce6,transparent);filter:blur(2px);"></div>
+              <div style="position:absolute;inset:0;background:linear-gradient(90deg,#3d7bff,transparent);filter:blur(2px);"></div>
             </div>
             <span style="font-size:12px;color:#9ca3af;">🔒</span>
           </div>
         `).join("")}
       </div>
       <a href="https://postureatwork.com/premium"
-         style="display:inline-block;padding:14px 28px;border-radius:100px;background:linear-gradient(135deg,#2b5ce6,#7c3aed);color:#fff;font-size:15px;font-weight:700;text-decoration:none;">
+         style="display:inline-block;padding:14px 28px;border-radius:100px;background:linear-gradient(135deg,#3d7bff,#8b5cf6);color:#fff;font-size:15px;font-weight:700;text-decoration:none;">
         🔓 Débloquer mon analyse — 19,99€ →
       </a>
       <p style="font-size:11px;color:#9ca3af;margin:10px 0 0;">Accès à vie · Paiement unique · Sans abonnement</p>

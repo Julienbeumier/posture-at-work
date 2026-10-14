@@ -155,7 +155,7 @@ function SuccessContent() {
       display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ textAlign: "center" }}>
         <div style={{ width: 48, height: 48, borderRadius: "50%", margin: "0 auto 20px",
-          border: "3px solid rgba(43,92,230,0.2)", borderTopColor: "#2b5ce6",
+          border: "3px solid rgba(61,123,255,0.2)", borderTopColor: "#3d7bff",
           animation: "spin 0.8s linear infinite" }} />
         <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 18,
           color: "var(--text-primary)", marginBottom: 8 }}>
@@ -234,12 +234,12 @@ function SuccessContent() {
           lineHeight: 1.65, marginBottom: 20 }}>
           Ton paiement a bien été reçu. L&apos;activation peut prendre quelques secondes.
           Rafraîchis la page dans 30 secondes ou contacte-nous si le problème persiste à{" "}
-          <a href="mailto:hello@postureatwork.com" style={{ color: "#7c9fff" }}>
+          <a href="mailto:hello@postureatwork.com" style={{ color: "#5b9dff" }}>
             hello@postureatwork.com
           </a>
         </p>
         <Link href="/results" style={{ textDecoration: "none" }}>
-          <div style={{ padding: "13px 24px", borderRadius: 100, background: "#2b5ce6",
+          <div style={{ padding: "13px 24px", borderRadius: 100, background: "#3d7bff",
             color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 14,
             display: "inline-block" }}>
             Retour aux résultats
@@ -286,7 +286,7 @@ function SuccessContent() {
               background: "rgba(116,198,157,0.08)", border: "0.5px solid rgba(116,198,157,0.2)",
               display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ fontSize: 18 }}>{item.emoji}</span>
-              <span style={{ fontFamily: T.b, fontSize: 12, color: "#74c69d",
+              <span style={{ fontFamily: T.b, fontSize: 12, color: "#2ee6a6",
                 fontWeight: 600 }}>{item.label}</span>
             </div>
           ))}

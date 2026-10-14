@@ -18,13 +18,13 @@ const FEATURES = [
     icon: "🎯",
     title: "Bilan individuel pour chaque employé",
     desc: "Chaque collaborateur fait son bilan en 5 minutes. Questionnaire clinique + analyse vidéo IA. Accès premium à vie inclus.",
-    color: "#2b5ce6",
+    color: "#3d7bff",
   },
   {
     icon: "📊",
     title: "Dashboard RH avec actions prioritaires",
     desc: "Scores par dimension, zones à risque, rapport trimestriel kiné. PAW vous dit exactement quoi faire — pas juste des données brutes.",
-    color: "#7c3aed",
+    color: "#8b5cf6",
   },
 ];
 
@@ -74,7 +74,7 @@ function PricingCalculator({
 
   return (
     <motion.div {...fu(0.2)} style={{ marginBottom: 72 }}>
-      <p style={{ fontFamily: fonts.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>Tarifs</p>
+      <p style={{ fontFamily: fonts.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#3d7bff", textTransform: "uppercase", marginBottom: 12 }}>Tarifs</p>
       <h2 style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
         Transparent. Sans surprise.
       </h2>
@@ -87,7 +87,7 @@ function PricingCalculator({
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
             <span style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, fontWeight: 600 }}>Nombre d&apos;employés</span>
-            <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 28, color: "#2b5ce6" }}>
+            <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 28, color: "#3d7bff" }}>
               {employees}{" "}
               <span style={{ fontSize: 14, fontWeight: 600, color: c.textMuted }}>employés</span>
             </span>
@@ -99,7 +99,7 @@ function PricingCalculator({
             step={5}
             value={employees}
             onChange={e => setEmployees(Number(e.target.value))}
-            style={{ width: "100%", accentColor: "#2b5ce6", cursor: "pointer" }}
+            style={{ width: "100%", accentColor: "#3d7bff", cursor: "pointer" }}
           />
           <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
             {["10", "25", "50", "75", "100", "150+"].map(label => (
@@ -115,15 +115,15 @@ function PricingCalculator({
               Pour les organisations de 150+ employés, nous construisons une offre sur mesure :
               multi-sites, intégration SIRH, accompagnement dédié.
             </p>
-            <p style={{ fontFamily: fonts.b, fontSize: 13, color: "#7c9fff", marginBottom: 28 }}>
+            <p style={{ fontFamily: fonts.b, fontSize: 13, color: "#5b9dff", marginBottom: 28 }}>
               Tarif négocié · Déploiement accompagné · SLA garanti
             </p>
             <a href="#contact" style={{ textDecoration: "none" }}>
               <button style={{
                 padding: "14px 32px", borderRadius: 100, border: "none",
-                background: "#2b5ce6", color: "#fff",
+                background: "#3d7bff", color: "#fff",
                 fontFamily: fonts.h, fontWeight: 800, fontSize: 15,
-                boxShadow: "0 4px 20px rgba(43,92,230,0.35)", cursor: "pointer",
+                boxShadow: "0 4px 20px rgba(61,123,255,0.35)", cursor: "pointer",
               }}>
                 Demander un devis pour {employees} employés →
               </button>
@@ -150,14 +150,14 @@ function PricingCalculator({
             {/* Argument de valeur */}
             <div style={{
               padding: "16px 18px", borderRadius: 14, marginBottom: 16,
-              background: price.bilanValue <= price.totalYear ? "rgba(43,92,230,0.06)" : "rgba(116,198,157,0.06)",
-              border: `0.5px solid ${price.bilanValue <= price.totalYear ? "rgba(43,92,230,0.2)" : "rgba(116,198,157,0.2)"}`,
+              background: price.bilanValue <= price.totalYear ? "rgba(61,123,255,0.06)" : "rgba(116,198,157,0.06)",
+              border: `0.5px solid ${price.bilanValue <= price.totalYear ? "rgba(61,123,255,0.2)" : "rgba(116,198,157,0.2)"}`,
             }}>
               {price.bilanValue > price.totalYear ? (
                 <p style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.7 }}>
                   💡 Si chacun de vos <strong style={{ color: c.textPrimary }}>{employees} employés</strong> achetait son bilan individuellement,
                   ça coûterait <strong style={{ color: c.textPrimary }}>{price.bilanValue.toLocaleString("fr-FR")}€</strong>.
-                  Avec PAW Entreprise, vous payez <strong style={{ color: "#74c69d" }}>{price.totalYear.toLocaleString("fr-FR")}€</strong> —
+                  Avec PAW Entreprise, vous payez <strong style={{ color: "#2ee6a6" }}>{price.totalYear.toLocaleString("fr-FR")}€</strong> —
                   et vous avez en plus le dashboard RH, l&apos;analyse collective et le rapport trimestriel.
                 </p>
               ) : (
@@ -178,7 +178,7 @@ function PricingCalculator({
                 display: "flex", alignItems: "center", gap: 8,
               }}>
                 <span style={{ fontSize: 16 }}>🎉</span>
-                <span style={{ fontFamily: fonts.b, fontSize: 13, color: "#1d9e75", fontWeight: 600 }}>
+                <span style={{ fontFamily: fonts.b, fontSize: 13, color: "#12c48b", fontWeight: 600 }}>
                   Tarif dégressif : vous économisez {price.savings.toLocaleString("fr-FR")}€/an vs le tarif PME
                 </span>
               </div>
@@ -195,7 +195,7 @@ function PricingCalculator({
                 "Call de restitution avec le kiné",
               ].map((f, i) => (
                 <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                  <span style={{ color: "#2b5ce6", fontSize: 12, flexShrink: 0, marginTop: 2 }}>✓</span>
+                  <span style={{ color: "#3d7bff", fontSize: 12, flexShrink: 0, marginTop: 2 }}>✓</span>
                   <span style={{ fontFamily: fonts.b, fontSize: 12, color: c.textSecondary, lineHeight: 1.4 }}>{f}</span>
                 </div>
               ))}
@@ -205,9 +205,9 @@ function PricingCalculator({
             <a href="#contact" style={{ textDecoration: "none" }}>
               <button style={{
                 width: "100%", padding: "15px 0", borderRadius: 100, border: "none",
-                background: "#2b5ce6", color: "#fff",
+                background: "#3d7bff", color: "#fff",
                 fontFamily: fonts.h, fontWeight: 800, fontSize: 15,
-                boxShadow: "0 4px 24px rgba(43,92,230,0.35)", cursor: "pointer",
+                boxShadow: "0 4px 24px rgba(61,123,255,0.35)", cursor: "pointer",
               }}>
                 Demander une démo pour {employees} employés →
               </button>
@@ -237,7 +237,7 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
 
   return (
     <motion.div {...fu(0.1)} style={{ marginBottom: 72 }}>
-      <p style={{ fontFamily: fonts.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#f4a261", textTransform: "uppercase", marginBottom: 12 }}>
+      <p style={{ fontFamily: fonts.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#ffb020", textTransform: "uppercase", marginBottom: 12 }}>
         Calculateur ROI
       </p>
       <h2 style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 22 : 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
@@ -257,11 +257,11 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
               <span style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, fontWeight: 600 }}>Arrêts TMS par an</span>
-              <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#f09595" }}>{arrets}</span>
+              <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#ff6b6b" }}>{arrets}</span>
             </div>
             <input type="range" min={1} max={10} step={1} value={arrets}
               onChange={e => setArrets(Number(e.target.value))}
-              style={{ width: "100%", accentColor: "#f09595", cursor: "pointer" }} />
+              style={{ width: "100%", accentColor: "#ff6b6b", cursor: "pointer" }} />
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
               {["1", "3", "5", "7", "10"].map(v => (
                 <span key={v} style={{ fontFamily: fonts.b, fontSize: 10, color: c.textMuted }}>{v}</span>
@@ -272,11 +272,11 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
               <span style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, fontWeight: 600 }}>Nombre d&apos;employés</span>
-              <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#2b5ce6" }}>{employees}</span>
+              <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#3d7bff" }}>{employees}</span>
             </div>
             <input type="range" min={10} max={150} step={5} value={employees}
               onChange={e => setEmployees(Number(e.target.value))}
-              style={{ width: "100%", accentColor: "#2b5ce6", cursor: "pointer" }} />
+              style={{ width: "100%", accentColor: "#3d7bff", cursor: "pointer" }} />
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
               {["10", "30", "50", "100", "150"].map(v => (
                 <span key={v} style={{ fontFamily: fonts.b, fontSize: 10, color: c.textMuted }}>{v}</span>
@@ -298,7 +298,7 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
             </div>
             <input type="range" min={2000} max={20000} step={500} value={coutArret}
               onChange={e => setCoutArret(Number(e.target.value))}
-              style={{ width: "100%", accentColor: "#f4a261", cursor: "pointer" }} />
+              style={{ width: "100%", accentColor: "#ffb020", cursor: "pointer" }} />
           </div>
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
@@ -307,24 +307,24 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
             </div>
             <input type="range" min={5} max={30} step={5} value={tauxReduction}
               onChange={e => setTauxReduction(Number(e.target.value))}
-              style={{ width: "100%", accentColor: "#74c69d", cursor: "pointer" }} />
+              style={{ width: "100%", accentColor: "#2ee6a6", cursor: "pointer" }} />
           </div>
         </div>
 
         {/* Résultats */}
         <div style={{ padding: isMobile ? "24px 20px" : "32px 36px" }}>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 14, marginBottom: 20 }}>
-            <div style={{ padding: "18px", borderRadius: 16, textAlign: "center", background: "rgba(240,149,149,0.06)", border: "0.5px solid rgba(240,149,149,0.2)" }}>
-              <p style={{ fontFamily: fonts.b, fontSize: 11, color: "#f09595", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>Coût TMS actuel</p>
-              <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 26, color: "#f09595", margin: "0 0 4px" }}>
+            <div style={{ padding: "18px", borderRadius: 16, textAlign: "center", background: "rgba(255,107,107,0.06)", border: "0.5px solid rgba(255,107,107,0.2)" }}>
+              <p style={{ fontFamily: fonts.b, fontSize: 11, color: "#ff6b6b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>Coût TMS actuel</p>
+              <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 26, color: "#ff6b6b", margin: "0 0 4px" }}>
                 {coutTotal.toLocaleString("fr-FR")}€
               </p>
               <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: 0 }}>/an (selon vos hypothèses)</p>
             </div>
 
-            <div style={{ padding: "18px", borderRadius: 16, textAlign: "center", background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
-              <p style={{ fontFamily: fonts.b, fontSize: 11, color: "#7c9fff", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>PAW coûte</p>
-              <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 26, color: "#7c9fff", margin: "0 0 4px" }}>
+            <div style={{ padding: "18px", borderRadius: 16, textAlign: "center", background: "rgba(61,123,255,0.06)", border: "0.5px solid rgba(61,123,255,0.2)" }}>
+              <p style={{ fontFamily: fonts.b, fontSize: 11, color: "#5b9dff", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>PAW coûte</p>
+              <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 26, color: "#5b9dff", margin: "0 0 4px" }}>
                 {coutPAW.toLocaleString("fr-FR")}€
               </p>
               <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: 0 }}>
@@ -334,13 +334,13 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
 
             <div style={{
               padding: "18px", borderRadius: 16, textAlign: "center",
-              background: roi > 0 ? "rgba(116,198,157,0.08)" : "rgba(244,162,97,0.08)",
-              border: `0.5px solid ${roi > 0 ? "rgba(116,198,157,0.25)" : "rgba(244,162,97,0.25)"}`,
+              background: roi > 0 ? "rgba(116,198,157,0.08)" : "rgba(255,176,32,0.08)",
+              border: `0.5px solid ${roi > 0 ? "rgba(116,198,157,0.25)" : "rgba(255,176,32,0.25)"}`,
             }}>
-              <p style={{ fontFamily: fonts.b, fontSize: 11, color: roi > 0 ? "#74c69d" : "#f4a261", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
+              <p style={{ fontFamily: fonts.b, fontSize: 11, color: roi > 0 ? "#2ee6a6" : "#ffb020", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
                 Économie potentielle
               </p>
-              <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 26, color: roi > 0 ? "#74c69d" : "#f4a261", margin: "0 0 4px" }}>
+              <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 26, color: roi > 0 ? "#2ee6a6" : "#ffb020", margin: "0 0 4px" }}>
                 {reductionTMS.toLocaleString("fr-FR")}€
               </p>
               <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: 0 }}>hypothèse : -{tauxReduction} % d&apos;arrêts TMS</p>
@@ -350,17 +350,17 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
           {/* ROI final */}
           <div style={{
             padding: "18px 20px", borderRadius: 16,
-            background: roi > 0 ? "rgba(116,198,157,0.06)" : "rgba(244,162,97,0.06)",
-            border: `1px solid ${roi > 0 ? "rgba(116,198,157,0.2)" : "rgba(244,162,97,0.2)"}`,
+            background: roi > 0 ? "rgba(116,198,157,0.06)" : "rgba(255,176,32,0.06)",
+            border: `1px solid ${roi > 0 ? "rgba(116,198,157,0.2)" : "rgba(255,176,32,0.2)"}`,
             display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
           }}>
             <div style={{ flex: 1 }}>
               {roi > 0 ? (
                 <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, margin: 0, lineHeight: 1.65 }}>
                   Pour <strong style={{ color: c.textPrimary }}>{employees} employés</strong> avec{" "}
-                  <strong style={{ color: "#f09595" }}>{arrets} arrêts TMS/an</strong>, PAW pourrait vous faire économiser, selon vos hypothèses,{" "}
-                  <strong style={{ color: "#74c69d" }}>{roi.toLocaleString("fr-FR")}€/an</strong> nets.
-                  Soit un retour sur investissement de <strong style={{ color: "#74c69d" }}>x{roiMultiple}</strong>.
+                  <strong style={{ color: "#ff6b6b" }}>{arrets} arrêts TMS/an</strong>, PAW pourrait vous faire économiser, selon vos hypothèses,{" "}
+                  <strong style={{ color: "#2ee6a6" }}>{roi.toLocaleString("fr-FR")}€/an</strong> nets.
+                  Soit un retour sur investissement de <strong style={{ color: "#2ee6a6" }}>x{roiMultiple}</strong>.
                 </p>
               ) : (
                 <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, margin: 0, lineHeight: 1.65 }}>
@@ -369,7 +369,7 @@ function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
               )}
             </div>
             <a href="#contact" style={{ textDecoration: "none", flexShrink: 0 }}>
-              <div style={{ padding: "12px 24px", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: fonts.h, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+              <div style={{ padding: "12px 24px", borderRadius: 100, background: "#3d7bff", color: "#fff", fontFamily: fonts.h, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
                 En savoir plus →
               </div>
             </a>
@@ -424,8 +424,8 @@ export default function EntrepriseClient() {
             padding: "6px 16px", borderRadius: 100, marginBottom: 24,
             background: "rgba(226,75,74,0.08)", border: "0.5px solid rgba(226,75,74,0.2)",
           }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#f09595", flexShrink: 0 }} />
-            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#f09595" }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#ff6b6b", flexShrink: 0 }} />
+            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#ff6b6b" }}>
               Les TMS représentent plus de 80 % des maladies professionnelles reconnues en France
             </span>
           </div>
@@ -439,7 +439,7 @@ export default function EntrepriseClient() {
           }}>
             Vos équipes ont mal.<br />
             Vous ne savez pas exactement pourquoi.<br />
-            <span style={{ color: "#2b5ce6" }}>PAW vous le dit — en 5 minutes par employé.</span>
+            <span style={{ color: "#3d7bff" }}>PAW vous le dit — en 5 minutes par employé.</span>
           </h1>
 
           <p style={{ fontFamily: T.b, fontSize: isMobile ? 15 : 17, color: c.textSecondary, lineHeight: 1.75, maxWidth: 560, margin: "0 auto 12px" }}>
@@ -456,9 +456,9 @@ export default function EntrepriseClient() {
             <a href="#contact" style={{ textDecoration: "none" }}>
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} style={{
                 padding: "16px 36px", borderRadius: 100, cursor: "pointer",
-                background: "#2b5ce6", color: "#fff",
+                background: "#3d7bff", color: "#fff",
                 fontFamily: T.h, fontWeight: 800, fontSize: 16,
-                boxShadow: "0 4px 32px rgba(43,92,230,0.4)",
+                boxShadow: "0 4px 32px rgba(61,123,255,0.4)",
               }}>
                 Demander une démo gratuite →
               </motion.div>
@@ -477,7 +477,7 @@ export default function EntrepriseClient() {
 
         {/* ── 2. DOULEURS DRH + STATS ── */}
         <motion.div {...fadeUp(0.05)} style={{ marginBottom: 72 }}>
-          <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, color: "#f09595", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16, textAlign: "center" }}>
+          <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, color: "#ff6b6b", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16, textAlign: "center" }}>
             Ça vous parle ?
           </p>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 14 }}>
@@ -524,7 +524,7 @@ export default function EntrepriseClient() {
                 background: "rgba(226,75,74,0.04)",
                 border: "0.5px solid rgba(226,75,74,0.12)", textAlign: "center" }}>
                 <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24,
-                  color: "#f09595", margin: "0 0 4px" }}>{s.value}</p>
+                  color: "#ff6b6b", margin: "0 0 4px" }}>{s.value}</p>
                 <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted,
                   margin: "0 0 2px", lineHeight: 1.4 }}>{s.label}</p>
                 <p style={{ fontFamily: T.b, fontSize: 10, color: c.textMuted,
@@ -536,19 +536,19 @@ export default function EntrepriseClient() {
 
         {/* ── 3. DASHBOARD MOCKUP ── */}
         <motion.div {...fadeUp(0.1)} style={{ marginBottom: 72 }}>
-          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>
+          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#3d7bff", textTransform: "uppercase", marginBottom: 12 }}>
             Votre dashboard RH
           </p>
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 22 : 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
             Tout ce qu&apos;il faut pour décider.<br />
-            <span style={{ color: "#2b5ce6" }}>Rien de superflu.</span>
+            <span style={{ color: "#3d7bff" }}>Rien de superflu.</span>
           </h2>
           <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 28, lineHeight: 1.65, maxWidth: 520 }}>
             En un coup d&apos;œil : qui est à risque, pourquoi, et quoi faire en priorité.
             Données anonymisées, conformes RGPD.
           </p>
 
-          <div style={{ borderRadius: 20, overflow: "hidden", border: "1px solid rgba(43,92,230,0.3)", boxShadow: "0 24px 64px rgba(0,0,0,0.4)" }}>
+          <div style={{ borderRadius: 20, overflow: "hidden", border: "1px solid rgba(61,123,255,0.3)", boxShadow: "0 24px 64px rgba(0,0,0,0.4)" }}>
             {/* Browser chrome */}
             <div style={{ background: "#1a1a2e", padding: "10px 16px", display: "flex", alignItems: "center", gap: 8, borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}>
               <div style={{ display: "flex", gap: 5 }}>
@@ -564,7 +564,7 @@ export default function EntrepriseClient() {
             </div>
 
             {/* Dashboard preview */}
-            <div style={{ background: "#0f0f1a", padding: isMobile ? "16px" : "20px", maxHeight: 520, overflow: "hidden", position: "relative" }}>
+            <div style={{ background: "#0a1020", padding: isMobile ? "16px" : "20px", maxHeight: 520, overflow: "hidden", position: "relative" }}>
               {/* Mini header */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                 <div>
@@ -582,8 +582,8 @@ export default function EntrepriseClient() {
               {/* Score + KPIs */}
               <div style={{ borderRadius: 16, padding: "16px", background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.2)", marginBottom: 12 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
-                  <div style={{ width: 56, height: 56, borderRadius: "50%", border: "2.5px solid #74c69d", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0, background: "rgba(116,198,157,0.1)" }}>
-                    <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#74c69d", lineHeight: 1 }}>67</span>
+                  <div style={{ width: 56, height: 56, borderRadius: "50%", border: "2.5px solid #2ee6a6", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0, background: "rgba(116,198,157,0.1)" }}>
+                    <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#2ee6a6", lineHeight: 1 }}>67</span>
                     <span style={{ fontFamily: T.b, fontSize: 8, color: "rgba(255,255,255,0.3)" }}>/100</span>
                   </div>
                   <div>
@@ -595,10 +595,10 @@ export default function EntrepriseClient() {
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
                   {[
-                    { val: "11", label: "Critique", bg: "rgba(240,149,149,0.1)", color: "#f09595" },
-                    { val: "19", label: "À améliorer", bg: "rgba(244,162,97,0.1)", color: "#f4a261" },
-                    { val: "11", label: "Bon niveau", bg: "rgba(116,198,157,0.1)", color: "#74c69d" },
-                    { val: "87%", label: "Participation", bg: "rgba(43,92,230,0.1)", color: "#7c9fff" },
+                    { val: "11", label: "Critique", bg: "rgba(255,107,107,0.1)", color: "#ff6b6b" },
+                    { val: "19", label: "À améliorer", bg: "rgba(255,176,32,0.1)", color: "#ffb020" },
+                    { val: "11", label: "Bon niveau", bg: "rgba(116,198,157,0.1)", color: "#2ee6a6" },
+                    { val: "87%", label: "Participation", bg: "rgba(61,123,255,0.1)", color: "#5b9dff" },
                   ].map((k, i) => (
                     <div key={i} style={{ padding: "8px 6px", borderRadius: 10, background: k.bg, textAlign: "center" }}>
                       <div style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: k.color }}>{k.val}</div>
@@ -611,8 +611,8 @@ export default function EntrepriseClient() {
               {/* Alertes */}
               <div style={{ marginBottom: 12 }}>
                 {[
-                  { color: "rgba(240,149,149,0.08)", border: "rgba(240,149,149,0.2)", text: "🔴 Douleurs lombaires critiques — 8 employés entrepôt. Formation gestes et postures urgente." },
-                  { color: "rgba(244,162,97,0.06)", border: "rgba(244,162,97,0.18)", text: "🟠 11 employés bureau sur laptop sans rehausseur — flexion de nuque prolongée." },
+                  { color: "rgba(255,107,107,0.08)", border: "rgba(255,107,107,0.2)", text: "🔴 Douleurs lombaires critiques — 8 employés entrepôt. Formation gestes et postures urgente." },
+                  { color: "rgba(255,176,32,0.06)", border: "rgba(255,176,32,0.18)", text: "🟠 11 employés bureau sur laptop sans rehausseur — flexion de nuque prolongée." },
                 ].map((a, i) => (
                   <div key={i} style={{ padding: "10px 12px", borderRadius: 10, background: a.color, border: `0.5px solid ${a.border}`, marginBottom: 6, fontFamily: T.b, fontSize: 11, color: "rgba(255,255,255,0.6)", lineHeight: 1.4 }}>
                     {a.text}
@@ -625,7 +625,7 @@ export default function EntrepriseClient() {
                 {["📊 Vue d'ensemble", "👥 Équipe", "📈 Évolution", "🏋️ Exercices"].map((tab, i) => (
                   <div key={i} style={{
                     padding: "5px 10px", borderRadius: 7,
-                    background: i === 0 ? "#2b5ce6" : "rgba(255,255,255,0.04)",
+                    background: i === 0 ? "#3d7bff" : "rgba(255,255,255,0.04)",
                     fontFamily: T.b, fontSize: 10, fontWeight: 600,
                     color: i === 0 ? "#fff" : "rgba(255,255,255,0.35)",
                     border: i === 0 ? "none" : "0.5px solid rgba(255,255,255,0.08)",
@@ -641,10 +641,10 @@ export default function EntrepriseClient() {
                   Scores par dimension
                 </div>
                 {[
-                  { emoji: "💻", name: "Setup", score: 58, color: "#f4a261", w: "58%" },
-                  { emoji: "🩺", name: "Douleurs", score: 52, color: "#f09595", w: "52%" },
-                  { emoji: "⏱️", name: "Habitudes", score: 61, color: "#f4a261", w: "61%" },
-                  { emoji: "🌙", name: "Sommeil", score: 72, color: "#74c69d", w: "72%" },
+                  { emoji: "💻", name: "Setup", score: 58, color: "#ffb020", w: "58%" },
+                  { emoji: "🩺", name: "Douleurs", score: 52, color: "#ff6b6b", w: "52%" },
+                  { emoji: "⏱️", name: "Habitudes", score: 61, color: "#ffb020", w: "61%" },
+                  { emoji: "🌙", name: "Sommeil", score: 72, color: "#2ee6a6", w: "72%" },
                 ].map((d, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7 }}>
                     <span style={{ fontSize: 13, width: 18 }}>{d.emoji}</span>
@@ -658,13 +658,13 @@ export default function EntrepriseClient() {
               </div>
 
               {/* Gradient fade */}
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 100, background: "linear-gradient(to bottom, transparent, #0f0f1a)", pointerEvents: "none" }} />
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 100, background: "linear-gradient(to bottom, transparent, #0a1020)", pointerEvents: "none" }} />
             </div>
 
             {/* CTA overlay */}
-            <div style={{ background: "#0f0f1a", padding: "16px 20px", textAlign: "center", borderTop: "0.5px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ background: "#0a1020", padding: "16px 20px", textAlign: "center", borderTop: "0.5px solid rgba(255,255,255,0.06)" }}>
               <a href="#contact" style={{ textDecoration: "none" }}>
-                <div style={{ display: "inline-block", padding: "11px 24px", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                <div style={{ display: "inline-block", padding: "11px 24px", borderRadius: 100, background: "#3d7bff", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
                   Voir une démo complète →
                 </div>
               </a>
@@ -688,7 +688,7 @@ export default function EntrepriseClient() {
 
         {/* ── 4. COMMENT ÇA MARCHE ── */}
         <motion.div {...fadeUp(0.1)} style={{ marginBottom: 72 }}>
-          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>
+          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#3d7bff", textTransform: "uppercase", marginBottom: 12 }}>
             Simple à déployer
           </p>
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 22 : 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
@@ -701,19 +701,19 @@ export default function EntrepriseClient() {
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16 }}>
             {[
               {
-                step: "01", icon: "⚡", color: "#2b5ce6",
+                step: "01", icon: "⚡", color: "#3d7bff",
                 title: "On crée votre espace",
                 desc: "Après votre démo, on configure votre dashboard RH en 48h. Vous recevez un lien d'invitation à partager à vos équipes.",
                 detail: "→ Vous ne faites rien techniquement",
               },
               {
-                step: "02", icon: "📱", color: "#7c3aed",
+                step: "02", icon: "📱", color: "#8b5cf6",
                 title: "Vos employés font leur bilan",
                 desc: "5 à 10 minutes sur mobile ou PC. Questionnaire + analyse vidéo IA posturale. Chaque employé reçoit son propre rapport personnalisé.",
                 detail: "→ Chaque collaborateur reçoit son propre bilan",
               },
               {
-                step: "03", icon: "📊", color: "#1d9e75",
+                step: "03", icon: "📊", color: "#12c48b",
                 title: "Vous pilotez et agissez",
                 desc: "Votre dashboard RH se remplit en temps réel. Identifiez les zones à risque, les actions prioritaires, et suivez l'évolution.",
                 detail: "→ Premier rapport sous 30 jours",
@@ -745,7 +745,7 @@ export default function EntrepriseClient() {
 
           <div style={{
             marginTop: 16, padding: "16px 20px", borderRadius: 16,
-            background: "rgba(43,92,230,0.04)", border: "0.5px solid rgba(43,92,230,0.15)",
+            background: "rgba(61,123,255,0.04)", border: "0.5px solid rgba(61,123,255,0.15)",
             display: "flex", gap: 14, alignItems: "flex-start",
           }}>
             <span style={{ fontSize: 20, flexShrink: 0 }}>🤔</span>
@@ -830,14 +830,14 @@ export default function EntrepriseClient() {
             </span>
           ))}
           <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>·</span>
-          <span style={{ fontFamily: T.b, fontSize: 11, color: "#74c69d", fontWeight: 600 }}>
+          <span style={{ fontFamily: T.b, fontSize: 11, color: "#2ee6a6", fontWeight: 600 }}>
             🔒 RGPD · Données EU
           </span>
         </div>
 
         {/* ── 6. CONTACT / DÉMO ── */}
         <motion.div {...fadeUp(0.25)} id="contact" style={{ borderRadius: 24, padding: "40px 36px", marginBottom: 32, background: c.bgCard, border: `0.5px solid ${c.border}` }}>
-          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>Contact</p>
+          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#3d7bff", textTransform: "uppercase", marginBottom: 12 }}>Contact</p>
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: c.textPrimary, marginBottom: 8 }}>
             Parlons de vos équipes.
           </h2>
@@ -848,7 +848,7 @@ export default function EntrepriseClient() {
           {contactSent ? (
             <div style={{ padding: "28px", borderRadius: 16, textAlign: "center", background: "rgba(29,158,117,0.08)", border: "0.5px solid rgba(29,158,117,0.25)" }}>
               <div style={{ fontSize: 36, marginBottom: 12 }}>✅</div>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#1d9e75", marginBottom: 6 }}>Message reçu !</p>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#12c48b", marginBottom: 6 }}>Message reçu !</p>
               <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted }}>
                 On revient vers vous sous 24h pour organiser votre démo.
               </p>
@@ -885,11 +885,11 @@ export default function EntrepriseClient() {
                 disabled={!form.nom || !form.email || !form.societe || contactLoading}
                 style={{
                   padding: "15px 0", borderRadius: 100, border: "none",
-                  background: form.nom && form.email && form.societe ? "#2b5ce6" : c.bgCard2,
+                  background: form.nom && form.email && form.societe ? "#3d7bff" : c.bgCard2,
                   color: form.nom && form.email && form.societe ? "#fff" : c.textMuted,
                   fontFamily: T.h, fontWeight: 800, fontSize: 15,
                   cursor: form.nom && form.email && form.societe ? "pointer" : "default",
-                  boxShadow: form.nom && form.email && form.societe ? "0 4px 24px rgba(43,92,230,0.35)" : "none",
+                  boxShadow: form.nom && form.email && form.societe ? "0 4px 24px rgba(61,123,255,0.35)" : "none",
                   transition: "all 0.2s", opacity: contactLoading ? 0.7 : 1,
                 }}
               >
@@ -905,7 +905,7 @@ export default function EntrepriseClient() {
             <span style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted }}>← Retour à PostureAtWork</span>
           </Link>
           <Link href="/entreprise/dashboard" style={{ textDecoration: "none" }}>
-            <span style={{ fontFamily: T.b, fontSize: 13, color: "#7c9fff" }}>Déjà client ? Accéder au dashboard →</span>
+            <span style={{ fontFamily: T.b, fontSize: 13, color: "#5b9dff" }}>Déjà client ? Accéder au dashboard →</span>
           </Link>
         </div>
 

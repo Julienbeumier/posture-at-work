@@ -7,20 +7,20 @@ import type { Scores } from "@/lib/scoring";
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
 const DIMS = [
-  { key: "setup",        label: "Setup",     color: "#7c9fff" },
-  { key: "pain",         label: "Douleurs",  color: "#f09595" },
-  { key: "habits",       label: "Habitudes", color: "#f4a261" },
-  { key: "sleep_energy", label: "Sommeil",   color: "#74c69d" },
-  { key: "nutrition",    label: "Nutrition", color: "#a78bfa" },
-  { key: "lifestyle",    label: "Lifestyle", color: "#5dcaa5" },
+  { key: "setup",        label: "Setup",     color: "#5b9dff" },
+  { key: "pain",         label: "Douleurs",  color: "#ff6b6b" },
+  { key: "habits",       label: "Habitudes", color: "#ffb020" },
+  { key: "sleep_energy", label: "Sommeil",   color: "#2ee6a6" },
+  { key: "nutrition",    label: "Nutrition", color: "#9b7bff" },
+  { key: "lifestyle",    label: "Lifestyle", color: "#3eddb0" },
 ];
 
-function scoreColor(s: number) { return s >= 70 ? "#74c69d" : s >= 50 ? "#f4a261" : "#f09595"; }
+function scoreColor(s: number) { return s >= 70 ? "#2ee6a6" : s >= 50 ? "#ffb020" : "#ff6b6b"; }
 
 function scoreBadge(s: number) {
-  if (s >= 70) return { label: "Bonne santé au travail", color: "#74c69d", bg: "rgba(116,198,157,0.15)" };
-  if (s >= 50) return { label: "À améliorer",            color: "#f4a261", bg: "rgba(244,162,97,0.15)" };
-  return          { label: "Attention requise",          color: "#f09595", bg: "rgba(240,149,149,0.15)" };
+  if (s >= 70) return { label: "Bonne santé au travail", color: "#2ee6a6", bg: "rgba(116,198,157,0.15)" };
+  if (s >= 50) return { label: "À améliorer",            color: "#ffb020", bg: "rgba(255,176,32,0.15)" };
+  return          { label: "Attention requise",          color: "#ff6b6b", bg: "rgba(255,107,107,0.15)" };
 }
 
 export default function PartagePage() {
@@ -40,7 +40,7 @@ export default function PartagePage() {
 
   if (!scores) {
     return (
-      <main style={{ minHeight: "100vh", background: "#0f0f1a", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <main style={{ minHeight: "100vh", background: "#0a1020", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center", maxWidth: 340, padding: "0 24px" }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>📊</div>
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "#f0f0fa", marginBottom: 10 }}>
@@ -49,7 +49,7 @@ export default function PartagePage() {
           <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.5)", marginBottom: 24 }}>
             Fais d&apos;abord ton bilan PostureAtWork pour générer ta carte de partage.
           </p>
-          <div onClick={() => router.push("/questionnaire")} style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "#2b5ce6", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
+          <div onClick={() => router.push("/questionnaire")} style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "#3d7bff", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
             Faire mon bilan →
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function PartagePage() {
     const html2canvas = (await import("html2canvas")).default;
     return html2canvas(cardRef.current, {
       scale: 2,
-      backgroundColor: "#0f0f1a",
+      backgroundColor: "#0a1020",
       useCORS: true,
       logging: false,
     });
@@ -124,7 +124,7 @@ export default function PartagePage() {
   };
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingTop: 56, paddingBottom: 60 }}>
+    <main style={{ minHeight: "100vh", background: "#0a1020", paddingTop: 56, paddingBottom: 60 }}>
       <div style={{ maxWidth: 460, margin: "0 auto", padding: "24px 20px" }}>
 
         <div onClick={() => router.back()} style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.4)", cursor: "pointer", marginBottom: 24 }}>
@@ -143,19 +143,19 @@ export default function PartagePage() {
           ref={cardRef}
           style={{
             width: "100%", aspectRatio: "1 / 1",
-            background: "#0f0f1a", borderRadius: 20,
+            background: "#0a1020", borderRadius: 20,
             padding: "7%", position: "relative", overflow: "hidden",
             border: "0.5px solid rgba(255,255,255,0.08)",
           }}
         >
           {/* Blobs */}
-          <div style={{ position: "absolute", top: "-12%", right: "-12%", width: "55%", height: "55%", borderRadius: "50%", background: "radial-gradient(circle, rgba(43,92,230,0.4) 0%, transparent 70%)", filter: "blur(40px)" }} />
+          <div style={{ position: "absolute", top: "-12%", right: "-12%", width: "55%", height: "55%", borderRadius: "50%", background: "radial-gradient(circle, rgba(61,123,255,0.4) 0%, transparent 70%)", filter: "blur(40px)" }} />
           <div style={{ position: "absolute", bottom: "-8%", left: "-5%", width: "40%", height: "40%", borderRadius: "50%", background: `radial-gradient(circle, ${color}28 0%, transparent 70%)`, filter: "blur(30px)" }} />
 
           {/* Logo */}
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: "6%", position: "relative", zIndex: 1 }}>
             <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#f0f0fa" }}>PAW</span>
-            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#7c9fff" }}>.</span>
+            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#5b9dff" }}>.</span>
             <span style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.4)", marginLeft: 4 }}>PostureAtWork</span>
           </div>
 
@@ -202,8 +202,8 @@ export default function PartagePage() {
           {/* Footer */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
             <span style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.25)" }}>postureatwork.com</span>
-            <div style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(43,92,230,0.20)", border: "0.5px solid rgba(43,92,230,0.35)" }}>
-              <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#7c9fff" }}>Fais ton bilan gratuit →</span>
+            <div style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(61,123,255,0.20)", border: "0.5px solid rgba(61,123,255,0.35)" }}>
+              <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#5b9dff" }}>Fais ton bilan gratuit →</span>
             </div>
           </div>
         </div>
@@ -215,7 +215,7 @@ export default function PartagePage() {
             disabled={busy}
             style={{
               padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: busy ? "default" : "pointer",
-              background: "#2b5ce6", border: "none", boxShadow: "0 4px 20px rgba(43,92,230,0.4)",
+              background: "#3d7bff", border: "none", boxShadow: "0 4px 20px rgba(61,123,255,0.4)",
               fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff",
               opacity: busy ? 0.7 : 1, width: "100%",
             }}
@@ -239,7 +239,7 @@ export default function PartagePage() {
               padding: "13px 0", borderRadius: 100, cursor: "pointer",
               background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.12)",
               fontFamily: T.h, fontWeight: 700, fontSize: 14,
-              color: copied ? "#74c69d" : "rgba(220,220,245,0.75)", width: "100%",
+              color: copied ? "#2ee6a6" : "rgba(220,220,245,0.75)", width: "100%",
             }}
           >
             {copied ? "✅ Lien copié !" : "🔗 Copier le lien"}
