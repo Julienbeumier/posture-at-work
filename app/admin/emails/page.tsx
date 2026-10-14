@@ -131,7 +131,7 @@ export default function AdminEmailsPage() {
                   background: loading === step ? "rgba(43,92,230,0.20)" : "rgba(43,92,230,0.15)",
                   border: "0.5px solid rgba(43,92,230,0.35)",
                   fontFamily: T.b, fontWeight: 600, fontSize: 13,
-                  color: loading === step ? "rgba(168,192,255,0.5)" : "#9db8ff",
+                  color: loading === step ? "rgba(168,192,255,0.5)" : "#6f9bff",
                   textAlign: "left",
                 }}
               >
@@ -140,7 +140,7 @@ export default function AdminEmailsPage() {
               {results[step] && (
                 <span style={{
                   fontFamily: T.b, fontSize: 13, whiteSpace: "nowrap",
-                  color: results[step].startsWith("✅") ? "#86ddb2" : "#ffa6a6",
+                  color: results[step].startsWith("✅") ? "#3fe0a0" : "#ff7b7b",
                 }}>
                   {results[step]}
                 </span>

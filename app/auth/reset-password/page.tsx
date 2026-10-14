@@ -56,7 +56,7 @@ export default function ResetPasswordPage() {
             style={{ padding: "12px 14px", borderRadius: 12, outline: "none",
               background: "var(--bg-card2)", border: "1px solid var(--border2)",
               color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }} />
-          {error && <p style={{ fontFamily: T.b, fontSize: 12, color: "#ffa6a6", textAlign: "center" }}>{error}</p>}
+          {error && <p style={{ fontFamily: T.b, fontSize: 12, color: "#ff7b7b", textAlign: "center" }}>{error}</p>}
           <button onClick={handleReset} disabled={!password || !confirm || loading}
             style={{ padding: "14px 0", borderRadius: 100, border: "none",
               background: password && confirm ? "#2b5ce6" : "var(--bg-card2)",

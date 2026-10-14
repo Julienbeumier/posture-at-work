@@ -25,21 +25,21 @@ const pillars = [
     icon: "🩺",
     title: "Douleurs",
     desc: "Nuque, dos, épaules, poignets — où tu as mal, depuis quand, et ce que ça révèle. Avec des exercices ciblés pour chaque zone.",
-    bg: "rgba(255,166,166,0.08)",
-    border: "rgba(255,166,166,0.18)",
-    titleColor: "#ffa6a6",
-    blob: "rgba(255,166,166,0.25)",
-    iconBg: "rgba(255,166,166,0.18)",
+    bg: "rgba(255,123,123,0.08)",
+    border: "rgba(255,123,123,0.18)",
+    titleColor: "#ff7b7b",
+    blob: "rgba(255,123,123,0.25)",
+    iconBg: "rgba(255,123,123,0.18)",
   },
   {
     icon: "⏱️",
     title: "Habitudes au travail",
     desc: "Pauses, position, heures d'écran, stress — les comportements répétés qui construisent ou détruisent ta santé au fil des semaines.",
-    bg: "rgba(255,184,119,0.08)",
-    border: "rgba(255,184,119,0.18)",
-    titleColor: "#ffb877",
-    blob: "rgba(255,184,119,0.25)",
-    iconBg: "rgba(255,184,119,0.18)",
+    bg: "rgba(255,163,71,0.08)",
+    border: "rgba(255,163,71,0.18)",
+    titleColor: "#ffa347",
+    blob: "rgba(255,163,71,0.25)",
+    iconBg: "rgba(255,163,71,0.18)",
   },
   {
     icon: "🌙",
@@ -192,7 +192,7 @@ export default function LandingClient() {
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "7px 18px", borderRadius: 100,
             background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.3)",
-            color: "#9db8ff", fontSize: 12, fontFamily: T.h, fontWeight: 700, letterSpacing: "0.04em",
+            color: "#6f9bff", fontSize: 12, fontFamily: T.h, fontWeight: 700, letterSpacing: "0.04em",
           }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#2b5ce6", display: "inline-block" }} />
             Bilan clinique. Résultats immédiats.
@@ -479,7 +479,7 @@ export default function LandingClient() {
                 <span key={i} style={{
                   padding: "4px 12px", borderRadius: 100,
                   background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)",
-                  fontFamily: T.b, fontSize: 11, color: "#9db8ff", fontWeight: 600,
+                  fontFamily: T.b, fontSize: 11, color: "#6f9bff", fontWeight: 600,
                 }}>✓ {badge}</span>
               ))}
             </div>

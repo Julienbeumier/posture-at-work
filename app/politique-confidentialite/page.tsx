@@ -34,7 +34,7 @@ export default function PolitiqueConfidentialite() {
         </p>
 
         <Section title="1. Qui sommes-nous">
-          <p>PostureAtWork est un outil de bilan santé au bureau développé de manière indépendante. Pour toute question relative à tes données, contacte-nous à : <a href="mailto:contact@postureatwork.app" style={{ color: "#9db8ff" }}>contact@postureatwork.app</a></p>
+          <p>PostureAtWork est un outil de bilan santé au bureau développé de manière indépendante. Pour toute question relative à tes données, contacte-nous à : <a href="mailto:contact@postureatwork.app" style={{ color: "#6f9bff" }}>contact@postureatwork.app</a></p>
         </Section>
 
         <Section title="2. Données collectées">
@@ -66,7 +66,7 @@ export default function PolitiqueConfidentialite() {
               La vidéo complète n'est jamais uploadée — seules 4 à 7 images fixes (JPEG) sont transmises, puis immédiatement supprimées après l'analyse.
             </p>
           </div>
-          <p>Anthropic est soumis à sa propre politique de confidentialité disponible sur <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: "#9db8ff" }}>anthropic.com/privacy</a>.</p>
+          <p>Anthropic est soumis à sa propre politique de confidentialité disponible sur <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: "#6f9bff" }}>anthropic.com/privacy</a>.</p>
         </Section>
 
         <Section title="5. Tes droits">
@@ -77,13 +77,13 @@ export default function PolitiqueConfidentialite() {
             <li><strong style={{ color: "#f0f0fa" }}>Supprimer</strong> ton compte et toutes tes données</li>
             <li><strong style={{ color: "#f0f0fa" }}>Exporter</strong> tes données (portabilité)</li>
           </ul>
-          <p style={{ marginTop: 12 }}>Pour exercer ces droits, envoie une demande à <a href="mailto:contact@postureatwork.app" style={{ color: "#9db8ff" }}>contact@postureatwork.app</a>.</p>
+          <p style={{ marginTop: 12 }}>Pour exercer ces droits, envoie une demande à <a href="mailto:contact@postureatwork.app" style={{ color: "#6f9bff" }}>contact@postureatwork.app</a>.</p>
         </Section>
 
         <Section title="6. Supprimer mes données">
           <p>
             Pour demander la suppression complète de ton compte et de toutes tes données, envoie un email à{" "}
-            <a href="mailto:contact@postureatwork.app?subject=Suppression de compte" style={{ color: "#ffa6a6" }}>contact@postureatwork.app</a>{" "}
+            <a href="mailto:contact@postureatwork.app?subject=Suppression de compte" style={{ color: "#ff7b7b" }}>contact@postureatwork.app</a>{" "}
             avec l'objet "Suppression de compte". Nous procéderons sous 72h.
           </p>
           <p style={{ marginTop: 8 }}>Tu peux aussi supprimer ton compte directement depuis ton tableau de bord.</p>
@@ -98,7 +98,7 @@ export default function PolitiqueConfidentialite() {
         <Section title="8. Contact">
           <p>
             Pour toute question concernant cette politique :<br />
-            <a href="mailto:contact@postureatwork.app" style={{ color: "#9db8ff" }}>contact@postureatwork.app</a>
+            <a href="mailto:contact@postureatwork.app" style={{ color: "#6f9bff" }}>contact@postureatwork.app</a>
           </p>
         </Section>
       </div>

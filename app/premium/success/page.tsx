@@ -234,7 +234,7 @@ function SuccessContent() {
           lineHeight: 1.65, marginBottom: 20 }}>
           Ton paiement a bien été reçu. L&apos;activation peut prendre quelques secondes.
           Rafraîchis la page dans 30 secondes ou contacte-nous si le problème persiste à{" "}
-          <a href="mailto:hello@postureatwork.com" style={{ color: "#9db8ff" }}>
+          <a href="mailto:hello@postureatwork.com" style={{ color: "#6f9bff" }}>
             hello@postureatwork.com
           </a>
         </p>
@@ -283,10 +283,10 @@ function SuccessContent() {
             { emoji: "♾️", label: "Accès à vie" },
           ].map((item, i) => (
             <div key={i} style={{ padding: "12px", borderRadius: 12,
-              background: "rgba(134,221,178,0.08)", border: "0.5px solid rgba(134,221,178,0.2)",
+              background: "rgba(63,224,160,0.08)", border: "0.5px solid rgba(63,224,160,0.2)",
               display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ fontSize: 18 }}>{item.emoji}</span>
-              <span style={{ fontFamily: T.b, fontSize: 12, color: "#86ddb2",
+              <span style={{ fontFamily: T.b, fontSize: 12, color: "#3fe0a0",
                 fontWeight: 600 }}>{item.label}</span>
             </div>
           ))}

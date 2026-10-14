@@ -4,9 +4,9 @@ import { useEffect } from "react";
 const KEEP_COLORS = [
   "#e24b4a", "#d4622a", "#2d6a4f",
   "#2b5ce6", "#7c3aed", "#1d9e75",
-  "#86ddb2", "#ffb877", "#ffa6a6",
+  "#3fe0a0", "#ffa347", "#ff7b7b",
   "#f59e0b", "#22c55e", "#2563eb",
-  "#a78bfa", "#9db8ff", "#5dcaa5",
+  "#a78bfa", "#6f9bff", "#5dcaa5",
 ];
 
 const COLORED_BGS = [

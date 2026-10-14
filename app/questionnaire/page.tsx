@@ -27,21 +27,21 @@ const CATEGORIES = [
     index: 1, id: "cat-2",
     title: "Tes douleurs", short: "Douleurs", emoji: "🩺",
     color: "#e24b4a", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
-    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#ffa6a6",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#ff7b7b",
     requiredQ: ["q6", "q7", "q8", "q9", "q10", "q11", "q12", "q12b", "q_irradiation", "q_douleur_nuit"],
   },
   {
     index: 2, id: "cat-3",
     title: "Habitudes de travail", short: "Habitudes", emoji: "⏱️",
     color: "#d4622a", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
-    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#ffb877",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#ffa347",
     requiredQ: ["q14", "q14b", "q_laptop_hors_bureau"],
   },
   {
     index: 3, id: "cat-4",
     title: "Sommeil & énergie", short: "Sommeil", emoji: "🌙",
     color: "#2d6a4f", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
-    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#86ddb2",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#3fe0a0",
     requiredQ: ["q18", "q20", "q_ecrans_soir"],
   },
   {
@@ -594,7 +594,7 @@ function BureauQuestionnaire() {
               </button>
               <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>
                 <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)" }}>PAW</span>
-                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#9db8ff" }}>.</span>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#6f9bff" }}>.</span>
               </Link>
             </div>
             <span style={{ color: "var(--t40)", fontSize: 13, fontFamily: T.b }}>

@@ -25,10 +25,10 @@ function useDemoAuth() {
 }
 
 const DIM_META: Record<string, { label: string; emoji: string; color: string; type: "employeur" | "employe" }> = {
-  setup:        { label: "Setup & ergonomie",  emoji: "💻", color: "#9db8ff",  type: "employeur" },
-  habits:       { label: "Habitudes de travail", emoji: "⏱️", color: "#ffb877", type: "employeur" },
-  pain:         { label: "Douleurs",            emoji: "🩺", color: "#ffa6a6", type: "employeur" },
-  sleep_energy: { label: "Sommeil & énergie",   emoji: "🌙", color: "#86ddb2", type: "employe" },
+  setup:        { label: "Setup & ergonomie",  emoji: "💻", color: "#6f9bff",  type: "employeur" },
+  habits:       { label: "Habitudes de travail", emoji: "⏱️", color: "#ffa347", type: "employeur" },
+  pain:         { label: "Douleurs",            emoji: "🩺", color: "#ff7b7b", type: "employeur" },
+  sleep_energy: { label: "Sommeil & énergie",   emoji: "🌙", color: "#3fe0a0", type: "employe" },
   nutrition:    { label: "Nutrition",           emoji: "🍽️", color: "#a78bfa", type: "employe" },
   lifestyle:    { label: "Mode de vie actif",   emoji: "🏃", color: "#5dcaa5", type: "employe" },
 };
@@ -170,7 +170,7 @@ const EXERCISES_BY_ISSUE: Record<string, { name: string; duration: string; desc:
 };
 
 function scoreColor(s: number) {
-  return s >= 70 ? "#86ddb2" : s >= 50 ? "#ffb877" : "#ffa6a6";
+  return s >= 70 ? "#3fe0a0" : s >= 50 ? "#ffa347" : "#ff7b7b";
 }
 
 function scoreZone(s: number) {
@@ -269,15 +269,15 @@ function analyzeEmployee(emp: EmployeeRow): {
 
   if (emp.job_type === "bureau") {
     if (a.q1 === "laptop" && a.q_double_ecran === "laptop_seul") {
-      flags.push({ label: "Laptop seul sans rehausseur", color: "#ffa6a6", severity: "critical" });
+      flags.push({ label: "Laptop seul sans rehausseur", color: "#ff7b7b", severity: "critical" });
       mainIssues.push("Laptop seul — charge cervicale +12kg en permanence");
       recommendations.push("Rehausseur d'écran + clavier externe indispensable");
     }
     if (a.q3 === "no" || a.q_hauteur_bureau === "trop_bas") {
-      flags.push({ label: "Écran trop bas", color: "#ffa6a6", severity: "critical" });
+      flags.push({ label: "Écran trop bas", color: "#ff7b7b", severity: "critical" });
     }
     if (a.q5b === "couch" || a.q5b === "fixed") {
-      flags.push({ label: "Chaise inadaptée", color: "#ffb877", severity: "warning" });
+      flags.push({ label: "Chaise inadaptée", color: "#ffa347", severity: "warning" });
       mainIssues.push("Chaise sans soutien lombaire — posture effondrée en fin de journée");
       recommendations.push("Coussin lombaire ou chaise ergonomique réglable");
     }
@@ -286,20 +286,20 @@ function analyzeEmployee(emp: EmployeeRow): {
     const dos = Number(a.q8 ?? 0);
     const poignets = Number(a.q9 ?? 0);
     if (nuque >= 3) {
-      flags.push({ label: `Douleurs nuque ${nuque}/5`, color: "#ffa6a6", severity: nuque >= 4 ? "critical" : "warning" });
+      flags.push({ label: `Douleurs nuque ${nuque}/5`, color: "#ff7b7b", severity: nuque >= 4 ? "critical" : "warning" });
       mainIssues.push(`Douleurs cervicales significatives (${nuque}/5)`);
     }
     if (epaules >= 3) {
-      flags.push({ label: `Douleurs épaules ${epaules}/5`, color: "#ffa6a6", severity: "warning" });
+      flags.push({ label: `Douleurs épaules ${epaules}/5`, color: "#ff7b7b", severity: "warning" });
       mainIssues.push(`Douleurs épaules (${epaules}/5) — enroulement postural probable`);
     }
     if (dos >= 3) {
-      flags.push({ label: `Douleurs lombaires ${dos}/5`, color: "#ffb877", severity: "warning" });
+      flags.push({ label: `Douleurs lombaires ${dos}/5`, color: "#ffa347", severity: "warning" });
       mainIssues.push(`Lombalgies (${dos}/5) — station assise prolongée probable facteur aggravant`);
       recommendations.push("Pauses actives toutes les 45 min + coussin lombaire");
     }
     if (poignets >= 3) {
-      flags.push({ label: `Douleurs poignets ${poignets}/5`, color: "#ffb877", severity: "warning" });
+      flags.push({ label: `Douleurs poignets ${poignets}/5`, color: "#ffa347", severity: "warning" });
       recommendations.push("Souris verticale à essayer (poignets douloureux)");
     }
     if (a.q_irradiation_bras === "coude" || a.q_irradiation_bras === "main") {
@@ -316,13 +316,13 @@ function analyzeEmployee(emp: EmployeeRow): {
     }
     const heures = Number(a.q13 ?? 0);
     if (heures >= 9) {
-      flags.push({ label: `${heures}h/jour assis`, color: "#ffb877", severity: "warning" });
+      flags.push({ label: `${heures}h/jour assis`, color: "#ffa347", severity: "warning" });
       mainIssues.push(`${heures}h assis par jour — sédentarité excessive`);
       recommendations.push("Alarme toutes les 45 min pour se lever");
     }
-    if (a.q14 === "never") flags.push({ label: "Aucune pause active", color: "#ffa6a6", severity: "critical" });
+    if (a.q14 === "never") flags.push({ label: "Aucune pause active", color: "#ff7b7b", severity: "critical" });
     if (a.q14b === "none") {
-      flags.push({ label: "Aucune activité physique", color: "#ffb877", severity: "warning" });
+      flags.push({ label: "Aucune activité physique", color: "#ffa347", severity: "warning" });
       recommendations.push("Encourager activité physique minimale 2x/semaine");
     }
     const stress = Number(a.q_stress_travail ?? 0);
@@ -332,12 +332,12 @@ function analyzeEmployee(emp: EmployeeRow): {
     }
     const sommeil = Number(a.q17 ?? 7);
     if (sommeil <= 5) {
-      flags.push({ label: `${sommeil}h de sommeil`, color: "#ffa6a6", severity: "critical" });
+      flags.push({ label: `${sommeil}h de sommeil`, color: "#ff7b7b", severity: "critical" });
       mainIssues.push(`Manque de sommeil (${sommeil}h) — récupération musculaire insuffisante`);
     }
-    if (a.qn1 === "screen") flags.push({ label: "Repas devant écran", color: "#ffb877", severity: "info" });
+    if (a.qn1 === "screen") flags.push({ label: "Repas devant écran", color: "#ffa347", severity: "info" });
     if (a.qn2 === "crash") {
-      flags.push({ label: "Crash post-repas", color: "#ffb877", severity: "warning" });
+      flags.push({ label: "Crash post-repas", color: "#ffa347", severity: "warning" });
       recommendations.push("Pause déjeuner loin de l'écran — repas protéiné");
     }
     const profileParts: string[] = [];
@@ -358,21 +358,21 @@ function analyzeEmployee(emp: EmployeeRow): {
     const epaules = Number(a.q_d_doul_epaules ?? 0);
     const pieds = Number(a.q_d_doul_pieds ?? 0);
     if (dos >= 3) {
-      flags.push({ label: `Douleurs dos ${dos}/5`, color: "#ffa6a6", severity: dos >= 4 ? "critical" : "warning" });
+      flags.push({ label: `Douleurs dos ${dos}/5`, color: "#ff7b7b", severity: dos >= 4 ? "critical" : "warning" });
       mainIssues.push(`Lombalgies significatives (${dos}/5) — manutention et station debout prolongée`);
       recommendations.push("Formation gestes et postures de levage");
     }
     if (jambes >= 3) {
-      flags.push({ label: `Jambes lourdes ${jambes}/5`, color: "#ffb877", severity: "warning" });
+      flags.push({ label: `Jambes lourdes ${jambes}/5`, color: "#ffa347", severity: "warning" });
       mainIssues.push(`Fatigue des membres inférieurs (${jambes}/5) — fatigue des jambes à surveiller`);
       recommendations.push("Chaussettes de compression + tapis anti-fatigue");
     }
     if (epaules >= 3) {
-      flags.push({ label: `Épaules ${epaules}/5`, color: "#ffb877", severity: "warning" });
+      flags.push({ label: `Épaules ${epaules}/5`, color: "#ffa347", severity: "warning" });
       mainIssues.push(`Douleurs épaules (${epaules}/5) — gestes répétitifs ou port de charges en hauteur`);
     }
     if (pieds >= 3) {
-      flags.push({ label: `Douleurs pieds ${pieds}/5`, color: "#ffb877", severity: "warning" });
+      flags.push({ label: `Douleurs pieds ${pieds}/5`, color: "#ffa347", severity: "warning" });
       recommendations.push("Semelles orthopédiques de travail");
     }
     if (a.q_d_posture_levage === "mauvaise") {
@@ -381,12 +381,12 @@ function analyzeEmployee(emp: EmployeeRow): {
       recommendations.push("Formation urgente gestes et postures — risque arrêt de travail");
     }
     if (a.q_d_tapis === "non") {
-      flags.push({ label: "Pas de tapis anti-fatigue", color: "#ffb877", severity: "warning" });
+      flags.push({ label: "Pas de tapis anti-fatigue", color: "#ffa347", severity: "warning" });
       recommendations.push("Tapis anti-fatigue au poste fixe — impact immédiat");
     }
     const sommeil = Number(a.q_d_sommeil ?? 7);
     if (sommeil <= 5) {
-      flags.push({ label: `${sommeil}h de sommeil`, color: "#ffa6a6", severity: "critical" });
+      flags.push({ label: `${sommeil}h de sommeil`, color: "#ff7b7b", severity: "critical" });
       mainIssues.push(`Manque de sommeil (${sommeil}h) — récupération insuffisante après journée physique`);
     }
     if (a.q_d_jambes_nuit === "souvent") {
@@ -735,7 +735,7 @@ export default function EntrepriseDemoDashboard() {
         {/* ── HEADER ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 28 }}>
           <div>
-            <p style={{ fontFamily: T.b, fontSize: 11, color: "#9db8ff", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>
+            <p style={{ fontFamily: T.b, fontSize: 11, color: "#6f9bff", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>
               🏢 Dashboard RH
             </p>
             <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: c.textPrimary, margin: "0 0 4px" }}>
@@ -791,9 +791,9 @@ export default function EntrepriseDemoDashboard() {
             gap: 8,
           }}>
             {[
-              { label: "Zone critique", value: zoneCounts.critique, color: "#ffa6a6", bg: "rgba(255,166,166,0.10)" },
-              { label: "À améliorer", value: zoneCounts.ameliorer, color: "#ffb877", bg: "rgba(255,184,119,0.10)" },
-              { label: "Bon niveau", value: zoneCounts.bon, color: "#86ddb2", bg: "rgba(134,221,178,0.10)" },
+              { label: "Zone critique", value: zoneCounts.critique, color: "#ff7b7b", bg: "rgba(255,123,123,0.10)" },
+              { label: "À améliorer", value: zoneCounts.ameliorer, color: "#ffa347", bg: "rgba(255,163,71,0.10)" },
+              { label: "Bon niveau", value: zoneCounts.bon, color: "#3fe0a0", bg: "rgba(63,224,160,0.10)" },
               { label: "Participation", value: `${participation}%`, color: "#2b5ce6", bg: c.bgCard2 },
             ].map((z, i) => (
               <div key={i} style={{ textAlign: "center", padding: isMobile ? "10px 8px" : "12px 16px", borderRadius: 14, background: z.bg }}>
@@ -995,14 +995,14 @@ export default function EntrepriseDemoDashboard() {
                       {/* Narrative bureau */}
                       {collective.bureauNarrative && (
                         <div style={{ marginTop: 12, padding: "14px 16px", borderRadius: 10, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
-                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#9db8ff", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#6f9bff", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
                             💻 Équipe bureau — Observation vidéo
                           </p>
                           <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.7, margin: "0 0 10px" }}>
                             {collective.bureauNarrative}
                           </p>
                           {collective.bureauPositif && (
-                            <p style={{ fontFamily: T.b, fontSize: 13, color: "#86ddb2", lineHeight: 1.6, margin: "0 0 10px" }}>
+                            <p style={{ fontFamily: T.b, fontSize: 13, color: "#3fe0a0", lineHeight: 1.6, margin: "0 0 10px" }}>
                               {collective.bureauPositif}
                             </p>
                           )}
@@ -1010,7 +1010,7 @@ export default function EntrepriseDemoDashboard() {
                             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                               {collective.bureauActions.map((action, i) => (
                                 <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                                  <span style={{ color: "#9db8ff", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
+                                  <span style={{ color: "#6f9bff", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
                                   <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary }}>{action}</span>
                                 </div>
                               ))}
@@ -1022,14 +1022,14 @@ export default function EntrepriseDemoDashboard() {
                       {/* Narrative debout */}
                       {collective.deboutNarrative && (
                         <div style={{ marginTop: 10, padding: "14px 16px", borderRadius: 10, background: "rgba(212,98,42,0.06)", border: "0.5px solid rgba(212,98,42,0.2)" }}>
-                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffb877", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffa347", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
                             🏭 Équipe debout — Observation vidéo
                           </p>
                           <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.7, margin: "0 0 10px" }}>
                             {collective.deboutNarrative}
                           </p>
                           {collective.deboutPositif && (
-                            <p style={{ fontFamily: T.b, fontSize: 13, color: "#86ddb2", lineHeight: 1.6, margin: "0 0 10px" }}>
+                            <p style={{ fontFamily: T.b, fontSize: 13, color: "#3fe0a0", lineHeight: 1.6, margin: "0 0 10px" }}>
                               {collective.deboutPositif}
                             </p>
                           )}
@@ -1037,7 +1037,7 @@ export default function EntrepriseDemoDashboard() {
                             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                               {collective.deboutActions.map((action, i) => (
                                 <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                                  <span style={{ color: "#ffb877", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
+                                  <span style={{ color: "#ffa347", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
                                   <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary }}>{action}</span>
                                 </div>
                               ))}
@@ -1054,7 +1054,7 @@ export default function EntrepriseDemoDashboard() {
                         {/* Bureau */}
                         {collective.bureauTrends.length > 0 && (
                           <div>
-                            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#9db8ff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
+                            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#6f9bff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
                               💻 Équipe bureau ({collective.bureauCount} filmés)
                             </p>
                             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1062,7 +1062,7 @@ export default function EntrepriseDemoDashboard() {
                                 const critiquePct = Math.round((trend.critique / trend.total) * 100);
                                 const attentionPct = Math.round((trend.attention / trend.total) * 100);
                                 const bonPct = Math.round((trend.bon / trend.total) * 100);
-                                const mainColor = trend.critique > trend.bon ? "#ffa6a6" : trend.attention > trend.bon ? "#ffb877" : "#86ddb2";
+                                const mainColor = trend.critique > trend.bon ? "#ff7b7b" : trend.attention > trend.bon ? "#ffa347" : "#3fe0a0";
 
                                 return (
                                   <div key={i} style={{ padding: "12px 14px", borderRadius: 12, background: `${mainColor}06`, border: `0.5px solid ${mainColor}25` }}>
@@ -1077,24 +1077,24 @@ export default function EntrepriseDemoDashboard() {
 
                                     {/* Barre de répartition */}
                                     <div style={{ height: 8, borderRadius: 100, overflow: "hidden", display: "flex", marginBottom: 8 }}>
-                                      {trend.critique > 0 && <div style={{ width: `${critiquePct}%`, background: "#ffa6a6" }} />}
-                                      {trend.attention > 0 && <div style={{ width: `${attentionPct}%`, background: "#ffb877" }} />}
-                                      {trend.bon > 0 && <div style={{ width: `${bonPct}%`, background: "#86ddb2" }} />}
+                                      {trend.critique > 0 && <div style={{ width: `${critiquePct}%`, background: "#ff7b7b" }} />}
+                                      {trend.attention > 0 && <div style={{ width: `${attentionPct}%`, background: "#ffa347" }} />}
+                                      {trend.bon > 0 && <div style={{ width: `${bonPct}%`, background: "#3fe0a0" }} />}
                                     </div>
 
                                     <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
                                       {trend.critique > 0 && (
-                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#ffa6a6" }}>
+                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#ff7b7b" }}>
                                           ⚠️ {trend.critique} critique{trend.critique > 1 ? "s" : ""}
                                         </span>
                                       )}
                                       {trend.attention > 0 && (
-                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#ffb877" }}>
+                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#ffa347" }}>
                                           🟠 {trend.attention} à surveiller
                                         </span>
                                       )}
                                       {trend.bon > 0 && (
-                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#86ddb2" }}>
+                                        <span style={{ fontFamily: T.b, fontSize: 11, color: "#3fe0a0" }}>
                                           ✅ {trend.bon} correct{trend.bon > 1 ? "s" : ""}
                                         </span>
                                       )}
@@ -1113,7 +1113,7 @@ export default function EntrepriseDemoDashboard() {
                         {/* Debout */}
                         {collective.deboutTrends.length > 0 && (
                           <div>
-                            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffb877", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
+                            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffa347", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
                               🏭 Équipe debout ({collective.deboutCount} filmés)
                             </p>
                             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1121,7 +1121,7 @@ export default function EntrepriseDemoDashboard() {
                                 const critiquePct = Math.round((trend.critique / trend.total) * 100);
                                 const attentionPct = Math.round((trend.attention / trend.total) * 100);
                                 const bonPct = Math.round((trend.bon / trend.total) * 100);
-                                const mainColor = trend.critique > trend.bon ? "#ffa6a6" : trend.attention > trend.bon ? "#ffb877" : "#86ddb2";
+                                const mainColor = trend.critique > trend.bon ? "#ff7b7b" : trend.attention > trend.bon ? "#ffa347" : "#3fe0a0";
 
                                 return (
                                   <div key={i} style={{ padding: "12px 14px", borderRadius: 12, background: `${mainColor}06`, border: `0.5px solid ${mainColor}25` }}>
@@ -1134,14 +1134,14 @@ export default function EntrepriseDemoDashboard() {
                                       </span>
                                     </div>
                                     <div style={{ height: 8, borderRadius: 100, overflow: "hidden", display: "flex", marginBottom: 8 }}>
-                                      {trend.critique > 0 && <div style={{ width: `${critiquePct}%`, background: "#ffa6a6" }} />}
-                                      {trend.attention > 0 && <div style={{ width: `${attentionPct}%`, background: "#ffb877" }} />}
-                                      {trend.bon > 0 && <div style={{ width: `${bonPct}%`, background: "#86ddb2" }} />}
+                                      {trend.critique > 0 && <div style={{ width: `${critiquePct}%`, background: "#ff7b7b" }} />}
+                                      {trend.attention > 0 && <div style={{ width: `${attentionPct}%`, background: "#ffa347" }} />}
+                                      {trend.bon > 0 && <div style={{ width: `${bonPct}%`, background: "#3fe0a0" }} />}
                                     </div>
                                     <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
-                                      {trend.critique > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#ffa6a6" }}>⚠️ {trend.critique} critique{trend.critique > 1 ? "s" : ""}</span>}
-                                      {trend.attention > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#ffb877" }}>🟠 {trend.attention} à surveiller</span>}
-                                      {trend.bon > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#86ddb2" }}>✅ {trend.bon} correct{trend.bon > 1 ? "s" : ""}</span>}
+                                      {trend.critique > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#ff7b7b" }}>⚠️ {trend.critique} critique{trend.critique > 1 ? "s" : ""}</span>}
+                                      {trend.attention > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#ffa347" }}>🟠 {trend.attention} à surveiller</span>}
+                                      {trend.bon > 0 && <span style={{ fontFamily: T.b, fontSize: 11, color: "#3fe0a0" }}>✅ {trend.bon} correct{trend.bon > 1 ? "s" : ""}</span>}
                                     </div>
                                     <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0, fontStyle: "italic" }}>
                                       {trend.consequence}
@@ -1202,7 +1202,7 @@ export default function EntrepriseDemoDashboard() {
                           Basé sur {assessed.length} bilan{assessed.length > 1 ? "s" : ""} · {hasGroups ? `${bureau.count} postes bureau · ${debout.count} postes debout` : "Profil mixte"}
                         </p>
                       </div>
-                      <span style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)", fontFamily: T.b, fontSize: 11, fontWeight: 600, color: "#9db8ff" }}>
+                      <span style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)", fontFamily: T.b, fontSize: 11, fontWeight: 600, color: "#6f9bff" }}>
                         🩺 Validé par un kinésithérapeute
                       </span>
                     </div>
@@ -1234,7 +1234,7 @@ export default function EntrepriseDemoDashboard() {
                           <div style={{ padding: "16px", borderRadius: 14, background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                               <span style={{ fontSize: 18 }}>💻</span>
-                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#9db8ff" }}>Équipe bureau ({bureau.count})</span>
+                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#6f9bff" }}>Équipe bureau ({bureau.count})</span>
                               <span style={{ marginLeft: "auto", fontFamily: T.h, fontWeight: 900, fontSize: 18, color: bureau.global ? scoreColor(bureau.global) : c.textMuted }}>{bureau.global ?? "—"}</span>
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -1253,8 +1253,8 @@ export default function EntrepriseDemoDashboard() {
                                 </div>
                               ))}
                             </div>
-                            <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10, background: "rgba(255,166,166,0.08)", border: "0.5px solid rgba(255,166,166,0.2)" }}>
-                              <p style={{ fontFamily: T.b, fontSize: 12, color: "#ffa6a6", margin: 0, lineHeight: 1.5 }}>
+                            <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10, background: "rgba(255,123,123,0.08)", border: "0.5px solid rgba(255,123,123,0.2)" }}>
+                              <p style={{ fontFamily: T.b, fontSize: 12, color: "#ff7b7b", margin: 0, lineHeight: 1.5 }}>
                                 ⚠️ Principale problématique : <strong>{bureauMainIssue}</strong>
                               </p>
                             </div>
@@ -1264,7 +1264,7 @@ export default function EntrepriseDemoDashboard() {
                           <div style={{ padding: "16px", borderRadius: 14, background: "rgba(212,98,42,0.06)", border: "0.5px solid rgba(212,98,42,0.2)" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                               <span style={{ fontSize: 18 }}>🏭</span>
-                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#ffb877" }}>Équipe debout ({debout.count})</span>
+                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#ffa347" }}>Équipe debout ({debout.count})</span>
                               <span style={{ marginLeft: "auto", fontFamily: T.h, fontWeight: 900, fontSize: 18, color: debout.global ? scoreColor(debout.global) : c.textMuted }}>{debout.global ?? "—"}</span>
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -1283,8 +1283,8 @@ export default function EntrepriseDemoDashboard() {
                                 </div>
                               ))}
                             </div>
-                            <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10, background: "rgba(255,184,119,0.08)", border: "0.5px solid rgba(255,184,119,0.2)" }}>
-                              <p style={{ fontFamily: T.b, fontSize: 12, color: "#ffb877", margin: 0, lineHeight: 1.5 }}>
+                            <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10, background: "rgba(255,163,71,0.08)", border: "0.5px solid rgba(255,163,71,0.2)" }}>
+                              <p style={{ fontFamily: T.b, fontSize: 12, color: "#ffa347", margin: 0, lineHeight: 1.5 }}>
                                 ⚠️ Principale problématique : <strong>{deboutMainIssue}</strong>
                               </p>
                             </div>
@@ -1303,7 +1303,7 @@ export default function EntrepriseDemoDashboard() {
                             emoji: "🦆",
                             risk: allPain < 55 && allSetup < 65,
                             niveau: allPain < 45 ? "Critique" : allPain < 55 ? "Élevé" : "Modéré",
-                            couleur: allPain < 45 ? "#ffa6a6" : allPain < 55 ? "#ffb877" : "#86ddb2",
+                            couleur: allPain < 45 ? "#ff7b7b" : allPain < 55 ? "#ffa347" : "#3fe0a0",
                             detail: hasGroups
                               ? `Bureau : douleurs cervicales liées aux écrans trop bas et laptops sans support (score setup ${bureau.setup}/100). Debout : tensions cervicales par port de charges en hauteur.`
                               : `Douleurs cervicales liées à la posture de travail — charge sur les vertèbres cervicales augmentée par la flexion de tête. Score douleurs : ${allPain}/100`,
@@ -1318,7 +1318,7 @@ export default function EntrepriseDemoDashboard() {
                             emoji: "🌿",
                             risk: allHabits < 60 || allPain < 55,
                             niveau: allHabits < 50 ? "Critique" : allHabits < 60 ? "Élevé" : "Modéré",
-                            couleur: allHabits < 50 ? "#ffa6a6" : allHabits < 60 ? "#ffb877" : "#86ddb2",
+                            couleur: allHabits < 50 ? "#ff7b7b" : allHabits < 60 ? "#ffa347" : "#3fe0a0",
                             detail: hasGroups
                               ? `Bureau : station assise prolongée sans pauses (${bureau.habits}/100 habitudes). Debout/entrepôt : lombalgies par manutention sans formation et postures de levage incorrectes (${debout.pain}/100 douleurs).`
                               : `Lombalgies liées aux habitudes de travail — station prolongée sans alternance posturale. Score habitudes : ${allHabits}/100`,
@@ -1333,7 +1333,7 @@ export default function EntrepriseDemoDashboard() {
                             emoji: "🦅",
                             risk: allSetup < 65,
                             niveau: allSetup < 50 ? "Critique" : allSetup < 60 ? "Élevé" : "Modéré",
-                            couleur: allSetup < 50 ? "#ffa6a6" : allSetup < 60 ? "#ffb877" : "#86ddb2",
+                            couleur: allSetup < 50 ? "#ff7b7b" : allSetup < 60 ? "#ffa347" : "#3fe0a0",
                             detail: hasGroups
                               ? `Bureau : tensions d'épaules liées au positionnement clavier/souris (${bureau.setup}/100). Entrepôt : tensions d'épaule par gestes répétitifs au-dessus des épaules.`
                               : `TMS des membres supérieurs liés au setup ergonomique. Score setup : ${allSetup}/100`,
@@ -1348,7 +1348,7 @@ export default function EntrepriseDemoDashboard() {
                             emoji: "🦵",
                             risk: hasGroups && (debout.pain ?? 100) < 55,
                             niveau: hasGroups && (debout.pain ?? 100) < 45 ? "Critique" : "Modéré",
-                            couleur: hasGroups && (debout.pain ?? 100) < 45 ? "#ffa6a6" : hasGroups && (debout.pain ?? 100) < 55 ? "#ffb877" : "#86ddb2",
+                            couleur: hasGroups && (debout.pain ?? 100) < 45 ? "#ff7b7b" : hasGroups && (debout.pain ?? 100) < 55 ? "#ffa347" : "#3fe0a0",
                             detail: hasGroups
                               ? `Spécifique équipe debout — jambes lourdes, œdèmes en fin de journée, fatigue des jambes. Fatigue plantaire fréquente. Score douleurs entrepôt : ${debout.pain}/100`
                               : "Zone moins concernée pour les postes bureau.",
@@ -1391,7 +1391,7 @@ export default function EntrepriseDemoDashboard() {
                         {[
                           {
                             horizon: "Cette semaine",
-                            color: "#ffa6a6",
+                            color: "#ff7b7b",
                             actions: [
                               allSetup < 60 ? "Faire l'inventaire des postes sans rehausseur d'écran et sans clavier externe" : null,
                               allPain < 55 ? "Identifier les 3 employés avec les scores douleurs les plus bas et les rencontrer" : null,
@@ -1400,7 +1400,7 @@ export default function EntrepriseDemoDashboard() {
                           },
                           {
                             horizon: "Dans le mois",
-                            color: "#ffb877",
+                            color: "#ffa347",
                             actions: [
                               allSetup < 60 ? "Équiper les postes bureau critiques : rehausseur + clavier externe (budget ~60€/poste)" : null,
                               hasGroups && (debout.pain ?? 100) < 55 ? "Installer des tapis anti-fatigue aux postes debout fixes (budget ~45€/poste)" : null,
@@ -1410,7 +1410,7 @@ export default function EntrepriseDemoDashboard() {
                           },
                           {
                             horizon: "Dans les 3 mois",
-                            color: "#86ddb2",
+                            color: "#3fe0a0",
                             actions: [
                               "Refaire passer les bilans PAW aux équipes pour mesurer l'évolution",
                               "Intégrer les résultats dans votre reporting social (CPPT, EcoVadis)",
@@ -1445,7 +1445,7 @@ export default function EntrepriseDemoDashboard() {
                         {hasGroups ? (
                           <>
                             <div>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#9db8ff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>💻 Postes bureau</p>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#6f9bff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>💻 Postes bureau</p>
                               {[
                                 ...(allSetup < 65 ? PRODUCTS_BY_ISSUE.setup_bureau : []),
                                 ...(allPain < 55 ? PRODUCTS_BY_ISSUE.douleurs_bureau : []),
@@ -1462,7 +1462,7 @@ export default function EntrepriseDemoDashboard() {
                               ))}
                             </div>
                             <div>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffb877", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>🏭 Postes debout</p>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffa347", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>🏭 Postes debout</p>
                               {[
                                 ...PRODUCTS_BY_ISSUE.setup_debout,
                                 ...PRODUCTS_BY_ISSUE.douleurs_debout,
@@ -1504,7 +1504,7 @@ export default function EntrepriseDemoDashboard() {
                         {hasGroups ? (
                           <>
                             <div>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#9db8ff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>💻 Équipe bureau</p>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#6f9bff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>💻 Équipe bureau</p>
                               {EXERCISES_BY_ISSUE.nuque_cervicales.concat(EXERCISES_BY_ISSUE.epaules_poignets).slice(0, 3).map((ex, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 6, minHeight: 56 }}>
                                   <span style={{ fontSize: 18, flexShrink: 0 }}>{ex.emoji}</span>
@@ -1516,7 +1516,7 @@ export default function EntrepriseDemoDashboard() {
                               ))}
                             </div>
                             <div>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffb877", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>🏭 Équipe debout</p>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffa347", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>🏭 Équipe debout</p>
                               {EXERCISES_BY_ISSUE.dos_lombaires.concat(EXERCISES_BY_ISSUE.jambes_pieds).slice(0, 3).map((ex, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 6, minHeight: 56 }}>
                                   <span style={{ fontSize: 18, flexShrink: 0 }}>{ex.emoji}</span>
@@ -1536,7 +1536,7 @@ export default function EntrepriseDemoDashboard() {
                                 <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: "0 0 2px" }}>{ex.name}</p>
                                 <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>{ex.desc}</p>
                               </div>
-                              <span style={{ padding: "3px 10px", borderRadius: 100, background: "rgba(43,92,230,0.10)", fontFamily: T.b, fontSize: 11, color: "#9db8ff", flexShrink: 0 }}>{ex.duration}</span>
+                              <span style={{ padding: "3px 10px", borderRadius: 100, background: "rgba(43,92,230,0.10)", fontFamily: T.b, fontSize: 11, color: "#6f9bff", flexShrink: 0 }}>{ex.duration}</span>
                             </div>
                           ))
                         )}
@@ -1727,7 +1727,7 @@ export default function EntrepriseDemoDashboard() {
                                           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                             {analysis.mainIssues.map((issue, ii) => (
                                               <div key={ii} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                                                <span style={{ color: "#ffa6a6", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
+                                                <span style={{ color: "#ff7b7b", fontSize: 12, flexShrink: 0, marginTop: 2 }}>→</span>
                                                 <p style={{ fontFamily: T.b, fontSize: 12, color: c.textSecondary, margin: 0, lineHeight: 1.55 }}>{issue}</p>
                                               </div>
                                             ))}
@@ -1741,13 +1741,13 @@ export default function EntrepriseDemoDashboard() {
                                           padding: "12px 14px", borderRadius: 10,
                                           background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)",
                                         }}>
-                                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#9db8ff", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+                                          <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#6f9bff", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
                                             Actions recommandées
                                           </p>
                                           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                             {analysis.recommendations.map((rec, ri) => (
                                               <div key={ri} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                                                <span style={{ color: "#9db8ff", fontSize: 12, flexShrink: 0, marginTop: 2 }}>✓</span>
+                                                <span style={{ color: "#6f9bff", fontSize: 12, flexShrink: 0, marginTop: 2 }}>✓</span>
                                                 <p style={{ fontFamily: T.b, fontSize: 12, color: c.textSecondary, margin: 0, lineHeight: 1.55 }}>{rec}</p>
                                               </div>
                                             ))}
@@ -1872,11 +1872,11 @@ export default function EntrepriseDemoDashboard() {
                       <div style={{
                         display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 16px",
                         borderRadius: 100, marginBottom: 16,
-                        background: diff >= 0 ? "rgba(29,158,117,0.10)" : "rgba(255,166,166,0.10)",
-                        border: `0.5px solid ${diff >= 0 ? "rgba(29,158,117,0.3)" : "rgba(255,166,166,0.3)"}`,
+                        background: diff >= 0 ? "rgba(29,158,117,0.10)" : "rgba(255,123,123,0.10)",
+                        border: `0.5px solid ${diff >= 0 ? "rgba(29,158,117,0.3)" : "rgba(255,123,123,0.3)"}`,
                       }}>
                         <span style={{ fontSize: 16 }}>{diff >= 0 ? "📈" : "📉"}</span>
-                        <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: diff >= 0 ? "#1d9e75" : "#ffa6a6" }}>
+                        <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: diff >= 0 ? "#1d9e75" : "#ff7b7b" }}>
                           {diff >= 0 ? "+" : ""}{diff} pts vs mois précédent
                         </span>
                         <span style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted }}>
@@ -1906,8 +1906,8 @@ export default function EntrepriseDemoDashboard() {
                         />
                         <Legend wrapperStyle={{ fontFamily: T.b, fontSize: 12, paddingTop: 12 }} />
                         <Line type="monotone" dataKey="global" name="Global" stroke="#2b5ce6" strokeWidth={2.5} dot={{ r: 4, fill: "#2b5ce6" }} activeDot={{ r: 6 }} connectNulls />
-                        <Line type="monotone" dataKey="bureau" name="Bureau" stroke="#9db8ff" strokeWidth={1.5} strokeDasharray="5 3" dot={{ r: 3 }} connectNulls />
-                        <Line type="monotone" dataKey="debout" name="Debout" stroke="#ffb877" strokeWidth={1.5} strokeDasharray="5 3" dot={{ r: 3 }} connectNulls />
+                        <Line type="monotone" dataKey="bureau" name="Bureau" stroke="#6f9bff" strokeWidth={1.5} strokeDasharray="5 3" dot={{ r: 3 }} connectNulls />
+                        <Line type="monotone" dataKey="debout" name="Debout" stroke="#ffa347" strokeWidth={1.5} strokeDasharray="5 3" dot={{ r: 3 }} connectNulls />
                       </LineChart>
                     </ResponsiveContainer>
 
@@ -1967,12 +1967,12 @@ export default function EntrepriseDemoDashboard() {
                               </td>
                               <td style={{ padding: "10px 12px" }}>
                                 {row.bureau !== null ? (
-                                  <span style={{ color: "#9db8ff" }}>{row.bureau}/100</span>
+                                  <span style={{ color: "#6f9bff" }}>{row.bureau}/100</span>
                                 ) : <span style={{ color: c.textMuted }}>—</span>}
                               </td>
                               <td style={{ padding: "10px 12px" }}>
                                 {row.debout !== null ? (
-                                  <span style={{ color: "#ffb877" }}>{row.debout}/100</span>
+                                  <span style={{ color: "#ffa347" }}>{row.debout}/100</span>
                                 ) : <span style={{ color: c.textMuted }}>—</span>}
                               </td>
                             </tr>
@@ -2047,7 +2047,7 @@ export default function EntrepriseDemoDashboard() {
                         <div style={{ flex: 1 }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
                             <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, margin: 0 }}>{ex.name}</p>
-                            <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.2)", fontFamily: T.b, fontSize: 11, color: "#9db8ff", flexShrink: 0, marginLeft: 8 }}>{ex.duration}</span>
+                            <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.2)", fontFamily: T.b, fontSize: 11, color: "#6f9bff", flexShrink: 0, marginLeft: 8 }}>{ex.duration}</span>
                           </div>
                           <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.55 }}>{ex.desc}</p>
                         </div>
@@ -2164,7 +2164,7 @@ export default function EntrepriseDemoDashboard() {
                         </span>
                         <div style={{ flex: 1 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                            <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(43,92,230,0.10)", fontFamily: T.b, fontSize: 10, fontWeight: 600, color: "#9db8ff", textTransform: "capitalize" }}>
+                            <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(43,92,230,0.10)", fontFamily: T.b, fontSize: 10, fontWeight: 600, color: "#6f9bff", textTransform: "capitalize" }}>
                               {signal.category.replace("_", " ")}
                             </span>
                             <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>

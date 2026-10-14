@@ -7,20 +7,20 @@ import type { Scores } from "@/lib/scoring";
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
 const DIMS = [
-  { key: "setup",        label: "Setup",     color: "#9db8ff" },
-  { key: "pain",         label: "Douleurs",  color: "#ffa6a6" },
-  { key: "habits",       label: "Habitudes", color: "#ffb877" },
-  { key: "sleep_energy", label: "Sommeil",   color: "#86ddb2" },
+  { key: "setup",        label: "Setup",     color: "#6f9bff" },
+  { key: "pain",         label: "Douleurs",  color: "#ff7b7b" },
+  { key: "habits",       label: "Habitudes", color: "#ffa347" },
+  { key: "sleep_energy", label: "Sommeil",   color: "#3fe0a0" },
   { key: "nutrition",    label: "Nutrition", color: "#a78bfa" },
   { key: "lifestyle",    label: "Lifestyle", color: "#5dcaa5" },
 ];
 
-function scoreColor(s: number) { return s >= 70 ? "#86ddb2" : s >= 50 ? "#ffb877" : "#ffa6a6"; }
+function scoreColor(s: number) { return s >= 70 ? "#3fe0a0" : s >= 50 ? "#ffa347" : "#ff7b7b"; }
 
 function scoreBadge(s: number) {
-  if (s >= 70) return { label: "Bonne santé au travail", color: "#86ddb2", bg: "rgba(134,221,178,0.15)" };
-  if (s >= 50) return { label: "À améliorer",            color: "#ffb877", bg: "rgba(255,184,119,0.15)" };
-  return          { label: "Attention requise",          color: "#ffa6a6", bg: "rgba(255,166,166,0.15)" };
+  if (s >= 70) return { label: "Bonne santé au travail", color: "#3fe0a0", bg: "rgba(63,224,160,0.15)" };
+  if (s >= 50) return { label: "À améliorer",            color: "#ffa347", bg: "rgba(255,163,71,0.15)" };
+  return          { label: "Attention requise",          color: "#ff7b7b", bg: "rgba(255,123,123,0.15)" };
 }
 
 export default function PartagePage() {
@@ -155,7 +155,7 @@ export default function PartagePage() {
           {/* Logo */}
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: "6%", position: "relative", zIndex: 1 }}>
             <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#f0f0fa" }}>PAW</span>
-            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#9db8ff" }}>.</span>
+            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#6f9bff" }}>.</span>
             <span style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.58)", marginLeft: 4 }}>PostureAtWork</span>
           </div>
 
@@ -203,7 +203,7 @@ export default function PartagePage() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
             <span style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.42)" }}>postureatwork.com</span>
             <div style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(43,92,230,0.20)", border: "0.5px solid rgba(43,92,230,0.35)" }}>
-              <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#9db8ff" }}>Fais ton bilan gratuit →</span>
+              <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#6f9bff" }}>Fais ton bilan gratuit →</span>
             </div>
           </div>
         </div>
@@ -239,7 +239,7 @@ export default function PartagePage() {
               padding: "13px 0", borderRadius: 100, cursor: "pointer",
               background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.12)",
               fontFamily: T.h, fontWeight: 700, fontSize: 14,
-              color: copied ? "#86ddb2" : "rgba(220,220,245,0.75)", width: "100%",
+              color: copied ? "#3fe0a0" : "rgba(220,220,245,0.75)", width: "100%",
             }}
           >
             {copied ? "✅ Lien copié !" : "🔗 Copier le lien"}

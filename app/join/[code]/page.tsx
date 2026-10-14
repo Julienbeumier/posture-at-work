@@ -211,7 +211,7 @@ export default function JoinPage() {
             padding: "6px 16px", borderRadius: 100, marginBottom: 16,
             background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)",
           }}>
-            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#9db8ff" }}>
+            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#6f9bff" }}>
               🏢 {company?.name}
             </span>
           </div>

@@ -374,7 +374,7 @@ export const EXERCISES: Record<string, Exercise> = {
   // ── Poignets & mains ──
   wrist_stretch: {
     id: "wrist_stretch", name: "Étirement poignets", subtitle: "Confort des poignets",
-    zone: "Poignets & mains", zoneColor: "#f4a261", duration: 60,
+    zone: "Poignets & mains", zoneColor: "#ffa347", duration: 60,
     reps: "30 sec par côté × 2", frequency: "Après chaque heure de clavier",
     location: ["bureau", "maison", "voyage"],
     difficulty: "facile", discreet: true, emoji: "🖐️",
@@ -386,7 +386,7 @@ export const EXERCISES: Record<string, Exercise> = {
   // ── Yeux ──
   eye_rest: {
     id: "eye_rest", name: "Repos oculaire 20-20-20", subtitle: "Fatigue visuelle",
-    zone: "Yeux & vision", zoneColor: "#74c69d", duration: 20,
+    zone: "Yeux & vision", zoneColor: "#3fe0a0", duration: 20,
     reps: "20 secondes toutes les 20 min", frequency: "Toutes les 20 minutes",
     location: ["bureau", "maison", "voyage"],
     difficulty: "facile", discreet: true, emoji: "👁️",

@@ -119,7 +119,7 @@ export default function OnboardingPage() {
           <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "var(--text-primary)" }}>
             PAW
           </span>
-          <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#9db8ff" }}>
+          <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#6f9bff" }}>
             .
           </span>
         </div>
@@ -140,7 +140,7 @@ export default function OnboardingPage() {
               style={{
                 height: "100%",
                 width: `${(step / 4) * 100}%`,
-                background: "linear-gradient(90deg, #2b5ce6, #9db8ff)",
+                background: "linear-gradient(90deg, #2b5ce6, #6f9bff)",
                 borderRadius: 100,
                 transition: "width 0.4s ease",
               }}
@@ -325,8 +325,8 @@ export default function OnboardingPage() {
                         justifyContent: "center",
                         borderRadius: 100,
                         background: age === opt ? "rgba(43,92,230,0.20)" : "rgba(255,255,255,0.06)",
-                        border: `0.5px solid ${age === opt ? "#9db8ff" : "rgba(255,255,255,0.15)"}`,
-                        color: age === opt ? "#9db8ff" : "var(--t75)",
+                        border: `0.5px solid ${age === opt ? "#6f9bff" : "rgba(255,255,255,0.15)"}`,
+                        color: age === opt ? "#6f9bff" : "var(--t75)",
                         fontSize: 14,
                         fontWeight: 600,
                         fontFamily: T.b,
@@ -396,7 +396,7 @@ export default function OnboardingPage() {
                           padding: "28px 16px 24px",
                           borderRadius: 22,
                           background: sel ? "rgba(43,92,230,0.18)" : "rgba(255,255,255,0.05)",
-                          border: `1px solid ${sel ? "#9db8ff" : "rgba(255,255,255,0.12)"}`,
+                          border: `1px solid ${sel ? "#6f9bff" : "rgba(255,255,255,0.12)"}`,
                           boxShadow: sel ? "0 0 24px rgba(43,92,230,0.25)" : "none",
                           textAlign: "center",
                           cursor: "pointer",
@@ -411,7 +411,7 @@ export default function OnboardingPage() {
                             fontFamily: T.h,
                             fontWeight: 800,
                             fontSize: 15,
-                            color: sel ? "#9db8ff" : "var(--text-primary)",
+                            color: sel ? "#6f9bff" : "var(--text-primary)",
                             marginBottom: 8,
                             lineHeight: 1.3,
                           }}
@@ -422,7 +422,7 @@ export default function OnboardingPage() {
                           style={{
                             fontFamily: T.b,
                             fontSize: 11,
-                            color: sel ? "rgba(157,184,255,0.75)" : "var(--t40)",
+                            color: sel ? "rgba(111,155,255,0.75)" : "var(--t40)",
                             lineHeight: 1.5,
                           }}
                         >
@@ -498,9 +498,9 @@ export default function OnboardingPage() {
                         background:
                           hoursWeek === opt ? "rgba(43,92,230,0.20)" : "rgba(255,255,255,0.06)",
                         border: `0.5px solid ${
-                          hoursWeek === opt ? "#9db8ff" : "rgba(255,255,255,0.15)"
+                          hoursWeek === opt ? "#6f9bff" : "rgba(255,255,255,0.15)"
                         }`,
-                        color: hoursWeek === opt ? "#9db8ff" : "var(--t75)",
+                        color: hoursWeek === opt ? "#6f9bff" : "var(--t75)",
                         fontSize: 14,
                         fontWeight: 600,
                         fontFamily: T.b,
@@ -569,7 +569,7 @@ export default function OnboardingPage() {
                       borderRadius: 100,
                       background: "rgba(43,92,230,0.15)",
                       border: "0.5px solid rgba(43,92,230,0.30)",
-                      color: "#9db8ff",
+                      color: "#6f9bff",
                       fontSize: 14,
                       fontWeight: 600,
                       fontFamily: T.b,

@@ -244,10 +244,10 @@ export default function AnalyzingPage() {
         {isDual ? (
           <div className="w-full space-y-3">
             <div className="rounded-2xl px-5 py-4 flex items-center gap-4"
-              style={{ background: personneDone ? "rgba(134,221,178,0.10)" : "rgba(167,139,250,0.08)", border: `1px solid ${personneDone ? "rgba(134,221,178,0.3)" : "rgba(167,139,250,0.2)"}` }}>
+              style={{ background: personneDone ? "rgba(63,224,160,0.10)" : "rgba(167,139,250,0.08)", border: `1px solid ${personneDone ? "rgba(63,224,160,0.3)" : "rgba(167,139,250,0.2)"}` }}>
               <span className="text-xl flex-shrink-0">{personneDone ? "✅" : "🧍"}</span>
               <div className="flex-1 text-left">
-                <p className="text-sm font-semibold" style={{ color: personneDone ? "#86ddb2" : "rgba(220,220,245,0.85)" }}>
+                <p className="text-sm font-semibold" style={{ color: personneDone ? "#3fe0a0" : "rgba(220,220,245,0.85)" }}>
                   {personneDone ? "Posture analysée" : "Analyse posture…"}
                 </p>
               </div>
@@ -264,10 +264,10 @@ export default function AnalyzingPage() {
             </div>
 
             <div className="rounded-2xl px-5 py-4 flex items-center gap-4"
-              style={{ background: posteDone ? "rgba(134,221,178,0.10)" : "rgba(59,130,246,0.08)", border: `1px solid ${posteDone ? "rgba(134,221,178,0.3)" : "rgba(59,130,246,0.2)"}` }}>
+              style={{ background: posteDone ? "rgba(63,224,160,0.10)" : "rgba(59,130,246,0.08)", border: `1px solid ${posteDone ? "rgba(63,224,160,0.3)" : "rgba(59,130,246,0.2)"}` }}>
               <span className="text-xl flex-shrink-0">{posteDone ? "✅" : "🖥️"}</span>
               <div className="flex-1 text-left">
-                <p className="text-sm font-semibold" style={{ color: posteDone ? "#86ddb2" : "rgba(220,220,245,0.85)" }}>
+                <p className="text-sm font-semibold" style={{ color: posteDone ? "#3fe0a0" : "rgba(220,220,245,0.85)" }}>
                   {posteDone ? "Setup analysé" : "Analyse setup…"}
                 </p>
               </div>

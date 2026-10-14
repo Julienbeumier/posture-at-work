@@ -306,7 +306,7 @@ export default function VideoIntroPage() {
               className="flex items-center justify-center py-1"
             >
               <span className="text-xs font-bold px-4 py-1.5 rounded-full"
-                style={{ background: "rgba(134,221,178,0.15)", border: "1px solid rgba(134,221,178,0.35)", color: "#86ddb2" }}>
+                style={{ background: "rgba(63,224,160,0.15)", border: "1px solid rgba(63,224,160,0.35)", color: "#3fe0a0" }}>
                 ✅ Analyse complète
               </span>
             </motion.div>

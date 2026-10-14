@@ -73,7 +73,7 @@ export default function AboutPage() {
             padding: "6px 16px", borderRadius: 100, marginBottom: 18,
             background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)",
           }}>
-            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#9db8ff" }}>
+            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#6f9bff" }}>
               Notre histoire
             </span>
           </div>
@@ -90,7 +90,7 @@ export default function AboutPage() {
           borderRadius: 20, padding: "28px 28px", marginBottom: 16,
           background: c.bgCard, border: `0.5px solid ${c.border}`,
         }}>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#9db8ff", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#6f9bff", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>
             Le constat
           </p>
           <p style={{ fontFamily: T.b, fontSize: 15, color: c.textSecondary, lineHeight: 1.8, margin: 0 }}>
@@ -105,7 +105,7 @@ export default function AboutPage() {
           borderRadius: 20, padding: "28px 28px", marginBottom: 32,
           background: c.bgCard, border: `0.5px solid ${c.border}`,
         }}>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#86ddb2", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#3fe0a0", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>
             La solution
           </p>
           <p style={{ fontFamily: T.b, fontSize: 15, color: c.textSecondary, lineHeight: 1.8, margin: 0 }}>
@@ -132,7 +132,7 @@ export default function AboutPage() {
             <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 17, color: c.textPrimary, margin: "0 0 4px" }}>
               Julien Beumier
             </p>
-            <p style={{ fontFamily: T.b, fontSize: 12, color: "#9db8ff", margin: "0 0 14px" }}>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "#6f9bff", margin: "0 0 14px" }}>
               Kinésithérapeute · Fondateur de PostureAtWork
             </p>
             <p style={{ fontFamily: T.b, fontSize: 14, color: c.textSecondary, lineHeight: 1.7, margin: 0 }}>
@@ -158,11 +158,11 @@ export default function AboutPage() {
               animate={{ opacity: 1, scale: 1 }}
               style={{
                 borderRadius: 20, padding: "36px 28px", textAlign: "center",
-                background: "rgba(45,106,79,0.12)", border: "0.5px solid rgba(134,221,178,0.3)",
+                background: "rgba(45,106,79,0.12)", border: "0.5px solid rgba(63,224,160,0.3)",
               }}
             >
               <div style={{ fontSize: 48, marginBottom: 14 }}>🙏</div>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: "#86ddb2", marginBottom: 8 }}>Message envoyé !</p>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: "#3fe0a0", marginBottom: 8 }}>Message envoyé !</p>
               <p style={{ fontFamily: T.b, fontSize: 14, color: c.textSecondary }}>
                 On te répond dans les plus brefs délais.
               </p>
@@ -196,7 +196,7 @@ export default function AboutPage() {
                 style={{ ...inputStyle, resize: "vertical", lineHeight: 1.6 }}
               />
               {formState === "error" && (
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "#ffa6a6" }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "#ff7b7b" }}>
                   Erreur lors de l&apos;envoi. Réessaie ou écris directement à hello@postureatwork.com
                 </p>
               )}

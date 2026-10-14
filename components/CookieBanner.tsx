@@ -34,7 +34,7 @@ export default function CookieBanner() {
       <div style={{ maxWidth: 700, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
         <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.70)", lineHeight: 1.6, flex: 1, minWidth: 200, margin: 0 }}>
           PAW utilise des cookies pour améliorer ton expérience et sauvegarder tes bilans.{" "}
-          <Link href="/politique-confidentialite" style={{ color: "#9db8ff", textDecoration: "underline" }}>
+          <Link href="/politique-confidentialite" style={{ color: "#6f9bff", textDecoration: "underline" }}>
             En savoir plus
           </Link>
         </p>

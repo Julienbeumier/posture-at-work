@@ -132,8 +132,8 @@ export function shouldShow(questionId: string, answers: GenericAnswers): boolean
 export const DEBOUT_CATEGORIES: CategoryDef[] = [
   {
     id: "cat-d1", title: "Ton poste debout", subtitle: "Sol, chaussures, ergonomie et ancienneté", emoji: "🏭",
-    color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
-    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    color: "#ffa347", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#ffa347",
     requiredQ: ["q_d_anciennete", "q_d1", "q_d2", "q_d3", "q_d_endurance", "q_d_position_var", "q_d7", "q_d_posture_tete"],
     questions: [
       { id: "q_d_anciennete", type: "choice", label: "Depuis combien de temps travailles-tu dans ce métier debout ?", options: [
@@ -205,8 +205,8 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "cat-d2", title: "Tes douleurs spécifiques", subtitle: "Pieds, jambes, dos — les zones clés debout", emoji: "🩺",
-    color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
-    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
+    color: "#ff7b7b", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#ff7b7b",
     requiredQ: ["q_d8", "q_d9", "q_d10", "q_d11", "q_d12", "q_d_irradiation", "q_d_jambes_soir"],
     questions: [
       { id: "q_d8", type: "painscale", label: "Douleurs pieds / talons", note: "La douleur au talon au premier pas du matin est un signal important — note-le" },
@@ -239,8 +239,8 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "cat-d3", title: "Habitudes & contraintes", subtitle: "Pauses, charges, gestes répétitifs", emoji: "⏱️",
-    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
-    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    color: "#3fe0a0", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#3fe0a0",
     requiredQ: ["q_d_repetitif", "q_d_charges", "q_d16", "q_d_stress", "q_d19"],
     questions: [
       { id: "q_d_repetitif", type: "choice", label: "Fais-tu des gestes répétitifs dans ton travail ?", options: [
@@ -402,8 +402,8 @@ export const DEBOUT_CATEGORIES: CategoryDef[] = [
 export const ARTISAN_CATEGORIES: CategoryDef[] = [
   {
     id: "cat-a1", title: "Ton travail physique", subtitle: "Type de travail et postures", emoji: "🔧",
-    color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
-    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    color: "#ffa347", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#ffa347",
     requiredQ: ["a_metier", "a_position", "a_hauteur"],
     questions: [
       { id: "a_metier", type: "choice", label: "Quel est ton métier principal ?", options: [
@@ -430,7 +430,7 @@ export const ARTISAN_CATEGORIES: CategoryDef[] = [
   {
     id: "cat-a2", title: "Port de charges", subtitle: "Manutention et sécurité", emoji: "📦",
     color: "#d4622a", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
-    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#ffa347",
     requiredQ: ["a_charges_freq", "a_technique", "a_charges_poids"],
     questions: [
       { id: "a_charges_freq", type: "choice", label: "Tu portes des charges lourdes (>10 kg) ?", options: [
@@ -491,8 +491,8 @@ export const ARTISAN_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "cat-a4", title: "Tes douleurs", subtitle: "Douleurs spécifiques terrain", emoji: "🩺",
-    color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
-    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
+    color: "#ff7b7b", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#ff7b7b",
     requiredQ: ["a_doul_dos", "a_doul_genoux", "a_doul_epaules", "a_doul_poignets", "a_doul_nuque", "a_doul_limite"],
     questions: [
       { id: "a_doul_dos", type: "painscale", label: "Douleur bas du dos" },
@@ -517,8 +517,8 @@ export const ARTISAN_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "cat-a5", title: "Récupération", subtitle: "Sommeil et habitudes post-chantier", emoji: "🌙",
-    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
-    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    color: "#3fe0a0", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#3fe0a0",
     requiredQ: ["a_reveil", "a_sport", "a_etirements"],
     questions: [
       { id: "a_sommeil", type: "slider", label: "Heures de sommeil par nuit", min: 4, max: 10, step: 0.5, unit: "h", alwaysAnswered: true },
@@ -565,8 +565,8 @@ export const ARTISAN_CATEGORIES: CategoryDef[] = [
 export const TRANSPORT_CATEGORIES: CategoryDef[] = [
   {
     id: "cat-t1", title: "Ton poste de conduite", subtitle: "Ergonomie véhicule", emoji: "🚗",
-    color: "#7c9fff", colorBg: "rgba(43,92,230,0.08)", colorBorder: "rgba(43,92,230,0.18)",
-    selectedBg: "rgba(43,92,230,0.18)", selectedColor: "#7c9fff",
+    color: "#6f9bff", colorBg: "rgba(43,92,230,0.08)", colorBorder: "rgba(43,92,230,0.18)",
+    selectedBg: "rgba(43,92,230,0.18)", selectedColor: "#6f9bff",
     requiredQ: ["t_vehicule", "t_siege", "t_distance_volant", "t_lombaire"],
     questions: [
       { id: "t_vehicule", type: "choice", label: "Quel véhicule conduis-tu principalement ?", options: [
@@ -597,8 +597,8 @@ export const TRANSPORT_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "cat-t2", title: "Douleurs en conduite", subtitle: "Douleurs liées à la position", emoji: "🩺",
-    color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
-    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
+    color: "#ff7b7b", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#ff7b7b",
     requiredQ: ["t_doul_dos", "t_doul_nuque", "t_doul_jambes", "t_doul_quand", "t_fourmillements"],
     questions: [
       { id: "t_doul_dos", type: "painscale", label: "Douleur bas du dos" },
@@ -622,8 +622,8 @@ export const TRANSPORT_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "cat-t3", title: "Pauses & posture route", subtitle: "Habitudes de conduite", emoji: "⏱️",
-    color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
-    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    color: "#ffa347", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#ffa347",
     requiredQ: ["t_pauses", "t_que_pauses"],
     questions: [
       { id: "t_pauses", type: "choice", label: "Fais-tu des pauses régulières en conduite ?", options: [
@@ -652,8 +652,8 @@ export const TRANSPORT_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "cat-t4", title: "Sommeil & fatigue route", subtitle: "Récupération essentielle", emoji: "🌙",
-    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
-    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    color: "#3fe0a0", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#3fe0a0",
     requiredQ: ["t_reveil", "t_somnolence"],
     questions: [
       { id: "t_sommeil", type: "slider", label: "Heures de sommeil par nuit", min: 4, max: 10, step: 0.5, unit: "h", alwaysAnswered: true },
@@ -697,8 +697,8 @@ export const TRANSPORT_CATEGORIES: CategoryDef[] = [
 export const MEDICAL_CATEGORIES: CategoryDef[] = [
   {
     id: "cat-m1", title: "Ton environnement de soin", subtitle: "Poste de travail médical", emoji: "🏥",
-    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
-    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    color: "#3fe0a0", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#3fe0a0",
     requiredQ: ["m_specialite", "m_position", "m_gardes"],
     questions: [
       { id: "m_specialite", type: "choice", label: "Quelle est ta spécialité ?", options: [
@@ -725,8 +725,8 @@ export const MEDICAL_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "cat-m2", title: "Gestes de soin", subtitle: "Postures et manutention", emoji: "💪",
-    color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
-    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    color: "#ffa347", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#ffa347",
     requiredQ: ["m_mobilisation", "m_courbe", "m_materiel"],
     questions: [
       { id: "m_mobilisation", type: "choice", label: "Fais-tu des mobilisations de patients ?", options: [
@@ -757,8 +757,8 @@ export const MEDICAL_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "cat-m3", title: "Douleurs soignants", subtitle: "Zones critiques du soin", emoji: "🩺",
-    color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
-    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
+    color: "#ff7b7b", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#ff7b7b",
     requiredQ: ["m_doul_dos", "m_doul_epaules", "m_doul_nuque"],
     questions: [
       { id: "m_doul_dos", type: "painscale", label: "Douleur bas du dos" },
@@ -794,8 +794,8 @@ export const MEDICAL_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "cat-m5", title: "Sommeil & récupération", subtitle: "Indispensable pour les soignants", emoji: "🌙",
-    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
-    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    color: "#3fe0a0", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#3fe0a0",
     requiredQ: ["m_reveil", "m_fatigue_chrono"],
     questions: [
       { id: "m_sommeil", type: "slider", label: "Heures de sommeil par nuit", min: 4, max: 10, step: 0.5, unit: "h", alwaysAnswered: true },
@@ -828,8 +828,8 @@ export const MEDICAL_CATEGORIES: CategoryDef[] = [
 export const ENSEIGNEMENT_CATEGORIES: CategoryDef[] = [
   {
     id: "cat-e1", title: "Ton environnement", subtitle: "Salle de classe et matériel", emoji: "🎓",
-    color: "#f4a261", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
-    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    color: "#ffa347", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#ffa347",
     requiredQ: ["e_niveau", "e_position", "e_bureau"],
     questions: [
       { id: "e_niveau", type: "choice", label: "Tu enseignes ?", options: [
@@ -858,8 +858,8 @@ export const ENSEIGNEMENT_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "cat-e2", title: "Voix & posture", subtitle: "Santé vocale et douleurs", emoji: "🎤",
-    color: "#f09595", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
-    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
+    color: "#ff7b7b", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#ff7b7b",
     requiredQ: ["e_voix", "e_doul_nuque", "e_doul_dos"],
     questions: [
       { id: "e_voix", type: "choice", label: "As-tu des problèmes de voix ?", options: [
@@ -907,8 +907,8 @@ export const ENSEIGNEMENT_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "cat-e4", title: "Sommeil & ressenti", subtitle: "Récupération et bien-être", emoji: "🌙",
-    color: "#74c69d", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
-    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    color: "#3fe0a0", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#3fe0a0",
     requiredQ: ["e_reveil", "e_ressenti"],
     questions: [
       { id: "e_sommeil", type: "slider", label: "Heures de sommeil par nuit", min: 4, max: 10, step: 0.5, unit: "h", alwaysAnswered: true },

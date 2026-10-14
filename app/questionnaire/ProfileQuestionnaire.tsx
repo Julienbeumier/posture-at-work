@@ -281,9 +281,9 @@ export default function ProfileQuestionnaire({
               </button>
               <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>
                 <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa" }}>PAW</span>
-                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#9db8ff" }}>.</span>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#6f9bff" }}>.</span>
               </Link>
-              <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(43,92,230,0.15)", fontFamily: T.b, fontSize: 11, color: "#9db8ff" }}>
+              <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(43,92,230,0.15)", fontFamily: T.b, fontSize: 11, color: "#6f9bff" }}>
                 {meta.emoji} {meta.label}
               </span>
             </div>
@@ -370,7 +370,7 @@ export default function ProfileQuestionnaire({
                           {q.id === "q_d_varices" && ans === "importantes" && (
                             <div style={{ marginTop: 6, padding: "10px 14px", borderRadius: 12, background: "rgba(226,75,74,0.12)", border: "0.5px solid rgba(226,75,74,0.35)", display: "flex", alignItems: "flex-start", gap: 8 }}>
                               <span style={{ fontSize: 16, flexShrink: 0 }}>⚕️</span>
-                              <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "#ffa6a6", lineHeight: 1.6, margin: 0 }}>
+                              <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "#ff7b7b", lineHeight: 1.6, margin: 0 }}>
                                 Des varices importantes et douloureuses méritent un avis médical — consulte ton médecin traitant ou un angiologue.
                               </p>
                             </div>
