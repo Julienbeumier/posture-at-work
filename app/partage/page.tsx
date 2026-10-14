@@ -7,20 +7,20 @@ import type { Scores } from "@/lib/scoring";
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
 const DIMS = [
-  { key: "setup",        label: "Setup",     color: "#7c9fff" },
-  { key: "pain",         label: "Douleurs",  color: "#f09595" },
-  { key: "habits",       label: "Habitudes", color: "#f4a261" },
-  { key: "sleep_energy", label: "Sommeil",   color: "#74c69d" },
+  { key: "setup",        label: "Setup",     color: "#9db8ff" },
+  { key: "pain",         label: "Douleurs",  color: "#ffa6a6" },
+  { key: "habits",       label: "Habitudes", color: "#ffb877" },
+  { key: "sleep_energy", label: "Sommeil",   color: "#86ddb2" },
   { key: "nutrition",    label: "Nutrition", color: "#a78bfa" },
   { key: "lifestyle",    label: "Lifestyle", color: "#5dcaa5" },
 ];
 
-function scoreColor(s: number) { return s >= 70 ? "#74c69d" : s >= 50 ? "#f4a261" : "#f09595"; }
+function scoreColor(s: number) { return s >= 70 ? "#86ddb2" : s >= 50 ? "#ffb877" : "#ffa6a6"; }
 
 function scoreBadge(s: number) {
-  if (s >= 70) return { label: "Bonne santé au travail", color: "#74c69d", bg: "rgba(116,198,157,0.15)" };
-  if (s >= 50) return { label: "À améliorer",            color: "#f4a261", bg: "rgba(244,162,97,0.15)" };
-  return          { label: "Attention requise",          color: "#f09595", bg: "rgba(240,149,149,0.15)" };
+  if (s >= 70) return { label: "Bonne santé au travail", color: "#86ddb2", bg: "rgba(134,221,178,0.15)" };
+  if (s >= 50) return { label: "À améliorer",            color: "#ffb877", bg: "rgba(255,184,119,0.15)" };
+  return          { label: "Attention requise",          color: "#ffa6a6", bg: "rgba(255,166,166,0.15)" };
 }
 
 export default function PartagePage() {
@@ -40,13 +40,13 @@ export default function PartagePage() {
 
   if (!scores) {
     return (
-      <main style={{ minHeight: "100vh", background: "#0f0f1a", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <main style={{ minHeight: "100vh", background: "#1f2d4d", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center", maxWidth: 340, padding: "0 24px" }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>📊</div>
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "#f0f0fa", marginBottom: 10 }}>
             Aucun bilan disponible
           </h2>
-          <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.5)", marginBottom: 24 }}>
+          <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.66)", marginBottom: 24 }}>
             Fais d&apos;abord ton bilan PostureAtWork pour générer ta carte de partage.
           </p>
           <div onClick={() => router.push("/questionnaire")} style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "#2b5ce6", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
@@ -71,7 +71,7 @@ export default function PartagePage() {
     const html2canvas = (await import("html2canvas")).default;
     return html2canvas(cardRef.current, {
       scale: 2,
-      backgroundColor: "#0f0f1a",
+      backgroundColor: "#1f2d4d",
       useCORS: true,
       logging: false,
     });
@@ -124,17 +124,17 @@ export default function PartagePage() {
   };
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingTop: 56, paddingBottom: 60 }}>
+    <main style={{ minHeight: "100vh", background: "#1f2d4d", paddingTop: 56, paddingBottom: 60 }}>
       <div style={{ maxWidth: 460, margin: "0 auto", padding: "24px 20px" }}>
 
-        <div onClick={() => router.back()} style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.4)", cursor: "pointer", marginBottom: 24 }}>
+        <div onClick={() => router.back()} style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.58)", cursor: "pointer", marginBottom: 24 }}>
           ← Retour
         </div>
 
         <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", marginBottom: 6 }}>
           📱 Partager mon score
         </h1>
-        <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.5)", marginBottom: 28, lineHeight: 1.65 }}>
+        <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.66)", marginBottom: 28, lineHeight: 1.65 }}>
           Génère ta carte de score et partage-la sur Instagram, WhatsApp ou ailleurs.
         </p>
 
@@ -143,7 +143,7 @@ export default function PartagePage() {
           ref={cardRef}
           style={{
             width: "100%", aspectRatio: "1 / 1",
-            background: "#0f0f1a", borderRadius: 20,
+            background: "#1f2d4d", borderRadius: 20,
             padding: "7%", position: "relative", overflow: "hidden",
             border: "0.5px solid rgba(255,255,255,0.08)",
           }}
@@ -155,8 +155,8 @@ export default function PartagePage() {
           {/* Logo */}
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: "6%", position: "relative", zIndex: 1 }}>
             <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#f0f0fa" }}>PAW</span>
-            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#7c9fff" }}>.</span>
-            <span style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.4)", marginLeft: 4 }}>PostureAtWork</span>
+            <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#9db8ff" }}>.</span>
+            <span style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.58)", marginLeft: 4 }}>PostureAtWork</span>
           </div>
 
           {/* Score circle + name */}
@@ -171,11 +171,11 @@ export default function PartagePage() {
               </svg>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 44, color, lineHeight: 1 }}>{scores.global}</span>
-                <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.4)" }}>/100</span>
+                <span style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.58)" }}>/100</span>
               </div>
             </div>
 
-            <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.5)", margin: 0, textAlign: "center" }}>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.66)", margin: 0, textAlign: "center" }}>
               {firstname}&apos;s PostureAtWork Score
             </p>
             <div style={{ padding: "4px 12px", borderRadius: 100, background: badge.bg, border: `1px solid ${badge.color}44` }}>
@@ -189,7 +189,7 @@ export default function PartagePage() {
               const val = (scores[d.key as keyof Scores] as number) ?? 0;
               return (
                 <div key={d.key} style={{ display: "flex", alignItems: "center", gap: "3%" }}>
-                  <span style={{ fontFamily: T.b, fontSize: 9, color: "rgba(220,220,245,0.4)", width: "22%", flexShrink: 0 }}>{d.label}</span>
+                  <span style={{ fontFamily: T.b, fontSize: 9, color: "rgba(220,220,245,0.58)", width: "22%", flexShrink: 0 }}>{d.label}</span>
                   <div style={{ flex: 1, height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden" }}>
                     <div style={{ width: `${val}%`, height: "100%", background: d.color, borderRadius: 100 }} />
                   </div>
@@ -201,9 +201,9 @@ export default function PartagePage() {
 
           {/* Footer */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
-            <span style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.25)" }}>postureatwork.com</span>
+            <span style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.42)" }}>postureatwork.com</span>
             <div style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(43,92,230,0.20)", border: "0.5px solid rgba(43,92,230,0.35)" }}>
-              <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#7c9fff" }}>Fais ton bilan gratuit →</span>
+              <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#9db8ff" }}>Fais ton bilan gratuit →</span>
             </div>
           </div>
         </div>
@@ -239,7 +239,7 @@ export default function PartagePage() {
               padding: "13px 0", borderRadius: 100, cursor: "pointer",
               background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.12)",
               fontFamily: T.h, fontWeight: 700, fontSize: 14,
-              color: copied ? "#74c69d" : "rgba(220,220,245,0.75)", width: "100%",
+              color: copied ? "#86ddb2" : "rgba(220,220,245,0.75)", width: "100%",
             }}
           >
             {copied ? "✅ Lien copié !" : "🔗 Copier le lien"}

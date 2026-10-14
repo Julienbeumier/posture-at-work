@@ -74,25 +74,25 @@ export default function AdminEmailsPage() {
   }
 
   if (!ready) return (
-    <main style={{ minHeight: "100vh", background: "#0f0f1a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <span style={{ fontFamily: T.b, color: "rgba(220,220,245,0.4)", fontSize: 14 }}>Chargement…</span>
+    <main style={{ minHeight: "100vh", background: "#1f2d4d", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <span style={{ fontFamily: T.b, color: "rgba(220,220,245,0.58)", fontSize: 14 }}>Chargement…</span>
     </main>
   );
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0f0f1a", padding: "80px 24px 60px" }}>
+    <main style={{ minHeight: "100vh", background: "#1f2d4d", padding: "80px 24px 60px" }}>
       <div style={{ maxWidth: 560, margin: "0 auto" }}>
         <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", margin: "0 0 4px" }}>
           🧪 Admin — Test emails
         </p>
-        <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.40)", margin: "0 0 32px" }}>
+        <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.58)", margin: "0 0 32px" }}>
           Scores test : global=58, setup=32, pain=48, habits=55, sleep=45, nutrition=30, lifestyle=60
         </p>
 
         {/* Champs */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
           <div>
-            <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: "0 0 6px" }}>Email destinataire</p>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.62)", margin: "0 0 6px" }}>Email destinataire</p>
             <input
               type="email"
               value={email}
@@ -105,7 +105,7 @@ export default function AdminEmailsPage() {
             />
           </div>
           <div>
-            <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.45)", margin: "0 0 6px" }}>Prénom</p>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(220,220,245,0.62)", margin: "0 0 6px" }}>Prénom</p>
             <input
               type="text"
               value={firstname}
@@ -131,7 +131,7 @@ export default function AdminEmailsPage() {
                   background: loading === step ? "rgba(43,92,230,0.20)" : "rgba(43,92,230,0.15)",
                   border: "0.5px solid rgba(43,92,230,0.35)",
                   fontFamily: T.b, fontWeight: 600, fontSize: 13,
-                  color: loading === step ? "rgba(168,192,255,0.5)" : "#7c9fff",
+                  color: loading === step ? "rgba(168,192,255,0.5)" : "#9db8ff",
                   textAlign: "left",
                 }}
               >
@@ -140,7 +140,7 @@ export default function AdminEmailsPage() {
               {results[step] && (
                 <span style={{
                   fontFamily: T.b, fontSize: 13, whiteSpace: "nowrap",
-                  color: results[step].startsWith("✅") ? "#74c69d" : "#f09595",
+                  color: results[step].startsWith("✅") ? "#86ddb2" : "#ffa6a6",
                 }}>
                   {results[step]}
                 </span>

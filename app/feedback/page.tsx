@@ -111,7 +111,7 @@ export default function FeedbackPage() {
             padding: "6px 16px", borderRadius: 100, marginBottom: 16,
             background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)",
           }}>
-            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#7c9fff" }}>
+            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#9db8ff" }}>
               ✨ Accès premium offert en bêta
             </span>
           </div>

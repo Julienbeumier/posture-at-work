@@ -366,7 +366,7 @@ export default function VideoCapturePage() {
               <span style={{
                 fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100,
                 background: isBureau ? "rgba(43,92,230,0.20)" : "rgba(167,139,250,0.20)",
-                color: isBureau ? "#7c9fff" : "#a78bfa",
+                color: isBureau ? "#9db8ff" : "#a78bfa",
                 border: `1px solid ${isBureau ? "rgba(43,92,230,0.35)" : "rgba(167,139,250,0.35)"}`,
               }}>
                 {isBureau ? "📹 Phase 1/2 — Analyse posture" : "📹 Analyse posture debout"}
@@ -423,7 +423,7 @@ export default function VideoCapturePage() {
                         "Je suis dans ma position de travail normale",
                         "Mon téléphone est stable (posé ou appuyé)",
                       ].map((item, i) => (
-                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(116,198,157,0.9)" }}>
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(134,221,178,0.9)" }}>
                           <span>✅</span><span>{item}</span>
                         </div>
                       ))}
@@ -450,13 +450,13 @@ export default function VideoCapturePage() {
               <span style={{
                 fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100,
                 background: isBureau ? "rgba(43,92,230,0.20)" : "rgba(167,139,250,0.20)",
-                color: isBureau ? "#7c9fff" : "#a78bfa",
+                color: isBureau ? "#9db8ff" : "#a78bfa",
                 border: `1px solid ${isBureau ? "rgba(43,92,230,0.35)" : "rgba(167,139,250,0.35)"}`,
               }}>
                 {isBureau ? "📹 Phase 1/2 — Analyse posture" : "📹 Analyse posture debout"}
               </span>
-              <span style={{ fontSize: 11, fontWeight: 800, color: "#f09595", display: "flex", alignItems: "center", gap: 5 }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f09595", display: "inline-block", animation: "pulse 1s infinite" }} />
+              <span style={{ fontSize: 11, fontWeight: 800, color: "#ffa6a6", display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ffa6a6", display: "inline-block", animation: "pulse 1s infinite" }} />
                 REC
               </span>
             </div>
@@ -530,8 +530,8 @@ export default function VideoCapturePage() {
               <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100, background: "rgba(59,130,246,0.20)", color: "#60a5fa", border: "1px solid rgba(59,130,246,0.35)" }}>
                 Étape 2 / 2 — Vue bureau
               </span>
-              <span style={{ fontSize: 11, fontWeight: 800, color: "#f09595", display: "flex", alignItems: "center", gap: 5 }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f09595", display: "inline-block" }} />
+              <span style={{ fontSize: 11, fontWeight: 800, color: "#ffa6a6", display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ffa6a6", display: "inline-block" }} />
                 REC
               </span>
             </div>

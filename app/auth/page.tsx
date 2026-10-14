@@ -297,9 +297,9 @@ function AuthForm() {
 
         {hasPendingBilan && redirect.includes("premium") && (
           <div style={{ padding: "12px 16px", borderRadius: 12, marginBottom: 16,
-            background: "rgba(116,198,157,0.08)", border: "0.5px solid rgba(116,198,157,0.2)",
+            background: "rgba(134,221,178,0.08)", border: "0.5px solid rgba(134,221,178,0.2)",
             textAlign: "center" }}>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: "#74c69d", margin: 0 }}>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "#86ddb2", margin: 0 }}>
               ✅ Ton bilan est sauvegardé — crée ton compte pour accéder à l&apos;analyse complète
             </p>
           </div>
@@ -394,14 +394,14 @@ function AuthForm() {
               {isLogin && (
                 <div style={{ textAlign: "right", marginTop: -4 }}>
                   <span onClick={() => { setMode("reset"); setError(""); }}
-                    style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff", cursor: "pointer" }}>
+                    style={{ fontFamily: T.b, fontSize: 12, color: "#9db8ff", cursor: "pointer" }}>
                     Mot de passe oublié ?
                   </span>
                 </div>
               )}
 
               {error && (
-                <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595", textAlign: "center", margin: 0 }}>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "#ffa6a6", textAlign: "center", margin: 0 }}>
                   {error}
                 </p>
               )}

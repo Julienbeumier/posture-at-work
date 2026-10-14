@@ -62,8 +62,8 @@ function PainScale({ value, onChange, cat }: {
             style={{ height: 60, borderRadius: 12, background: sel ? cat.selectedBg : "rgba(255,255,255,0.05)", border: sel ? `1px solid ${cat.color}66` : "0.5px solid rgba(255,255,255,0.08)", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, overflow: "hidden" }}
           >
             <span style={{ fontSize: 16 }}>{PAIN_EMOJIS[v]}</span>
-            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 11, color: sel ? cat.selectedColor : "rgba(220,220,245,0.4)" }}>{v}</span>
-            <span style={{ fontSize: 8, color: sel ? cat.selectedColor : "rgba(220,220,245,0.25)", textAlign: "center", padding: "0 2px", width: "100%" }}>{PAIN_LABELS[v]}</span>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 11, color: sel ? cat.selectedColor : "rgba(220,220,245,0.58)" }}>{v}</span>
+            <span style={{ fontSize: 8, color: sel ? cat.selectedColor : "rgba(220,220,245,0.42)", textAlign: "center", padding: "0 2px", width: "100%" }}>{PAIN_LABELS[v]}</span>
           </motion.div>
         );
       })}
@@ -83,7 +83,7 @@ function WellbeingScale({ value, onChange, cat }: {
             style={{ height: 68, borderRadius: 14, background: sel ? cat.selectedBg : "rgba(255,255,255,0.05)", border: sel ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.08)", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5, overflow: "hidden" }}
           >
             <span style={{ fontSize: 22 }}>{opt.emoji}</span>
-            <span style={{ fontSize: 9, fontFamily: T.b, color: sel ? cat.selectedColor : "rgba(220,220,245,0.35)", textAlign: "center", padding: "0 3px", width: "100%" }}>{opt.label}</span>
+            <span style={{ fontSize: 9, fontFamily: T.b, color: sel ? cat.selectedColor : "rgba(220,220,245,0.54)", textAlign: "center", padding: "0 3px", width: "100%" }}>{opt.label}</span>
           </motion.div>
         );
       })}
@@ -158,14 +158,14 @@ function SliderInput({ id, value, min, max, step, unit, reference, onChange, cat
         <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 40, color: cat.selectedColor }}>{value}<span style={{ fontSize: 22 }}>{unit}</span></span>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <span style={{ color: "rgba(220,220,245,0.35)", fontSize: 11, width: 24, textAlign: "center" }}>{min}</span>
+        <span style={{ color: "rgba(220,220,245,0.54)", fontSize: 11, width: 24, textAlign: "center" }}>{min}</span>
         <input type="range" id={id} min={min} max={max} step={step} value={value}
           onChange={(e) => onChange(Number(e.target.value))}
           style={{ flex: 1, accentColor: cat.color, background: `linear-gradient(to right, ${cat.color} ${pct}%, rgba(255,255,255,0.08) ${pct}%)`, height: 4, borderRadius: 100, outline: "none", appearance: "none" }}
         />
-        <span style={{ color: "rgba(220,220,245,0.35)", fontSize: 11, width: 24, textAlign: "center" }}>{max}</span>
+        <span style={{ color: "rgba(220,220,245,0.54)", fontSize: 11, width: 24, textAlign: "center" }}>{max}</span>
       </div>
-      {reference && <p style={{ textAlign: "center", color: "rgba(220,220,245,0.35)", fontSize: 12, fontFamily: T.b }}>{reference}</p>}
+      {reference && <p style={{ textAlign: "center", color: "rgba(220,220,245,0.54)", fontSize: 12, fontFamily: T.b }}>{reference}</p>}
     </div>
   );
 }
@@ -176,12 +176,12 @@ function QBlock({ number, question, note, children, answered, cat }: {
   return (
     <div style={{ padding: "20px", borderRadius: 18, background: answered ? cat.colorBg : "rgba(255,255,255,0.02)", border: answered ? `0.5px solid ${cat.colorBorder}` : "0.5px solid rgba(255,255,255,0.06)", transition: "all 0.3s ease", display: "flex", flexDirection: "column", gap: 14 }}>
       <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-        <div style={{ width: 24, height: 24, borderRadius: "50%", background: answered ? cat.colorBg : "rgba(255,255,255,0.05)", border: answered ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.10)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, fontFamily: T.h, fontWeight: 700, color: answered ? cat.color : "rgba(220,220,245,0.35)" }}>
+        <div style={{ width: 24, height: 24, borderRadius: "50%", background: answered ? cat.colorBg : "rgba(255,255,255,0.05)", border: answered ? `1px solid ${cat.color}55` : "0.5px solid rgba(255,255,255,0.10)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, fontFamily: T.h, fontWeight: 700, color: answered ? cat.color : "rgba(220,220,245,0.54)" }}>
           {answered ? "✓" : number}
         </div>
         <div>
           <p style={{ color: "#f0f0fa", fontSize: 14, fontFamily: T.b, lineHeight: 1.5, margin: 0 }}>{question}</p>
-          {note && <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 11, fontFamily: T.b, lineHeight: 1.5, margin: "4px 0 0" }}>ℹ️ {note}</p>}
+          {note && <p style={{ color: "rgba(220,220,245,0.58)", fontSize: 11, fontFamily: T.b, lineHeight: 1.5, margin: "4px 0 0" }}>ℹ️ {note}</p>}
         </div>
       </div>
       {children}
@@ -272,22 +272,22 @@ export default function ProfileQuestionnaire({
       </AnimatePresence>
 
       {/* Sticky header */}
-      <div style={{ position: "sticky", top: 0, zIndex: 30, background: "rgba(15,15,26,0.95)", backdropFilter: "blur(20px)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 30, background: "rgba(31,45,77,0.95)", backdropFilter: "blur(20px)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "12px 20px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "rgba(220,220,245,0.40)", fontSize: 13, fontFamily: T.b, cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+              <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "rgba(220,220,245,0.58)", fontSize: 13, fontFamily: T.b, cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
                 ← Retour
               </button>
               <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>
                 <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa" }}>PAW</span>
-                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#7c9fff" }}>.</span>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#9db8ff" }}>.</span>
               </Link>
-              <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(43,92,230,0.15)", fontFamily: T.b, fontSize: 11, color: "#7c9fff" }}>
+              <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(43,92,230,0.15)", fontFamily: T.b, fontSize: 11, color: "#9db8ff" }}>
                 {meta.emoji} {meta.label}
               </span>
             </div>
-            <span style={{ color: "rgba(220,220,245,0.40)", fontSize: 13, fontFamily: T.b }}>
+            <span style={{ color: "rgba(220,220,245,0.58)", fontSize: 13, fontFamily: T.b }}>
               {done} / {categories.length}
             </span>
           </div>
@@ -299,7 +299,7 @@ export default function ProfileQuestionnaire({
               const isDone = isCatDone(cat, answers);
               return (
                 <button key={cat.id} onClick={() => document.getElementById(cat.id)?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                  style={{ padding: "5px 12px", borderRadius: 100, background: isDone ? cat.colorBg : "rgba(255,255,255,0.05)", border: isDone ? `0.5px solid ${cat.colorBorder}` : "0.5px solid rgba(255,255,255,0.08)", color: isDone ? cat.selectedColor : "rgba(220,220,245,0.35)", fontFamily: T.h, fontWeight: 700, fontSize: 12, cursor: "pointer", flexShrink: 0 }}>
+                  style={{ padding: "5px 12px", borderRadius: 100, background: isDone ? cat.colorBg : "rgba(255,255,255,0.05)", border: isDone ? `0.5px solid ${cat.colorBorder}` : "0.5px solid rgba(255,255,255,0.08)", color: isDone ? cat.selectedColor : "rgba(220,220,245,0.54)", fontFamily: T.h, fontWeight: 700, fontSize: 12, cursor: "pointer", flexShrink: 0 }}>
                   {cat.emoji} {isDone ? "✓" : ""}
                 </button>
               );
@@ -313,7 +313,7 @@ export default function ProfileQuestionnaire({
 
         {firstname && (
           <div style={{ textAlign: "center", paddingBottom: 12 }}>
-            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color: "rgba(220,220,245,0.55)" }}>
+            <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 15, color: "rgba(220,220,245,0.70)" }}>
               Bonjour {firstname} 👋
             </span>
           </div>
@@ -332,7 +332,7 @@ export default function ProfileQuestionnaire({
                     </div>
                     <div>
                       <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 17, color: "#f0f0fa", margin: 0, letterSpacing: "-0.3px" }}>{cat.title}</h2>
-                      <p style={{ color: "rgba(220,220,245,0.40)", fontSize: 12, fontFamily: T.b, margin: 0 }}>{cat.subtitle}</p>
+                      <p style={{ color: "rgba(220,220,245,0.58)", fontSize: 12, fontFamily: T.b, margin: 0 }}>{cat.subtitle}</p>
                     </div>
                   </div>
                   {isDone && (
@@ -370,7 +370,7 @@ export default function ProfileQuestionnaire({
                           {q.id === "q_d_varices" && ans === "importantes" && (
                             <div style={{ marginTop: 6, padding: "10px 14px", borderRadius: 12, background: "rgba(226,75,74,0.12)", border: "0.5px solid rgba(226,75,74,0.35)", display: "flex", alignItems: "flex-start", gap: 8 }}>
                               <span style={{ fontSize: 16, flexShrink: 0 }}>⚕️</span>
-                              <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "#f09595", lineHeight: 1.6, margin: 0 }}>
+                              <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "#ffa6a6", lineHeight: 1.6, margin: 0 }}>
                                 Des varices importantes et douloureuses méritent un avis médical — consulte ton médecin traitant ou un angiologue.
                               </p>
                             </div>
@@ -389,13 +389,13 @@ export default function ProfileQuestionnaire({
       <AnimatePresence>
         {allDone && (
           <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }} transition={{ type: "spring", damping: 20 }}
-            style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 40, padding: "16px 20px 24px", background: "linear-gradient(to top, #0f0f1a 60%, transparent)" }}
+            style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 40, padding: "16px 20px 24px", background: "linear-gradient(to top, #1f2d4d 60%, transparent)" }}
           >
             <div style={{ maxWidth: 680, margin: "0 auto" }}>
               <div onClick={handleSubmit} style={{ display: "block", width: "100%", padding: "18px 24px", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 800, fontSize: 16, textAlign: "center", cursor: "pointer", boxShadow: "0 0 40px rgba(43,92,230,0.5)" }}>
                 Voir mes résultats →
               </div>
-              <p style={{ textAlign: "center", color: "rgba(220,220,245,0.30)", fontSize: 12, fontFamily: T.b, marginTop: 8 }}>
+              <p style={{ textAlign: "center", color: "rgba(220,220,245,0.48)", fontSize: 12, fontFamily: T.b, marginTop: 8 }}>
                 Toutes les questions sont répondues ✓
               </p>
             </div>

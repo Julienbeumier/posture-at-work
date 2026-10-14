@@ -25,14 +25,14 @@ const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-s
 // ─── Status helpers ───────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<StatusLevel, { color: string; bg: string; border: string; label: string; icon: string }> = {
-  bon:      { color: "#74c69d", bg: "rgba(116,198,157,0.08)", border: "rgba(116,198,157,0.25)", label: "Bon",       icon: "✅" },
-  attention:{ color: "#f4a261", bg: "rgba(244,162,97,0.08)",  border: "rgba(244,162,97,0.25)",  label: "Attention", icon: "⚠️" },
-  critique: { color: "#f09595", bg: "rgba(240,149,149,0.08)", border: "rgba(240,149,149,0.28)", label: "Critique",  icon: "🔴" },
+  bon:      { color: "#86ddb2", bg: "rgba(134,221,178,0.08)", border: "rgba(134,221,178,0.25)", label: "Bon",       icon: "✅" },
+  attention:{ color: "#ffb877", bg: "rgba(255,184,119,0.08)",  border: "rgba(255,184,119,0.25)",  label: "Attention", icon: "⚠️" },
+  critique: { color: "#ffa6a6", bg: "rgba(255,166,166,0.08)", border: "rgba(255,166,166,0.28)", label: "Critique",  icon: "🔴" },
 };
 
 const PRIORITY_COLOR: Record<string, { color: string; label: string }> = {
-  haute:     { color: "#f09595", label: "Priorité haute" },
-  moyenne:   { color: "#f4a261", label: "Priorité moyenne" },
+  haute:     { color: "#ffa6a6", label: "Priorité haute" },
+  moyenne:   { color: "#ffb877", label: "Priorité moyenne" },
   optionnel: { color: "var(--t35)", label: "Optionnel" },
 };
 
@@ -103,7 +103,7 @@ function SetupCard({ label, item, delay = 0 }: { label: string; item: SetupItem;
         <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>Observation : </span>{item.observation}
       </p>
       <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.65 }}>
-        <span style={{ color: "#74c69d" }}>→ </span>{item.recommendation}
+        <span style={{ color: "#86ddb2" }}>→ </span>{item.recommendation}
       </p>
     </ExpandableCard>
   );
@@ -139,7 +139,7 @@ function SectionTitle({ emoji, title }: { emoji: string; title: string }) {
 
 // ─── Dual-mode components ─────────────────────────────────────────────────────
 
-function scoreColor(s: number) { return s >= 70 ? "#74c69d" : s >= 50 ? "#f4a261" : "#f09595"; }
+function scoreColor(s: number) { return s >= 70 ? "#86ddb2" : s >= 50 ? "#ffb877" : "#ffa6a6"; }
 
 function SegmentBar({ label, seg, delay = 0 }: { label: string; seg: PersonneSegment; delay?: number }) {
   const color = scoreColor(seg.score);
@@ -325,7 +325,7 @@ function buildCrossedSynthesis(
     : videoScore ?? questionScore ?? 50;
 
   const scoreLabel = globalScore >= 70 ? "Bon niveau" : globalScore >= 50 ? "À améliorer" : "Attention requise";
-  const scoreColor = globalScore >= 70 ? "#74c69d" : globalScore >= 50 ? "#f4a261" : "#f09595";
+  const scoreColor = globalScore >= 70 ? "#86ddb2" : globalScore >= 50 ? "#ffb877" : "#ffa6a6";
 
   // ─── Lecture des réponses brutes (source unique : lib/ergo-knowledge) ──────
   const sig = readSignals(answers);
@@ -470,17 +470,17 @@ function buildCrossedSynthesis(
   const weekPlan = [
     {
       week: "Cette semaine — Priorité",
-      color: "#f09595",
+      color: "#ffa6a6",
       actions: mergedRecs.filter(r => r.priority <= 1).map(r => r.action).slice(0, 4),
     },
     {
       week: "Dans 2 semaines",
-      color: "#f4a261",
+      color: "#ffb877",
       actions: mergedRecs.filter(r => r.priority === 2).map(r => r.action).slice(0, 3),
     },
     {
       week: "Dans le mois — À ancrer",
-      color: "#74c69d",
+      color: "#86ddb2",
       actions: mergedRecs.filter(r => r.priority >= 3).map(r => r.action).slice(0, 3),
     },
   ].filter(w => w.actions.length > 0);
@@ -587,14 +587,14 @@ function PositivePointsBlock({ points }: { points: string[] }) {
   if (points.length === 0) return null;
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-      style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(116,198,157,0.06)", border: "0.5px solid rgba(116,198,157,0.2)" }}>
-      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#74c69d", marginBottom: 12 }}>
+      style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(134,221,178,0.06)", border: "0.5px solid rgba(134,221,178,0.2)" }}>
+      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#86ddb2", marginBottom: 12 }}>
         ✅ Ce que tu fais bien
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {points.map((point, i) => (
           <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-            <span style={{ color: "#74c69d", fontSize: 14, flexShrink: 0 }}>→</span>
+            <span style={{ color: "#86ddb2", fontSize: 14, flexShrink: 0 }}>→</span>
             <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t70)", margin: 0, lineHeight: 1.55 }}>{point}</p>
           </div>
         ))}
@@ -645,7 +645,7 @@ function DailyChecklist({ items }: { items: string[] }) {
           ☑️ Ta routine quotidienne
         </p>
         {allDone && (
-          <span style={{ fontFamily: T.b, fontSize: 12, color: "#74c69d", fontWeight: 600 }}>
+          <span style={{ fontFamily: T.b, fontSize: 12, color: "#86ddb2", fontWeight: 600 }}>
             🎉 Journée parfaite !
           </span>
         )}
@@ -656,14 +656,14 @@ function DailyChecklist({ items }: { items: string[] }) {
             onClick={() => setChecked(prev => ({ ...prev, [i]: !prev[i] }))}
             style={{ display: "flex", gap: 12, alignItems: "center", cursor: "pointer",
               padding: "10px 12px", borderRadius: 10,
-              background: checked[i] ? "rgba(116,198,157,0.08)" : "var(--bg-card2)",
-              border: `0.5px solid ${checked[i] ? "rgba(116,198,157,0.25)" : "var(--border)"}`,
+              background: checked[i] ? "rgba(134,221,178,0.08)" : "var(--bg-card2)",
+              border: `0.5px solid ${checked[i] ? "rgba(134,221,178,0.25)" : "var(--border)"}`,
               transition: "all 0.2s",
             }}>
             <div style={{
               width: 20, height: 20, borderRadius: 6, flexShrink: 0,
-              background: checked[i] ? "#74c69d" : "transparent",
-              border: `1.5px solid ${checked[i] ? "#74c69d" : "var(--border-3)"}`,
+              background: checked[i] ? "#86ddb2" : "transparent",
+              border: `1.5px solid ${checked[i] ? "#86ddb2" : "var(--border-3)"}`,
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
               {checked[i] && <span style={{ color: "#fff", fontSize: 11 }}>✓</span>}
@@ -692,7 +692,7 @@ function PersonalizedProductsBlock({ products }: { products: Array<{ name: strin
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {products.map((product, i) => {
-          const pColor = product.priority === "haute" ? "#f09595" : product.priority === "moyenne" ? "#f4a261" : "var(--t35)";
+          const pColor = product.priority === "haute" ? "#ffa6a6" : product.priority === "moyenne" ? "#ffb877" : "var(--t35)";
           const pLabel = product.priority === "haute" ? "Priorité haute" : product.priority === "moyenne" ? "Priorité moyenne" : "Optionnel";
           const amazonUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(product.amazon_search)}&tag=postureatwo09-21`;
           return (
@@ -703,7 +703,7 @@ function PersonalizedProductsBlock({ products }: { products: Array<{ name: strin
               </div>
               <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, margin: "0 0 10px" }}>{product.reason}</p>
               <a href={amazonUrl} target="_blank" rel="noopener noreferrer"
-                style={{ display: "inline-block", padding: "7px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer" }}>
+                style={{ display: "inline-block", padding: "7px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(255,184,119,0.10)", border: "0.5px solid rgba(255,184,119,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#ffb877", cursor: "pointer" }}>
                 Voir sur Amazon →
               </a>
             </div>
@@ -966,7 +966,7 @@ export default function FinalReportPage() {
       <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingBottom: 80, position: "relative" }}>
         <BackgroundBlobs blobs={[
           { top: "-5%", right: "-5%", color: "rgba(167,139,250,0.10)", size: 480 },
-          { top: "45%", left: "-8%", color: "rgba(116,198,157,0.09)", size: 380 },
+          { top: "45%", left: "-8%", color: "rgba(134,221,178,0.09)", size: 380 },
           { bottom: "-10%", right: "15%", color: "rgba(43,92,230,0.07)", size: 400 },
         ]} />
         <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
@@ -984,8 +984,8 @@ export default function FinalReportPage() {
           {/* Global score */}
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
             style={{ borderRadius: 28, padding: "28px 28px 24px", textAlign: "center", marginBottom: 20, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20, padding: "6px 14px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)" }}>
-              <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#74c69d" }}>✅ Analyse posturale — Poste debout</span>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20, padding: "6px 14px", borderRadius: 100, background: "rgba(134,221,178,0.12)", border: "0.5px solid rgba(134,221,178,0.3)" }}>
+              <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#86ddb2" }}>✅ Analyse posturale — Poste debout</span>
             </div>
             <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "var(--text-primary)", marginBottom: da.jobTypeDetected ? 14 : 24 }}>
               {firstname ? `Le bilan debout de ${firstname}` : "Ton bilan PostureAtWork — Debout"}
@@ -1004,7 +1004,7 @@ export default function FinalReportPage() {
               </div>
               {questionnaireScore != null && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-                  <ScoreRing score={questionnaireScore} size={82} color="#7c9fff" />
+                  <ScoreRing score={questionnaireScore} size={82} color="#9db8ff" />
                   <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)" }}>Questionnaire</span>
                 </div>
               )}
@@ -1035,7 +1035,7 @@ export default function FinalReportPage() {
               {da.mainIssues.length > 0 && (
                 <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
                   {da.mainIssues.map((issue, i) => {
-                    const sevColor = issue.severity === "eleve" ? "#f09595" : issue.severity === "modere" ? "#f4a261" : "#74c69d";
+                    const sevColor = issue.severity === "eleve" ? "#ffa6a6" : issue.severity === "modere" ? "#ffb877" : "#86ddb2";
                     return (
                       <div key={i} style={{ borderRadius: 12, padding: "10px 14px", background: `${sevColor}10`, border: `0.5px solid ${sevColor}35` }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
@@ -1052,7 +1052,7 @@ export default function FinalReportPage() {
               {da.positivePoints.length > 0 && (
                 <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
                   {da.positivePoints.map((pt, i) => (
-                    <span key={i} style={{ padding: "4px 10px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontSize: 11, color: "#74c69d" }}>
+                    <span key={i} style={{ padding: "4px 10px", borderRadius: 100, background: "rgba(134,221,178,0.12)", border: "0.5px solid rgba(134,221,178,0.3)", fontFamily: T.b, fontSize: 11, color: "#86ddb2" }}>
                       ✓ {pt}
                     </span>
                   ))}
@@ -1094,8 +1094,8 @@ export default function FinalReportPage() {
                   </div>
                 )}
                 {da.environnement.contraintes_visibles.length > 0 && (
-                  <div style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(240,149,149,0.06)", border: "0.5px solid rgba(240,149,149,0.2)" }}>
-                    <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#f09595" }}>Contraintes détectées</span>
+                  <div style={{ borderRadius: 14, padding: "12px 16px", background: "rgba(255,166,166,0.06)", border: "0.5px solid rgba(255,166,166,0.2)" }}>
+                    <span style={{ fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#ffa6a6" }}>Contraintes détectées</span>
                     <ul style={{ paddingLeft: 14, margin: "6px 0 0" }}>
                       {da.environnement.contraintes_visibles.map((c, i) => (
                         <li key={i} style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.6 }}>{c}</li>
@@ -1115,16 +1115,16 @@ export default function FinalReportPage() {
                 {da.recommendations.slice(0, 5).map((rec, i) => (
                   <motion.div key={i}
                     initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.08 }}
-                    style={{ borderRadius: 18, padding: "16px 18px", background: i === 0 ? "rgba(240,149,149,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${i === 0 ? "rgba(240,149,149,0.25)" : "rgba(255,255,255,0.08)"}` }}>
+                    style={{ borderRadius: 18, padding: "16px 18px", background: i === 0 ? "rgba(255,166,166,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${i === 0 ? "rgba(255,166,166,0.25)" : "rgba(255,255,255,0.08)"}` }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                      <div style={{ width: 26, height: 26, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 12, color: i === 0 ? "#f09595" : "var(--t35)" }}>
+                      <div style={{ width: 26, height: 26, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(255,166,166,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 12, color: i === 0 ? "#ffa6a6" : "var(--t35)" }}>
                         {i + 1}
                       </div>
                       <div style={{ flex: 1 }}>
                         <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)", display: "block", marginBottom: 6 }}>{rec.action}</span>
                         <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, margin: 0 }}>{rec.why}</p>
                         {rec.applicable_tous_postes && (
-                          <span style={{ display: "inline-block", marginTop: 6, padding: "2px 8px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontSize: 10, color: "#74c69d" }}>
+                          <span style={{ display: "inline-block", marginTop: 6, padding: "2px 8px", borderRadius: 100, background: "rgba(134,221,178,0.12)", border: "0.5px solid rgba(134,221,178,0.3)", fontFamily: T.b, fontSize: 10, color: "#86ddb2" }}>
                             Applicable à tous les postes debout
                           </span>
                         )}
@@ -1147,14 +1147,14 @@ export default function FinalReportPage() {
 
           {/* Save */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            style={{ borderRadius: 24, padding: "24px 26px", marginBottom: 16, background: "linear-gradient(135deg, rgba(116,198,157,0.07), rgba(43,92,230,0.07))", border: "0.5px solid rgba(116,198,157,0.2)" }}>
+            style={{ borderRadius: 24, padding: "24px 26px", marginBottom: 16, background: "linear-gradient(135deg, rgba(134,221,178,0.07), rgba(43,92,230,0.07))", border: "0.5px solid rgba(134,221,178,0.2)" }}>
             <AnimatePresence mode="wait">
               {saveStatus === "saved" ? (
                 <motion.div key="saved" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: "center", padding: "12px 0" }}>
                   <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
                   <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)", marginBottom: 6 }}>Rapport sauvegardé !</p>
                   <Link href="/dashboard" style={{ textDecoration: "none" }}>
-                    <div style={{ display: "inline-block", padding: "10px 24px", borderRadius: 100, background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#74c69d", cursor: "pointer" }}>
+                    <div style={{ display: "inline-block", padding: "10px 24px", borderRadius: 100, background: "rgba(134,221,178,0.15)", border: "0.5px solid rgba(134,221,178,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#86ddb2", cursor: "pointer" }}>
                       Voir mon dashboard →
                     </div>
                   </Link>
@@ -1192,7 +1192,7 @@ export default function FinalReportPage() {
               </div>
             </Link>
             <Link href="/dashboard" style={{ textDecoration: "none", flex: 1 }}>
-              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#7c9fff" }}>
+              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#9db8ff" }}>
                 Dashboard →
               </div>
             </Link>
@@ -1253,8 +1253,8 @@ export default function FinalReportPage() {
           {/* ── GLOBAL SCORE HEADER ── */}
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
             style={{ borderRadius: 28, padding: "28px 28px 24px", textAlign: "center", marginBottom: 20, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20, padding: "6px 14px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)" }}>
-              <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#74c69d" }}>✅ Analyse complète — Posture & Setup</span>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20, padding: "6px 14px", borderRadius: 100, background: "rgba(134,221,178,0.12)", border: "0.5px solid rgba(134,221,178,0.3)" }}>
+              <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#86ddb2" }}>✅ Analyse complète — Posture & Setup</span>
             </div>
             <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "var(--text-primary)", marginBottom: 24 }}>
               {firstname ? `Le bilan complet de ${firstname}` : "Ton bilan PostureAtWork complet"}
@@ -1274,7 +1274,7 @@ export default function FinalReportPage() {
               </div>
               {questionnaireScore != null && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-                  <ScoreRing score={questionnaireScore} size={68} color="#7c9fff" />
+                  <ScoreRing score={questionnaireScore} size={68} color="#9db8ff" />
                   <span style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)" }}>Questionnaire</span>
                 </div>
               )}
@@ -1314,7 +1314,7 @@ export default function FinalReportPage() {
               {pa.mainIssues.length > 0 && (
                 <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
                   {pa.mainIssues.map((issue, i) => {
-                    const sevColor = issue.severity === "élevé" ? "#f09595" : issue.severity === "modéré" ? "#f4a261" : "#74c69d";
+                    const sevColor = issue.severity === "élevé" ? "#ffa6a6" : issue.severity === "modéré" ? "#ffb877" : "#86ddb2";
                     return (
                       <div key={i} style={{ borderRadius: 12, padding: "10px 14px", background: `${sevColor}10`, border: `0.5px solid ${sevColor}35` }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
@@ -1333,7 +1333,7 @@ export default function FinalReportPage() {
               {pa.positivePoints.length > 0 && (
                 <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
                   {pa.positivePoints.map((pt, i) => (
-                    <span key={i} style={{ padding: "4px 10px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontSize: 11, color: "#74c69d" }}>
+                    <span key={i} style={{ padding: "4px 10px", borderRadius: 100, background: "rgba(134,221,178,0.12)", border: "0.5px solid rgba(134,221,178,0.3)", fontFamily: T.b, fontSize: 11, color: "#86ddb2" }}>
                       ✓ {pt}
                     </span>
                   ))}
@@ -1375,7 +1375,7 @@ export default function FinalReportPage() {
               {po.positivePoints.length > 0 && (
                 <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
                   {po.positivePoints.map((pt, i) => (
-                    <span key={i} style={{ padding: "4px 10px", borderRadius: 100, background: "rgba(116,198,157,0.12)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontSize: 11, color: "#74c69d" }}>
+                    <span key={i} style={{ padding: "4px 10px", borderRadius: 100, background: "rgba(134,221,178,0.12)", border: "0.5px solid rgba(134,221,178,0.3)", fontFamily: T.b, fontSize: 11, color: "#86ddb2" }}>
                       ✓ {pt}
                     </span>
                   ))}
@@ -1394,9 +1394,9 @@ export default function FinalReportPage() {
                 return (
                   <motion.div key={i}
                     initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.08 }}
-                    style={{ borderRadius: 18, padding: "16px 18px", background: i === 0 ? "rgba(240,149,149,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${i === 0 ? "rgba(240,149,149,0.25)" : "rgba(255,255,255,0.08)"}` }}>
+                    style={{ borderRadius: 18, padding: "16px 18px", background: i === 0 ? "rgba(255,166,166,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${i === 0 ? "rgba(255,166,166,0.25)" : "rgba(255,255,255,0.08)"}` }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 8 }}>
-                      <div style={{ width: 26, height: 26, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 12, color: i === 0 ? "#f09595" : "var(--t35)" }}>
+                      <div style={{ width: 26, height: 26, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(255,166,166,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 12, color: i === 0 ? "#ffa6a6" : "var(--t35)" }}>
                         {i + 1}
                       </div>
                       <div style={{ flex: 1 }}>
@@ -1406,8 +1406,8 @@ export default function FinalReportPage() {
                             {isPosture ? "Posture" : "Setup"}
                           </span>
                           {isPosture
-                            ? <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: "rgba(116,198,157,0.12)", color: "#74c69d" }}>Gratuit — correction immédiate</span>
-                            : rec.cost && <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: "rgba(244,162,97,0.12)", color: "#f4a261" }}>{rec.cost}</span>
+                            ? <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: "rgba(134,221,178,0.12)", color: "#86ddb2" }}>Gratuit — correction immédiate</span>
+                            : rec.cost && <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: "rgba(255,184,119,0.12)", color: "#ffb877" }}>{rec.cost}</span>
                           }
                         </div>
                         <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, margin: 0 }}>{rec.why}</p>
@@ -1445,7 +1445,7 @@ export default function FinalReportPage() {
                         </div>
                         <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", lineHeight: 1.6, margin: "0 0 10px" }}>{product.reason}</p>
                         <a href={amazonUrl} target="_blank" rel="noopener noreferrer"
-                          style={{ display: "inline-block", padding: "7px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer" }}>
+                          style={{ display: "inline-block", padding: "7px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(255,184,119,0.10)", border: "0.5px solid rgba(255,184,119,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#ffb877", cursor: "pointer" }}>
                           Voir sur Amazon →
                         </a>
                       </div>
@@ -1496,14 +1496,14 @@ export default function FinalReportPage() {
 
           {/* ── SAVE ── */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            style={{ borderRadius: 24, padding: "24px 26px", marginBottom: 16, background: "linear-gradient(135deg, rgba(116,198,157,0.07), rgba(43,92,230,0.07))", border: "0.5px solid rgba(116,198,157,0.2)" }}>
+            style={{ borderRadius: 24, padding: "24px 26px", marginBottom: 16, background: "linear-gradient(135deg, rgba(134,221,178,0.07), rgba(43,92,230,0.07))", border: "0.5px solid rgba(134,221,178,0.2)" }}>
             <AnimatePresence mode="wait">
               {saveStatus === "saved" ? (
                 <motion.div key="saved" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: "center", padding: "12px 0" }}>
                   <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
                   <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)", marginBottom: 6 }}>Rapport sauvegardé !</p>
                   <Link href="/dashboard" style={{ textDecoration: "none" }}>
-                    <div style={{ display: "inline-block", padding: "10px 24px", borderRadius: 100, background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#74c69d", cursor: "pointer" }}>
+                    <div style={{ display: "inline-block", padding: "10px 24px", borderRadius: 100, background: "rgba(134,221,178,0.15)", border: "0.5px solid rgba(134,221,178,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#86ddb2", cursor: "pointer" }}>
                       Voir mon dashboard →
                     </div>
                   </Link>
@@ -1541,7 +1541,7 @@ export default function FinalReportPage() {
               </div>
             </Link>
             <Link href="/dashboard" style={{ textDecoration: "none", flex: 1 }}>
-              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#7c9fff" }}>
+              <div style={{ padding: "12px 0", borderRadius: 100, textAlign: "center", background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#9db8ff" }}>
                 Dashboard →
               </div>
             </Link>
@@ -1557,14 +1557,14 @@ export default function FinalReportPage() {
   const combinedScore = questionnaireScore != null
     ? Math.round(questionnaireScore * 0.6 + postureScore * 0.4)
     : postureScore;
-  const combinedColor = combinedScore >= 70 ? "#74c69d" : combinedScore >= 50 ? "#f4a261" : "#f09595";
+  const combinedColor = combinedScore >= 70 ? "#86ddb2" : combinedScore >= 50 ? "#ffb877" : "#ffa6a6";
 
   return (
     <main style={{ minHeight: "100vh", background: "var(--bg-primary)", paddingBottom: 80, position: "relative" }}>
       <BackgroundBlobs blobs={[
         { top: "-5%", right: "-5%", color: "rgba(124,58,237,0.12)", size: 480 },
         { top: "40%", left: "-8%", color: "rgba(43,92,230,0.10)", size: 380 },
-        { bottom: "-10%", right: "15%", color: "rgba(116,198,157,0.08)", size: 400 },
+        { bottom: "-10%", right: "15%", color: "rgba(134,221,178,0.08)", size: 400 },
       ]} />
 
       <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: "0 24px" }}>
@@ -1598,7 +1598,7 @@ export default function FinalReportPage() {
             </div>
             {questionnaireScore != null && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-                <ScoreRing score={questionnaireScore} size={82} color="#7c9fff" />
+                <ScoreRing score={questionnaireScore} size={82} color="#9db8ff" />
                 <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>Questionnaire</span>
               </div>
             )}
@@ -1641,10 +1641,10 @@ export default function FinalReportPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {report!.priority_actions.map((action, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.09 }}
-                style={{ borderRadius: 20, padding: "18px 20px", position: "relative", overflow: "hidden", background: i === 0 ? "rgba(240,149,149,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${i === 0 ? "rgba(240,149,149,0.25)" : "rgba(255,255,255,0.08)"}` }}>
+                style={{ borderRadius: 20, padding: "18px 20px", position: "relative", overflow: "hidden", background: i === 0 ? "rgba(255,166,166,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${i === 0 ? "rgba(255,166,166,0.25)" : "rgba(255,255,255,0.08)"}` }}>
                 <div style={{ position: "relative", zIndex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: 10, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(240,149,149,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 13, color: i === 0 ? "#f09595" : "var(--t35)" }}>
+                    <div style={{ width: 28, height: 28, borderRadius: 10, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: i === 0 ? "rgba(255,166,166,0.18)" : "rgba(255,255,255,0.06)", fontFamily: T.h, fontWeight: 900, fontSize: 13, color: i === 0 ? "#ffa6a6" : "var(--t35)" }}>
                       {action.rank}
                     </div>
                     <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{action.title}</span>
@@ -1655,7 +1655,7 @@ export default function FinalReportPage() {
                   <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", lineHeight: 1.65, marginBottom: 6 }}>
                     <span style={{ color: "var(--t80)", fontWeight: 600 }}>Comment : </span>{action.how}
                   </p>
-                  <p style={{ fontFamily: T.b, fontSize: 12, color: "#74c69d", fontWeight: 600 }}>Impact : {action.impact}</p>
+                  <p style={{ fontFamily: T.b, fontSize: 12, color: "#86ddb2", fontWeight: 600 }}>Impact : {action.impact}</p>
                 </div>
               </motion.div>
             ))}
@@ -1671,11 +1671,11 @@ export default function FinalReportPage() {
                 style={{ borderRadius: 20, padding: "18px 20px", background: "rgba(43,92,230,0.07)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
                 <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
                   <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)" }}>{ex.name}</span>
-                  <span style={{ flexShrink: 0, padding: "3px 10px", borderRadius: 100, background: "rgba(43,92,230,0.15)", color: "#7c9fff", fontFamily: T.b, fontWeight: 600, fontSize: 11 }}>{ex.target}</span>
+                  <span style={{ flexShrink: 0, padding: "3px 10px", borderRadius: 100, background: "rgba(43,92,230,0.15)", color: "#9db8ff", fontFamily: T.b, fontWeight: 600, fontSize: 11 }}>{ex.target}</span>
                 </div>
                 <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.65, marginBottom: 8 }}>{ex.instruction}</p>
                 <div style={{ display: "flex", gap: 10 }}>
-                  <span style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff" }}>⏱ {ex.duration}</span>
+                  <span style={{ fontFamily: T.b, fontSize: 12, color: "#9db8ff" }}>⏱ {ex.duration}</span>
                   <span style={{ color: "var(--t20)" }}>·</span>
                   <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)" }}>{ex.frequency}</span>
                 </div>
@@ -1701,7 +1701,7 @@ export default function FinalReportPage() {
                     </div>
                     <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)", lineHeight: 1.6, margin: "0 0 10px" }}>{product.reason}</p>
                     <a href={amazonUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-                      style={{ display: "inline-block", padding: "7px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(244,162,97,0.10)", border: "0.5px solid rgba(244,162,97,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#f4a261", cursor: "pointer" }}>
+                      style={{ display: "inline-block", padding: "7px 14px", borderRadius: 100, textDecoration: "none", background: "rgba(255,184,119,0.10)", border: "0.5px solid rgba(255,184,119,0.3)", fontFamily: T.b, fontWeight: 700, fontSize: 12, color: "#ffb877", cursor: "pointer" }}>
                       Voir sur Amazon →
                     </a>
                   </div>
@@ -1722,7 +1722,7 @@ export default function FinalReportPage() {
         {/* Programme */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
           style={{ marginBottom: 16, borderRadius: 22, padding: "20px 22px", background: "rgba(45,106,79,0.08)", border: "0.5px solid rgba(45,106,79,0.20)" }}>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#74c69d", margin: "0 0 14px" }}>🧘 Programme recommandé pour toi</p>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#86ddb2", margin: "0 0 14px" }}>🧘 Programme recommandé pour toi</p>
           {[
             { emoji: "🦆", name: "Rétraction cervicale", reps: "10 rép. × 5 sec", zone: "Nuque" },
             { emoji: "🌿", name: "Flexion lombaire", reps: "45 sec × 2", zone: "Bas du dos" },
@@ -1734,7 +1734,7 @@ export default function FinalReportPage() {
                 <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "var(--text-primary)", margin: 0 }}>{ex.name}</p>
                 <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: 0 }}>{ex.reps}</p>
               </div>
-              <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(116,198,157,0.12)", fontFamily: T.b, fontSize: 10, color: "#74c69d" }}>{ex.zone}</span>
+              <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(134,221,178,0.12)", fontFamily: T.b, fontSize: 10, color: "#86ddb2" }}>{ex.zone}</span>
             </div>
           ))}
           <Link href="/mobilite?program=cible_cervicales" style={{ textDecoration: "none" }}>
@@ -1746,14 +1746,14 @@ export default function FinalReportPage() {
 
         {/* Save */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          style={{ borderRadius: 24, padding: "24px 26px", marginBottom: 16, background: "linear-gradient(135deg, rgba(116,198,157,0.07), rgba(43,92,230,0.07))", border: "0.5px solid rgba(116,198,157,0.2)" }}>
+          style={{ borderRadius: 24, padding: "24px 26px", marginBottom: 16, background: "linear-gradient(135deg, rgba(134,221,178,0.07), rgba(43,92,230,0.07))", border: "0.5px solid rgba(134,221,178,0.2)" }}>
           <AnimatePresence mode="wait">
             {saveStatus === "saved" ? (
               <motion.div key="saved" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: "center", padding: "12px 0" }}>
                 <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
                 <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)", marginBottom: 6 }}>Rapport sauvegardé !</p>
                 <Link href="/dashboard" style={{ textDecoration: "none" }}>
-                  <div style={{ display: "inline-block", padding: "10px 24px", borderRadius: 100, background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#74c69d", cursor: "pointer" }}>
+                  <div style={{ display: "inline-block", padding: "10px 24px", borderRadius: 100, background: "rgba(134,221,178,0.15)", border: "0.5px solid rgba(134,221,178,0.3)", fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#86ddb2", cursor: "pointer" }}>
                     Voir mon dashboard →
                   </div>
                 </Link>

@@ -13,7 +13,7 @@ function DesincritContent() {
   const error = params.get("error");
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0f0f1a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 24px", position: "relative" }}>
+    <main style={{ minHeight: "100vh", background: "#1f2d4d", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 24px", position: "relative" }}>
       <BackgroundBlobs blobs={[{ top: "-5%", right: "-5%", color: "rgba(43,92,230,0.10)", size: 400 }]} />
       <div style={{ position: "relative", zIndex: 1, textAlign: "center", maxWidth: 420 }}>
         {error ? (
@@ -22,7 +22,7 @@ function DesincritContent() {
             <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", marginBottom: 10 }}>
               Lien invalide
             </p>
-            <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.50)", lineHeight: 1.65, marginBottom: 28 }}>
+            <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.66)", lineHeight: 1.65, marginBottom: 28 }}>
               Ce lien de désinscription est invalide ou a expiré.
             </p>
           </>
@@ -32,7 +32,7 @@ function DesincritContent() {
             <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", marginBottom: 10 }}>
               Tu as été désinscrit avec succès
             </p>
-            <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.50)", lineHeight: 1.65, marginBottom: 28 }}>
+            <p style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.66)", lineHeight: 1.65, marginBottom: 28 }}>
               {email ? `L'adresse ${email} ne recevra plus d'emails PAW.` : "Tu ne recevras plus nos emails."}
             </p>
           </>

@@ -27,21 +27,21 @@ const CATEGORIES = [
     index: 1, id: "cat-2",
     title: "Tes douleurs", short: "Douleurs", emoji: "🩺",
     color: "#e24b4a", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
-    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#ffa6a6",
     requiredQ: ["q6", "q7", "q8", "q9", "q10", "q11", "q12", "q12b", "q_irradiation", "q_douleur_nuit"],
   },
   {
     index: 2, id: "cat-3",
     title: "Habitudes de travail", short: "Habitudes", emoji: "⏱️",
     color: "#d4622a", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
-    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#ffb877",
     requiredQ: ["q14", "q14b", "q_laptop_hors_bureau"],
   },
   {
     index: 3, id: "cat-4",
     title: "Sommeil & énergie", short: "Sommeil", emoji: "🌙",
     color: "#2d6a4f", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
-    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#86ddb2",
     requiredQ: ["q18", "q20", "q_ecrans_soir"],
   },
   {
@@ -581,7 +581,7 @@ function BureauQuestionnaire() {
           position: "sticky",
           top: 0,
           zIndex: 30,
-          background: theme === "light" ? "rgba(255,255,255,0.95)" : "rgba(15,15,26,0.95)",
+          background: theme === "light" ? "rgba(255,255,255,0.95)" : "rgba(31,45,77,0.95)",
           backdropFilter: "blur(20px)",
           borderBottom: "0.5px solid var(--border)",
         }}
@@ -594,7 +594,7 @@ function BureauQuestionnaire() {
               </button>
               <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>
                 <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)" }}>PAW</span>
-                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#7c9fff" }}>.</span>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#9db8ff" }}>.</span>
               </Link>
             </div>
             <span style={{ color: "var(--t40)", fontSize: 13, fontFamily: T.b }}>
@@ -960,7 +960,7 @@ function BureauQuestionnaire() {
               right: 0,
               zIndex: 40,
               padding: "16px 20px 24px",
-              background: theme === "light" ? "linear-gradient(to top, #F3F7FF 60%, transparent)" : "linear-gradient(to top, #0f0f1a 60%, transparent)",
+              background: theme === "light" ? "linear-gradient(to top, #F3F7FF 60%, transparent)" : "linear-gradient(to top, #1f2d4d 60%, transparent)",
             }}
           >
             <div style={{ maxWidth: 680, margin: "0 auto" }}>

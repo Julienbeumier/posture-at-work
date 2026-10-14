@@ -138,10 +138,10 @@ export default function AdminPage() {
 
         {result && (
           <div style={{ marginTop: 16, padding: "16px 18px", borderRadius: 14,
-            background: result.success ? "rgba(116,198,157,0.08)" : "rgba(226,75,74,0.08)",
-            border: `0.5px solid ${result.success ? "rgba(116,198,157,0.25)" : "rgba(226,75,74,0.25)"}` }}>
+            background: result.success ? "rgba(134,221,178,0.08)" : "rgba(226,75,74,0.08)",
+            border: `0.5px solid ${result.success ? "rgba(134,221,178,0.25)" : "rgba(226,75,74,0.25)"}` }}>
             <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
-              color: result.success ? "#74c69d" : "#f09595", margin: "0 0 8px" }}>
+              color: result.success ? "#86ddb2" : "#ffa6a6", margin: "0 0 8px" }}>
               {result.success ? "✅ Entreprise créée !" : "❌ Erreur"}
             </p>
             <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", margin: 0, lineHeight: 1.6 }}>
@@ -150,7 +150,7 @@ export default function AdminPage() {
             {result.success && result.inviteCode && (
               <div style={{ marginTop: 10, padding: "10px 12px", borderRadius: 10, background: "rgba(43,92,230,0.08)" }}>
                 <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: "0 0 4px" }}>Lien d&apos;invitation employés :</p>
-                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#7c9fff", margin: 0 }}>
+                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: "#9db8ff", margin: 0 }}>
                   postureatwork.com/join/{result.inviteCode}
                 </p>
                 <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t40)", margin: "4px 0 0" }}>

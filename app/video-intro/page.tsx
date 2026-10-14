@@ -306,7 +306,7 @@ export default function VideoIntroPage() {
               className="flex items-center justify-center py-1"
             >
               <span className="text-xs font-bold px-4 py-1.5 rounded-full"
-                style={{ background: "rgba(116,198,157,0.15)", border: "1px solid rgba(116,198,157,0.35)", color: "#74c69d" }}>
+                style={{ background: "rgba(134,221,178,0.15)", border: "1px solid rgba(134,221,178,0.35)", color: "#86ddb2" }}>
                 ✅ Analyse complète
               </span>
             </motion.div>
@@ -372,7 +372,7 @@ export default function VideoIntroPage() {
                 <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 800, fontSize: 15, color: "#fff", marginBottom: 6 }}>
                   📱 Tu es sur ordinateur ?
                 </p>
-                <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "rgba(220,220,245,0.6)", lineHeight: 1.65, marginBottom: 14 }}>
+                <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 13, color: "rgba(220,220,245,0.74)", lineHeight: 1.65, marginBottom: 14 }}>
                   Pour une analyse posturale précise, filme-toi avec ton téléphone.
                   La caméra mobile donne de meilleurs résultats.
                 </p>
@@ -400,7 +400,7 @@ export default function VideoIntroPage() {
                         2. Tes données sont transférées automatiquement<br />
                         3. Filme depuis le mobile
                       </p>
-                      <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 11, color: "rgba(220,220,245,0.35)" }}>
+                      <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 11, color: "rgba(220,220,245,0.54)" }}>
                         ⏱️ Valable 1 heure
                       </p>
                     </div>

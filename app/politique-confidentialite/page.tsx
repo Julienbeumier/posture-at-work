@@ -9,32 +9,32 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <div style={{ marginBottom: 32 }}>
       <h2 style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: "#f0f0fa", margin: "0 0 12px" }}>{title}</h2>
-      <div style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.65)", lineHeight: 1.75 }}>{children}</div>
+      <div style={{ fontFamily: T.b, fontSize: 14, color: "rgba(220,220,245,0.78)", lineHeight: 1.75 }}>{children}</div>
     </div>
   );
 }
 
 export default function PolitiqueConfidentialite() {
   return (
-    <main style={{ minHeight: "100vh", background: "#0f0f1a", paddingBottom: 80, position: "relative" }}>
+    <main style={{ minHeight: "100vh", background: "#1f2d4d", paddingBottom: 80, position: "relative" }}>
       <BackgroundBlobs blobs={[{ top: "-5%", right: "-5%", color: "rgba(43,92,230,0.10)", size: 400 }]} />
 
       <div style={{ position: "relative", zIndex: 10, maxWidth: 680, margin: "0 auto", padding: "0 24px" }}>
         <div style={{ paddingTop: 80, paddingBottom: 32 }}>
           <Link href="/" style={{ textDecoration: "none" }}>
-            <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.4)", cursor: "pointer" }}>← Accueil</span>
+            <span style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.58)", cursor: "pointer" }}>← Accueil</span>
           </Link>
         </div>
 
         <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: "#f0f0fa", marginBottom: 8, letterSpacing: "-0.5px" }}>
           Politique de confidentialité
         </h1>
-        <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.35)", marginBottom: 40 }}>
+        <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.54)", marginBottom: 40 }}>
           Dernière mise à jour : mai 2026
         </p>
 
         <Section title="1. Qui sommes-nous">
-          <p>PostureAtWork est un outil de bilan santé au bureau développé de manière indépendante. Pour toute question relative à tes données, contacte-nous à : <a href="mailto:contact@postureatwork.app" style={{ color: "#7c9fff" }}>contact@postureatwork.app</a></p>
+          <p>PostureAtWork est un outil de bilan santé au bureau développé de manière indépendante. Pour toute question relative à tes données, contacte-nous à : <a href="mailto:contact@postureatwork.app" style={{ color: "#9db8ff" }}>contact@postureatwork.app</a></p>
         </Section>
 
         <Section title="2. Données collectées">
@@ -66,7 +66,7 @@ export default function PolitiqueConfidentialite() {
               La vidéo complète n'est jamais uploadée — seules 4 à 7 images fixes (JPEG) sont transmises, puis immédiatement supprimées après l'analyse.
             </p>
           </div>
-          <p>Anthropic est soumis à sa propre politique de confidentialité disponible sur <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: "#7c9fff" }}>anthropic.com/privacy</a>.</p>
+          <p>Anthropic est soumis à sa propre politique de confidentialité disponible sur <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: "#9db8ff" }}>anthropic.com/privacy</a>.</p>
         </Section>
 
         <Section title="5. Tes droits">
@@ -77,13 +77,13 @@ export default function PolitiqueConfidentialite() {
             <li><strong style={{ color: "#f0f0fa" }}>Supprimer</strong> ton compte et toutes tes données</li>
             <li><strong style={{ color: "#f0f0fa" }}>Exporter</strong> tes données (portabilité)</li>
           </ul>
-          <p style={{ marginTop: 12 }}>Pour exercer ces droits, envoie une demande à <a href="mailto:contact@postureatwork.app" style={{ color: "#7c9fff" }}>contact@postureatwork.app</a>.</p>
+          <p style={{ marginTop: 12 }}>Pour exercer ces droits, envoie une demande à <a href="mailto:contact@postureatwork.app" style={{ color: "#9db8ff" }}>contact@postureatwork.app</a>.</p>
         </Section>
 
         <Section title="6. Supprimer mes données">
           <p>
             Pour demander la suppression complète de ton compte et de toutes tes données, envoie un email à{" "}
-            <a href="mailto:contact@postureatwork.app?subject=Suppression de compte" style={{ color: "#f09595" }}>contact@postureatwork.app</a>{" "}
+            <a href="mailto:contact@postureatwork.app?subject=Suppression de compte" style={{ color: "#ffa6a6" }}>contact@postureatwork.app</a>{" "}
             avec l'objet "Suppression de compte". Nous procéderons sous 72h.
           </p>
           <p style={{ marginTop: 8 }}>Tu peux aussi supprimer ton compte directement depuis ton tableau de bord.</p>
@@ -98,7 +98,7 @@ export default function PolitiqueConfidentialite() {
         <Section title="8. Contact">
           <p>
             Pour toute question concernant cette politique :<br />
-            <a href="mailto:contact@postureatwork.app" style={{ color: "#7c9fff" }}>contact@postureatwork.app</a>
+            <a href="mailto:contact@postureatwork.app" style={{ color: "#9db8ff" }}>contact@postureatwork.app</a>
           </p>
         </Section>
       </div>

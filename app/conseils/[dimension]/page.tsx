@@ -19,9 +19,9 @@ const T = {
 };
 
 function scoreBadge(score: number) {
-  if (score >= 70) return { label: "Bonne santé", color: "#74c69d", bg: "rgba(116,198,157,0.12)", border: "rgba(116,198,157,0.3)" };
-  if (score >= 50) return { label: "À améliorer", color: "#f4a261", bg: "rgba(244,162,97,0.12)", border: "rgba(244,162,97,0.3)" };
-  return { label: "Attention requise", color: "#f09595", bg: "rgba(240,149,149,0.12)", border: "rgba(240,149,149,0.3)" };
+  if (score >= 70) return { label: "Bonne santé", color: "#86ddb2", bg: "rgba(134,221,178,0.12)", border: "rgba(134,221,178,0.3)" };
+  if (score >= 50) return { label: "À améliorer", color: "#ffb877", bg: "rgba(255,184,119,0.12)", border: "rgba(255,184,119,0.3)" };
+  return { label: "Attention requise", color: "#ffa6a6", bg: "rgba(255,166,166,0.12)", border: "rgba(255,166,166,0.3)" };
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -100,8 +100,8 @@ const DIM_PROGRAM: Record<string, string> = {
 };
 
 const PRIORITY_STYLE = {
-  haute:   { color: "#f09595", label: "Priorité haute" },
-  moyenne: { color: "#f4a261", label: "Priorité moyenne" },
+  haute:   { color: "#ffa6a6", label: "Priorité haute" },
+  moyenne: { color: "#ffb877", label: "Priorité moyenne" },
   premium: { color: "#a78bfa", label: "Premium" },
 };
 
@@ -118,7 +118,7 @@ function ProductCard({ p }: { p: Product }) {
           position: "absolute", top: 12, right: 12,
           padding: "2px 9px", borderRadius: 100,
           fontFamily: T.b, fontWeight: 700, fontSize: 10,
-          color: "#74c69d", background: "rgba(116,198,157,0.15)", border: "0.5px solid rgba(116,198,157,0.3)",
+          color: "#86ddb2", background: "rgba(134,221,178,0.15)", border: "0.5px solid rgba(134,221,178,0.3)",
         }}>
           {p.badge}
         </span>
@@ -340,7 +340,7 @@ export default function DimensionPage() {
       <main style={{ minHeight: "100vh", background: c.mainBg, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
         <div style={{ textAlign: "center" }}>
           <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", marginBottom: 12 }}>Dimension inconnue</p>
-          <Link href="/results" style={{ textDecoration: "none", color: "#7c9fff", fontFamily: T.b, fontSize: 14 }}>← Retour aux résultats</Link>
+          <Link href="/results" style={{ textDecoration: "none", color: "#9db8ff", fontFamily: T.b, fontSize: 14 }}>← Retour aux résultats</Link>
         </div>
       </main>
     );
@@ -538,7 +538,7 @@ export default function DimensionPage() {
             <SectionTitle>📋 Ta checklist prioritaire</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {advice.checklist.map((item, i) => {
-                const pColor = item.priority === "urgent" ? "#f09595" : item.priority === "important" ? "#f4a261" : "#74c69d";
+                const pColor = item.priority === "urgent" ? "#ffa6a6" : item.priority === "important" ? "#ffb877" : "#86ddb2";
                 const pLabel = item.priority === "urgent" ? "Urgent" : item.priority === "important" ? "Important" : "Optionnel";
                 return (
                   <div key={i} style={{ borderRadius: 14, padding: "14px 16px", background: `${pColor}0d`, border: `0.5px solid ${pColor}30` }}>
@@ -561,14 +561,14 @@ export default function DimensionPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18 }}
-            style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(240,149,149,0.08)", border: "0.5px solid rgba(240,149,149,0.28)" }}
+            style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(255,166,166,0.08)", border: "0.5px solid rgba(255,166,166,0.28)" }}
           >
             <SectionTitle>🚨 Points d'attention médicale</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {advice.redFlags.map((flag, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                   <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>⚠️</span>
-                  <p style={{ fontFamily: T.b, fontSize: 13, color: "#f09595", lineHeight: 1.65, margin: 0 }}>{flag}</p>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "#ffa6a6", lineHeight: 1.65, margin: 0 }}>{flag}</p>
                 </div>
               ))}
             </div>
@@ -635,9 +635,9 @@ export default function DimensionPage() {
             <SectionTitle>🔄 Tes rituels quotidiens</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {advice.rituals.map((ritual, i) => {
-                const momentColors: Record<string, string> = { matin: "#f4a261", "journée": "#7c9fff", soir: "#74c69d", toujours: "#a78bfa" };
+                const momentColors: Record<string, string> = { matin: "#ffb877", "journée": "#9db8ff", soir: "#86ddb2", toujours: "#a78bfa" };
                 const momentEmojis: Record<string, string> = { matin: "🌅", "journée": "☀️", soir: "🌙", toujours: "🔄" };
-                const mColor = momentColors[ritual.moment] ?? "#7c9fff";
+                const mColor = momentColors[ritual.moment] ?? "#9db8ff";
                 const mEmoji = momentEmojis[ritual.moment] ?? "🔄";
                 return (
                   <div key={i} style={{ borderRadius: 14, padding: "14px 16px", background: `${mColor}0d`, border: `0.5px solid ${mColor}28` }}>
@@ -667,8 +667,8 @@ export default function DimensionPage() {
             <SectionTitle>🍽️ Exemples de repas adaptés</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {advice.mealExamples.map((meal, i) => {
-                const mealColors: Record<string, string> = { "petit-déjeuner": "#f4a261", "déjeuner": "#7c9fff", collation: "#a78bfa" };
-                const mColor = mealColors[meal.moment] ?? "#7c9fff";
+                const mealColors: Record<string, string> = { "petit-déjeuner": "#ffb877", "déjeuner": "#9db8ff", collation: "#a78bfa" };
+                const mColor = mealColors[meal.moment] ?? "#9db8ff";
                 return (
                   <div key={i} style={{ borderRadius: 14, padding: "14px 16px", background: `${mColor}0d`, border: `0.5px solid ${mColor}28` }}>
                     <span style={{ padding: "2px 8px", borderRadius: 100, background: `${mColor}20`, fontFamily: T.b, fontSize: 10, fontWeight: 600, color: mColor, display: "inline-block", marginBottom: 8 }}>
@@ -689,13 +689,13 @@ export default function DimensionPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.31 }}
-            style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(240,149,149,0.06)", border: "0.5px solid rgba(240,149,149,0.22)" }}
+            style={{ borderRadius: 20, padding: "18px 20px", marginBottom: 16, background: "rgba(255,166,166,0.06)", border: "0.5px solid rgba(255,166,166,0.22)" }}
           >
             <SectionTitle>⛔ À éviter absolument</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {advice.avoidItems.map((item, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                  <span style={{ color: "#f09595", fontSize: 13, flexShrink: 0, marginTop: 2 }}>✕</span>
+                  <span style={{ color: "#ffa6a6", fontSize: 13, flexShrink: 0, marginTop: 2 }}>✕</span>
                   <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{item}</p>
                 </div>
               ))}
@@ -724,14 +724,14 @@ export default function DimensionPage() {
                   style={{
                     display: "flex", alignItems: "center", gap: 12, padding: "12px 14px",
                     borderRadius: 12, cursor: "pointer",
-                    background: isChecked ? "rgba(116,198,157,0.10)" : "rgba(255,255,255,0.04)",
-                    border: isChecked ? "0.5px solid rgba(116,198,157,0.30)" : "0.5px solid var(--border)",
+                    background: isChecked ? "rgba(134,221,178,0.10)" : "rgba(255,255,255,0.04)",
+                    border: isChecked ? "0.5px solid rgba(134,221,178,0.30)" : "0.5px solid var(--border)",
                     transition: "all 0.2s ease",
                   }}
                 >
                   <div style={{
                     width: 22, height: 22, borderRadius: 6, flexShrink: 0,
-                    background: isChecked ? "#74c69d" : "rgba(255,255,255,0.06)",
+                    background: isChecked ? "#86ddb2" : "rgba(255,255,255,0.06)",
                     border: isChecked ? "none" : "0.5px solid rgba(255,255,255,0.15)",
                     display: "flex", alignItems: "center", justifyContent: "center",
                   }}>

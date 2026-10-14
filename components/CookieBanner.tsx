@@ -27,21 +27,21 @@ export default function CookieBanner() {
   return (
     <div style={{
       position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100,
-      background: "#1b1b2e",
+      background: "#263760",
       borderTop: "0.5px solid rgba(255,255,255,0.10)",
       padding: "16px 20px",
     }}>
       <div style={{ maxWidth: 700, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
         <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.70)", lineHeight: 1.6, flex: 1, minWidth: 200, margin: 0 }}>
           PAW utilise des cookies pour améliorer ton expérience et sauvegarder tes bilans.{" "}
-          <Link href="/politique-confidentialite" style={{ color: "#7c9fff", textDecoration: "underline" }}>
+          <Link href="/politique-confidentialite" style={{ color: "#9db8ff", textDecoration: "underline" }}>
             En savoir plus
           </Link>
         </p>
         <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
           <button
             onClick={refuse}
-            style={{ padding: "12px 18px", borderRadius: 100, background: "transparent", border: "1px solid rgba(255,255,255,0.20)", color: "rgba(220,220,245,0.60)", fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer", minHeight: 44 }}
+            style={{ padding: "12px 18px", borderRadius: 100, background: "transparent", border: "1px solid rgba(255,255,255,0.20)", color: "rgba(220,220,245,0.74)", fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer", minHeight: 44 }}
           >
             Refuser
           </button>

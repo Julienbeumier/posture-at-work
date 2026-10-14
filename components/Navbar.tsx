@@ -108,7 +108,7 @@ export default function Navbar() {
         left: 0,
         right: 0,
         zIndex: 50,
-        background: scrolled ? "rgba(15,15,26,0.92)" : "transparent",
+        background: scrolled ? "rgba(31,45,77,0.92)" : "transparent",
         backdropFilter: scrolled ? "blur(20px)" : "none",
         borderBottom: scrolled ? "0.5px solid rgba(255,255,255,0.07)" : "none",
         transition: "all 0.3s ease",
@@ -187,12 +187,12 @@ export default function Navbar() {
             {user ? (
               <>
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>
-                  <div style={{ padding: "7px 16px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#7c9fff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                  <div style={{ padding: "7px 16px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#9db8ff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                     Exercices
                   </div>
                 </Link>
                 <Link href="/dashboard" style={{ textDecoration: "none" }}>
-                  <div style={{ padding: "7px 16px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#7c9fff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                  <div style={{ padding: "7px 16px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#9db8ff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                     Dashboard
                   </div>
                 </Link>
@@ -212,7 +212,7 @@ export default function Navbar() {
               <div style={{ position: "relative", display: "inline-block" }}>
                 <div
                   onClick={() => setMenuOpen((v) => !v)}
-                  style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg, #2b5ce6, #7c9fff)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: T.h }}
+                  style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg, #2b5ce6, #9db8ff)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: T.h }}
                 >
                   {initials}
                 </div>
@@ -225,7 +225,7 @@ export default function Navbar() {
                   <div onClick={() => { router.push("/dashboard"); setMenuOpen(false); }} style={{ padding: "10px 16px", color: "var(--t75)", fontSize: 13, cursor: "pointer" }}>
                     📊 Mon compte
                   </div>
-                  <div onClick={signOut} style={{ padding: "10px 16px", color: "#f09595", fontSize: 13, cursor: "pointer" }}>
+                  <div onClick={signOut} style={{ padding: "10px 16px", color: "#ffa6a6", fontSize: 13, cursor: "pointer" }}>
                     → Déconnexion
                   </div>
                 </div>
@@ -236,7 +236,7 @@ export default function Navbar() {
           {/* Mon bilan button (connecté seulement) */}
           {user && (
             <Link href="/questionnaire" style={{ textDecoration: "none" }}>
-              <div style={{ padding: "11px 18px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#7c9fff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.h, minHeight: 44, display: "flex", alignItems: "center" }}>
+              <div style={{ padding: "11px 18px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#9db8ff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.h, minHeight: 44, display: "flex", alignItems: "center" }}>
                 Mon bilan
               </div>
             </Link>
@@ -317,7 +317,7 @@ export default function Navbar() {
           {user && (
             <button
               onClick={() => { signOut(); setIsMenuOpen(false); }}
-              style={{ ...menuItemStyle, background: "none", border: "none", width: "100%", textAlign: "left", color: "#f09595", borderBottom: "none" }}
+              style={{ ...menuItemStyle, background: "none", border: "none", width: "100%", textAlign: "left", color: "#ffa6a6", borderBottom: "none" }}
             >
               → Se déconnecter
             </button>
