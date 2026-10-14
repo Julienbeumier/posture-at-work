@@ -209,9 +209,9 @@ export default function JoinPage() {
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "6px 16px", borderRadius: 100, marginBottom: 16,
-            background: "rgba(61,123,255,0.12)", border: "0.5px solid rgba(61,123,255,0.25)",
+            background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)",
           }}>
-            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#5b9dff" }}>
+            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#7c9fff" }}>
               🏢 {company?.name}
             </span>
           </div>
@@ -235,7 +235,7 @@ export default function JoinPage() {
           }}
         >
           <span style={{ fontSize: 18 }}>🔒</span>
-          <p style={{ fontFamily: T.b, fontSize: 13, color: "#12c48b", margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontFamily: T.b, fontSize: 13, color: "#1d9e75", margin: 0, lineHeight: 1.6 }}>
             Vos scores remontent de façon <strong>anonymisée</strong> à votre employeur.
             Votre nom n&apos;est jamais visible. Vous restez identifié(e) comme &quot;Employé #X&quot;.
           </p>
@@ -254,7 +254,7 @@ export default function JoinPage() {
                 onClick={() => setIsNewUser(opt.key)}
                 style={{
                   flex: 1, padding: "8px 0", borderRadius: 10, border: "none",
-                  background: isNewUser === opt.key ? "#3d7bff" : "transparent",
+                  background: isNewUser === opt.key ? "#2b5ce6" : "transparent",
                   color: isNewUser === opt.key ? "#fff" : c.textMuted,
                   fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer",
                   transition: "all 0.2s",
@@ -304,18 +304,18 @@ export default function JoinPage() {
               style={{ padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `1px solid ${c.border2}`, color: c.textPrimary, fontFamily: T.b, fontSize: 14, outline: "none" }}
             />
             {error && (
-              <p style={{ fontFamily: T.b, fontSize: 12, color: "#ff4d5e" }}>{error}</p>
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "#e24b4a" }}>{error}</p>
             )}
             <button
               onClick={handleAuth}
               disabled={!email || !password || loading}
               style={{
                 padding: "14px 0", borderRadius: 100, border: "none",
-                background: email && password ? "#3d7bff" : c.bgCard2,
+                background: email && password ? "#2b5ce6" : c.bgCard2,
                 color: email && password ? "#fff" : c.textMuted,
                 fontFamily: T.h, fontWeight: 800, fontSize: 15,
                 cursor: email && password ? "pointer" : "default",
-                boxShadow: email && password ? "0 4px 20px rgba(61,123,255,0.35)" : "none",
+                boxShadow: email && password ? "0 4px 20px rgba(43,92,230,0.35)" : "none",
                 opacity: loading ? 0.7 : 1, transition: "all 0.2s",
               }}
             >

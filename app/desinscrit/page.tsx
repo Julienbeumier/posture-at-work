@@ -13,8 +13,8 @@ function DesincritContent() {
   const error = params.get("error");
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0a1020", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 24px", position: "relative" }}>
-      <BackgroundBlobs blobs={[{ top: "-5%", right: "-5%", color: "rgba(61,123,255,0.10)", size: 400 }]} />
+    <main style={{ minHeight: "100vh", background: "#0f0f1a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 24px", position: "relative" }}>
+      <BackgroundBlobs blobs={[{ top: "-5%", right: "-5%", color: "rgba(43,92,230,0.10)", size: 400 }]} />
       <div style={{ position: "relative", zIndex: 1, textAlign: "center", maxWidth: 420 }}>
         {error ? (
           <>
@@ -38,7 +38,7 @@ function DesincritContent() {
           </>
         )}
         <Link href="/" style={{ textDecoration: "none" }}>
-          <div style={{ padding: "13px 28px", borderRadius: 100, background: "#3d7bff", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff", display: "inline-block" }}>
+          <div style={{ padding: "13px 28px", borderRadius: 100, background: "#2b5ce6", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff", display: "inline-block" }}>
             Retour à l'accueil →
           </div>
         </Link>

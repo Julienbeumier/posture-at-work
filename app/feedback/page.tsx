@@ -109,9 +109,9 @@ export default function FeedbackPage() {
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "6px 16px", borderRadius: 100, marginBottom: 16,
-            background: "rgba(61,123,255,0.12)", border: "0.5px solid rgba(61,123,255,0.25)",
+            background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)",
           }}>
-            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#5b9dff" }}>
+            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#7c9fff" }}>
               ✨ Accès premium offert en bêta
             </span>
           </div>
@@ -144,8 +144,8 @@ export default function FeedbackPage() {
                 onClick={() => setNps(n)}
                 style={{
                   width: 42, height: 42, borderRadius: 10,
-                  background: nps === n ? "#3d7bff" : c.bgCard2,
-                  border: `1.5px solid ${nps === n ? "#3d7bff" : c.border2}`,
+                  background: nps === n ? "#2b5ce6" : c.bgCard2,
+                  border: `1.5px solid ${nps === n ? "#2b5ce6" : c.border2}`,
                   color: nps === n ? "#fff" : c.textSecondary,
                   fontFamily: T.h, fontWeight: 700, fontSize: 14,
                   cursor: "pointer", transition: "all 0.15s",
@@ -227,11 +227,11 @@ export default function FeedbackPage() {
           disabled={!allRequired || loading}
           style={{
             width: "100%", padding: "16px 0", borderRadius: 100,
-            background: allRequired ? "#3d7bff" : "rgba(61,123,255,0.12)",
+            background: allRequired ? "#2b5ce6" : "rgba(43,92,230,0.12)",
             border: "none", cursor: allRequired ? "pointer" : "default",
             color: allRequired ? "#fff" : c.textMuted,
             fontFamily: T.h, fontWeight: 800, fontSize: 16,
-            boxShadow: allRequired ? "0 4px 24px rgba(61,123,255,0.35)" : "none",
+            boxShadow: allRequired ? "0 4px 24px rgba(43,92,230,0.35)" : "none",
             transition: "all 0.2s",
             opacity: loading ? 0.7 : 1,
           }}

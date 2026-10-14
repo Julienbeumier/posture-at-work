@@ -2,17 +2,17 @@
 import { useEffect } from "react";
 
 const KEEP_COLORS = [
-  "#ff4d5e", "#ff8a3d", "#2d6a4f",
-  "#3d7bff", "#8b5cf6", "#12c48b",
-  "#2ee6a6", "#ffb020", "#ff6b6b",
+  "#e24b4a", "#d4622a", "#2d6a4f",
+  "#2b5ce6", "#7c3aed", "#1d9e75",
+  "#74c69d", "#f4a261", "#f09595",
   "#f59e0b", "#22c55e", "#2563eb",
-  "#9b7bff", "#5b9dff", "#3eddb0",
+  "#a78bfa", "#7c9fff", "#5dcaa5",
 ];
 
 const COLORED_BGS = [
-  "#3d7bff", "#2563eb", "#ff4d5e",
-  "#2d6a4f", "#ff8a3d", "#8b5cf6",
-  "#12c48b", "#f59e0b",
+  "#2b5ce6", "#2563eb", "#e24b4a",
+  "#2d6a4f", "#d4622a", "#7c3aed",
+  "#1d9e75", "#f59e0b",
 ];
 
 const WHITISH = [

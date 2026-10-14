@@ -41,7 +41,7 @@ export default function ResetPasswordPage() {
       <div style={{ width: "100%", maxWidth: 400 }}>
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: c.textPrimary, marginBottom: 6 }}>
-            PAW<span style={{ color: "#3d7bff" }}>.</span> Entreprise
+            PAW<span style={{ color: "#2b5ce6" }}>.</span> Entreprise
           </p>
           <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted }}>Nouveau mot de passe</p>
         </div>
@@ -50,10 +50,10 @@ export default function ResetPasswordPage() {
             style={{ padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `1px solid ${c.border2}`, color: c.textPrimary, fontFamily: T.b, fontSize: 14, outline: "none" }} />
           <input type="password" placeholder="Confirmer le mot de passe" value={confirm} onChange={e => setConfirm(e.target.value)}
             style={{ padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `1px solid ${c.border2}`, color: c.textPrimary, fontFamily: T.b, fontSize: 14, outline: "none" }} />
-          {error && <p style={{ fontFamily: T.b, fontSize: 12, color: "#ff4d5e" }}>{error}</p>}
+          {error && <p style={{ fontFamily: T.b, fontSize: 12, color: "#e24b4a" }}>{error}</p>}
           <button onClick={handleReset} disabled={!password || !confirm || loading} style={{
             padding: "14px 0", borderRadius: 100, border: "none",
-            background: password && confirm ? "#3d7bff" : c.bgCard2,
+            background: password && confirm ? "#2b5ce6" : c.bgCard2,
             color: password && confirm ? "#fff" : c.textMuted,
             fontFamily: T.h, fontWeight: 800, fontSize: 15,
             cursor: password && confirm ? "pointer" : "default",

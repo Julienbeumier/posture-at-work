@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase";
 const BUREAU_PHASES = [
   {
     icon: "🧍",
-    color: "#9b7bff",
+    color: "#a78bfa",
     bg: "rgba(167,139,250,0.12)",
     border: "rgba(167,139,250,0.3)",
     badge: "Phase 1",
@@ -169,7 +169,7 @@ export default function VideoIntroPage() {
     <main style={{ minHeight: "100vh", background: "#0a0a0a",
       display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ width: 32, height: 32, borderRadius: "50%",
-        border: "2px solid rgba(139,92,246,0.2)", borderTopColor: "#9b7bff",
+        border: "2px solid rgba(139,92,246,0.2)", borderTopColor: "#a78bfa",
         animation: "spin 0.8s linear infinite" }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </main>
@@ -191,7 +191,7 @@ export default function VideoIntroPage() {
           ← Mes résultats
         </Link>
         <span className="text-xs font-semibold px-3 py-1 rounded-full"
-          style={{ background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", color: "#9b7bff" }}>
+          style={{ background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", color: "#a78bfa" }}>
           {isBureau ? "Analyse complète" : "Analyse IA"}
         </span>
       </div>
@@ -229,7 +229,7 @@ export default function VideoIntroPage() {
             <>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-3">
                 Analyse IA complète —{" "}
-                <span style={{ background: "linear-gradient(135deg, #9b7bff, #60a5fa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                <span style={{ background: "linear-gradient(135deg, #a78bfa, #60a5fa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                   Posture & Setup
                 </span>
               </h1>
@@ -241,7 +241,7 @@ export default function VideoIntroPage() {
             <>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-3">
                 Analyse posturale IA —{" "}
-                <span style={{ background: "linear-gradient(135deg, #9b7bff, #60a5fa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                <span style={{ background: "linear-gradient(135deg, #a78bfa, #60a5fa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                   Profil debout
                 </span>
               </h1>
@@ -306,7 +306,7 @@ export default function VideoIntroPage() {
               className="flex items-center justify-center py-1"
             >
               <span className="text-xs font-bold px-4 py-1.5 rounded-full"
-                style={{ background: "rgba(116,198,157,0.15)", border: "1px solid rgba(116,198,157,0.35)", color: "#2ee6a6" }}>
+                style={{ background: "rgba(116,198,157,0.15)", border: "1px solid rgba(116,198,157,0.35)", color: "#74c69d" }}>
                 ✅ Analyse complète
               </span>
             </motion.div>
@@ -364,7 +364,7 @@ export default function VideoIntroPage() {
             transition={{ delay: 0.5 }}
             style={{
               borderRadius: 20, padding: "20px 24px", marginBottom: 16,
-              background: "rgba(61,123,255,0.08)", border: "1px solid rgba(61,123,255,0.25)",
+              background: "rgba(43,92,230,0.08)", border: "1px solid rgba(43,92,230,0.25)",
             }}
           >
             <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
@@ -382,7 +382,7 @@ export default function VideoIntroPage() {
                     disabled={qrLoading}
                     style={{
                       padding: "10px 20px", borderRadius: 100, border: "none",
-                      background: "#3d7bff", color: "#fff",
+                      background: "#2b5ce6", color: "#fff",
                       fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600, fontSize: 13,
                       cursor: "pointer", opacity: qrLoading ? 0.7 : 1,
                     }}
@@ -415,17 +415,17 @@ export default function VideoIntroPage() {
                       marginTop: 16, padding: "14px 16px", borderRadius: 12,
                       background: videoReady
                         ? "rgba(29,158,117,0.1)"
-                        : "rgba(61,123,255,0.06)",
+                        : "rgba(43,92,230,0.06)",
                       border: `0.5px solid ${videoReady
                         ? "rgba(29,158,117,0.3)"
-                        : "rgba(61,123,255,0.2)"}`,
+                        : "rgba(43,92,230,0.2)"}`,
                       display: "flex", alignItems: "center", gap: 12,
                     }}>
                     {videoReady ? (
                       <>
                         <span style={{ fontSize: 20 }}>✅</span>
                         <div style={{ flex: 1 }}>
-                          <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 700, fontSize: 14, color: "#12c48b", margin: "0 0 4px" }}>
+                          <p style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 700, fontSize: 14, color: "#1d9e75", margin: "0 0 4px" }}>
                             Analyse terminée !
                           </p>
                           <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "var(--t55)", margin: 0 }}>
@@ -436,7 +436,7 @@ export default function VideoIntroPage() {
                           onClick={() => window.location.href = "/final-report"}
                           style={{
                             padding: "8px 16px", borderRadius: 100, border: "none",
-                            background: "#12c48b", color: "#fff",
+                            background: "#1d9e75", color: "#fff",
                             fontFamily: "var(--font-jakarta), sans-serif", fontWeight: 600, fontSize: 12,
                             cursor: "pointer", flexShrink: 0,
                           }}>
@@ -447,8 +447,8 @@ export default function VideoIntroPage() {
                       <>
                         <div style={{
                           width: 16, height: 16, borderRadius: "50%", flexShrink: 0,
-                          border: "2px solid rgba(61,123,255,0.4)",
-                          borderTopColor: "#3d7bff",
+                          border: "2px solid rgba(43,92,230,0.4)",
+                          borderTopColor: "#2b5ce6",
                           animation: "spin 1s linear infinite",
                         }} />
                         <div>
@@ -480,7 +480,7 @@ export default function VideoIntroPage() {
             whileTap={{ scale: 0.97 }}
             onClick={goToCapture}
             className="w-full py-4 rounded-2xl font-bold text-white text-base"
-            style={{ background: "linear-gradient(135deg, #8b5cf6, #4f46e5)", boxShadow: "0 0 40px rgba(139,92,246,0.4)" }}
+            style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)", boxShadow: "0 0 40px rgba(124,58,237,0.4)" }}
           >
             {isDesktop ? "Continuer avec la webcam →" : "Commencer l'analyse →"}
           </motion.button>

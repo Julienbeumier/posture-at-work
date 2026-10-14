@@ -46,7 +46,7 @@ export async function POST(req: Request) {
               <h2>Bilan ergonomique offert par votre employeur</h2>
               <p>Votre entreprise utilise PostureAtWork pour améliorer la santé de ses équipes.</p>
               <p>En 5 minutes, obtenez votre bilan personnalisé : posture, douleurs, énergie.</p>
-              <p><a href="${inviteUrl}" style="background:#3d7bff;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">Faire mon bilan →</a></p>
+              <p><a href="${inviteUrl}" style="background:#2b5ce6;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">Faire mon bilan →</a></p>
               <p style="color:#999;font-size:12px;margin-top:24px;">Code d'accès : ${code}</p>
             `,
           })

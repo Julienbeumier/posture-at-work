@@ -31,12 +31,12 @@ const bc = (s: number) => (s >= 70 ? "#16a34a" : s >= 50 ? "#d97706" : "#dc2626"
 interface DimMeta { key: string; label: string; emoji: string; color: string; bg: string }
 
 const DIMS: DimMeta[] = [
-  { key: "setup",        label: "Setup & ergonomie",   emoji: "💻", color: "#3d7bff", bg: "#eff4ff" },
-  { key: "pain",         label: "Douleurs",              emoji: "🩺", color: "#ff4d5e", bg: "#fff1f0" },
-  { key: "habits",       label: "Habitudes de travail", emoji: "⏱️", color: "#ff8a3d", bg: "#fff7ed" },
+  { key: "setup",        label: "Setup & ergonomie",   emoji: "💻", color: "#2b5ce6", bg: "#eff4ff" },
+  { key: "pain",         label: "Douleurs",              emoji: "🩺", color: "#e24b4a", bg: "#fff1f0" },
+  { key: "habits",       label: "Habitudes de travail", emoji: "⏱️", color: "#d4622a", bg: "#fff7ed" },
   { key: "sleep_energy", label: "Sommeil & énergie",    emoji: "🌙", color: "#2d6a4f", bg: "#f0fdf4" },
-  { key: "nutrition",    label: "Nutrition",              emoji: "🍽️", color: "#8b5cf6", bg: "#f5f3ff" },
-  { key: "lifestyle",    label: "Mode de vie actif",    emoji: "🏃", color: "#12c48b", bg: "#f0fdf4" },
+  { key: "nutrition",    label: "Nutrition",              emoji: "🍽️", color: "#7c3aed", bg: "#f5f3ff" },
+  { key: "lifestyle",    label: "Mode de vie actif",    emoji: "🏃", color: "#1d9e75", bg: "#f0fdf4" },
 ];
 
 // ─── Data helpers ─────────────────────────────────────────────────────────────
@@ -337,7 +337,7 @@ export default function RapportPDF() {
     : { bg: "#f0fdf4", border: "#86efac", icon: "✅", text: "Tu es sur la bonne voie ! Quelques optimisations pour aller encore plus loin.", color: "#14532d" };
 
   const HEADER_STYLE: React.CSSProperties = {
-    background: "#3d7bff",
+    background: "#2b5ce6",
     margin: "-12mm -14mm 0",
     padding: "10px 14mm",
     display: "flex",
@@ -471,14 +471,14 @@ export default function RapportPDF() {
       <button
         className="no-print"
         onClick={() => router.back()}
-        style={{ position: "fixed", top: 16, left: 16, zIndex: 9999, padding: "9px 18px", borderRadius: 100, background: "#3d7bff", border: "none", color: "#fff", fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+        style={{ position: "fixed", top: 16, left: 16, zIndex: 9999, padding: "9px 18px", borderRadius: 100, background: "#2b5ce6", border: "none", color: "#fff", fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
       >
         ← Retour
       </button>
       <button
         className="no-print"
         onClick={() => window.print()}
-        style={{ position: "fixed", bottom: 24, right: 24, zIndex: 9999, padding: "13px 28px", borderRadius: 100, background: "#3d7bff", border: "none", color: "#fff", fontFamily: "Inter, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 20px rgba(61,123,255,0.45)" }}
+        style={{ position: "fixed", bottom: 24, right: 24, zIndex: 9999, padding: "13px 28px", borderRadius: 100, background: "#2b5ce6", border: "none", color: "#fff", fontFamily: "Inter, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 20px rgba(43,92,230,0.45)" }}
       >
         📄 Télécharger mon rapport PDF
       </button>
@@ -512,7 +512,7 @@ export default function RapportPDF() {
           {/* Profil */}
           <div style={{ flex: 1, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "13px 15px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-              <div style={{ width: 50, height: 50, borderRadius: "50%", background: "#3d7bff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: "15pt", flexShrink: 0 }}>
+              <div style={{ width: 50, height: 50, borderRadius: "50%", background: "#2b5ce6", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: "15pt", flexShrink: 0 }}>
                 {initials(firstname)}
               </div>
               <div>
@@ -670,7 +670,7 @@ export default function RapportPDF() {
           🎯 Tes priorités
         </div>
         {topActions.map(({ action, dim }, i) => {
-          const rankColor = i === 0 ? "#dc2626" : i <= 2 ? "#d97706" : "#3d7bff";
+          const rankColor = i === 0 ? "#dc2626" : i <= 2 ? "#d97706" : "#2b5ce6";
           return (
             <div key={i} className="priority-card">
               <div style={{ width: 28, height: 28, borderRadius: "50%", background: rankColor, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "11pt", flexShrink: 0, marginTop: 1 }}>
@@ -727,7 +727,7 @@ export default function RapportPDF() {
                     {p.name}{"price" in p && p.price ? ` — ${p.price}` : ""}
                   </div>
                   <div style={{ fontSize: "8.5pt", color: "#92400e", marginTop: 2 }}>{p.reason}</div>
-                  {p.url && <div style={{ fontSize: "7.5pt", color: "#3d7bff", marginTop: 3 }}>{p.url}</div>}
+                  {p.url && <div style={{ fontSize: "7.5pt", color: "#2b5ce6", marginTop: 3 }}>{p.url}</div>}
                 </div>
                 <span className="pill" style={{ background: "#fef9c3", color: "#854d0e", fontSize: "7.5pt", flexShrink: 0 }}>Priorité haute</span>
               </div>
@@ -803,7 +803,7 @@ export default function RapportPDF() {
                   </div>
                   {deboutAnalysis.recommendations.slice(0, 3).map((rec, i) => (
                     <div key={i} style={{ display: "flex", gap: 8, padding: "5px 0", borderBottom: "1px solid #f1f5f9", fontSize: "8.5pt" }}>
-                      <span style={{ fontWeight: 800, color: "#3d7bff", flexShrink: 0, minWidth: 14 }}>{i + 1}.</span>
+                      <span style={{ fontWeight: 800, color: "#2b5ce6", flexShrink: 0, minWidth: 14 }}>{i + 1}.</span>
                       <div>
                         <span style={{ fontWeight: 600, color: "#1e293b" }}>{rec.action}</span>
                         {rec.why && <span style={{ color: "#64748b" }}> — {rec.why}</span>}

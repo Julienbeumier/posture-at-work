@@ -227,7 +227,7 @@ function AuthForm() {
         <div style={{
           position: "absolute", top: "-15%", left: "50%", transform: "translateX(-50%)",
           width: 600, height: 400, opacity: 0.12,
-          background: "radial-gradient(ellipse, rgba(61,123,255,0.5) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse, rgba(43,92,230,0.5) 0%, transparent 70%)",
         }} />
       </div>
 
@@ -236,7 +236,7 @@ function AuthForm() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           style={{ textAlign: "center", marginBottom: 32 }}>
           <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: "var(--text-primary)", margin: "0 0 4px" }}>
-            PAW<span style={{ color: "#3d7bff" }}>.</span>
+            PAW<span style={{ color: "#2b5ce6" }}>.</span>
           </p>
           <p style={{ fontFamily: T.b, fontSize: 9, letterSpacing: "0.18em", color: "var(--t35)", textTransform: "uppercase", margin: "0 0 20px" }}>
             Posture At Work
@@ -268,7 +268,7 @@ function AuthForm() {
         {fromEntreprise && (
           <div style={{
             padding: "12px 16px", borderRadius: 12, marginBottom: 16,
-            background: "rgba(61,123,255,0.08)", border: "0.5px solid rgba(61,123,255,0.2)",
+            background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)",
             textAlign: "center",
           }}>
             <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
@@ -283,7 +283,7 @@ function AuthForm() {
 
         {fromOnboarding && onboardingData && (
           <div style={{ padding: "12px 16px", borderRadius: 12, marginBottom: 16,
-            background: "rgba(61,123,255,0.08)", border: "0.5px solid rgba(61,123,255,0.2)",
+            background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)",
             textAlign: "center" }}>
             <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
               color: "var(--text-primary)", margin: "0 0 4px" }}>
@@ -299,7 +299,7 @@ function AuthForm() {
           <div style={{ padding: "12px 16px", borderRadius: 12, marginBottom: 16,
             background: "rgba(116,198,157,0.08)", border: "0.5px solid rgba(116,198,157,0.2)",
             textAlign: "center" }}>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: "#2ee6a6", margin: 0 }}>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "#74c69d", margin: 0 }}>
               ✅ Ton bilan est sauvegardé — crée ton compte pour accéder à l&apos;analyse complète
             </p>
           </div>
@@ -315,7 +315,7 @@ function AuthForm() {
               <button key={tab} onClick={() => { setMode(tab); setError(""); setSuccess(""); }}
                 style={{
                   flex: 1, padding: "9px 0", borderRadius: 10, border: "none",
-                  background: mode === tab ? "#3d7bff" : "transparent",
+                  background: mode === tab ? "#2b5ce6" : "transparent",
                   color: mode === tab ? "#fff" : "var(--t50)",
                   fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer",
                   transition: "all 0.2s",
@@ -333,7 +333,7 @@ function AuthForm() {
               style={{ borderRadius: 20, padding: "28px", textAlign: "center",
                 background: "rgba(29,158,117,0.08)", border: "0.5px solid rgba(29,158,117,0.25)" }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>✅</div>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#12c48b", marginBottom: 8 }}>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#1d9e75", marginBottom: 8 }}>
                 {isReset ? "Email envoyé !" : "Compte créé !"}
               </p>
               <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.6 }}>{success}</p>
@@ -394,14 +394,14 @@ function AuthForm() {
               {isLogin && (
                 <div style={{ textAlign: "right", marginTop: -4 }}>
                   <span onClick={() => { setMode("reset"); setError(""); }}
-                    style={{ fontFamily: T.b, fontSize: 12, color: "#5b9dff", cursor: "pointer" }}>
+                    style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff", cursor: "pointer" }}>
                     Mot de passe oublié ?
                   </span>
                 </div>
               )}
 
               {error && (
-                <p style={{ fontFamily: T.b, fontSize: 12, color: "#ff6b6b", textAlign: "center", margin: 0 }}>
+                <p style={{ fontFamily: T.b, fontSize: 12, color: "#f09595", textAlign: "center", margin: 0 }}>
                   {error}
                 </p>
               )}
@@ -411,11 +411,11 @@ function AuthForm() {
                 disabled={loading}
                 style={{
                   padding: "14px 0", borderRadius: 100, border: "none",
-                  background: loading ? "var(--bg-card2)" : "#3d7bff",
+                  background: loading ? "var(--bg-card2)" : "#2b5ce6",
                   color: loading ? "var(--t40)" : "#fff",
                   fontFamily: T.h, fontWeight: 800, fontSize: 15,
                   cursor: loading ? "default" : "pointer",
-                  boxShadow: !loading ? "0 4px 24px rgba(61,123,255,0.35)" : "none",
+                  boxShadow: !loading ? "0 4px 24px rgba(43,92,230,0.35)" : "none",
                   transition: "all 0.2s", opacity: loading ? 0.7 : 1,
                 }}>
                 {loading ? "Chargement…"

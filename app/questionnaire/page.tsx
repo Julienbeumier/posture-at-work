@@ -19,50 +19,50 @@ const CATEGORIES = [
   {
     index: 0, id: "cat-1",
     title: "Ton setup", short: "Setup", emoji: "💻",
-    color: "#3d7bff", colorBg: "rgba(61,123,255,0.10)", colorBorder: "rgba(61,123,255,0.20)",
-    selectedBg: "rgba(61,123,255,0.18)", selectedColor: "#a8c0ff",
+    color: "#2b5ce6", colorBg: "rgba(43,92,230,0.10)", colorBorder: "rgba(43,92,230,0.20)",
+    selectedBg: "rgba(43,92,230,0.18)", selectedColor: "#a8c0ff",
     requiredQ: ["q1", "q3", "q4", "q5", "q5b", "q_eclairage"],
   },
   {
     index: 1, id: "cat-2",
     title: "Tes douleurs", short: "Douleurs", emoji: "🩺",
-    color: "#ff4d5e", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
-    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#ff6b6b",
+    color: "#e24b4a", colorBg: "rgba(226,75,74,0.08)", colorBorder: "rgba(226,75,74,0.18)",
+    selectedBg: "rgba(226,75,74,0.18)", selectedColor: "#f09595",
     requiredQ: ["q6", "q7", "q8", "q9", "q10", "q11", "q12", "q12b", "q_irradiation", "q_douleur_nuit"],
   },
   {
     index: 2, id: "cat-3",
     title: "Habitudes de travail", short: "Habitudes", emoji: "⏱️",
-    color: "#ff8a3d", colorBg: "rgba(255,138,61,0.08)", colorBorder: "rgba(255,138,61,0.18)",
-    selectedBg: "rgba(255,138,61,0.18)", selectedColor: "#ffb020",
+    color: "#d4622a", colorBg: "rgba(212,98,42,0.08)", colorBorder: "rgba(212,98,42,0.18)",
+    selectedBg: "rgba(212,98,42,0.18)", selectedColor: "#f4a261",
     requiredQ: ["q14", "q14b", "q_laptop_hors_bureau"],
   },
   {
     index: 3, id: "cat-4",
     title: "Sommeil & énergie", short: "Sommeil", emoji: "🌙",
     color: "#2d6a4f", colorBg: "rgba(45,106,79,0.08)", colorBorder: "rgba(45,106,79,0.18)",
-    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#2ee6a6",
+    selectedBg: "rgba(45,106,79,0.18)", selectedColor: "#74c69d",
     requiredQ: ["q18", "q20", "q_ecrans_soir"],
   },
   {
     index: 4, id: "cat-5",
     title: "Nutrition & énergie", short: "Nutrition", emoji: "🍽️",
-    color: "#8b5cf6", colorBg: "rgba(139,92,246,0.08)", colorBorder: "rgba(139,92,246,0.18)",
-    selectedBg: "rgba(139,92,246,0.18)", selectedColor: "#9b7bff",
+    color: "#7c3aed", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
+    selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
     requiredQ: ["qn1", "qn2", "qn3", "qn4"],
   },
   {
     index: 5, id: "cat-6",
     title: "Ton corps", short: "Corps", emoji: "🏃",
-    color: "#12c48b", colorBg: "rgba(29,158,117,0.08)", colorBorder: "rgba(29,158,117,0.18)",
-    selectedBg: "rgba(29,158,117,0.18)", selectedColor: "#3eddb0",
+    color: "#1d9e75", colorBg: "rgba(29,158,117,0.08)", colorBorder: "rgba(29,158,117,0.18)",
+    selectedBg: "rgba(29,158,117,0.18)", selectedColor: "#5dcaa5",
     requiredQ: ["q21", "q24"],
   },
   {
     index: 6, id: "cat-7",
     title: "Ressenti global", short: "Ressenti", emoji: "💭",
-    color: "#8b5cf6", colorBg: "rgba(139,92,246,0.08)", colorBorder: "rgba(139,92,246,0.18)",
-    selectedBg: "rgba(139,92,246,0.18)", selectedColor: "#9b7bff",
+    color: "#7c3aed", colorBg: "rgba(124,58,237,0.08)", colorBorder: "rgba(124,58,237,0.18)",
+    selectedBg: "rgba(124,58,237,0.18)", selectedColor: "#a78bfa",
     requiredQ: ["q25"],
   },
 ] as const;
@@ -571,7 +571,7 @@ function BureauQuestionnaire() {
   return (
     <main style={{ minHeight: "100vh", paddingBottom: 80, background: c.mainBg }}>
       <BackgroundBlobs blobs={[
-        { top: "0%", right: "-5%", color: "rgba(61,123,255,0.12)", size: 400 },
+        { top: "0%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 400 },
         { top: "50%", left: "-8%", color: "rgba(226,75,74,0.08)", size: 350 },
       ]} />
 
@@ -594,7 +594,7 @@ function BureauQuestionnaire() {
               </button>
               <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>
                 <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "var(--text-primary)" }}>PAW</span>
-                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#5b9dff" }}>.</span>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#7c9fff" }}>.</span>
               </Link>
             </div>
             <span style={{ color: "var(--t40)", fontSize: 13, fontFamily: T.b }}>
@@ -604,7 +604,7 @@ function BureauQuestionnaire() {
           {/* Progress bar */}
           <div style={{ height: 4, background: "var(--bg-card-2)", borderRadius: 100, overflow: "hidden", marginBottom: 10 }}>
             <motion.div
-              style={{ height: "100%", borderRadius: 100, background: "#3d7bff" }}
+              style={{ height: "100%", borderRadius: 100, background: "#2b5ce6" }}
               animate={{ width: `${(done / CATEGORIES.length) * 100}%` }}
               transition={{ duration: 0.4 }}
             />
@@ -656,7 +656,7 @@ function BureauQuestionnaire() {
             }}
           >
             <div style={{
-              background: "rgba(61,123,255,0.90)",
+              background: "rgba(43,92,230,0.90)",
               backdropFilter: "blur(10px)",
               borderRadius: 100,
               padding: "12px 24px",
@@ -960,7 +960,7 @@ function BureauQuestionnaire() {
               right: 0,
               zIndex: 40,
               padding: "16px 20px 24px",
-              background: theme === "light" ? "linear-gradient(to top, #F3F7FF 60%, transparent)" : "linear-gradient(to top, #0a1020 60%, transparent)",
+              background: theme === "light" ? "linear-gradient(to top, #F3F7FF 60%, transparent)" : "linear-gradient(to top, #0f0f1a 60%, transparent)",
             }}
           >
             <div style={{ maxWidth: 680, margin: "0 auto" }}>
@@ -971,14 +971,14 @@ function BureauQuestionnaire() {
                   width: "100%",
                   padding: "18px 24px",
                   borderRadius: 100,
-                  background: "#3d7bff",
+                  background: "#2b5ce6",
                   color: "#ffffff",
                   fontFamily: T.h,
                   fontWeight: 800,
                   fontSize: 16,
                   textAlign: "center",
                   cursor: "pointer",
-                  boxShadow: "0 0 40px rgba(61,123,255,0.5)",
+                  boxShadow: "0 0 40px rgba(43,92,230,0.5)",
                 }}
               >
                 Analyser mon bilan →
@@ -1028,7 +1028,7 @@ export default function QuestionnairePage() {
     <main style={{ minHeight: "100vh", background: "var(--main-bg)",
       display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ width: 32, height: 32, borderRadius: "50%",
-        border: "2px solid rgba(61,123,255,0.2)", borderTopColor: "#3d7bff",
+        border: "2px solid rgba(43,92,230,0.2)", borderTopColor: "#2b5ce6",
         animation: "spin 0.8s linear infinite" }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </main>

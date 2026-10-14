@@ -307,8 +307,8 @@ export default function VideoCapturePostePage() {
               <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100, background: "rgba(34,197,94,0.20)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.35)" }}>
                 📹 Phase 2/2 — Ton setup
               </span>
-              <span style={{ fontSize: 11, fontWeight: 800, color: "#ff6b6b", display: "flex", alignItems: "center", gap: 5 }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff6b6b", display: "inline-block" }} />
+              <span style={{ fontSize: 11, fontWeight: 800, color: "#f09595", display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f09595", display: "inline-block" }} />
                 REC
               </span>
             </div>

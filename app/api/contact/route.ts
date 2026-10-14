@@ -36,7 +36,7 @@ export async function POST(req: Request) {
             <h2>Merci pour votre intérêt pour PAW Entreprise !</h2>
             <p>Nous revenons vers vous sous 24h pour organiser votre démo personnalisée.</p>
             <p>En attendant, vous pouvez explorer un dashboard de démonstration complet :</p>
-            <a href="https://postureatwork.com/entreprise/demo" style="display:inline-block; padding:12px 24px; background:#8b5cf6; color:#fff; border-radius:100px; text-decoration:none; font-weight:600;">
+            <a href="https://postureatwork.com/entreprise/demo" style="display:inline-block; padding:12px 24px; background:#7c3aed; color:#fff; border-radius:100px; text-decoration:none; font-weight:600;">
               Voir le dashboard de démo →
             </a>
             <p style="margin-top: 24px; color: #666; font-size: 13px;">— L'équipe PostureAtWork</p>

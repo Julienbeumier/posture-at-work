@@ -26,15 +26,15 @@ const T = {
 // ─── Score color helpers ──────────────────────────────────────────────────────
 
 function scoreBarColor(score: number) {
-  if (score >= 70) return "#2ee6a6";
-  if (score >= 50) return "#ffb020";
-  return "#ff6b6b";
+  if (score >= 70) return "#74c69d";
+  if (score >= 50) return "#f4a261";
+  return "#f09595";
 }
 
 function scoreBadge(score: number): { label: string; color: string; bg: string; border: string } {
-  if (score >= 70) return { label: "Bonne santé", color: "#2ee6a6", bg: "rgba(116,198,157,0.12)", border: "rgba(116,198,157,0.3)" };
-  if (score >= 50) return { label: "À améliorer", color: "#ffb020", bg: "rgba(255,176,32,0.12)", border: "rgba(255,176,32,0.3)" };
-  return { label: "Attention requise", color: "#ff6b6b", bg: "rgba(255,107,107,0.12)", border: "rgba(255,107,107,0.3)" };
+  if (score >= 70) return { label: "Bonne santé", color: "#74c69d", bg: "rgba(116,198,157,0.12)", border: "rgba(116,198,157,0.3)" };
+  if (score >= 50) return { label: "À améliorer", color: "#f4a261", bg: "rgba(244,162,97,0.12)", border: "rgba(244,162,97,0.3)" };
+  return { label: "Attention requise", color: "#f09595", bg: "rgba(240,149,149,0.12)", border: "rgba(240,149,149,0.3)" };
 }
 
 // ─── Animated score circle ────────────────────────────────────────────────────
@@ -66,8 +66,8 @@ function ScoreCircle({ score, isPartial = false }: { score: number; isPartial?: 
   return (
     <div style={{ position: "relative", width: size, height: size }}>
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="rgba(61,123,255,0.12)"
-          stroke="rgba(61,123,255,0.35)" strokeWidth={sw} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="rgba(43,92,230,0.12)"
+          stroke="rgba(43,92,230,0.35)" strokeWidth={sw} />
         <circle cx={size / 2} cy={size / 2} r={r} fill="none"
           stroke={color} strokeWidth={sw} strokeLinecap="round"
           strokeDasharray={circ} strokeDashoffset={circ - dash}
@@ -83,7 +83,7 @@ function ScoreCircle({ score, isPartial = false }: { score: number; isPartial?: 
         </span>
         <span style={{ fontSize: 11, color: "var(--t45)", marginTop: 2 }}>/100</span>
         {isPartial && (
-          <span style={{ fontSize: 9, color: "#ffb020", marginTop: 1, fontFamily: T.b, fontWeight: 600 }}>
+          <span style={{ fontSize: 9, color: "#f4a261", marginTop: 1, fontFamily: T.b, fontWeight: 600 }}>
             incomplet
           </span>
         )}
@@ -209,7 +209,7 @@ function SubScoreBar({
             <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: dimensionColor, flexShrink: 0 }}>{p.price}</span>
             <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{
               padding: "5px 12px", borderRadius: 100, textDecoration: "none", flexShrink: 0,
-              background: "#3d7bff", fontFamily: T.b, fontWeight: 700, fontSize: 11, color: "#fff",
+              background: "#2b5ce6", fontFamily: T.b, fontWeight: 700, fontSize: 11, color: "#fff",
             }}>Amazon →</a>
           </div>
         );
@@ -258,17 +258,17 @@ function scoreInterpretation(key: keyof Omit<Scores, "global" | "job_type">, sco
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const SUB_SCORES: { key: keyof Omit<Scores, "global" | "job_type">; label: string; emoji: string; dimensionPath: string; dimensionColor: string }[] = [
-  { key: "setup",       label: "Setup & ergonomie",          emoji: "💻",  dimensionPath: "/conseils/setup",          dimensionColor: "#5b9dff" },
-  { key: "pain",        label: "Douleurs",                   emoji: "🩺",  dimensionPath: "/conseils/douleurs",       dimensionColor: "#ff6b6b" },
-  { key: "habits",      label: "Habitudes de travail",       emoji: "⏱️", dimensionPath: "/conseils/habitudes",      dimensionColor: "#ffb020" },
-  { key: "mode_de_vie", label: "Mode de vie & Récupération", emoji: "🌙",  dimensionPath: "/conseils/mode-de-vie",   dimensionColor: "#2ee6a6" },
-  { key: "nutrition",   label: "Nutrition",                   emoji: "🍽️", dimensionPath: "/conseils/nutrition",      dimensionColor: "#9b7bff" },
+  { key: "setup",       label: "Setup & ergonomie",          emoji: "💻",  dimensionPath: "/conseils/setup",          dimensionColor: "#7c9fff" },
+  { key: "pain",        label: "Douleurs",                   emoji: "🩺",  dimensionPath: "/conseils/douleurs",       dimensionColor: "#f09595" },
+  { key: "habits",      label: "Habitudes de travail",       emoji: "⏱️", dimensionPath: "/conseils/habitudes",      dimensionColor: "#f4a261" },
+  { key: "mode_de_vie", label: "Mode de vie & Récupération", emoji: "🌙",  dimensionPath: "/conseils/mode-de-vie",   dimensionColor: "#74c69d" },
+  { key: "nutrition",   label: "Nutrition",                   emoji: "🍽️", dimensionPath: "/conseils/nutrition",      dimensionColor: "#a78bfa" },
 ];
 
 const PRIORITY_STYLE = {
-  urgent: { bg: "rgba(255,107,107,0.08)", border: "rgba(255,107,107,0.25)", tagBg: "rgba(255,107,107,0.15)", tagColor: "#ff6b6b", blob: "rgba(255,107,107,0.12)", label: "Urgent" },
-  important: { bg: "rgba(255,176,32,0.08)", border: "rgba(255,176,32,0.22)", tagBg: "rgba(255,176,32,0.15)", tagColor: "#ffb020", blob: "rgba(255,176,32,0.12)", label: "Important" },
-  good: { bg: "rgba(116,198,157,0.07)", border: "rgba(116,198,157,0.2)", tagBg: "rgba(116,198,157,0.15)", tagColor: "#2ee6a6", blob: "rgba(116,198,157,0.10)", label: "Bien joué" },
+  urgent: { bg: "rgba(240,149,149,0.08)", border: "rgba(240,149,149,0.25)", tagBg: "rgba(240,149,149,0.15)", tagColor: "#f09595", blob: "rgba(240,149,149,0.12)", label: "Urgent" },
+  important: { bg: "rgba(244,162,97,0.08)", border: "rgba(244,162,97,0.22)", tagBg: "rgba(244,162,97,0.15)", tagColor: "#f4a261", blob: "rgba(244,162,97,0.12)", label: "Important" },
+  good: { bg: "rgba(116,198,157,0.07)", border: "rgba(116,198,157,0.2)", tagBg: "rgba(116,198,157,0.15)", tagColor: "#74c69d", blob: "rgba(116,198,157,0.10)", label: "Bien joué" },
 };
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -515,9 +515,9 @@ export default function ResultsPage() {
   return (
     <main style={{ minHeight: "100vh", background: c.mainBg, paddingBottom: 80, position: "relative" }}>
       <BackgroundBlobs blobs={[
-        { top: "-5%", right: "-5%", color: "rgba(61,123,255,0.14)", size: 500 },
+        { top: "-5%", right: "-5%", color: "rgba(43,92,230,0.14)", size: 500 },
         { top: "35%", left: "-8%", color: "rgba(116,198,157,0.08)", size: 380 },
-        { bottom: "-10%", right: "10%", color: "rgba(255,176,32,0.07)", size: 420 },
+        { bottom: "-10%", right: "10%", color: "rgba(244,162,97,0.07)", size: 420 },
       ]} />
 
       <div style={{ position: "relative", zIndex: 10, maxWidth: 660, margin: "0 auto", padding: isMobile ? "0 16px" : "0 24px" }}>
@@ -536,8 +536,8 @@ export default function ResultsPage() {
             background: "rgba(116,198,157,0.12)",
             border: "0.5px solid rgba(116,198,157,0.3)",
           }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#2ee6a6" }} />
-            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#2ee6a6" }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#74c69d" }} />
+            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#74c69d" }}>
               ✅ Analyse complète
             </span>
           </div>
@@ -561,7 +561,7 @@ export default function ResultsPage() {
               background: "rgba(29,158,117,0.12)", border: "0.5px solid rgba(29,158,117,0.3)",
             }}>
               <span style={{ fontSize: 12 }}>✅</span>
-              <span style={{ fontFamily: T.b, fontSize: 12, color: "#12c48b", fontWeight: 600 }}>
+              <span style={{ fontFamily: T.b, fontSize: 12, color: "#1d9e75", fontWeight: 600 }}>
                 Bilan complet — Analyse vidéo incluse
               </span>
             </div>
@@ -572,8 +572,8 @@ export default function ResultsPage() {
               transition={{ delay: 0.3 }}
               style={{
                 borderRadius: 20, padding: "20px 24px", marginBottom: 20,
-                background: "rgba(139,92,246,0.08)",
-                border: "1.5px solid rgba(139,92,246,0.35)",
+                background: "rgba(124,58,237,0.08)",
+                border: "1.5px solid rgba(124,58,237,0.35)",
                 position: "relative", overflow: "hidden",
                 textAlign: "left", width: "100%",
               }}
@@ -581,20 +581,20 @@ export default function ResultsPage() {
               <div style={{
                 position: "absolute", top: -40, right: -40,
                 width: 160, height: 160, borderRadius: "50%",
-                background: "rgba(139,92,246,0.15)", filter: "blur(40px)",
+                background: "rgba(124,58,237,0.15)", filter: "blur(40px)",
                 pointerEvents: "none",
               }} />
               <div style={{ position: "relative", zIndex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                   <div style={{
                     width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                    background: "rgba(139,92,246,0.2)", border: "1px solid rgba(139,92,246,0.4)",
+                    background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.4)",
                     display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
                   }}>
                     🎥
                   </div>
                   <div>
-                    <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 15, color: "#b79cff", margin: 0, lineHeight: 1.2 }}>
+                    <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 15, color: "#c4b5fd", margin: 0, lineHeight: 1.2 }}>
                       Ton bilan est incomplet
                     </p>
                     <p style={{ fontFamily: T.b, fontSize: 11, color: "rgba(196,181,253,0.6)", margin: 0 }}>
@@ -604,7 +604,7 @@ export default function ResultsPage() {
                 </div>
                 <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.7, margin: "0 0 16px" }}>
                   Le questionnaire analyse tes habitudes et ta douleur déclarée.
-                  Mais <strong style={{ color: "#b79cff" }}>personne n&apos;a encore vu ta posture réelle.</strong>
+                  Mais <strong style={{ color: "#c4b5fd" }}>personne n&apos;a encore vu ta posture réelle.</strong>
                   {" "}L&apos;analyse vidéo IA est la seule façon de savoir exactement
                   ce que ton corps fait au travail — en 40 secondes.
                 </p>
@@ -616,8 +616,8 @@ export default function ResultsPage() {
                   ].map(f => (
                     <span key={f} style={{
                       padding: "4px 12px", borderRadius: 100,
-                      background: "rgba(139,92,246,0.12)", border: "0.5px solid rgba(139,92,246,0.25)",
-                      fontFamily: T.b, fontSize: 11, color: "#b79cff",
+                      background: "rgba(124,58,237,0.12)", border: "0.5px solid rgba(124,58,237,0.25)",
+                      fontFamily: T.b, fontSize: 11, color: "#c4b5fd",
                     }}>
                       ✓ {f}
                     </span>
@@ -626,8 +626,8 @@ export default function ResultsPage() {
                 <Link href="/video-intro" style={{ textDecoration: "none" }}>
                   <div style={{
                     padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-                    background: "linear-gradient(135deg, #8b5cf6, #9b7bff)",
-                    boxShadow: "0 4px 20px rgba(139,92,246,0.4)",
+                    background: "linear-gradient(135deg, #7c3aed, #a78bfa)",
+                    boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
                     fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "#fff",
                   }}>
                     🎥 Analyser ma posture →
@@ -658,7 +658,7 @@ export default function ResultsPage() {
           {jobType !== "bureau" && (() => {
             const jc = getJobContent(jobType);
             return (
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 18px", borderRadius: 16, background: "rgba(61,123,255,0.08)", border: "0.5px solid rgba(61,123,255,0.18)", maxWidth: 480, textAlign: "left" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 18px", borderRadius: 16, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)", maxWidth: 480, textAlign: "left" }}>
                 <span style={{ fontSize: 20, flexShrink: 0 }}>{jc.emoji}</span>
                 <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.65, margin: 0 }}>{jc.intro}</p>
               </div>
@@ -674,8 +674,8 @@ export default function ResultsPage() {
             style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               padding: "12px 28px", borderRadius: 100, cursor: "pointer",
-              background: "rgba(61,123,255,0.10)", border: "0.5px solid rgba(61,123,255,0.35)",
-              fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#5b9dff",
+              background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.35)",
+              fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#7c9fff",
             }}
           >
             📱 Partager mon score
@@ -685,10 +685,10 @@ export default function ResultsPage() {
         {/* ── FLAG ALERTS (debout) ── */}
         {deboutFlags && (() => {
           const cards: { bg: string; border: string; color: string; text: string }[] = [];
-          if (deboutFlags.consultRecommandee) cards.push({ bg: "rgba(226,75,74,0.10)", border: "rgba(226,75,74,0.30)", color: "#ff6b6b", text: "⚕️ Certains de tes symptômes méritent un avis professionnel. Consulte un médecin ou kinésithérapeute." });
-          if (deboutFlags.crampes) cards.push({ bg: "rgba(255,176,32,0.10)", border: "rgba(255,176,32,0.28)", color: "#ffb020", text: "😴 Tes crampes nocturnes ont une solution simple — voir les conseils sommeil" });
-          if (deboutFlags.dependanceEnergie) cards.push({ bg: "rgba(255,176,32,0.10)", border: "rgba(255,176,32,0.28)", color: "#ffb020", text: "⚡ Tu dépends des boissons énergisantes pour tenir — il y a une meilleure solution" });
-          if (deboutFlags.petitDejInsuffisant) cards.push({ bg: "rgba(61,123,255,0.10)", border: "rgba(61,123,255,0.28)", color: "#5b9dff", text: "🍳 Un vrai petit-déjeuner changerait significativement ton niveau d'énergie et ta posture" });
+          if (deboutFlags.consultRecommandee) cards.push({ bg: "rgba(226,75,74,0.10)", border: "rgba(226,75,74,0.30)", color: "#f09595", text: "⚕️ Certains de tes symptômes méritent un avis professionnel. Consulte un médecin ou kinésithérapeute." });
+          if (deboutFlags.crampes) cards.push({ bg: "rgba(244,162,97,0.10)", border: "rgba(244,162,97,0.28)", color: "#f4a261", text: "😴 Tes crampes nocturnes ont une solution simple — voir les conseils sommeil" });
+          if (deboutFlags.dependanceEnergie) cards.push({ bg: "rgba(244,162,97,0.10)", border: "rgba(244,162,97,0.28)", color: "#f4a261", text: "⚡ Tu dépends des boissons énergisantes pour tenir — il y a une meilleure solution" });
+          if (deboutFlags.petitDejInsuffisant) cards.push({ bg: "rgba(43,92,230,0.10)", border: "rgba(43,92,230,0.28)", color: "#7c9fff", text: "🍳 Un vrai petit-déjeuner changerait significativement ton niveau d'énergie et ta posture" });
           if (!cards.length) return null;
           return (
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
@@ -709,9 +709,9 @@ export default function ResultsPage() {
           const diff = selfPct - scores.global;
           let msg = "";
           let msgColor = "var(--t55)";
-          if (diff > 20) { msg = "Tu t'estimes mieux que ton score — tes douleurs sont peut-être devenues normales pour toi. C'est un signal à ne pas ignorer."; msgColor = "#ffb020"; }
-          else if (diff < -20) { msg = "Tu es plus solide que tu ne le crois ! Ton score est meilleur que ton ressenti."; msgColor = "#2ee6a6"; }
-          else { msg = "Ton ressenti correspond bien à ta situation réelle — bonne conscience corporelle."; msgColor = "#5b9dff"; }
+          if (diff > 20) { msg = "Tu t'estimes mieux que ton score — tes douleurs sont peut-être devenues normales pour toi. C'est un signal à ne pas ignorer."; msgColor = "#f4a261"; }
+          else if (diff < -20) { msg = "Tu es plus solide que tu ne le crois ! Ton score est meilleur que ton ressenti."; msgColor = "#74c69d"; }
+          else { msg = "Ton ressenti correspond bien à ta situation réelle — bonne conscience corporelle."; msgColor = "#7c9fff"; }
           return (
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
               style={{ borderRadius: 16, padding: "16px 20px", background: "var(--bg-card)", border: "0.5px solid var(--border-2)", marginBottom: 16, display: "flex", flexDirection: "column", gap: 10 }}>
@@ -722,8 +722,8 @@ export default function ResultsPage() {
                   <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", margin: 0 }}>Ton ressenti</p>
                 </div>
                 <span style={{ color: "var(--t25)", fontSize: 18 }}>vs</span>
-                <div style={{ flex: 1, textAlign: "center", padding: "10px 0", borderRadius: 12, background: "rgba(61,123,255,0.08)", border: "0.5px solid rgba(61,123,255,0.18)" }}>
-                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#5b9dff", margin: 0 }}>{scores.global}</p>
+                <div style={{ flex: 1, textAlign: "center", padding: "10px 0", borderRadius: 12, background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.18)" }}>
+                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#7c9fff", margin: 0 }}>{scores.global}</p>
                   <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t35)", margin: 0 }}>Score PAW</p>
                 </div>
               </div>
@@ -792,15 +792,15 @@ export default function ResultsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 }}
                 style={{ marginTop: 4, padding: "16px 20px", borderRadius: 16,
-                  background: "rgba(139,92,246,0.08)",
-                  border: "1px solid rgba(139,92,246,0.3)",
+                  background: "rgba(124,58,237,0.08)",
+                  border: "1px solid rgba(124,58,237,0.3)",
                   display: "flex", alignItems: "center",
                   justifyContent: "space-between", gap: 12, flexWrap: "wrap",
                   cursor: "pointer" }}
                 onClick={() => router.push("/premium")}>
                 <div>
                   <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14,
-                    color: "#b79cff", margin: "0 0 4px" }}>
+                    color: "#c4b5fd", margin: "0 0 4px" }}>
                     🔒 3 dimensions verrouillées
                   </p>
                   <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", margin: 0 }}>
@@ -808,7 +808,7 @@ export default function ResultsPage() {
                   </p>
                 </div>
                 <div style={{ padding: "10px 20px", borderRadius: 100,
-                  background: "#8b5cf6", color: "#fff",
+                  background: "#7c3aed", color: "#fff",
                   fontFamily: T.h, fontWeight: 700, fontSize: 13, flexShrink: 0 }}>
                   Débloquer →
                 </div>
@@ -821,18 +821,18 @@ export default function ResultsPage() {
                 transition={{ delay: 0.9 }}
                 style={{
                   borderRadius: 20, padding: "20px 22px", marginTop: 8,
-                  background: "rgba(139,92,246,0.06)",
-                  border: "1px dashed rgba(139,92,246,0.35)",
+                  background: "rgba(124,58,237,0.06)",
+                  border: "1px dashed rgba(124,58,237,0.35)",
                   display: "flex", alignItems: "center", gap: 14,
                 }}
               >
                 <div style={{ fontSize: 28, flexShrink: 0 }}>🎥</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#b79cff", margin: 0 }}>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#c4b5fd", margin: 0 }}>
                       Analyse IA posturale
                     </p>
-                    <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(139,92,246,0.2)", fontFamily: T.b, fontSize: 10, fontWeight: 700, color: "#b79cff" }}>
+                    <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(124,58,237,0.2)", fontFamily: T.b, fontSize: 10, fontWeight: 700, color: "#c4b5fd" }}>
                       NON ANALYSÉ
                     </span>
                   </div>
@@ -843,7 +843,7 @@ export default function ResultsPage() {
                 <Link href="/video-intro" style={{ textDecoration: "none", flexShrink: 0 }}>
                   <div style={{
                     padding: "8px 16px", borderRadius: 100,
-                    background: "#8b5cf6", color: "#fff",
+                    background: "#7c3aed", color: "#fff",
                     fontFamily: T.b, fontWeight: 700, fontSize: 12, cursor: "pointer",
                   }}>
                     Analyser →
@@ -949,7 +949,7 @@ export default function ResultsPage() {
                   transition={{ delay: i * 0.08 }}
                   style={{
                     borderRadius: 20, padding: "20px 22px",
-                    background: "rgba(61,123,255,0.07)", border: "0.5px solid rgba(61,123,255,0.2)",
+                    background: "rgba(43,92,230,0.07)", border: "0.5px solid rgba(43,92,230,0.2)",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
@@ -957,7 +957,7 @@ export default function ResultsPage() {
                     <div>
                       <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)", margin: 0 }}>{ex.name}</p>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
-                        <span style={{ fontFamily: T.b, fontSize: 12, color: "#5b9dff" }}>⏱ {ex.duration}</span>
+                        <span style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff" }}>⏱ {ex.duration}</span>
                         <span style={{ color: "var(--t20)", fontSize: 10 }}>·</span>
                         <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t40)" }}>{ex.targets}</span>
                       </div>
@@ -987,23 +987,23 @@ export default function ResultsPage() {
             return (
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>
-                  <div style={{ borderRadius: 16, padding: "16px 14px", background: "rgba(61,123,255,0.10)", border: "0.5px solid rgba(61,123,255,0.25)", textAlign: "center", cursor: "pointer" }}>
+                  <div style={{ borderRadius: 16, padding: "16px 14px", background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)", textAlign: "center", cursor: "pointer" }}>
                     <div style={{ fontSize: 24, marginBottom: 8 }}>🧘</div>
-                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#5b9dff", margin: "0 0 4px" }}>Exercices</p>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#7c9fff", margin: "0 0 4px" }}>Exercices</p>
                     <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: 0 }}>Programme guidé</p>
                   </div>
                 </Link>
                 <Link href={lowestDim.dimensionPath} style={{ textDecoration: "none" }}>
-                  <div style={{ borderRadius: 16, padding: "16px 14px", background: "rgba(139,92,246,0.10)", border: "0.5px solid rgba(139,92,246,0.25)", textAlign: "center", cursor: "pointer" }}>
+                  <div style={{ borderRadius: 16, padding: "16px 14px", background: "rgba(124,58,237,0.10)", border: "0.5px solid rgba(124,58,237,0.25)", textAlign: "center", cursor: "pointer" }}>
                     <div style={{ fontSize: 24, marginBottom: 8 }}>🎯</div>
-                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#9b7bff", margin: "0 0 4px" }}>Plan prioritaire</p>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#a78bfa", margin: "0 0 4px" }}>Plan prioritaire</p>
                     <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: 0 }}>{lowestDim.label}</p>
                   </div>
                 </Link>
                 <Link href="/video-intro" style={{ textDecoration: "none" }}>
                   <div style={{ borderRadius: 16, padding: "16px 14px", background: "rgba(45,106,79,0.10)", border: "0.5px solid rgba(45,106,79,0.25)", textAlign: "center", cursor: "pointer" }}>
                     <div style={{ fontSize: 24, marginBottom: 8 }}>🎬</div>
-                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#2ee6a6", margin: "0 0 4px" }}>Analyse IA</p>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#74c69d", margin: "0 0 4px" }}>Analyse IA</p>
                     <p style={{ fontFamily: T.b, fontSize: 10, color: "var(--t40)", margin: 0 }}>Posture vidéo</p>
                   </div>
                 </Link>
@@ -1020,11 +1020,11 @@ export default function ResultsPage() {
           return (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.48 }}
               style={{ borderRadius: 20, padding: "20px 22px", marginBottom: 16, background: "rgba(167,139,250,0.06)", border: "0.5px solid rgba(167,139,250,0.18)" }}>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#9b7bff", margin: "0 0 12px" }}>💡 Le saviez-vous ?</p>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#a78bfa", margin: "0 0 12px" }}>💡 Le saviez-vous ?</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {facts.map((fact, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                    <span style={{ color: "#9b7bff", fontSize: 14, flexShrink: 0, marginTop: 1 }}>•</span>
+                    <span style={{ color: "#a78bfa", fontSize: 14, flexShrink: 0, marginTop: 1 }}>•</span>
                     <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", lineHeight: 1.6, margin: 0 }}>{fact}</p>
                   </div>
                 ))}
@@ -1040,8 +1040,8 @@ export default function ResultsPage() {
           transition={{ delay: 0.6 }}
           style={{
             borderRadius: 20, padding: "24px 26px",
-            background: "linear-gradient(135deg, rgba(61,123,255,0.10), rgba(61,123,255,0.06))",
-            border: "0.5px solid rgba(61,123,255,0.25)",
+            background: "linear-gradient(135deg, rgba(43,92,230,0.10), rgba(43,92,230,0.06))",
+            border: "0.5px solid rgba(43,92,230,0.25)",
             marginBottom: 16,
           }}
         >
@@ -1061,7 +1061,7 @@ export default function ResultsPage() {
                 style={{ padding: "14px 18px", borderRadius: 16, background: "rgba(45,106,79,0.15)", border: "0.5px solid rgba(116,198,157,0.35)", display: "flex", alignItems: "center", gap: 10 }}
               >
                 <span style={{ fontSize: 18 }}>📧</span>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "#2ee6a6", margin: 0 }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "#74c69d", margin: 0 }}>
                   Ton rapport a été envoyé à <strong>{emailInput}</strong> !
                 </p>
               </motion.div>
@@ -1084,7 +1084,7 @@ export default function ResultsPage() {
                     onClick={sendBilanEmail}
                     style={{
                       padding: "12px 18px", borderRadius: 12, cursor: emailLoading ? "default" : "pointer",
-                      background: emailInput ? "#3d7bff" : "rgba(61,123,255,0.25)",
+                      background: emailInput ? "#2b5ce6" : "rgba(43,92,230,0.25)",
                       fontFamily: T.h, fontWeight: 800, fontSize: 13,
                       color: emailInput ? "#fff" : "rgba(255,255,255,0.3)",
                       flexShrink: 0, transition: "all 0.2s",
@@ -1100,8 +1100,8 @@ export default function ResultsPage() {
           <Link href="/final-report" style={{ textDecoration: "none", display: "block", marginTop: 12 }}>
             <div style={{
               padding: "13px 0", borderRadius: 100, textAlign: "center", cursor: "pointer",
-              background: "transparent", border: "0.5px solid rgba(61,123,255,0.40)",
-              fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#5b9dff",
+              background: "transparent", border: "0.5px solid rgba(43,92,230,0.40)",
+              fontFamily: T.b, fontWeight: 600, fontSize: 13, color: "#7c9fff",
             }}>
               Sauvegarder sur mon compte →
             </div>

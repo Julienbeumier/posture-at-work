@@ -29,7 +29,7 @@ interface Assessment {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function sc(s: number) { return s >= 70 ? "#2ee6a6" : s >= 50 ? "#ffb020" : "#ff6b6b"; }
+function sc(s: number) { return s >= 70 ? "#74c69d" : s >= 50 ? "#f4a261" : "#f09595"; }
 
 function fadeUp(delay = 0) {
   return {
@@ -49,7 +49,7 @@ function HeroCircle({ score }: { score: number }) {
   return (
     <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="rgba(61,123,255,0.12)" stroke="rgba(61,123,255,0.35)" strokeWidth={sw} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="rgba(43,92,230,0.12)" stroke="rgba(43,92,230,0.35)" strokeWidth={sw} />
         <motion.circle
           cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={sw}
           strokeLinecap="round" strokeDasharray={circ}
@@ -115,10 +115,10 @@ function SignalForm({ companyId, anonymousId, onSent }: {
           {types.map(t => (
             <button key={t.key} onClick={() => setType(t.key)}
               style={{ padding: "10px 12px", borderRadius: 10, cursor: "pointer",
-                background: type === t.key ? "rgba(255,176,32,0.15)" : "rgba(255,255,255,0.04)",
-                border: `0.5px solid ${type === t.key ? "rgba(255,176,32,0.4)" : "rgba(255,255,255,0.08)"}`,
+                background: type === t.key ? "rgba(244,162,97,0.15)" : "rgba(255,255,255,0.04)",
+                border: `0.5px solid ${type === t.key ? "rgba(244,162,97,0.4)" : "rgba(255,255,255,0.08)"}`,
                 fontFamily: T.b, fontSize: 12, fontWeight: 600,
-                color: type === t.key ? "#ffb020" : "rgba(255,255,255,0.5)", textAlign: "left" as const }}>
+                color: type === t.key ? "#f4a261" : "rgba(255,255,255,0.5)", textAlign: "left" as const }}>
               {t.label}
             </button>
           ))}
@@ -135,11 +135,11 @@ function SignalForm({ companyId, anonymousId, onSent }: {
         {selectedType?.showIntensity && (
           <div>
             <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(255,255,255,0.45)", marginBottom: 6 }}>
-              Intensité : <strong style={{ color: "#ffb020" }}>{intensity}/5</strong>
+              Intensité : <strong style={{ color: "#f4a261" }}>{intensity}/5</strong>
             </p>
             <input type="range" min={1} max={5} step={1} value={intensity}
               onChange={e => setIntensity(Number(e.target.value))}
-              style={{ width: "100%", accentColor: "#ffb020" }} />
+              style={{ width: "100%", accentColor: "#f4a261" }} />
           </div>
         )}
         {type && (
@@ -152,7 +152,7 @@ function SignalForm({ companyId, anonymousId, onSent }: {
         {type && description.trim() && (
           <button onClick={handleSubmit} disabled={loading}
             style={{ padding: "12px 0", borderRadius: 100, border: "none", cursor: "pointer",
-              background: "#ffb020", color: "#fff", opacity: loading ? 0.7 : 1,
+              background: "#f4a261", color: "#fff", opacity: loading ? 0.7 : 1,
               fontFamily: T.h, fontWeight: 700, fontSize: 14 }}>
             {loading ? "Envoi…" : "Envoyer le signalement →"}
           </button>
@@ -219,11 +219,11 @@ function DailyChecklist({ scores }: { scores: Record<string, number> | null }) {
   const totalCount = tasks.length;
 
   const dimColors: Record<string, string> = {
-    setup: "#5b9dff",
-    habitudes: "#ffb020",
-    douleurs: "#ff6b6b",
-    nutrition: "#2ee6a6",
-    "mode-de-vie": "#b79cff",
+    setup: "#7c9fff",
+    habitudes: "#f4a261",
+    douleurs: "#f09595",
+    nutrition: "#74c69d",
+    "mode-de-vie": "#c4b5fd",
   };
 
   return (
@@ -244,7 +244,7 @@ function DailyChecklist({ scores }: { scores: Record<string, number> | null }) {
           <div style={{ height: 4, width: 80, borderRadius: 100,
             background: "var(--border)", overflow: "hidden" }}>
             <div style={{ height: "100%", borderRadius: 100,
-              background: doneCount === totalCount ? "#2ee6a6" : "#3d7bff",
+              background: doneCount === totalCount ? "#74c69d" : "#2b5ce6",
               width: `${(doneCount / totalCount) * 100}%`,
               transition: "width 0.3s ease" }} />
           </div>
@@ -266,8 +266,8 @@ function DailyChecklist({ scores }: { scores: Record<string, number> | null }) {
               transition: "all 0.15s" }}>
 
             <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0,
-              border: `2px solid ${checked[task.id] ? "#2ee6a6" : "var(--border-2)"}`,
-              background: checked[task.id] ? "#2ee6a6" : "transparent",
+              border: `2px solid ${checked[task.id] ? "#74c69d" : "var(--border-2)"}`,
+              background: checked[task.id] ? "#74c69d" : "transparent",
               display: "flex", alignItems: "center", justifyContent: "center",
               transition: "all 0.15s" }}>
               {checked[task.id] && (
@@ -302,7 +302,7 @@ function DailyChecklist({ scores }: { scores: Record<string, number> | null }) {
             border: "0.5px solid rgba(116,198,157,0.25)",
             textAlign: "center" }}>
           <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
-            color: "#2ee6a6", margin: 0 }}>
+            color: "#74c69d", margin: 0 }}>
             🎉 Checklist complète — excellent travail aujourd&apos;hui !
           </p>
         </motion.div>
@@ -470,7 +470,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <main style={{ minHeight: "100vh", background: c.mainBg, position: "relative" }}>
-        <BackgroundBlobs blobs={[{ top: "-5%", right: "-5%", color: "rgba(61,123,255,0.12)", size: 400 }]} />
+        <BackgroundBlobs blobs={[{ top: "-5%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 400 }]} />
         <div style={{ maxWidth: 800, margin: "0 auto", padding: isMobile ? "80px 16px 40px" : "100px 24px 60px", display: "flex", flexDirection: "column", gap: 12 }}>
           {[1, 2, 3].map(i => <Skeleton key={i} />)}
         </div>
@@ -487,10 +487,10 @@ export default function DashboardPage() {
         {/* ── ALERTS ── */}
         {notAdminError && (
           <div style={{ padding: "12px 16px", borderRadius: 12, marginBottom: 14,
-            background: "rgba(255,176,32,0.1)", border: "0.5px solid rgba(255,176,32,0.3)",
+            background: "rgba(244,162,97,0.1)", border: "0.5px solid rgba(244,162,97,0.3)",
             display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ fontSize: 16 }}>⚠️</span>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: "#ffb020", margin: 0 }}>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: "#f4a261", margin: 0 }}>
               Tu n&apos;as pas accès au dashboard entreprise. Contacte ton administrateur PAW.
             </p>
           </div>
@@ -499,7 +499,7 @@ export default function DashboardPage() {
         {showFeedbackBanner && (
           <motion.div {...fadeUp(0)} style={{ marginBottom: 14,
             borderRadius: 18, padding: "18px 20px",
-            background: "rgba(61,123,255,0.10)", border: "0.5px solid rgba(61,123,255,0.25)",
+            background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)",
             display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
             <div style={{ fontSize: 28 }}>💬</div>
             <div style={{ flex: 1 }}>
@@ -513,7 +513,7 @@ export default function DashboardPage() {
             <div style={{ display: "flex", gap: 8 }}>
               <Link href="/feedback" style={{ textDecoration: "none" }}>
                 <button style={{ padding: "9px 18px", borderRadius: 100, border: "none",
-                  background: "#3d7bff", color: "#fff",
+                  background: "#2b5ce6", color: "#fff",
                   fontFamily: T.h, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
                   Donner mon avis →
                 </button>
@@ -532,7 +532,7 @@ export default function DashboardPage() {
         {showIosBanner && (
           <motion.div {...fadeUp(0)} style={{ marginBottom: 14,
             borderRadius: 16, padding: "14px 18px",
-            background: "rgba(61,123,255,0.10)", border: "0.5px solid rgba(61,123,255,0.25)",
+            background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)",
             display: "flex", alignItems: "flex-start", gap: 12 }}>
             <span style={{ fontSize: 18, flexShrink: 0 }}>📱</span>
             <div style={{ flex: 1 }}>
@@ -572,10 +572,10 @@ export default function DashboardPage() {
             <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600,
               padding: "4px 12px", borderRadius: 100,
               background: (latestAssessment?.global_score ?? 0) >= 70
-                ? "rgba(116,198,157,0.15)" : "rgba(255,176,32,0.15)",
-              color: (latestAssessment?.global_score ?? 0) >= 70 ? "#2ee6a6" : "#ffb020",
+                ? "rgba(116,198,157,0.15)" : "rgba(244,162,97,0.15)",
+              color: (latestAssessment?.global_score ?? 0) >= 70 ? "#74c69d" : "#f4a261",
               border: `0.5px solid ${(latestAssessment?.global_score ?? 0) >= 70
-                ? "rgba(116,198,157,0.3)" : "rgba(255,176,32,0.3)"}` }}>
+                ? "rgba(116,198,157,0.3)" : "rgba(244,162,97,0.3)"}` }}>
               {(latestAssessment?.global_score ?? 0) >= 70 ? "✅ Bon niveau" :
                (latestAssessment?.global_score ?? 0) >= 50 ? "🟠 À améliorer" :
                "🔴 Points critiques"}
@@ -585,7 +585,7 @@ export default function DashboardPage() {
           <Link href="/questionnaire" style={{ textDecoration: "none", flexShrink: 0 }}>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
               style={{ padding: "12px 20px", borderRadius: 100,
-                background: "#3d7bff", color: "#fff",
+                background: "#2b5ce6", color: "#fff",
                 fontFamily: T.h, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
               Nouveau bilan →
             </motion.div>
@@ -631,7 +631,7 @@ export default function DashboardPage() {
                             lifestyle: "🏃 Lifestyle",
                           };
                           const s = score as number;
-                          const color = s >= 70 ? "#2ee6a6" : s >= 50 ? "#ffb020" : "#ff6b6b";
+                          const color = s >= 70 ? "#74c69d" : s >= 50 ? "#f4a261" : "#f09595";
                           return (
                             <div key={key} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                               <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", flex: 1 }}>
@@ -651,7 +651,7 @@ export default function DashboardPage() {
                         })}
                     </div>
 
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "#5b9dff", fontWeight: 600, margin: 0 }}>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff", fontWeight: 600, margin: 0 }}>
                       Voir toutes mes dimensions →
                     </p>
                   </motion.div>
@@ -694,7 +694,7 @@ export default function DashboardPage() {
                             background: "rgba(116,198,157,0.08)",
                             border: "0.5px solid rgba(116,198,157,0.2)", marginBottom: 10 }}>
                             <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600,
-                              color: "#2ee6a6", margin: "0 0 4px" }}>
+                              color: "#74c69d", margin: "0 0 4px" }}>
                               🎯 Focus du moment
                             </p>
                             <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", margin: 0 }}>
@@ -709,7 +709,7 @@ export default function DashboardPage() {
                       );
                     })()}
 
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "#5b9dff", fontWeight: 600, margin: 0 }}>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff", fontWeight: 600, margin: 0 }}>
                       Voir mon programme →
                     </p>
                   </motion.div>
@@ -729,10 +729,10 @@ export default function DashboardPage() {
                 <motion.div whileHover={{ scale: 1.01, y: -2 }}
                   style={{ padding: "24px", borderRadius: 20, cursor: "pointer",
                     background: latestAssessment?.video_analysis
-                      ? "rgba(61,123,255,0.08)"
-                      : "rgba(61,123,255,0.06)",
+                      ? "rgba(43,92,230,0.08)"
+                      : "rgba(43,92,230,0.06)",
                     border: `1px solid ${latestAssessment?.video_analysis
-                      ? "rgba(61,123,255,0.3)" : "rgba(61,123,255,0.2)"}` }}>
+                      ? "rgba(43,92,230,0.3)" : "rgba(43,92,230,0.2)"}` }}>
 
                   {/* Header */}
                   <div style={{ display: "flex", alignItems: "center",
@@ -747,7 +747,7 @@ export default function DashboardPage() {
                     {latestAssessment?.video_analysis && (
                       <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700,
                         padding: "4px 12px", borderRadius: 100,
-                        background: "rgba(116,198,157,0.15)", color: "#2ee6a6",
+                        background: "rgba(116,198,157,0.15)", color: "#74c69d",
                         border: "0.5px solid rgba(116,198,157,0.3)" }}>
                         ✅ Complétée
                       </span>
@@ -766,9 +766,9 @@ export default function DashboardPage() {
                     const postureIssues = va?.personne?.mainIssues ?? va?.debout?.mainIssues ?? [];
                     const setupIssues = va?.poste?.mainIssues ?? [];
 
-                    const getColor = (s: number) => s >= 70 ? "#2ee6a6" : s >= 50 ? "#ffb020" : "#ff6b6b";
-                    const getBg = (s: number) => s >= 70 ? "rgba(116,198,157,0.08)" : s >= 50 ? "rgba(255,176,32,0.08)" : "rgba(255,107,107,0.08)";
-                    const getBorder = (s: number) => s >= 70 ? "rgba(116,198,157,0.2)" : s >= 50 ? "rgba(255,176,32,0.2)" : "rgba(255,107,107,0.2)";
+                    const getColor = (s: number) => s >= 70 ? "#74c69d" : s >= 50 ? "#f4a261" : "#f09595";
+                    const getBg = (s: number) => s >= 70 ? "rgba(116,198,157,0.08)" : s >= 50 ? "rgba(244,162,97,0.08)" : "rgba(240,149,149,0.08)";
+                    const getBorder = (s: number) => s >= 70 ? "rgba(116,198,157,0.2)" : s >= 50 ? "rgba(244,162,97,0.2)" : "rgba(240,149,149,0.2)";
 
                     const allIssues = [...postureIssues.slice(0, 2), ...setupIssues.slice(0, 1)];
 
@@ -836,8 +836,8 @@ export default function DashboardPage() {
                             </p>
                             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                               {allIssues.map((issue: { zone?: string; element?: string; severity: string }, i) => {
-                                const sevColor = issue.severity === "élevé" ? "#ff6b6b" :
-                                                 issue.severity === "modéré" ? "#ffb020" : "#2ee6a6";
+                                const sevColor = issue.severity === "élevé" ? "#f09595" :
+                                                 issue.severity === "modéré" ? "#f4a261" : "#74c69d";
                                 return (
                                   <div key={i} style={{ display: "flex", alignItems: "center",
                                     gap: 10, padding: "8px 12px", borderRadius: 10,
@@ -860,7 +860,7 @@ export default function DashboardPage() {
                           </div>
                         )}
 
-                        <p style={{ fontFamily: T.b, fontSize: 13, color: "#5b9dff",
+                        <p style={{ fontFamily: T.b, fontSize: 13, color: "#7c9fff",
                           fontWeight: 600, margin: 0 }}>
                           Voir mon rapport complet →
                         </p>
@@ -878,14 +878,14 @@ export default function DashboardPage() {
                         {["40 secondes", "IA posturale", "Rapport immédiat", "PC ou mobile"].map((tag, i) => (
                           <span key={i} style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600,
                             padding: "4px 12px", borderRadius: 100,
-                            background: "rgba(61,123,255,0.12)", color: "#5b9dff",
-                            border: "0.5px solid rgba(61,123,255,0.2)" }}>
+                            background: "rgba(43,92,230,0.12)", color: "#7c9fff",
+                            border: "0.5px solid rgba(43,92,230,0.2)" }}>
                             {tag}
                           </span>
                         ))}
                       </div>
                       <div style={{ display: "inline-block", padding: "12px 24px",
-                        borderRadius: 100, background: "#3d7bff", color: "#fff",
+                        borderRadius: 100, background: "#2b5ce6", color: "#fff",
                         fontFamily: T.h, fontWeight: 700, fontSize: 14 }}>
                         Analyser ma posture →
                       </div>
@@ -964,7 +964,7 @@ export default function DashboardPage() {
             </p>
             <Link href="/questionnaire" style={{ textDecoration: "none" }}>
               <div style={{ display: "inline-block", padding: "15px 32px",
-                borderRadius: 100, background: "#3d7bff", color: "#fff",
+                borderRadius: 100, background: "#2b5ce6", color: "#fff",
                 fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
                 Commencer mon bilan →
               </div>

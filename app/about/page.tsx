@@ -71,9 +71,9 @@ export default function AboutPage() {
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "6px 16px", borderRadius: 100, marginBottom: 18,
-            background: "rgba(61,123,255,0.12)", border: "0.5px solid rgba(61,123,255,0.25)",
+            background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)",
           }}>
-            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#5b9dff" }}>
+            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "#7c9fff" }}>
               Notre histoire
             </span>
           </div>
@@ -90,7 +90,7 @@ export default function AboutPage() {
           borderRadius: 20, padding: "28px 28px", marginBottom: 16,
           background: c.bgCard, border: `0.5px solid ${c.border}`,
         }}>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#5b9dff", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#7c9fff", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>
             Le constat
           </p>
           <p style={{ fontFamily: T.b, fontSize: 15, color: c.textSecondary, lineHeight: 1.8, margin: 0 }}>
@@ -105,7 +105,7 @@ export default function AboutPage() {
           borderRadius: 20, padding: "28px 28px", marginBottom: 32,
           background: c.bgCard, border: `0.5px solid ${c.border}`,
         }}>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#2ee6a6", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>
+          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "#74c69d", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>
             La solution
           </p>
           <p style={{ fontFamily: T.b, fontSize: 15, color: c.textSecondary, lineHeight: 1.8, margin: 0 }}>
@@ -118,12 +118,12 @@ export default function AboutPage() {
         {/* ── LE CRÉATEUR ── */}
         <motion.div {...fadeUp(0.2)} style={{
           borderRadius: 20, padding: "28px 28px", marginBottom: 48,
-          background: "rgba(61,123,255,0.08)", border: "0.5px solid rgba(61,123,255,0.20)",
+          background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.20)",
           display: "flex", flexDirection: isMobile ? "column" : "row", gap: isMobile ? 16 : 20, alignItems: "flex-start", flexWrap: "wrap",
         }}>
           <div style={{
             width: 60, height: 60, borderRadius: "50%", flexShrink: 0,
-            background: "rgba(61,123,255,0.18)", border: "2px solid rgba(61,123,255,0.35)",
+            background: "rgba(43,92,230,0.18)", border: "2px solid rgba(43,92,230,0.35)",
             display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26,
           }}>
             👨‍⚕️
@@ -132,7 +132,7 @@ export default function AboutPage() {
             <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 17, color: c.textPrimary, margin: "0 0 4px" }}>
               Julien Beumier
             </p>
-            <p style={{ fontFamily: T.b, fontSize: 12, color: "#5b9dff", margin: "0 0 14px" }}>
+            <p style={{ fontFamily: T.b, fontSize: 12, color: "#7c9fff", margin: "0 0 14px" }}>
               Kinésithérapeute · Fondateur de PostureAtWork
             </p>
             <p style={{ fontFamily: T.b, fontSize: 14, color: c.textSecondary, lineHeight: 1.7, margin: 0 }}>
@@ -162,7 +162,7 @@ export default function AboutPage() {
               }}
             >
               <div style={{ fontSize: 48, marginBottom: 14 }}>🙏</div>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: "#2ee6a6", marginBottom: 8 }}>Message envoyé !</p>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18, color: "#74c69d", marginBottom: 8 }}>Message envoyé !</p>
               <p style={{ fontFamily: T.b, fontSize: 14, color: c.textSecondary }}>
                 On te répond dans les plus brefs délais.
               </p>
@@ -196,7 +196,7 @@ export default function AboutPage() {
                 style={{ ...inputStyle, resize: "vertical", lineHeight: 1.6 }}
               />
               {formState === "error" && (
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "#ff6b6b" }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "#f09595" }}>
                   Erreur lors de l&apos;envoi. Réessaie ou écris directement à hello@postureatwork.com
                 </p>
               )}
@@ -205,10 +205,10 @@ export default function AboutPage() {
                 disabled={formState === "loading"}
                 style={{
                   padding: "15px 0", borderRadius: 100, border: "none",
-                  background: "#3d7bff", color: "#fff",
+                  background: "#2b5ce6", color: "#fff",
                   fontFamily: T.h, fontWeight: 800, fontSize: 15,
                   cursor: formState === "loading" ? "default" : "pointer",
-                  boxShadow: "0 4px 20px rgba(61,123,255,0.35)",
+                  boxShadow: "0 4px 20px rgba(43,92,230,0.35)",
                   opacity: formState === "loading" ? 0.7 : 1,
                   transition: "opacity 0.2s",
                 }}

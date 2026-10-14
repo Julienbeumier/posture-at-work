@@ -74,13 +74,13 @@ export default function AdminEmailsPage() {
   }
 
   if (!ready) return (
-    <main style={{ minHeight: "100vh", background: "#0a1020", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <main style={{ minHeight: "100vh", background: "#0f0f1a", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <span style={{ fontFamily: T.b, color: "rgba(220,220,245,0.4)", fontSize: 14 }}>Chargement…</span>
     </main>
   );
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0a1020", padding: "80px 24px 60px" }}>
+    <main style={{ minHeight: "100vh", background: "#0f0f1a", padding: "80px 24px 60px" }}>
       <div style={{ maxWidth: 560, margin: "0 auto" }}>
         <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#f0f0fa", margin: "0 0 4px" }}>
           🧪 Admin — Test emails
@@ -128,10 +128,10 @@ export default function AdminEmailsPage() {
                 disabled={loading === step}
                 style={{
                   flex: 1, padding: "12px 16px", borderRadius: 10, cursor: loading === step ? "default" : "pointer",
-                  background: loading === step ? "rgba(61,123,255,0.20)" : "rgba(61,123,255,0.15)",
-                  border: "0.5px solid rgba(61,123,255,0.35)",
+                  background: loading === step ? "rgba(43,92,230,0.20)" : "rgba(43,92,230,0.15)",
+                  border: "0.5px solid rgba(43,92,230,0.35)",
                   fontFamily: T.b, fontWeight: 600, fontSize: 13,
-                  color: loading === step ? "rgba(168,192,255,0.5)" : "#5b9dff",
+                  color: loading === step ? "rgba(168,192,255,0.5)" : "#7c9fff",
                   textAlign: "left",
                 }}
               >
@@ -140,7 +140,7 @@ export default function AdminEmailsPage() {
               {results[step] && (
                 <span style={{
                   fontFamily: T.b, fontSize: 13, whiteSpace: "nowrap",
-                  color: results[step].startsWith("✅") ? "#2ee6a6" : "#ff6b6b",
+                  color: results[step].startsWith("✅") ? "#74c69d" : "#f09595",
                 }}>
                   {results[step]}
                 </span>

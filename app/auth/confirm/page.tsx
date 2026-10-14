@@ -61,7 +61,7 @@ function ConfirmContent() {
               Ton compte est activé. Redirection vers ton dashboard dans quelques secondes…
             </p>
             <div style={{ padding: "8px 16px", borderRadius: 100, background: "rgba(29,158,117,0.1)", display: "inline-block" }}>
-              <p style={{ fontFamily: T.b, fontSize: 13, color: "#12c48b", margin: 0 }}>
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "#1d9e75", margin: 0 }}>
                 Redirection automatique en cours…
               </p>
             </div>
@@ -79,7 +79,7 @@ function ConfirmContent() {
             </p>
             <Link href="/auth" style={{ textDecoration: "none" }}>
               <div style={{
-                padding: "13px 28px", borderRadius: 100, background: "#3d7bff",
+                padding: "13px 28px", borderRadius: 100, background: "#2b5ce6",
                 fontFamily: T.b, fontWeight: 700, fontSize: 14, color: "#fff",
                 display: "inline-block",
               }}>

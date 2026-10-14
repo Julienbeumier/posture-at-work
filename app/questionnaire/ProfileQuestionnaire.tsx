@@ -254,7 +254,7 @@ export default function ProfileQuestionnaire({
   return (
     <main style={{ minHeight: "100vh", paddingBottom: 80 }}>
       <BackgroundBlobs blobs={[
-        { top: "0%", right: "-5%", color: "rgba(61,123,255,0.12)", size: 400 },
+        { top: "0%", right: "-5%", color: "rgba(43,92,230,0.12)", size: 400 },
         { top: "50%", left: "-8%", color: "rgba(226,75,74,0.08)", size: 350 },
       ]} />
 
@@ -264,7 +264,7 @@ export default function ProfileQuestionnaire({
           <motion.div key={toast} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.3 }}
             style={{ position: "fixed", bottom: 24, left: 0, right: 0, display: "flex", justifyContent: "center", zIndex: 50, pointerEvents: "none" }}
           >
-            <div style={{ background: "rgba(61,123,255,0.90)", backdropFilter: "blur(10px)", borderRadius: 100, padding: "12px 24px", color: "#fff", fontFamily: T.b, fontWeight: 700, fontSize: 14, whiteSpace: "nowrap" }}>
+            <div style={{ background: "rgba(43,92,230,0.90)", backdropFilter: "blur(10px)", borderRadius: 100, padding: "12px 24px", color: "#fff", fontFamily: T.b, fontWeight: 700, fontSize: 14, whiteSpace: "nowrap" }}>
               {toast}
             </div>
           </motion.div>
@@ -281,9 +281,9 @@ export default function ProfileQuestionnaire({
               </button>
               <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>
                 <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#f0f0fa" }}>PAW</span>
-                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#5b9dff" }}>.</span>
+                <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#7c9fff" }}>.</span>
               </Link>
-              <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(61,123,255,0.15)", fontFamily: T.b, fontSize: 11, color: "#5b9dff" }}>
+              <span style={{ padding: "2px 10px", borderRadius: 100, background: "rgba(43,92,230,0.15)", fontFamily: T.b, fontSize: 11, color: "#7c9fff" }}>
                 {meta.emoji} {meta.label}
               </span>
             </div>
@@ -292,7 +292,7 @@ export default function ProfileQuestionnaire({
             </span>
           </div>
           <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden", marginBottom: 10 }}>
-            <motion.div style={{ height: "100%", borderRadius: 100, background: "#3d7bff" }} animate={{ width: `${(done / categories.length) * 100}%` }} transition={{ duration: 0.4 }} />
+            <motion.div style={{ height: "100%", borderRadius: 100, background: "#2b5ce6" }} animate={{ width: `${(done / categories.length) * 100}%` }} transition={{ duration: 0.4 }} />
           </div>
           <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 2 }}>
             {categories.map((cat) => {
@@ -370,7 +370,7 @@ export default function ProfileQuestionnaire({
                           {q.id === "q_d_varices" && ans === "importantes" && (
                             <div style={{ marginTop: 6, padding: "10px 14px", borderRadius: 12, background: "rgba(226,75,74,0.12)", border: "0.5px solid rgba(226,75,74,0.35)", display: "flex", alignItems: "flex-start", gap: 8 }}>
                               <span style={{ fontSize: 16, flexShrink: 0 }}>⚕️</span>
-                              <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "#ff6b6b", lineHeight: 1.6, margin: 0 }}>
+                              <p style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 12, color: "#f09595", lineHeight: 1.6, margin: 0 }}>
                                 Des varices importantes et douloureuses méritent un avis médical — consulte ton médecin traitant ou un angiologue.
                               </p>
                             </div>
@@ -389,10 +389,10 @@ export default function ProfileQuestionnaire({
       <AnimatePresence>
         {allDone && (
           <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }} transition={{ type: "spring", damping: 20 }}
-            style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 40, padding: "16px 20px 24px", background: "linear-gradient(to top, #0a1020 60%, transparent)" }}
+            style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 40, padding: "16px 20px 24px", background: "linear-gradient(to top, #0f0f1a 60%, transparent)" }}
           >
             <div style={{ maxWidth: 680, margin: "0 auto" }}>
-              <div onClick={handleSubmit} style={{ display: "block", width: "100%", padding: "18px 24px", borderRadius: 100, background: "#3d7bff", color: "#fff", fontFamily: T.h, fontWeight: 800, fontSize: 16, textAlign: "center", cursor: "pointer", boxShadow: "0 0 40px rgba(61,123,255,0.5)" }}>
+              <div onClick={handleSubmit} style={{ display: "block", width: "100%", padding: "18px 24px", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 800, fontSize: 16, textAlign: "center", cursor: "pointer", boxShadow: "0 0 40px rgba(43,92,230,0.5)" }}>
                 Voir mes résultats →
               </div>
               <p style={{ textAlign: "center", color: "rgba(220,220,245,0.30)", fontSize: 12, fontFamily: T.b, marginTop: 8 }}>

@@ -129,7 +129,7 @@ export default function Navbar() {
         <Link href="/" style={{ textDecoration: "none" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
             <span style={{ fontFamily: "var(--font-nunito), sans-serif", fontWeight: 900, fontSize: 20, color: "var(--text-primary)", letterSpacing: "-0.5px", lineHeight: 1 }}>
-              PAW<span style={{ color: "#3d7bff" }}>.</span>
+              PAW<span style={{ color: "#2b5ce6" }}>.</span>
             </span>
             <span style={{ fontFamily: "var(--font-jakarta), sans-serif", fontSize: 8, letterSpacing: "0.18em", color: "var(--t35)", textTransform: "uppercase", lineHeight: 1, marginTop: 2 }}>
               Posture At Work
@@ -147,8 +147,8 @@ export default function Navbar() {
             style={{
               position: "relative", display: "flex", alignItems: "center",
               width: 64, height: 32, borderRadius: 100, padding: 4, cursor: "pointer",
-              background: theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(61,123,255,0.12)",
-              border: theme === "dark" ? "0.5px solid rgba(255,255,255,0.15)" : "0.5px solid rgba(61,123,255,0.25)",
+              background: theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(43,92,230,0.12)",
+              border: theme === "dark" ? "0.5px solid rgba(255,255,255,0.15)" : "0.5px solid rgba(43,92,230,0.25)",
               transition: "all 0.3s ease", outline: "none",
             }}
           >
@@ -156,7 +156,7 @@ export default function Navbar() {
               position: "absolute", left: theme === "dark" ? 4 : 32, width: 24, height: 24,
               borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 13, lineHeight: 1,
-              background: theme === "dark" ? "rgba(255,255,255,0.15)" : "#3d7bff",
+              background: theme === "dark" ? "rgba(255,255,255,0.15)" : "#2b5ce6",
               transition: "left 0.25s ease, background 0.25s ease",
             }}>
               {theme === "dark" ? "🌙" : "☀️"}
@@ -171,11 +171,11 @@ export default function Navbar() {
             <Link href="/entreprise/dashboard" className="hidden md:block" style={{ textDecoration: "none" }}>
               <div style={{
                 padding: "6px 14px", borderRadius: 100, cursor: "pointer",
-                background: "rgba(139,92,246,0.12)",
-                border: "0.5px solid rgba(139,92,246,0.3)",
+                background: "rgba(124,58,237,0.12)",
+                border: "0.5px solid rgba(124,58,237,0.3)",
                 fontFamily: "var(--font-jakarta), sans-serif",
                 fontSize: 13, fontWeight: 600,
-                color: "#b79cff",
+                color: "#c4b5fd",
               }}>
                 🏢 Dashboard RH
               </div>
@@ -187,12 +187,12 @@ export default function Navbar() {
             {user ? (
               <>
                 <Link href="/mobilite" style={{ textDecoration: "none" }}>
-                  <div style={{ padding: "7px 16px", borderRadius: 100, background: "rgba(61,123,255,0.18)", color: "#5b9dff", border: "0.5px solid rgba(61,123,255,0.30)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                  <div style={{ padding: "7px 16px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#7c9fff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                     Exercices
                   </div>
                 </Link>
                 <Link href="/dashboard" style={{ textDecoration: "none" }}>
-                  <div style={{ padding: "7px 16px", borderRadius: 100, background: "rgba(61,123,255,0.18)", color: "#5b9dff", border: "0.5px solid rgba(61,123,255,0.30)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                  <div style={{ padding: "7px 16px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#7c9fff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                     Dashboard
                   </div>
                 </Link>
@@ -212,7 +212,7 @@ export default function Navbar() {
               <div style={{ position: "relative", display: "inline-block" }}>
                 <div
                   onClick={() => setMenuOpen((v) => !v)}
-                  style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg, #3d7bff, #5b9dff)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: T.h }}
+                  style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg, #2b5ce6, #7c9fff)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, cursor: "pointer", fontFamily: T.h }}
                 >
                   {initials}
                 </div>
@@ -225,7 +225,7 @@ export default function Navbar() {
                   <div onClick={() => { router.push("/dashboard"); setMenuOpen(false); }} style={{ padding: "10px 16px", color: "var(--t75)", fontSize: 13, cursor: "pointer" }}>
                     📊 Mon compte
                   </div>
-                  <div onClick={signOut} style={{ padding: "10px 16px", color: "#ff6b6b", fontSize: 13, cursor: "pointer" }}>
+                  <div onClick={signOut} style={{ padding: "10px 16px", color: "#f09595", fontSize: 13, cursor: "pointer" }}>
                     → Déconnexion
                   </div>
                 </div>
@@ -236,7 +236,7 @@ export default function Navbar() {
           {/* Mon bilan button (connecté seulement) */}
           {user && (
             <Link href="/questionnaire" style={{ textDecoration: "none" }}>
-              <div style={{ padding: "11px 18px", borderRadius: 100, background: "rgba(61,123,255,0.18)", color: "#5b9dff", border: "0.5px solid rgba(61,123,255,0.30)", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.h, minHeight: 44, display: "flex", alignItems: "center" }}>
+              <div style={{ padding: "11px 18px", borderRadius: 100, background: "rgba(43,92,230,0.18)", color: "#7c9fff", border: "0.5px solid rgba(43,92,230,0.30)", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.h, minHeight: 44, display: "flex", alignItems: "center" }}>
                 Mon bilan
               </div>
             </Link>
@@ -317,7 +317,7 @@ export default function Navbar() {
           {user && (
             <button
               onClick={() => { signOut(); setIsMenuOpen(false); }}
-              style={{ ...menuItemStyle, background: "none", border: "none", width: "100%", textAlign: "left", color: "#ff6b6b", borderBottom: "none" }}
+              style={{ ...menuItemStyle, background: "none", border: "none", width: "100%", textAlign: "left", color: "#f09595", borderBottom: "none" }}
             >
               → Se déconnecter
             </button>

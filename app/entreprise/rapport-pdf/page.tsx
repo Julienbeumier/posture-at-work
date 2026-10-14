@@ -132,7 +132,7 @@ export default function EntrepriseRapportPDF() {
 
       {/* Bouton impression — masqué à l'impression */}
       <div className="no-print" style={{ position: "fixed", top: 16, right: 16, zIndex: 100, display: "flex", gap: 8 }}>
-        <button onClick={() => window.print()} style={{ padding: "10px 20px", borderRadius: 8, background: "#3d7bff", color: "#fff", border: "none", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
+        <button onClick={() => window.print()} style={{ padding: "10px 20px", borderRadius: 8, background: "#2b5ce6", color: "#fff", border: "none", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
           🖨️ Imprimer / Télécharger PDF
         </button>
         <button onClick={() => router.back()} style={{ padding: "10px 20px", borderRadius: 8, background: "#f1f5f9", color: "#374151", border: "none", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
@@ -144,9 +144,9 @@ export default function EntrepriseRapportPDF() {
       <div className="page">
 
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, paddingBottom: 14, borderBottom: "2px solid #3d7bff" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, paddingBottom: 14, borderBottom: "2px solid #2b5ce6" }}>
           <div>
-            <div style={{ fontSize: "8pt", fontWeight: 700, letterSpacing: "0.12em", color: "#3d7bff", textTransform: "uppercase", marginBottom: 4 }}>
+            <div style={{ fontSize: "8pt", fontWeight: 700, letterSpacing: "0.12em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 4 }}>
               PostureAtWork · Rapport de synthèse ergonomique
             </div>
             <h1>{company?.name}</h1>
@@ -307,7 +307,7 @@ export default function EntrepriseRapportPDF() {
 
         {/* Header page 2 */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, paddingBottom: 10, borderBottom: "1px solid #e2e8f0" }}>
-          <div style={{ fontSize: "8pt", fontWeight: 700, color: "#3d7bff", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          <div style={{ fontSize: "8pt", fontWeight: 700, color: "#2b5ce6", letterSpacing: "0.1em", textTransform: "uppercase" }}>
             PostureAtWork · {company?.name} · Plan d&apos;action & Équipe
           </div>
           <div style={{ fontSize: "8pt", color: "#94a3b8" }}>{new Date().toLocaleDateString("fr-FR")}</div>

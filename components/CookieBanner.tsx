@@ -27,14 +27,14 @@ export default function CookieBanner() {
   return (
     <div style={{
       position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100,
-      background: "#131c33",
+      background: "#1b1b2e",
       borderTop: "0.5px solid rgba(255,255,255,0.10)",
       padding: "16px 20px",
     }}>
       <div style={{ maxWidth: 700, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
         <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.70)", lineHeight: 1.6, flex: 1, minWidth: 200, margin: 0 }}>
           PAW utilise des cookies pour améliorer ton expérience et sauvegarder tes bilans.{" "}
-          <Link href="/politique-confidentialite" style={{ color: "#5b9dff", textDecoration: "underline" }}>
+          <Link href="/politique-confidentialite" style={{ color: "#7c9fff", textDecoration: "underline" }}>
             En savoir plus
           </Link>
         </p>
@@ -47,7 +47,7 @@ export default function CookieBanner() {
           </button>
           <button
             onClick={accept}
-            style={{ padding: "12px 18px", borderRadius: 100, background: "#3d7bff", border: "none", color: "#fff", fontFamily: T.b, fontWeight: 700, fontSize: 13, cursor: "pointer", boxShadow: "0 2px 12px rgba(61,123,255,0.35)", minHeight: 44 }}
+            style={{ padding: "12px 18px", borderRadius: 100, background: "#2b5ce6", border: "none", color: "#fff", fontFamily: T.b, fontWeight: 700, fontSize: 13, cursor: "pointer", boxShadow: "0 2px 12px rgba(43,92,230,0.35)", minHeight: 44 }}
           >
             Accepter
           </button>

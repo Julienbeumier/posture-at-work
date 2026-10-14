@@ -109,7 +109,7 @@ export default function OnboardingPage() {
     >
       <BackgroundBlobs
         blobs={[
-          { top: "-5%", right: "-5%", color: "rgba(61,123,255,0.18)", size: 500 },
+          { top: "-5%", right: "-5%", color: "rgba(43,92,230,0.18)", size: 500 },
         ]}
       />
 
@@ -119,7 +119,7 @@ export default function OnboardingPage() {
           <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "var(--text-primary)" }}>
             PAW
           </span>
-          <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#5b9dff" }}>
+          <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 26, color: "#7c9fff" }}>
             .
           </span>
         </div>
@@ -140,7 +140,7 @@ export default function OnboardingPage() {
               style={{
                 height: "100%",
                 width: `${(step / 4) * 100}%`,
-                background: "linear-gradient(90deg, #3d7bff, #5b9dff)",
+                background: "linear-gradient(90deg, #2b5ce6, #7c9fff)",
                 borderRadius: 100,
                 transition: "width 0.4s ease",
               }}
@@ -250,14 +250,14 @@ export default function OnboardingPage() {
                     width: "100%",
                     padding: "17px 24px",
                     borderRadius: 100,
-                    background: name.trim() ? "#3d7bff" : "rgba(61,123,255,0.20)",
+                    background: name.trim() ? "#2b5ce6" : "rgba(43,92,230,0.20)",
                     color: name.trim() ? "#fff" : "rgba(255,255,255,0.25)",
                     fontFamily: T.h,
                     fontWeight: 800,
                     fontSize: 16,
                     textAlign: "center",
                     cursor: name.trim() ? "pointer" : "default",
-                    boxShadow: name.trim() ? "0 0 40px rgba(61,123,255,0.4)" : "none",
+                    boxShadow: name.trim() ? "0 0 40px rgba(43,92,230,0.4)" : "none",
                     transition: "all 0.2s ease",
                     boxSizing: "border-box",
                   }}
@@ -324,9 +324,9 @@ export default function OnboardingPage() {
                         alignItems: "center",
                         justifyContent: "center",
                         borderRadius: 100,
-                        background: age === opt ? "rgba(61,123,255,0.20)" : "rgba(255,255,255,0.06)",
-                        border: `0.5px solid ${age === opt ? "#5b9dff" : "rgba(255,255,255,0.15)"}`,
-                        color: age === opt ? "#5b9dff" : "var(--t75)",
+                        background: age === opt ? "rgba(43,92,230,0.20)" : "rgba(255,255,255,0.06)",
+                        border: `0.5px solid ${age === opt ? "#7c9fff" : "rgba(255,255,255,0.15)"}`,
+                        color: age === opt ? "#7c9fff" : "var(--t75)",
                         fontSize: 14,
                         fontWeight: 600,
                         fontFamily: T.b,
@@ -395,9 +395,9 @@ export default function OnboardingPage() {
                         style={{
                           padding: "28px 16px 24px",
                           borderRadius: 22,
-                          background: sel ? "rgba(61,123,255,0.18)" : "rgba(255,255,255,0.05)",
-                          border: `1px solid ${sel ? "#5b9dff" : "rgba(255,255,255,0.12)"}`,
-                          boxShadow: sel ? "0 0 24px rgba(61,123,255,0.25)" : "none",
+                          background: sel ? "rgba(43,92,230,0.18)" : "rgba(255,255,255,0.05)",
+                          border: `1px solid ${sel ? "#7c9fff" : "rgba(255,255,255,0.12)"}`,
+                          boxShadow: sel ? "0 0 24px rgba(43,92,230,0.25)" : "none",
                           textAlign: "center",
                           cursor: "pointer",
                           transition: "all 0.18s ease",
@@ -411,7 +411,7 @@ export default function OnboardingPage() {
                             fontFamily: T.h,
                             fontWeight: 800,
                             fontSize: 15,
-                            color: sel ? "#5b9dff" : "var(--text-primary)",
+                            color: sel ? "#7c9fff" : "var(--text-primary)",
                             marginBottom: 8,
                             lineHeight: 1.3,
                           }}
@@ -496,11 +496,11 @@ export default function OnboardingPage() {
                         justifyContent: "center",
                         borderRadius: 100,
                         background:
-                          hoursWeek === opt ? "rgba(61,123,255,0.20)" : "rgba(255,255,255,0.06)",
+                          hoursWeek === opt ? "rgba(43,92,230,0.20)" : "rgba(255,255,255,0.06)",
                         border: `0.5px solid ${
-                          hoursWeek === opt ? "#5b9dff" : "rgba(255,255,255,0.15)"
+                          hoursWeek === opt ? "#7c9fff" : "rgba(255,255,255,0.15)"
                         }`,
-                        color: hoursWeek === opt ? "#5b9dff" : "var(--t75)",
+                        color: hoursWeek === opt ? "#7c9fff" : "var(--t75)",
                         fontSize: 14,
                         fontWeight: 600,
                         fontFamily: T.b,
@@ -567,9 +567,9 @@ export default function OnboardingPage() {
                       display: "inline-block",
                       padding: "10px 20px",
                       borderRadius: 100,
-                      background: "rgba(61,123,255,0.15)",
-                      border: "0.5px solid rgba(61,123,255,0.30)",
-                      color: "#5b9dff",
+                      background: "rgba(43,92,230,0.15)",
+                      border: "0.5px solid rgba(43,92,230,0.30)",
+                      color: "#7c9fff",
                       fontSize: 14,
                       fontWeight: 600,
                       fontFamily: T.b,
@@ -601,14 +601,14 @@ export default function OnboardingPage() {
                       width: "100%",
                       padding: "17px 24px",
                       borderRadius: 100,
-                      background: "#3d7bff",
+                      background: "#2b5ce6",
                       color: "#fff",
                       fontFamily: T.h,
                       fontWeight: 800,
                       fontSize: 16,
                       textAlign: "center",
                       cursor: "pointer",
-                      boxShadow: "0 0 40px rgba(61,123,255,0.4)",
+                      boxShadow: "0 0 40px rgba(43,92,230,0.4)",
                       transition: "all 0.2s ease",
                       boxSizing: "border-box",
                     }}
