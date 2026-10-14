@@ -410,25 +410,81 @@ function analyzeCollectiveVideo(employees: EmployeeRow[], assessed: EmployeeRow[
   const bureauWithVideo = withVideo.filter(e => e.job_type === "bureau");
   const deboutWithVideo = withVideo.filter(e => e.job_type === "debout");
 
-  function getStatus(emp: EmployeeRow, zone: string): string | null {
-    const va = emp.video_analysis as Record<string, unknown>;
+  // Zones lues dans l'analyse vidéo (format actuel : bureau = segments, debout = posture).
+  const ZONE_KEYS: Record<string, { bureau: string; debout: string }> = {
+    head_position: { bureau: "tete_cou", debout: "tete_cou" },
+    shoulders: { bureau: "epaules_dos_haut", debout: "epaules" },
+    trunk: { bureau: "bas_dos_bassin", debout: "colonne" },
+  };
+  const statusFromScore = (s: number) => (s >= 70 ? "bon" : s >= 50 ? "attention" : "critique");
+
+  function getSource(emp: EmployeeRow): Record<string, unknown> | null {
+    const va = emp.video_analysis as Record<string, unknown> | null;
     if (!va) return null;
-    // Bureau : personne.posture_analysis.{zone}.status
-    // Debout : debout.posture_analysis.{zone}.status
-    const source = (va.personne as Record<string, unknown>) ?? (va.debout as Record<string, unknown>);
+    return ((va.personne as Record<string, unknown>) ?? (va.debout as Record<string, unknown>)) ?? null;
+  }
+
+  function getStatus(emp: EmployeeRow, zone: string): string | null {
+    const source = getSource(emp);
     if (!source) return null;
-    const posture = source.posture_analysis as Record<string, unknown>;
-    if (!posture) return null;
-    const item = posture[zone] as Record<string, unknown>;
-    return item?.status as string ?? null;
+    // Format actuel : bureau → personne.segments.{zone}, debout → personne.posture.{zone}
+    const keys = ZONE_KEYS[zone];
+    const segments = source.segments as Record<string, Record<string, unknown>> | undefined;
+    const posture = source.posture as Record<string, Record<string, unknown>> | undefined;
+    const current = keys ? (segments?.[keys.bureau] ?? posture?.[keys.debout]) : undefined;
+    if (current) {
+      if (typeof current.status === "string") return current.status;
+      if (typeof current.score === "number") return statusFromScore(current.score);
+    }
+    // Ancien format : posture_analysis.{zone}.status
+    const legacy = source.posture_analysis as Record<string, Record<string, unknown>> | undefined;
+    return (legacy?.[zone]?.status as string) ?? null;
   }
 
   function getPostureScore(emp: EmployeeRow): number | null {
-    const va = emp.video_analysis as Record<string, unknown>;
-    if (!va) return null;
-    const source = (va.personne as Record<string, unknown>) ?? (va.debout as Record<string, unknown>);
-    const posture = source?.posture_analysis as Record<string, unknown>;
-    return posture?.score as number ?? null;
+    const source = getSource(emp);
+    if (!source) return null;
+    if (typeof source.globalPostureScore === "number") return source.globalPostureScore;
+    const legacy = source.posture_analysis as Record<string, unknown> | undefined;
+    return (legacy?.score as number) ?? null;
+  }
+
+  // Ce que la vidéo révèle en plus du questionnaire
+  function silentRisk(group: EmployeeRow[]) {
+    const both = group.filter(e => getPostureScore(e) !== null && typeof e.scores?.pain === "number");
+    const silent = both.filter(e => (e.scores!.pain as number) >= 60 && (getPostureScore(e) as number) < 60);
+    return { silent: silent.length, total: both.length };
+  }
+
+  function posteStats(group: EmployeeRow[]) {
+    const els = group
+      .map(e => ((e.video_analysis as Record<string, unknown>)?.poste as Record<string, unknown> | null)?.elements as Record<string, Record<string, unknown>> | undefined)
+      .filter((x): x is Record<string, Record<string, unknown>> => !!x);
+    if (els.length === 0) return null;
+    const setups = group
+      .map(e => ((e.video_analysis as Record<string, unknown>)?.poste as Record<string, unknown> | null)?.globalSetupScore)
+      .filter((x): x is number => typeof x === "number");
+    return {
+      total: els.length,
+      laptopSeul: els.filter(x => x.ecran?.type === "laptop_seul").length,
+      ecranTropBas: els.filter(x => x.ecran?.hauteur === "trop_bas").length,
+      eclairage: els.filter(x => x.organisation?.eclairage === "mauvais" || x.organisation?.eclairage === "moyen").length,
+      sansReposePoignets: els.filter(x => x.clavier_souris?.repose_poignets === false).length,
+      sansAccoudoirs: els.filter(x => x.chaise?.accoudoirs === false).length,
+      avgSetup: setups.length ? Math.round(setups.reduce((a, b) => a + b, 0) / setups.length) : null,
+    };
+  }
+
+  function deboutEnvStats(group: EmployeeRow[]) {
+    const envs = group
+      .map(e => (getSource(e)?.environnement as Record<string, Record<string, unknown> | string> | undefined))
+      .filter((x): x is Record<string, Record<string, unknown> | string> => !!x);
+    if (envs.length === 0) return null;
+    return {
+      total: envs.length,
+      planInadapte: envs.filter(x => { const h = (x.plan_travail as Record<string, unknown> | undefined)?.hauteur; return h === "trop_bas" || h === "trop_haut"; }).length,
+      sansTapis: envs.filter(x => x.tapis_antifatigue === "non").length,
+    };
   }
 
   function countStatus(group: EmployeeRow[], zone: string, status: string): number {
@@ -622,8 +678,98 @@ function analyzeCollectiveVideo(employees: EmployeeRow[], assessed: EmployeeRow[
     deboutNarrative,
     deboutActions,
     deboutPositif,
+    silentBureau: silentRisk(bureauWithVideo),
+    silentDebout: silentRisk(deboutWithVideo),
+    posteBureau: posteStats(bureauWithVideo),
+    envDebout: deboutEnvStats(deboutWithVideo),
+    simulated: withVideo.some(e => (e.video_analysis as Record<string, unknown>)?.simulated === true),
     notFilmed: employees.filter(e => e.video_analysis === null && e.global_score !== null).length,
   };
+}
+
+type Theme = ReturnType<typeof useTheme>["c"];
+
+function RevealRow({ label, n, total, c }: { label: string; n: number; total: number; c: Theme }) {
+  const pct = total ? Math.round((n / total) * 100) : 0;
+  const color = pct >= 50 ? "#ff7b7b" : pct >= 25 ? "#ffa347" : "#3fe0a0";
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginBottom: 4 }}>
+        <span style={{ fontFamily: T.b, fontSize: 12, color: c.textSecondary }}>{label}</span>
+        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 12, color, flexShrink: 0 }}>{n}/{total}</span>
+      </div>
+      <div style={{ height: 8, borderRadius: 100, background: c.bgCard2, overflow: "hidden" }}>
+        <div style={{ width: `${pct}%`, height: "100%", borderRadius: 100, background: color, boxShadow: `0 0 10px ${color}77` }} />
+      </div>
+    </div>
+  );
+}
+
+type Collective = NonNullable<ReturnType<typeof analyzeCollectiveVideo>>;
+
+/** Ce que la vidéo ajoute au questionnaire : risques silencieux + réalité du poste. */
+function VideoRevealBlock({ collective, c, isMobile }: { collective: Collective; c: Theme; isMobile: boolean }) {
+  const { silentBureau, silentDebout, posteBureau, envDebout } = collective;
+  const silentTotal = silentBureau.silent + silentDebout.silent;
+  const silentBase = silentBureau.total + silentDebout.total;
+  if (silentTotal === 0 && !posteBureau && !envDebout) return null;
+
+  return (
+    <div style={{ marginBottom: 16, borderRadius: 20, overflow: "hidden", border: "1px solid rgba(111,155,255,0.55)", background: "linear-gradient(160deg, rgba(43,92,230,0.38), rgba(43,92,230,0.10))", boxShadow: "0 10px 34px rgba(43,92,230,0.22)" }}>
+      <div style={{ padding: isMobile ? "16px" : "20px 22px" }}>
+        <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: "0 0 4px" }}>
+          <Ico e="🔎" />Ce que la vidéo révèle en plus du questionnaire
+        </p>
+        <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: "0 0 16px" }}>
+          Le questionnaire donne le ressenti, la vidéo montre ce qui se passe vraiment au poste.
+        </p>
+
+        {silentTotal > 0 && (
+          <div style={{ padding: "14px 16px", borderRadius: 16, background: "rgba(255,163,71,0.16)", border: "1px solid rgba(255,163,71,0.55)", marginBottom: 14 }}>
+            <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#ffa347", margin: "0 0 4px" }}>
+              <Ico e="⚠️" />{silentTotal} employé{silentTotal > 1 ? "s" : ""} sur {silentBase} sans douleur marquée, mais avec une posture à risque
+            </p>
+            <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.6, margin: 0 }}>
+              Ces personnes déclarent peu de gêne : sans la vidéo, aucun signal d&apos;alerte. C&apos;est le moment idéal pour corriger le poste, avant que les douleurs s&apos;installent.
+            </p>
+          </div>
+        )}
+
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : posteBureau && envDebout ? "1fr 1fr" : "1fr", gap: 18 }}>
+          {posteBureau && (
+            <div>
+              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#6f9bff", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 10px" }}>
+                <Ico e="💻" />Postes bureau observés
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <RevealRow c={c} total={posteBureau.total} n={posteBureau.laptopSeul} label="Portable utilisé seul, sans rehausse" />
+                <RevealRow c={c} total={posteBureau.total} n={posteBureau.ecranTropBas} label="Écran trop bas" />
+                <RevealRow c={c} total={posteBureau.total} n={posteBureau.eclairage} label="Éclairage ou reflets à améliorer" />
+                <RevealRow c={c} total={posteBureau.total} n={posteBureau.sansReposePoignets} label="Poignets sans appui" />
+                <RevealRow c={c} total={posteBureau.total} n={posteBureau.sansAccoudoirs} label="Avant-bras sans accoudoirs" />
+              </div>
+              {posteBureau.avgSetup !== null && (
+                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: "10px 0 0" }}>
+                  Score setup moyen observé : <strong style={{ color: c.textPrimary }}>{posteBureau.avgSetup}/100</strong>
+                </p>
+              )}
+            </div>
+          )}
+          {envDebout && (
+            <div>
+              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffa347", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 10px" }}>
+                <Ico e="🏭" />Postes debout observés
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <RevealRow c={c} total={envDebout.total} n={envDebout.planInadapte} label="Hauteur du plan de travail inadaptée" />
+                <RevealRow c={c} total={envDebout.total} n={envDebout.sansTapis} label="Sol dur sans tapis anti-fatigue" />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 const SEVERITY_STYLE: Record<TeamInsight["severity"], { color: string; label: string }> = {
@@ -1144,6 +1290,11 @@ export default function EntrepriseDashboard() {
                               {collective.total} employé{collective.total > 1 ? "s" : ""} filmé{collective.total > 1 ? "s" : ""} sur {assessed.length} bilans complétés
                               {collective.notFilmed > 0 && ` · ${collective.notFilmed} non filmé${collective.notFilmed > 1 ? "s" : ""}`}
                             </p>
+                            {collective.simulated && (
+                              <span style={{ display: "inline-block", marginTop: 6, padding: "2px 10px", borderRadius: 100, fontFamily: T.b, fontSize: 10, fontWeight: 700, color: "#6f9bff", background: "rgba(43,92,230,0.22)", border: "1px solid rgba(111,155,255,0.5)" }}>
+                                Démo : analyses vidéo simulées
+                              </span>
+                            )}
                           </div>
                         </div>
                         <div style={{ display: "flex", gap: 8 }}>
@@ -1219,6 +1370,7 @@ export default function EntrepriseDashboard() {
 
                     {/* Tendances */}
                     <div style={{ padding: "18px 20px", background: c.cardGrad }}>
+                      <VideoRevealBlock collective={collective} c={c} isMobile={isMobile} />
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : collective.bureauTrends.length > 0 && collective.deboutTrends.length > 0 ? "1fr 1fr" : "1fr", gap: 16 }}>
 
                         {/* Bureau */}
