@@ -612,7 +612,7 @@ function analyzeCollectiveVideo(employees: EmployeeRow[], assessed: EmployeeRow[
         `Exercice ouverture pectorale — 30 sec, matin et soir`,
       ];
     } else {
-      bureauNarrative = `Posture globalement satisfaisante pour l'équipe bureau. Score posture moyen ${avgPostureScore(bureauWithVideo)}/100.`;
+      bureauNarrative = `Posture globalement satisfaisante pour l'équipe bureau.${avgPostureScore(bureauWithVideo) !== null ? ` Score posture moyen ${avgPostureScore(bureauWithVideo)}/100.` : ""}`;
       if (bureauPainScore && bureauPainScore > 60) {
         bureauNarrative += ` Le questionnaire confirme un niveau de douleurs correct (${bureauPainScore}/100).`;
       }
@@ -650,7 +650,7 @@ function analyzeCollectiveVideo(employees: EmployeeRow[], assessed: EmployeeRow[
         `Exercice flexion lombaire debout — 5 min en fin de journée`,
       ];
     } else {
-      deboutNarrative = `Contraintes lombaires modérées pour l'équipe debout. Score posture moyen ${avgPostureScore(deboutWithVideo)}/100.`;
+      deboutNarrative = `Contraintes lombaires modérées pour l'équipe debout.${avgPostureScore(deboutWithVideo) !== null ? ` Score posture moyen ${avgPostureScore(deboutWithVideo)}/100.` : ""}`;
       deboutActions = [`Maintenir la formation gestes et postures`, `Tapis anti-fatigue recommandés`];
     }
 
