@@ -29,357 +29,189 @@ const FEATURES = [
   },
 ];
 
-function calculatePrice(employees: number) {
-  const n = Math.max(10, employees);
-  if (n < 50) {
-    return {
-      pricePerEmployee: 25,
-      totalYear: n * 25,
-      totalMonth: Math.round((n * 25) / 12),
-      tier: "PME",
-      savings: 0,
-      bilanValue: Math.round(n * 19.99),
-    };
-  } else if (n < 150) {
-    const total = n * 20;
-    return {
-      pricePerEmployee: 20,
-      totalYear: total,
-      totalMonth: Math.round(total / 12),
-      tier: "Croissance",
-      savings: n * 25 - total,
-      bilanValue: Math.round(n * 19.99),
-    };
-  }
-  return {
-    pricePerEmployee: 0,
-    totalYear: 0,
-    totalMonth: 0,
-    tier: "Entreprise",
-    savings: 0,
-    bilanValue: 0,
-  };
+// Coût moyen d'un jour d'absence (salaire garanti) pour un employeur belge — Securex, baromètre de l'absentéisme 2022 :
+// 321 € de coûts directs + 802 € de coûts indirects = 1 123 € par jour ; 6,07 jours par travailleur à temps plein.
+const COUT_JOUR_ABSENCE = 1123;
+const JOURS_ABSENCE_PAR_TRAVAILLEUR = 6.07;
+const SECUREX_URL = "https://www.securex.be/getmedia/a13c68a1-07b4-46b8-a7d9-21e046b77cfa/WhitePaper-Absenteisme-2022-fr.pdf?ext=.pdf";
+const SLIDER_MIN = 10;
+const SLIDER_MAX = 150;
+
+function pricing(employees: number) {
+  const n = Math.max(SLIDER_MIN, employees);
+  if (n >= 150) return { devis: true as const, n, perEmployee: 0, totalYear: 0, tier: "Entreprise" };
+  const perEmployee = n < 50 ? 25 : 20;
+  return { devis: false as const, n, perEmployee, totalYear: n * perEmployee, tier: n < 50 ? "PME" : "Croissance" };
 }
 
-function PricingCalculator({
+const OUTCOMES = [
+  {
+    icon: "🔎", color: "#6f9bff", title: "Voir",
+    text: "Où sont les risques dans vos équipes, sans jamais exposer un salarié.",
+    items: ["Bilan + analyse vidéo IA de chaque employé", "Dashboard RH 100 % anonymisé"],
+  },
+  {
+    icon: "🧭", color: "#3fe0a0", title: "Agir",
+    text: "Un parcours d'amélioration pour savoir quoi faire, dans quel ordre.",
+    items: ["Parcours en 5 étapes + plan d'action suivi", "Call de restitution avec le kiné"],
+  },
+  {
+    icon: "📈", color: "#ffa347", title: "Prouver",
+    text: "Des résultats que vous pouvez montrer à votre direction et à vos équipes.",
+    items: ["Rapport trimestriel PDF", "Rapport bien-être valorisable"],
+  },
+];
+
+function InvestmentCalculator({
   isMobile, c, T: fonts, fadeUp: fu,
 }: {
   isMobile: boolean;
-  c: { textPrimary: string; textSecondary: string; textMuted: string; bgCard: string; bgCard2: string; border: string };
+  c: { textPrimary: string; textSecondary: string; textMuted: string; bgCard: string; bgCard2: string; border: string; borderStrong: string; cardGrad: string; bgPrimary: string };
   T: { h: string; b: string };
   fadeUp: (delay?: number) => object;
 }) {
-  const [employees, setEmployees] = useState(20);
-  const price = calculatePrice(employees);
-  const isDevis = price.tier === "Entreprise";
+  const [employees, setEmployees] = useState(30);
+  const p = pricing(employees);
+  const monthly = p.totalYear / 12;
+  const perEmployeeMonth = p.perEmployee / 12;
+  const breakEvenDays = p.totalYear / COUT_JOUR_ABSENCE;
+  const breakEvenLabel = breakEvenDays < 1 ? "moins d'un jour d'absence" : `${Math.ceil(breakEvenDays)} jours d'absence`;
+  const absenceCostTeam = Math.round(p.n * JOURS_ABSENCE_PAR_TRAVAILLEUR * COUT_JOUR_ABSENCE);
+  const marks = [10, 25, 50, 100, 150];
 
   return (
-    <motion.div {...fu(0.2)} style={{ marginBottom: 72 }}>
-      <p style={{ fontFamily: fonts.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>Tarifs</p>
-      <h2 style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
-        Transparent. Sans surprise.
+    <motion.div {...fu(0.1)} style={{ marginBottom: 72 }}>
+      <p style={{ fontFamily: fonts.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#2b5ce6", textTransform: "uppercase", marginBottom: 12 }}>
+        Tarifs
+      </p>
+      <h2 style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 22 : 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
+        Un prix clair. Rentabilisé dès les premiers jours d&apos;absence évités.
       </h2>
-      <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textMuted, marginBottom: 32 }}>
-        Accès premium PAW inclus pour chaque employé. Prix dégressif à partir de 50 personnes.
+      <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textMuted, marginBottom: 28, lineHeight: 1.65, maxWidth: 560 }}>
+        Faites glisser pour votre équipe. Le premium PAW est inclus pour chaque employé.
       </p>
 
-      <div style={{ borderRadius: 24, padding: isMobile ? "24px 18px" : "36px 40px", background: c.bgCard, border: `0.5px solid ${c.border}` }}>
-        {/* Slider */}
-        <div style={{ marginBottom: 28 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
-            <span style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, fontWeight: 600 }}>Nombre d&apos;employés</span>
-            <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 28, color: "#2b5ce6" }}>
-              {employees}{" "}
-              <span style={{ fontSize: 14, fontWeight: 600, color: c.textMuted }}>employés</span>
+      <div style={{ borderRadius: 28, overflow: "hidden", border: `1px solid ${c.borderStrong}`, background: c.cardGrad }}>
+        {/* 1. Curseur */}
+        <div style={{ padding: isMobile ? "24px 18px 8px" : "32px 40px 12px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
+            <label htmlFor="invest-employees" style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, fontWeight: 600 }}>
+              Combien d&apos;employés dans votre entreprise ?
+            </label>
+            <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 30 : 38, color: "#6f9bff", lineHeight: 1 }}>
+              {employees}{employees >= SLIDER_MAX ? "+" : ""}
             </span>
           </div>
           <input
+            id="invest-employees"
             type="range"
-            min={10}
-            max={160}
+            min={SLIDER_MIN}
+            max={SLIDER_MAX}
             step={5}
             value={employees}
             onChange={e => setEmployees(Number(e.target.value))}
-            style={{ width: "100%", accentColor: "#2b5ce6", cursor: "pointer" }}
+            aria-valuetext={`${employees} employés`}
+            style={{ width: "100%", accentColor: "#2b5ce6", cursor: "pointer", height: 28 }}
           />
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
-            {["10", "25", "50", "75", "100", "150+"].map(label => (
-              <span key={label} style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted }}>{label}</span>
+          <div style={{ position: "relative", height: 20, marginTop: 2 }}>
+            {marks.map(m => (
+              <span key={m} style={{
+                position: "absolute", left: `${((m - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * 100}%`,
+                transform: m === SLIDER_MAX ? "translateX(-100%)" : m === SLIDER_MIN ? "none" : "translateX(-50%)",
+                fontFamily: fonts.b, fontSize: 11, color: c.textMuted,
+              }}>{m === SLIDER_MAX ? "150+" : m}</span>
             ))}
           </div>
         </div>
 
-        {isDevis ? (
-          <div style={{ textAlign: "center", padding: "28px 20px" }}>
-            <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 36, color: c.textPrimary, marginBottom: 8 }}>Sur devis</p>
-            <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textMuted, marginBottom: 8, lineHeight: 1.65 }}>
-              Pour les organisations de 150+ employés, nous construisons une offre sur mesure :
-              multi-sites, intégration SIRH, accompagnement dédié.
+        {p.devis ? (
+          <div style={{ padding: isMobile ? "28px 18px 32px" : "36px 40px 44px", textAlign: "center" }}>
+            <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 34 : 44, color: c.textPrimary, margin: "0 0 8px" }}>Sur devis</p>
+            <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textMuted, margin: "0 auto 8px", lineHeight: 1.65, maxWidth: 520 }}>
+              Au-delà de 150 employés, nous construisons une offre sur mesure : plusieurs sites, intégration SIRH, accompagnement dédié.
             </p>
-            <p style={{ fontFamily: fonts.b, fontSize: 13, color: "#6f9bff", marginBottom: 28 }}>
-              Tarif négocié · Déploiement accompagné · SLA garanti
-            </p>
+            <p style={{ fontFamily: fonts.b, fontSize: 13, color: "#6f9bff", margin: "0 0 26px" }}>Tarif négocié · Déploiement accompagné</p>
             <a href="#contact" style={{ textDecoration: "none" }}>
-              <button style={{
-                padding: "14px 32px", borderRadius: 100, border: "none",
-                background: "#2b5ce6", color: "#fff",
-                fontFamily: fonts.h, fontWeight: 800, fontSize: 15,
-                boxShadow: "0 4px 20px rgba(43,92,230,0.35)", cursor: "pointer",
-              }}>
-                Demander un devis pour {employees} employés →
-              </button>
+              <span style={{ display: "inline-block", padding: "15px 34px", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: fonts.h, fontWeight: 800, fontSize: 15, boxShadow: "0 6px 26px rgba(43,92,230,0.45)" }}>
+                Demander un devis →
+              </span>
             </a>
           </div>
         ) : (
-          <div>
-            {/* Prix principal */}
-            <div style={{ textAlign: "center", padding: "24px 0 20px", borderBottom: `0.5px solid ${c.border}`, marginBottom: 20 }}>
-              <p style={{ fontFamily: fonts.b, fontSize: 12, color: c.textMuted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>
-                Votre tarif annuel
-              </p>
-              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 8, marginBottom: 6 }}>
-                <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 48 : 64, color: c.textPrimary, letterSpacing: "-3px", lineHeight: 1 }}>
-                  {price.totalYear.toLocaleString("fr-FR")}€
+          <div style={{ padding: isMobile ? "8px 18px 28px" : "12px 40px 40px" }}>
+            {/* 2. Prix */}
+            <div style={{ borderRadius: 22, padding: isMobile ? "22px 18px" : "28px 32px", marginBottom: 16, textAlign: "center", background: "linear-gradient(145deg, rgba(43,92,230,0.38), rgba(111,155,255,0.12))", border: "1px solid rgba(111,155,255,0.45)", boxShadow: "0 12px 40px rgba(43,92,230,0.22)" }}>
+              <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 100, background: "rgba(111,155,255,0.18)", color: "#6f9bff", fontFamily: fonts.b, fontWeight: 700, fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 10 }}>
+                Offre {p.tier}
+              </span>
+              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
+                <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 52 : 68, color: c.textPrimary, letterSpacing: "-3px", lineHeight: 1 }}>
+                  {p.totalYear.toLocaleString("fr-FR")} €
                 </span>
-                <span style={{ fontFamily: fonts.b, fontSize: 16, color: c.textMuted }}>/an HT</span>
+                <span style={{ fontFamily: fonts.b, fontSize: 15, color: c.textMuted }}>par an, HT</span>
               </div>
-              <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textMuted, margin: 0 }}>
-                soit <strong style={{ color: c.textPrimary }}>{price.pricePerEmployee}€/employé/an</strong> — {(price.pricePerEmployee / 12).toFixed(2)}€/mois/personne
+              <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, margin: "10px 0 0", lineHeight: 1.6 }}>
+                Soit <strong style={{ color: c.textPrimary }}>{Math.round(monthly).toLocaleString("fr-FR")} € par mois</strong> pour toute l&apos;équipe, ou{" "}
+                <strong style={{ color: c.textPrimary }}>{perEmployeeMonth.toFixed(2).replace(".", ",")} € par employé et par mois</strong>.
               </p>
-            </div>
-
-            {/* Argument de valeur */}
-            <div style={{
-              padding: "16px 18px", borderRadius: 14, marginBottom: 16,
-              background: price.bilanValue <= price.totalYear ? "rgba(43,92,230,0.06)" : "rgba(63,224,160,0.06)",
-              border: `0.5px solid ${price.bilanValue <= price.totalYear ? "rgba(43,92,230,0.2)" : "rgba(63,224,160,0.2)"}`,
-            }}>
-              {price.bilanValue > price.totalYear ? (
-                <p style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.7 }}>
-                  💡 Si chacun de vos <strong style={{ color: c.textPrimary }}>{employees} employés</strong> achetait son bilan individuellement,
-                  ça coûterait <strong style={{ color: c.textPrimary }}>{price.bilanValue.toLocaleString("fr-FR")}€</strong>.
-                  Avec PAW Entreprise, vous payez <strong style={{ color: "#3fe0a0" }}>{price.totalYear.toLocaleString("fr-FR")}€</strong> —
-                  et vous avez en plus le dashboard RH, l&apos;analyse collective et le rapport trimestriel.
+              {p.n < 50 && (
+                <p style={{ fontFamily: fonts.b, fontSize: 12.5, color: "#3fe0a0", fontWeight: 600, margin: "10px 0 0" }}>
+                  Dès 50 employés, le tarif passe à 20 € par employé et par an.
                 </p>
-              ) : (
-                <p style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.7 }}>
-                  💡 Pour <strong style={{ color: c.textPrimary }}>{employees} employés</strong>, PAW Entreprise inclut
-                  les <strong style={{ color: c.textPrimary }}>{employees} bilans premium</strong> + le dashboard RH collectif
-                  + l&apos;analyse posturale vidéo de toute l&apos;équipe + le rapport trimestriel.
-                  Un ergonome facture <strong style={{ color: c.textPrimary }}>~150€/personne</strong> pour bien moins.
+              )}
+              {p.tier === "Croissance" && (
+                <p style={{ fontFamily: fonts.b, fontSize: 12.5, color: "#3fe0a0", fontWeight: 600, margin: "10px 0 0" }}>
+                  🎉 Tarif dégressif : vous économisez {(p.n * 5).toLocaleString("fr-FR")} € par an par rapport au tarif PME.
                 </p>
               )}
             </div>
 
-            {/* Badge économies si dégressif */}
-            {price.savings > 0 && (
-              <div style={{
-                padding: "10px 14px", borderRadius: 10, marginBottom: 16,
-                background: "rgba(63,224,160,0.08)", border: "0.5px solid rgba(63,224,160,0.2)",
-                display: "flex", alignItems: "center", gap: 8,
-              }}>
-                <span style={{ fontSize: 16 }}>🎉</span>
-                <span style={{ fontFamily: fonts.b, fontSize: 13, color: "#1d9e75", fontWeight: 600 }}>
-                  Tarif dégressif : vous économisez {price.savings.toLocaleString("fr-FR")}€/an vs le tarif PME
-                </span>
-              </div>
-            )}
+            {/* 3. Rentabilité (chiffre sourcé) */}
+            <div style={{ borderRadius: 18, padding: isMobile ? "16px" : "18px 22px", marginBottom: 22, background: "rgba(63,224,160,0.08)", border: "1px solid rgba(63,224,160,0.28)" }}>
+              <p style={{ fontFamily: fonts.h, fontWeight: 800, fontSize: isMobile ? 15 : 16, color: c.textPrimary, margin: "0 0 6px", lineHeight: 1.45 }}>
+                💡 PAW est rentabilisé dès que votre équipe évite {breakEvenLabel} sur l&apos;année.
+              </p>
+              <p style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.65 }}>
+                Un jour d&apos;absence coûte en moyenne <strong style={{ color: c.textPrimary }}>{COUT_JOUR_ABSENCE.toLocaleString("fr-FR")} €</strong> à un employeur belge
+                (coûts directs et indirects). Pour {p.n} employés, les absences sous salaire garanti représentent en moyenne{" "}
+                <strong style={{ color: c.textPrimary }}>{absenceCostTeam.toLocaleString("fr-FR")} € par an</strong>.
+              </p>
+              <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: "8px 0 0", lineHeight: 1.5 }}>
+                Source :{" "}
+                <a href={SECUREX_URL} target="_blank" rel="noopener noreferrer" style={{ color: "#6f9bff" }}>Securex, L&apos;absentéisme en 2022</a>
+                {" "}(1 123 € par jour = 321 € directs + 802 € indirects ; {JOURS_ABSENCE_PAR_TRAVAILLEUR.toString().replace(".", ",")} jours par travailleur). Moyenne belge indicative, sans garantie de résultat.
+              </p>
+            </div>
 
-            {/* Ce qui est inclus */}
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 6, marginBottom: 20 }}>
-              {[
-                `${employees} bilans premium PAW`,
-                `${employees} analyses vidéo IA`,
-                "Dashboard RH anonymisé",
-                "Rapport trimestriel PDF",
-                "Rapport bien-être valorisable",
-                "Call de restitution avec le kiné",
-              ].map((f, i) => (
-                <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                  <span style={{ color: "#2b5ce6", fontSize: 12, flexShrink: 0, marginTop: 2 }}>✓</span>
-                  <span style={{ fontFamily: fonts.b, fontSize: 12, color: c.textSecondary, lineHeight: 1.4 }}>{f}</span>
+            {/* 4. Ce que vous recevez */}
+            <p style={{ fontFamily: fonts.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: c.textMuted, textTransform: "uppercase", margin: "0 0 12px" }}>
+              Ce que vous obtenez
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 12, marginBottom: 26 }}>
+              {OUTCOMES.map(o => (
+                <div key={o.title} style={{ borderRadius: 18, padding: "18px", background: `linear-gradient(160deg, ${o.color}22, ${o.color}0d)`, border: `1px solid ${o.color}55` }}>
+                  <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 16, color: o.color, margin: "0 0 6px" }}>{o.icon} {o.title}</p>
+                  <p style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, margin: "0 0 10px", lineHeight: 1.55 }}>{o.text}</p>
+                  {o.items.map(it => (
+                    <p key={it} style={{ display: "flex", gap: 8, fontFamily: fonts.b, fontSize: 12.5, color: c.textMuted, margin: "0 0 4px", lineHeight: 1.45 }}>
+                      <span aria-hidden="true" style={{ color: o.color }}>✓</span>{it}
+                    </p>
+                  ))}
                 </div>
               ))}
             </div>
+            <p style={{ fontFamily: fonts.b, fontSize: 12.5, color: c.textMuted, textAlign: "center", margin: "0 0 20px" }}>
+              Inclus pour vos {p.n} employés : {p.n} bilans premium PAW et {p.n} analyses vidéo IA.
+            </p>
 
-            {/* CTA */}
+            {/* 5. CTA */}
             <a href="#contact" style={{ textDecoration: "none" }}>
-              <button style={{
-                width: "100%", padding: "15px 0", borderRadius: 100, border: "none",
-                background: "#2b5ce6", color: "#fff",
-                fontFamily: fonts.h, fontWeight: 800, fontSize: 15,
-                boxShadow: "0 4px 24px rgba(43,92,230,0.35)", cursor: "pointer",
-              }}>
-                Demander une démo pour {employees} employés →
-              </button>
+              <span style={{ display: "block", textAlign: "center", padding: "17px 0", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: fonts.h, fontWeight: 800, fontSize: 16, boxShadow: "0 6px 28px rgba(43,92,230,0.5)" }}>
+                Demander une démo pour {p.n} employés →
+              </span>
             </a>
           </div>
         )}
-      </div>
-    </motion.div>
-  );
-}
-
-function ROICalculator({ isMobile, c, T: fonts, fadeUp: fu }: {
-  isMobile: boolean;
-  c: Record<string, string>;
-  T: { h: string; b: string };
-  fadeUp: (delay?: number) => object;
-}) {
-  const [arrets, setArrets] = useState(2);
-  const [employees, setEmployees] = useState(30);
-  const [coutArret, setCoutArret] = useState(8000);
-  const [tauxReduction, setTauxReduction] = useState(10);
-  const coutTotal = arrets * coutArret;
-  const reductionTMS = Math.round(coutTotal * (tauxReduction / 100));
-  const coutPAW = employees < 50 ? employees * 25 : employees * 20;
-  const roi = reductionTMS - coutPAW;
-  const roiMultiple = Math.round((reductionTMS / Math.max(coutPAW, 1)) * 10) / 10;
-
-  return (
-    <motion.div {...fu(0.1)} style={{ marginBottom: 72 }}>
-      <p style={{ fontFamily: fonts.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#ffa347", textTransform: "uppercase", marginBottom: 12 }}>
-        Calculateur ROI
-      </p>
-      <h2 style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 22 : 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
-        Combien vous coûte l&apos;inaction ?
-      </h2>
-      <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textMuted, marginBottom: 28, lineHeight: 1.65 }}>
-        Estimez le coût de vos arrêts TMS et comparez avec le coût de la prévention. Les deux hypothèses du bas sont à ajuster selon votre situation.
-      </p>
-
-      <div style={{ borderRadius: 24, overflow: "hidden", border: `0.5px solid ${c.border}`, background: c.bgCard }}>
-        {/* Sliders */}
-        <div style={{
-          padding: isMobile ? "24px 20px" : "32px 36px",
-          borderBottom: `0.5px solid ${c.border}`,
-          display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 24,
-        }}>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
-              <span style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, fontWeight: 600 }}>Arrêts TMS par an</span>
-              <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#ff7b7b" }}>{arrets}</span>
-            </div>
-            <input type="range" min={1} max={10} step={1} value={arrets}
-              onChange={e => setArrets(Number(e.target.value))}
-              style={{ width: "100%", accentColor: "#ff7b7b", cursor: "pointer" }} />
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
-              {["1", "3", "5", "7", "10"].map(v => (
-                <span key={v} style={{ fontFamily: fonts.b, fontSize: 10, color: c.textMuted }}>{v}</span>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
-              <span style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, fontWeight: 600 }}>Nombre d&apos;employés</span>
-              <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#2b5ce6" }}>{employees}</span>
-            </div>
-            <input type="range" min={10} max={150} step={5} value={employees}
-              onChange={e => setEmployees(Number(e.target.value))}
-              style={{ width: "100%", accentColor: "#2b5ce6", cursor: "pointer" }} />
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
-              {["10", "30", "50", "100", "150"].map(v => (
-                <span key={v} style={{ fontFamily: fonts.b, fontSize: 10, color: c.textMuted }}>{v}</span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Hypothèses modifiables */}
-        <div style={{
-          padding: isMobile ? "0 20px 24px" : "0 36px 28px",
-          borderBottom: `0.5px solid ${c.border}`,
-          display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 24,
-        }}>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
-              <span style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, fontWeight: 600 }}>Coût d&apos;un arrêt (votre estimation)</span>
-              <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 20, color: c.textPrimary }}>{coutArret.toLocaleString("fr-FR")}€</span>
-            </div>
-            <input type="range" min={2000} max={20000} step={500} value={coutArret}
-              onChange={e => setCoutArret(Number(e.target.value))}
-              style={{ width: "100%", accentColor: "#ffa347", cursor: "pointer" }} />
-          </div>
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
-              <span style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, fontWeight: 600 }}>Réduction d&apos;arrêts visée (hypothèse)</span>
-              <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 20, color: c.textPrimary }}>{tauxReduction} %</span>
-            </div>
-            <input type="range" min={5} max={30} step={5} value={tauxReduction}
-              onChange={e => setTauxReduction(Number(e.target.value))}
-              style={{ width: "100%", accentColor: "#3fe0a0", cursor: "pointer" }} />
-          </div>
-        </div>
-
-        {/* Résultats */}
-        <div style={{ padding: isMobile ? "24px 20px" : "32px 36px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 14, marginBottom: 20 }}>
-            <div style={{ padding: "18px", borderRadius: 16, textAlign: "center", background: "rgba(255,123,123,0.06)", border: "0.5px solid rgba(255,123,123,0.2)" }}>
-              <p style={{ fontFamily: fonts.b, fontSize: 11, color: "#ff7b7b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>Coût TMS actuel</p>
-              <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 26, color: "#ff7b7b", margin: "0 0 4px" }}>
-                {coutTotal.toLocaleString("fr-FR")}€
-              </p>
-              <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: 0 }}>/an (selon vos hypothèses)</p>
-            </div>
-
-            <div style={{ padding: "18px", borderRadius: 16, textAlign: "center", background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
-              <p style={{ fontFamily: fonts.b, fontSize: 11, color: "#6f9bff", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>PAW coûte</p>
-              <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 26, color: "#6f9bff", margin: "0 0 4px" }}>
-                {coutPAW.toLocaleString("fr-FR")}€
-              </p>
-              <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: 0 }}>
-                /an ({employees < 50 ? "25" : "20"}€/employé)
-              </p>
-            </div>
-
-            <div style={{
-              padding: "18px", borderRadius: 16, textAlign: "center",
-              background: roi > 0 ? "rgba(63,224,160,0.08)" : "rgba(255,163,71,0.08)",
-              border: `0.5px solid ${roi > 0 ? "rgba(63,224,160,0.25)" : "rgba(255,163,71,0.25)"}`,
-            }}>
-              <p style={{ fontFamily: fonts.b, fontSize: 11, color: roi > 0 ? "#3fe0a0" : "#ffa347", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
-                Économie potentielle
-              </p>
-              <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 26, color: roi > 0 ? "#3fe0a0" : "#ffa347", margin: "0 0 4px" }}>
-                {reductionTMS.toLocaleString("fr-FR")}€
-              </p>
-              <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: 0 }}>hypothèse : -{tauxReduction} % d&apos;arrêts TMS</p>
-            </div>
-          </div>
-
-          {/* ROI final */}
-          <div style={{
-            padding: "18px 20px", borderRadius: 16,
-            background: roi > 0 ? "rgba(63,224,160,0.06)" : "rgba(255,163,71,0.06)",
-            border: `1px solid ${roi > 0 ? "rgba(63,224,160,0.2)" : "rgba(255,163,71,0.2)"}`,
-            display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
-          }}>
-            <div style={{ flex: 1 }}>
-              {roi > 0 ? (
-                <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, margin: 0, lineHeight: 1.65 }}>
-                  Pour <strong style={{ color: c.textPrimary }}>{employees} employés</strong> avec{" "}
-                  <strong style={{ color: "#ff7b7b" }}>{arrets} arrêts TMS/an</strong>, PAW pourrait vous faire économiser, selon vos hypothèses,{" "}
-                  <strong style={{ color: "#3fe0a0" }}>{roi.toLocaleString("fr-FR")}€/an</strong> nets.
-                  Soit un retour sur investissement de <strong style={{ color: "#3fe0a0" }}>x{roiMultiple}</strong>.
-                </p>
-              ) : (
-                <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, margin: 0, lineHeight: 1.65 }}>
-                  Même avec peu d&apos;arrêts, PAW agit en amont, avant que les gênes ne deviennent des arrêts.
-                </p>
-              )}
-            </div>
-            <a href="#contact" style={{ textDecoration: "none", flexShrink: 0 }}>
-              <div style={{ padding: "12px 24px", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: fonts.h, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
-                En savoir plus →
-              </div>
-            </a>
-          </div>
-
-          <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, textAlign: "center", marginTop: 10 }}>
-            Simulation indicative : le coût d&apos;un arrêt et la réduction visée sont des hypothèses que vous pouvez modifier, sans garantie de résultat.
-          </p>
-        </div>
       </div>
     </motion.div>
   );
@@ -802,9 +634,8 @@ export default function EntrepriseClient() {
           </div>
         </motion.div>
 
-        {/* ── 5. CALCULATEUR ROI + PRICING ── */}
-        <ROICalculator isMobile={isMobile} c={c as Record<string, string>} T={T} fadeUp={fadeUp} />
-        <PricingCalculator isMobile={isMobile} c={c} T={T} fadeUp={fadeUp} />
+        {/* ── 5. TARIFS + RENTABILITÉ ── */}
+        <InvestmentCalculator isMobile={isMobile} c={c} T={T} fadeUp={fadeUp} />
 
         {/* ESG discret */}
         <motion.div {...fadeUp(0.05)} style={{ marginBottom: 40 }}>
