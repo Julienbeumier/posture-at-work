@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import webpush from "web-push";
 import { createClient } from "@/lib/supabase";
+import { isCronRequest } from "@/lib/server-auth";
 
 const MESSAGES = [
   { title: "💆 Pause posture", body: "Redresse-toi, recule ton écran et fais 3 respirations profondes." },
@@ -12,7 +13,8 @@ const MESSAGES = [
   { title: "🌙 Bilan du jour", body: "Exercices faits ? Check-in rapide sur PAW pour garder ton streak." },
 ];
 
-export async function GET() {
+export async function GET(req: Request) {
+  if (!isCronRequest(req)) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   webpush.setVapidDetails(
     process.env.VAPID_SUBJECT ?? "mailto:contact@posture-at-work.com",
     process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,

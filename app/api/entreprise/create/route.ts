@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { secureCode } from "@/lib/server-auth";
 import { createServerClient } from "@/lib/supabase";
 import { cookies } from "next/headers";
 
@@ -58,7 +59,7 @@ export async function POST(req: Request) {
     }
 
     // Générer un premier code d'invitation
-    const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+    const code = secureCode(8);
     await supabaseAdmin.from("company_invites").insert({
       company_id: company.id,
       code,

@@ -2,19 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { emailBilan } from "@/lib/emails/templates";
 import { createClient } from "@/lib/supabase";
+import { rateLimit, clientIp } from "@/lib/server-auth";
 
 export const dynamic = "force-dynamic";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = "PostureAtWork <onboarding@resend.dev>";
+const FROM = "PostureAtWork <hello@postureatwork.com>";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { email, firstname, scores, recommendations, topExercise } = body;
+    const { scores, recommendations, topExercise } = body;
+    const email = String(body.email ?? "").trim().slice(0, 200);
+    const firstname = String(body.firstname ?? "").slice(0, 60);
 
-    if (!email || !email.includes("@")) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: "Email invalide" }, { status: 400 });
+    }
+
+    // Frein anti-abus : pas plus de 5 envois / h / IP, et 2 / jour / destinataire
+    if (!rateLimit(`bilan-ip:${clientIp(req)}`, 5, 60 * 60 * 1000) ||
+        !rateLimit(`bilan-to:${email.toLowerCase()}`, 2, 24 * 60 * 60 * 1000)) {
+      return NextResponse.json({ error: "Trop de demandes, réessayez plus tard" }, { status: 429 });
     }
 
     const { subject, html } = emailBilan({

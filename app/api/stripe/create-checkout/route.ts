@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createServerClient } from "@/lib/supabase";
 import { cookies } from "next/headers";
+import { getSupabaseAdmin } from "@/lib/server-auth";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-06-24.dahlia",
@@ -34,7 +35,7 @@ export async function POST() {
         metadata: { user_id: user.id },
       });
       customerId = customer.id;
-      await supabase.from("profiles").upsert({
+      await getSupabaseAdmin().from("profiles").upsert({
         user_id: user.id,
         stripe_customer_id: customerId,
       }, { onConflict: "user_id" });
@@ -58,7 +59,7 @@ export async function POST() {
       },
     });
 
-    await supabase.from("purchases").insert({
+    await getSupabaseAdmin().from("purchases").insert({
       user_id: user.id,
       stripe_session_id: session.id,
       amount: 1999,

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { rateLimit, clientIp, escapeHtml } from "@/lib/server-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -7,21 +8,30 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
-    const { nom, email, message } = await req.json();
+    if (!rateLimit(`contact:${clientIp(req)}`, 5, 60 * 60 * 1000)) {
+      return NextResponse.json({ error: "Trop de messages, réessayez plus tard" }, { status: 429 });
+    }
+    const body = await req.json();
+    const nom = String(body.nom ?? "").slice(0, 120);
+    const email = String(body.email ?? "").slice(0, 200);
+    const message = String(body.message ?? "").slice(0, 5000);
     if (!nom || !email || !message) {
       return NextResponse.json({ error: "Champs manquants" }, { status: 400 });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json({ error: "Email invalide" }, { status: 400 });
     }
 
     await resend.emails.send({
       from: "PostureAtWork <hello@postureatwork.com>",
       to: "hello@postureatwork.com",
-      subject: `[PAW Contact] Message de ${nom}`,
+      subject: `[PAW Contact] Message de ${nom.replace(/[\r\n]/g, " ")}`,
       html: `
         <h2>Nouveau message via PostureAtWork</h2>
-        <p><strong>Nom :</strong> ${nom}</p>
-        <p><strong>Email :</strong> ${email}</p>
+        <p><strong>Nom :</strong> ${escapeHtml(nom)}</p>
+        <p><strong>Email :</strong> ${escapeHtml(email)}</p>
         <p><strong>Message :</strong></p>
-        <p>${message.replace(/\n/g, "<br/>")}</p>
+        <p>${escapeHtml(message).replace(/\n/g, "<br/>")}</p>
       `,
     });
 

@@ -31,7 +31,6 @@ async function recoverAndSavePendingAssessment(
         jobType = data.jobType ?? "bureau";
       } else {
         localStorage.removeItem("paw_pending_assessment");
-        console.log("[success] Bilan en attente trop vieux — ignoré");
         return;
       }
     } else if (sessionScores) {
@@ -43,11 +42,9 @@ async function recoverAndSavePendingAssessment(
           answers = sessionAnswers ? JSON.parse(sessionAnswers) : null;
           jobType = sessionJobType ?? "bureau";
         } else {
-          console.log("[success] SessionStorage trop vieux — ignoré");
           return;
         }
       } else {
-        console.log("[success] Pas de timestamp sessionStorage — ignoré");
         return;
       }
     }
@@ -78,7 +75,6 @@ async function recoverAndSavePendingAssessment(
     if (jobType) localStorage.setItem("paw_job_type", jobType);
     localStorage.removeItem("paw_pending_assessment");
 
-    console.log("[success] Bilan récupéré et sauvegardé");
   } catch (err) {
     console.error("[success] Erreur récupération bilan:", err);
   }

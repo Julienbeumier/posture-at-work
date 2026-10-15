@@ -357,7 +357,7 @@ export default function ResultsPage() {
     async function saveToSupabase(s: Scores, a: QuestionnaireAnswers | Record<string, unknown>) {
       const isExample = sessionStorage.getItem("paw_example_mode") === "true"
                      || localStorage.getItem("paw_example_mode") === "true";
-      if (isExample) { console.log("[PAW] Mode exemple — pas de sauvegarde"); return; }
+      if (isExample) { return; }
       try {
         const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();
@@ -417,7 +417,6 @@ export default function ResultsPage() {
 
       // 3. Supabase latest assessment
       const { data: { user } } = await createClient().auth.getUser();
-      console.log("[PAW] Assessments — recherche user:", user?.id);
       if (user) {
         const { data } = await createClient()
           .from("assessments")
@@ -426,7 +425,6 @@ export default function ResultsPage() {
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle();
-        console.log("[PAW] Assessment trouvé:", !!data?.scores);
         if (data?.scores) {
           const parsedAnswers: QuestionnaireAnswers = data.answers
             ? { ...DEFAULT_ANSWERS, ...(data.answers as Partial<QuestionnaireAnswers>) }

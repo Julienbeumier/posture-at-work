@@ -138,7 +138,6 @@ export default function VideoCapturePage() {
             jobTypeRef.current = data.job_type;
             setIsBureau(data.job_type === "bureau");
           }
-          console.log("Session mobile chargée, jobType:", data.job_type);
         })
         .catch(err => console.error("Erreur chargement session:", err));
     }

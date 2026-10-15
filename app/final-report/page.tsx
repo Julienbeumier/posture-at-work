@@ -900,7 +900,6 @@ export default function FinalReportPage() {
           savedRef.current = false;
         } else {
           setSaveStatus("saved");
-          console.log("[final-report] Bilan sauvegardé avec vidéo:", !!videoAnalysis);
         }
       });
   }, [user]);

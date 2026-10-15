@@ -2,7 +2,6 @@
 import { useState } from "react";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_SECRET ?? "paw-admin-2026";
 
 export default function AdminPage() {
   const [password, setPassword] = useState("");
@@ -16,7 +15,19 @@ export default function AdminPage() {
     inviteCode: "",
   });
   const [loading, setLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
   const [result, setResult] = useState<{ success: boolean; message: string; inviteCode?: string; companyId?: string } | null>(null);
+
+  async function login() {
+    setAuthError("");
+    try {
+      const res = await fetch("/api/admin/create-company", { headers: { "x-admin-secret": password } });
+      if (res.ok) setAuthenticated(true);
+      else setAuthError(res.status === 429 ? "Trop de tentatives, réessayez plus tard." : "Accès refusé.");
+    } catch {
+      setAuthError("Erreur réseau.");
+    }
+  }
 
   if (!authenticated) return (
     <main style={{ minHeight: "100vh", background: "var(--main-bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
@@ -26,14 +37,15 @@ export default function AdminPage() {
         </p>
         <input type="password" placeholder="Mot de passe admin" value={password}
           onChange={e => setPassword(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && setAuthenticated(password === ADMIN_PASSWORD)}
+          onKeyDown={e => e.key === "Enter" && login()}
           style={{ width: "100%", padding: "12px 14px", borderRadius: 12, outline: "none", marginBottom: 10, boxSizing: "border-box",
             background: "var(--bg-card2)", border: "1px solid var(--border2)", color: "var(--text-primary)", fontFamily: T.b, fontSize: 14 }} />
-        <button onClick={() => setAuthenticated(password === ADMIN_PASSWORD)}
+        <button onClick={login}
           style={{ width: "100%", padding: "13px 0", borderRadius: 100, border: "none", background: "#2b5ce6", color: "#fff",
             fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
           Accéder →
         </button>
+        {authError && <p style={{ fontFamily: T.b, fontSize: 12, color: "#ff7b7b", textAlign: "center", marginTop: 10 }}>{authError}</p>}
       </div>
     </main>
   );
@@ -45,7 +57,7 @@ export default function AdminPage() {
 
     const res = await fetch("/api/admin/create-company", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-admin-secret": password },
       body: JSON.stringify(form),
     });
     const data = await res.json();

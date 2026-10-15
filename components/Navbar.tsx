@@ -31,7 +31,6 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    console.log("[Navbar] user:", user?.email, "isEnterpriseAdmin:", isEnterpriseAdmin);
     if (!user) {
       setIsEnterpriseAdmin(false);
       return;

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { secureToken } from "@/lib/server-auth";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,7 +13,7 @@ export async function POST(req: Request) {
     const { scores, answers, jobType, userId, assessmentId } = await req.json();
 
     // Générer un token unique
-    const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    const token = secureToken(24);
 
     // Stocker dans Supabase temporairement (expire dans 1h)
     await supabaseAdmin.from("video_sessions").upsert({

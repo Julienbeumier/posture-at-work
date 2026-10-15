@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
+import { isCronRequest } from "@/lib/server-auth";
 
 const supabaseAdmin = createSupabaseClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -8,12 +9,22 @@ const supabaseAdmin = createSupabaseClient(
   { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
+// Vercel Cron appelle en GET avec "Authorization: Bearer CRON_SECRET"
+export async function GET(req: Request) {
+  if (!isCronRequest(req)) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  return run();
+}
+
 export async function POST(req: Request) {
+  const body = await req.json().catch(() => ({}));
+  if (!isCronRequest(req) && !(process.env.CRON_SECRET && body.secret === process.env.CRON_SECRET)) {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  }
+  return run();
+}
+
+async function run() {
   try {
-    const body = await req.json();
-    if (body.secret !== process.env.CRON_SECRET) {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-    }
 
     const now = new Date();
     const resend = new Resend(process.env.RESEND_API_KEY);

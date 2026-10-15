@@ -13,7 +13,7 @@ export async function GET() {
 
     const { data: company } = await supabaseAdmin
       .from("companies")
-      .select("*")
+      .select("id, name, plan, max_employees")
       .eq("id", DEMO_COMPANY_ID)
       .single();
 

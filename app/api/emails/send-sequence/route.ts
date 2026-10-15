@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { emailTip, emailActionPlan, emailRappel, emailPremium } from "@/lib/emails/templates";
 import { createClient } from "@/lib/supabase";
+import { isPlatformAdmin } from "@/lib/server-auth";
 
 export const dynamic = "force-dynamic";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = "PostureAtWork <onboarding@resend.dev>";
+const FROM = "PostureAtWork <hello@postureatwork.com>";
 
 const NEXT_DELAYS: Record<number, number> = {
   2: 7,   // J+3 → next at J+7
@@ -17,6 +18,9 @@ const NEXT_DELAYS: Record<number, number> = {
 
 export async function POST(req: NextRequest) {
   try {
+    if (!(await isPlatformAdmin(req))) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
     const body = await req.json();
     const { email, firstname, step, scores } = body;
 

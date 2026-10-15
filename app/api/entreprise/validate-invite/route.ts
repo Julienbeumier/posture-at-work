@@ -17,7 +17,7 @@ export async function GET(req: Request) {
 
     const { data } = await supabaseAdmin
       .from("company_invites")
-      .select("*, companies(*)")
+      .select("company_id, expires_at, companies(id, name)")
       .eq("code", code.toUpperCase())
       .gt("expires_at", new Date().toISOString())
       .maybeSingle();
@@ -26,7 +26,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Invitation invalide ou expirée" }, { status: 404 });
     }
 
-    return NextResponse.json({ company: data.companies, invite: { ...data, companies: undefined } });
+    return NextResponse.json({ company: data.companies, invite: { company_id: data.company_id, expires_at: data.expires_at } });
   } catch (err) {
     console.error("[validate-invite]", err);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { rateLimit, clientIp } from "@/lib/server-auth";
 import type { AnalysisReport, PersonneAnalysis, PosteAnalysis, DeboutAnalysis } from "@/lib/analysis-types";
 
 export const maxDuration = 60;
@@ -642,8 +643,18 @@ function parseJSON(text: string) {
   return JSON.parse(raw);
 }
 
+const MAX_BODY_BYTES = 25 * 1024 * 1024; // 25 Mo : largement suffisant pour 6 images compressées
+
 export async function POST(req: NextRequest) {
   try {
+    // Frein anti-abus : l'analyse consomme des crédits IA
+    if (!rateLimit(`analyze:${clientIp(req)}`, 12, 60 * 60 * 1000)) {
+      return NextResponse.json({ error: "Trop d'analyses récentes, réessayez plus tard." }, { status: 429 });
+    }
+    const declared = Number(req.headers.get("content-length") ?? 0);
+    if (declared > MAX_BODY_BYTES) {
+      return NextResponse.json({ error: "Données trop volumineuses" }, { status: 413 });
+    }
     const body = await req.json();
     const {
       frames,

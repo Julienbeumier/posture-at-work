@@ -93,8 +93,6 @@ export default function VideoIntroPage() {
       const scores = JSON.parse(sessionStorage.getItem("postureatwork_scores") || "{}");
       if (scores.job_type) scoresType = scores.job_type;
     } catch {}
-    console.log("video-intro job_type:", lsType);
-    console.log("scores job_type:", scoresType);
     const effective = scoresType ?? lsType ?? "bureau";
     setJobType(effective);
   // eslint-disable-next-line react-hooks/exhaustive-deps

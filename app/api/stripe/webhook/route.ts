@@ -51,7 +51,6 @@ export async function POST(req: Request) {
       })
       .eq("stripe_session_id", session.id);
 
-    console.log(`[webhook] Premium activé pour user ${userId}`);
 
     try {
       const { data: authData, error: authError } = await supabaseAdmin.auth.admin.getUserById(userId);
@@ -73,7 +72,6 @@ export async function POST(req: Request) {
           html: premiumWelcomeEmail(firstName),
         });
 
-        console.log("[webhook] Email bienvenue envoyé:", result);
       } else {
         console.warn("[webhook] Pas d'email trouvé pour user:", userId);
       }

@@ -59,6 +59,15 @@ export async function GET(
         }
       }
 
+      if (invite) {
+        await supabaseAdmin.from("profiles").upsert({
+          user_id: data.user.id,
+          is_premium: true,
+          premium_source: "b2b",
+          premium_activated_at: new Date().toISOString(),
+        }, { onConflict: "user_id" });
+      }
+
       return NextResponse.redirect(`${origin}/onboarding`);
     }
   }

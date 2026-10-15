@@ -26,12 +26,12 @@ export default function JoinPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const joinCompany = useCallback(async (userId: string, companyId: string) => {
+  const joinCompany = useCallback(async (_userId: string, companyId: string) => {
     setStep("joining");
     const res = await fetch("/api/entreprise/join", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code, userId, companyId }),
+      body: JSON.stringify({ code }),
     });
 
     if (!res.ok) {
@@ -40,14 +40,7 @@ export default function JoinPage() {
       return;
     }
 
-    // Activer le premium automatiquement pour les employés B2B
-    await supabase.from("profiles").upsert({
-      user_id: userId,
-      is_premium: true,
-      premium_source: "b2b",
-      premium_activated_at: new Date().toISOString(),
-    }, { onConflict: "user_id" });
-
+    // Le premium B2B est activé côté serveur par /api/entreprise/join
     localStorage.setItem("paw_company_id", companyId);
     localStorage.setItem("paw_is_b2b", "true");
     localStorage.setItem("paw_premium", "true");
@@ -80,7 +73,6 @@ export default function JoinPage() {
   }, [code, joinCompany, supabase.auth]);
 
   async function handleGoogle() {
-    console.log("[Join] handleGoogle clicked, company:", company, "code:", code);
     if (!company) {
       setError("Erreur: company non chargée — recharge la page");
       return;
@@ -90,7 +82,6 @@ export default function JoinPage() {
     // Stocker le code d'invitation pour après le callback OAuth
     sessionStorage.setItem("paw_join_code", code);
     const redirectTo = `${window.location.origin}/join/${code}/callback`;
-    console.log("[Join] redirectTo:", redirectTo);
     const { error: err } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo },

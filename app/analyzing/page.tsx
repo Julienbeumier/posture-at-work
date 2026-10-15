@@ -58,7 +58,6 @@ export default function AnalyzingPage() {
         ?? (questionnaire_scores as (Record<string, unknown> | null))?.job_type as string
         ?? localStorage.getItem("paw_job_type")
         ?? "bureau";
-      console.log("jobType =", jobType);
 
       // ── Debout analysis mode ─────────────────────────────────────────────
       if (framesPersonneRaw && !framesPosteRaw && jobType === "debout") {
