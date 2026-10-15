@@ -71,11 +71,6 @@ export default function ComptePage() {
   const [pwdMsg, setPwdMsg] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
   const [pwdBusy, setPwdBusy] = useState(false);
 
-  // Email
-  const [newEmail, setNewEmail] = useState("");
-  const [emailMsg, setEmailMsg] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
-  const [emailBusy, setEmailBusy] = useState(false);
-
   // Suppression
   const [confirmText, setConfirmText] = useState("");
   const [deleteMsg, setDeleteMsg] = useState<string | null>(null);
@@ -113,38 +108,6 @@ export default function ComptePage() {
     if (error) { setPwdMsg({ kind: "error", text: error.message }); return; }
     setCurrentPwd(""); setNewPwd(""); setConfirmPwd("");
     setPwdMsg({ kind: "ok", text: "Mot de passe mis à jour." });
-  }
-
-  async function changeEmail() {
-    setEmailMsg(null);
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) { setEmailMsg({ kind: "error", text: "Adresse email invalide." }); return; }
-    setEmailBusy(true);
-    const { error } = await createClient().auth.updateUser({ email: newEmail });
-    setEmailBusy(false);
-    if (error) { setEmailMsg({ kind: "error", text: error.message }); return; }
-    setNewEmail("");
-    setEmailMsg({ kind: "ok", text: "Un email de confirmation vient d'être envoyé. Le changement sera effectif après validation du lien." });
-  }
-
-  async function exportData() {
-    const supabase = createClient();
-    const [assessments, checkins] = await Promise.all([
-      supabase.from("assessments").select("*").eq("user_id", user!.id),
-      supabase.from("daily_checkins").select("*").eq("user_id", user!.id),
-    ]);
-    const payload = {
-      exporte_le: new Date().toISOString(),
-      compte: { email: user!.email, cree_le: user!.created_at },
-      premium,
-      bilans: assessments.data ?? [],
-      check_ins: checkins.data ?? [],
-    };
-    const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `postureatwork-mes-donnees-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
   }
 
   async function signOut() {
@@ -224,22 +187,12 @@ export default function ComptePage() {
                 {pwdBusy ? "Mise à jour…" : "Mettre à jour"}
               </Button>
             </Card>
-
-            <Card title="Changer d'adresse email" subtitle="Un lien de confirmation sera envoyé pour valider le changement.">
-              <input type="email" placeholder="Nouvelle adresse email" value={newEmail} onChange={e => setNewEmail(e.target.value)} autoComplete="email" style={inputStyle} />
-              {emailMsg && <Notice kind={emailMsg.kind}>{emailMsg.text}</Notice>}
-              <Button onClick={changeEmail} disabled={emailBusy || !newEmail}>{emailBusy ? "Envoi…" : "Envoyer le lien"}</Button>
-            </Card>
           </>
         ) : (
-          <Card title="Mot de passe et email" subtitle="Votre compte est lié à Google : le mot de passe et l'adresse email se gèrent depuis votre compte Google." >
+          <Card title="Mot de passe" subtitle="Votre compte est lié à Google : le mot de passe se gère depuis votre compte Google.">
             <span />
           </Card>
         )}
-
-        <Card title="Mes données" subtitle="Téléchargez une copie de vos bilans et check-ins au format JSON.">
-          <Button onClick={exportData}>Télécharger mes données</Button>
-        </Card>
 
         <Card title="Session">
           <Button onClick={signOut}>Se déconnecter</Button>
