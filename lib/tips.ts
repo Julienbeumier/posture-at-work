@@ -318,7 +318,7 @@ export const PRODUCTS: Record<string, Product> = {
   rehausseur_ecran: {
     id: "rehausseur_ecran",
     name: "Rehausseur écran GRIFEMA",
-    reason: "Ton écran trop bas force ta tête à s'incliner — ça augmente la charge sur ta nuque. Ce rehausseur règle la hauteur en quelques minutes",
+    reason: "Ton écran trop bas force ta tête à s'incliner — ça augmente la charge sur ta nuque. Ce rehausseur permet de régler la hauteur facilement",
     url: "https://www.amazon.fr/s?k=Rehausseur+%C3%A9cran+GRIFEMA&tag=postureatwo09-21",
     priority: "haute",
     dimension: ["setup"],
@@ -374,7 +374,7 @@ export const PRODUCTS: Record<string, Product> = {
   coussin_lombaire: {
     id: "coussin_lombaire",
     name: "Coussin lombaire FORTEM",
-    reason: "Maintient la courbure naturelle du dos et soulage immédiatement les douleurs lombaires — soulagement dès la première utilisation",
+    reason: "Aide à maintenir la courbure naturelle du dos et peut réduire la gêne lombaire en position assise",
     url: "https://www.amazon.fr/s?k=Coussin+lombaire+FORTEM&tag=postureatwo09-21",
     priority: "haute",
     dimension: ["douleurs"],
@@ -396,7 +396,7 @@ export const PRODUCTS: Record<string, Product> = {
   balle_massage: {
     id: "balle_massage",
     name: "Balle de massage BLACKROLL",
-    reason: "Libère les points de tension dans les épaules et la nuque en quelques minutes — à garder sur son bureau",
+    reason: "Permet d'auto-masser les tensions des épaules et de la nuque — à garder sur son bureau",
     url: "https://www.amazon.fr/s?k=Balle+de+massage+BLACKROLL&tag=postureatwo09-21",
     priority: "moyenne",
     dimension: ["douleurs"],

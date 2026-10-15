@@ -16,7 +16,7 @@ const MESSAGES = [
 export async function GET(req: Request) {
   if (!isCronRequest(req)) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   webpush.setVapidDetails(
-    process.env.VAPID_SUBJECT ?? "mailto:contact@posture-at-work.com",
+    process.env.VAPID_SUBJECT ?? "mailto:hello@postureatwork.com",
     process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
     process.env.VAPID_PRIVATE_KEY!
   );

@@ -96,7 +96,7 @@ function ScoreCircle({ score, isPartial = false }: { score: number; isPartial?: 
 
 const DIM_INLINE_PRODUCTS: Record<string, { name: string; url: string; reason: string; price: string }> = {
   "/conseils/setup":        { name: "Rehausseur écran GRIFEMA",           url: "https://www.amazon.fr/s?k=Rehausseur+%C3%A9cran+GRIFEMA&tag=postureatwo09-21", reason: "Écran trop bas → nuque en flexion prolongée",    price: "~28€" },
-  "/conseils/douleurs":     { name: "Coussin lombaire FORTEM",             url: "https://www.amazon.fr/s?k=Coussin+lombaire+FORTEM&tag=postureatwo09-21", reason: "Soulage les douleurs lombaires dès la première utilisation", price: "~30€" },
+  "/conseils/douleurs":     { name: "Coussin lombaire FORTEM",             url: "https://www.amazon.fr/s?k=Coussin+lombaire+FORTEM&tag=postureatwo09-21", reason: "Soutient la courbure lombaire en position assise — peut aider à réduire la gêne", price: "~30€" },
   "/conseils/habitudes":    { name: "Bureau assis-debout SONGMICS",        url: "https://www.amazon.fr/s?k=Bureau+assis-debout+SONGMICS&tag=postureatwo09-21", reason: "Alterner assis/debout aide à réduire les douleurs lombaires", price: "~200€" },
   "/conseils/mode-de-vie":  { name: "Lunettes anti-lumière bleue Horus X", url: "https://www.amazon.fr/s?k=Lunettes+anti-lumi%C3%A8re+bleue+Horus+X&tag=postureatwo09-21", reason: "Un petit plus de confort pour les soirées devant l'écran — à associer à une coupure des écrans avant le coucher",  price: "~30€" },
   "/conseils/nutrition":    { name: "Gourde graduée avec horaires 1.5L",   url: "https://www.amazon.fr/s?k=Gourde+gradu%C3%A9e+avec+horaires+1.5L&tag=postureatwo09-21", reason: "Rappel d'hydratation tout au long de la journée",          price: "~15€" },

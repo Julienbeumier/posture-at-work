@@ -449,7 +449,7 @@ export default function EntrepriseClient() {
           </p>
 
           <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: "0 auto 32px" }}>
-            Démo sans engagement · Mise en place en 48h · Aucun contrat longue durée
+            Démo sans engagement · Mise en place rapide · Aucun contrat longue durée
           </p>
 
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
@@ -675,7 +675,7 @@ export default function EntrepriseClient() {
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 10, marginTop: 16 }}>
             {[
               { icon: "🎯", text: "Actions prioritaires identifiées automatiquement" },
-              { icon: "🔒", text: "Données 100% anonymisées — RGPD garanti" },
+              { icon: "🔒", text: "Aucune donnée individuelle visible par l'employeur — vous ne voyez que des résultats agrégés" },
               { icon: "📈", text: "Suivi de l'évolution trimestrielle en temps réel" },
             ].map((p, i) => (
               <div key={i} style={{ display: "flex", gap: 10, alignItems: "center", padding: "12px 14px", borderRadius: 12, background: c.bgCard, border: `0.5px solid ${c.border}` }}>
@@ -692,7 +692,7 @@ export default function EntrepriseClient() {
             Simple à déployer
           </p>
           <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 22 : 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
-            Opérationnel en 48h.<br />Résultats en 30 jours.
+            Mise en place rapide.<br />Un premier rapport dès que vos équipes ont répondu.
           </h2>
           <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 32, lineHeight: 1.65, maxWidth: 500 }}>
             Pas d&apos;installation. Pas de formation IT. Pas de contrat longue durée.
@@ -703,7 +703,7 @@ export default function EntrepriseClient() {
               {
                 step: "01", icon: "⚡", color: "#2b5ce6",
                 title: "On crée votre espace",
-                desc: "Après votre démo, on configure votre dashboard RH en 48h. Vous recevez un lien d'invitation à partager à vos équipes.",
+                desc: "Après votre démo, on configure votre dashboard RH. Vous recevez un lien d'invitation à partager à vos équipes.",
                 detail: "→ Vous ne faites rien techniquement",
               },
               {
@@ -716,7 +716,7 @@ export default function EntrepriseClient() {
                 step: "03", icon: "📊", color: "#1d9e75",
                 title: "Vous pilotez et agissez",
                 desc: "Votre dashboard RH se remplit en temps réel. Identifiez les zones à risque, les actions prioritaires, et suivez l'évolution.",
-                detail: "→ Premier rapport sous 30 jours",
+                detail: "→ Premier rapport dès que vos équipes ont répondu",
               },
             ].map((step, i) => (
               <motion.div key={i} {...fadeUp(i * 0.08)} style={{

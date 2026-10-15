@@ -123,17 +123,17 @@ const RESOURCES = [
 const PRODUCTS_BY_ISSUE: Record<string, { name: string; url: string; price: string; reason: string }[]> = {
   setup_bureau: [
     { name: "Rehausseur écran GRIFEMA", url: "https://www.amazon.fr/s?k=Rehausseur+%C3%A9cran+GRIFEMA&tag=postureatwo09-21", price: "~28€", reason: "Corrige la hauteur d'écran — réduit la charge cervicale de 12kg" },
-    { name: "Support laptop ergonomique", url: "https://www.amazon.fr/s?k=Support+laptop+ergonomique&tag=postureatwo09-21", price: "~30€", reason: "Indispensable pour tout usage laptop prolongé" },
+    { name: "Support laptop ergonomique", url: "https://www.amazon.fr/s?k=Support+laptop+ergonomique&tag=postureatwo09-21", price: "~30€", reason: "Utile pour tout usage prolongé d'un laptop : permet de relever l'écran à hauteur des yeux" },
     { name: "Souris verticale Trust Verto", url: "https://www.amazon.fr/s?k=Souris+verticale+Trust+Verto&tag=postureatwo09-21", price: "~25€", reason: "Aide à réduire la torsion du poignet" },
   ],
   setup_debout: [
     { name: "Tapis anti-fatigue", url: "https://www.amazon.fr/s?k=Tapis+anti-fatigue&tag=postureatwo09-21", price: "~45€", reason: "Aide à réduire la fatigue des jambes et lombaires en station debout prolongée" },
-    { name: "Semelles orthopédiques", url: "https://www.amazon.fr/s?k=Semelles+orthop%C3%A9diques&tag=postureatwo09-21", price: "~30€", reason: "Amorti et soutien de voûte — essentiel pour les postes debout > 4h/jour" },
+    { name: "Semelles orthopédiques", url: "https://www.amazon.fr/s?k=Semelles+orthop%C3%A9diques&tag=postureatwo09-21", price: "~30€", reason: "Amorti et soutien de la voûte plantaire — peut aider sur les postes debout prolongés (à essayer individuellement)" },
     { name: "Chaussettes de compression", url: "https://www.amazon.fr/s?k=Chaussettes+de+compression&tag=postureatwo09-21", price: "~20€", reason: "Aide à soulager les jambes lourdes" },
   ],
   douleurs_bureau: [
-    { name: "Coussin lombaire FORTEM", url: "https://www.amazon.fr/s?k=Coussin+lombaire+FORTEM&tag=postureatwo09-21", price: "~30€", reason: "Soulagement immédiat des douleurs lombaires dès la première utilisation" },
-    { name: "Balle de massage BLACKROLL", url: "https://www.amazon.fr/s?k=Balle+de+massage+BLACKROLL&tag=postureatwo09-21", price: "~15€", reason: "Libère les points de tension nuque et épaules en quelques minutes" },
+    { name: "Coussin lombaire FORTEM", url: "https://www.amazon.fr/s?k=Coussin+lombaire+FORTEM&tag=postureatwo09-21", price: "~30€", reason: "Soutient la courbure lombaire en position assise — peut aider à réduire la gêne lombaire" },
+    { name: "Balle de massage BLACKROLL", url: "https://www.amazon.fr/s?k=Balle+de+massage+BLACKROLL&tag=postureatwo09-21", price: "~15€", reason: "Permet un auto-massage des zones de tension nuque et épaules" },
   ],
   douleurs_debout: [
     { name: "Balle massage plantaire", url: "https://www.amazon.fr/s?k=Balle+massage+plantaire&tag=postureatwo09-21", price: "~15€", reason: "Peut soulager les tensions du pied après journée debout" },
@@ -538,9 +538,9 @@ function analyzeCollectiveVideo(employees: EmployeeRow[], assessed: EmployeeRow[
       } else {
         bureauNarrative += ` Le questionnaire n'avait pas pleinement capté cette problématique — la vidéo révèle une cause posturale sous-jacente.`;
       }
-      bureauNarrative += ` Cause identifiée : laptops utilisés sans rehausseur d'écran (setup moyen ${bureauSetupScore}/100).`;
+      bureauNarrative += ` Cause probable à vérifier : laptops utilisés sans rehausseur d'écran (setup moyen ${bureauSetupScore}/100).`;
       bureauActions = [
-        `Rehausseur d'écran + clavier externe (~60€/poste) — impact immédiat`,
+        `Rehausseur d'écran + clavier et souris externes pour les postes en laptop seul`,
         `Exercice rétraction cervicale collectif — 5 min, 3x/semaine`,
         `Vérifier que tous les laptops ont un support`,
       ];
@@ -1203,7 +1203,7 @@ export default function EntrepriseDemoDashboard() {
                         </p>
                       </div>
                       <span style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(43,92,230,0.12)", border: "0.5px solid rgba(43,92,230,0.25)", fontFamily: T.b, fontSize: 11, fontWeight: 600, color: "#6f9bff" }}>
-                        🩺 Validé par un kinésithérapeute
+                        🩺 Conçu avec un kinésithérapeute
                       </span>
                     </div>
 

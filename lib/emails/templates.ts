@@ -566,8 +566,8 @@ export function entrepriseWelcomeEmail(data: {
     <!-- RGPD -->
     <div style="background:#f0fdf4;border-radius:16px;padding:16px 20px;margin-bottom:28px;border:1px solid #bbf7d0;">
       <p style="font-size:13px;color:#374151;line-height:1.65;margin:0;">
-        🔒 <strong>Données 100% anonymisées</strong> — en tant qu'administrateur, vous voyez uniquement des données agrégées.
-        Aucune donnée de santé individuelle n'est accessible. Conformité RGPD garantie.
+        🔒 <strong>Résultats agrégés</strong> — en tant qu'administrateur, vous ne voyez que des données collectives.
+        Les réponses individuelles de vos employés ne vous sont jamais communiquées.
       </p>
     </div>
 

@@ -30,11 +30,11 @@ export default function PolitiqueConfidentialite() {
           Politique de confidentialité
         </h1>
         <p style={{ fontFamily: T.b, fontSize: 13, color: "rgba(220,220,245,0.54)", marginBottom: 40 }}>
-          Dernière mise à jour : mai 2026
+          Dernière mise à jour : octobre 2026
         </p>
 
         <Section title="1. Qui sommes-nous">
-          <p>PostureAtWork est un outil de bilan santé au bureau développé de manière indépendante. Pour toute question relative à tes données, contacte-nous à : <a href="mailto:contact@postureatwork.app" style={{ color: "#6f9bff" }}>contact@postureatwork.app</a></p>
+          <p>PostureAtWork est un outil de bilan santé au bureau développé de manière indépendante. Pour toute question relative à tes données, contacte-nous à : <a href="mailto:hello@postureatwork.com" style={{ color: "#6f9bff" }}>hello@postureatwork.com</a></p>
         </Section>
 
         <Section title="2. Données collectées">
@@ -46,6 +46,20 @@ export default function PolitiqueConfidentialite() {
             <li>Tes check-ins quotidiens (exercices, hydratation, douleurs)</li>
             <li>Des frames vidéo temporaires lors de l'analyse posturale (non stockées — voir section 4)</li>
           </ul>
+        </Section>
+
+        <Section title="2 bis. Données de santé et consentement">
+          <p>
+            Tes réponses au questionnaire (douleurs, sommeil, habitudes) sont des <strong style={{ color: "#f0f0fa" }}>données relatives à la santé</strong>.
+            Elles ne sont traitées qu&apos;avec ton consentement, pour te fournir ton bilan. Tu peux retirer ce consentement à tout moment en supprimant ton compte.
+          </p>
+        </Section>
+
+        <Section title="2 ter. Si ton employeur utilise PAW">
+          <p>
+            Si tu rejoins PAW via une invitation de ton employeur, celui-ci voit uniquement des résultats <strong style={{ color: "#f0f0fa" }}>agrégés</strong> et
+            des identifiants anonymes (« Employé #3 »). Tes réponses individuelles et ton analyse vidéo ne lui sont pas communiquées.
+          </p>
         </Section>
 
         <Section title="3. Utilisation des données">
@@ -69,6 +83,17 @@ export default function PolitiqueConfidentialite() {
           <p>Anthropic est soumis à sa propre politique de confidentialité disponible sur <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: "#6f9bff" }}>anthropic.com/privacy</a>.</p>
         </Section>
 
+        <Section title="4 bis. Prestataires qui traitent tes données">
+          <ul style={{ paddingLeft: 20, marginTop: 4 }}>
+            <li>Supabase — base de données et authentification (serveurs dans l&apos;Union européenne, Irlande)</li>
+            <li>Vercel — hébergement du site</li>
+            <li>Anthropic — analyse des images (voir section 4)</li>
+            <li>Stripe — paiement (nous ne voyons jamais ton numéro de carte)</li>
+            <li>Resend — envoi des emails</li>
+            <li>Cloudflare Turnstile — protection anti-robots</li>
+          </ul>
+        </Section>
+
         <Section title="5. Tes droits">
           <p>Conformément au RGPD, tu as le droit de :</p>
           <ul style={{ paddingLeft: 20, marginTop: 8 }}>
@@ -77,13 +102,13 @@ export default function PolitiqueConfidentialite() {
             <li><strong style={{ color: "#f0f0fa" }}>Supprimer</strong> ton compte et toutes tes données</li>
             <li><strong style={{ color: "#f0f0fa" }}>Exporter</strong> tes données (portabilité)</li>
           </ul>
-          <p style={{ marginTop: 12 }}>Pour exercer ces droits, envoie une demande à <a href="mailto:contact@postureatwork.app" style={{ color: "#6f9bff" }}>contact@postureatwork.app</a>.</p>
+          <p style={{ marginTop: 12 }}>Pour exercer ces droits, envoie une demande à <a href="mailto:hello@postureatwork.com" style={{ color: "#6f9bff" }}>hello@postureatwork.com</a>.</p>
         </Section>
 
         <Section title="6. Supprimer mes données">
           <p>
             Pour demander la suppression complète de ton compte et de toutes tes données, envoie un email à{" "}
-            <a href="mailto:contact@postureatwork.app?subject=Suppression de compte" style={{ color: "#ff7b7b" }}>contact@postureatwork.app</a>{" "}
+            <a href="mailto:hello@postureatwork.com?subject=Suppression de compte" style={{ color: "#ff7b7b" }}>hello@postureatwork.com</a>{" "}
             avec l'objet "Suppression de compte". Nous procéderons sous 72h.
           </p>
           <p style={{ marginTop: 8 }}>Tu peux aussi supprimer ton compte directement depuis ton tableau de bord.</p>
@@ -91,14 +116,14 @@ export default function PolitiqueConfidentialite() {
 
         <Section title="7. Cookies et stockage local">
           <p>
-            PostureAtWork utilise <strong style={{ color: "#f0f0fa" }}>uniquement le localStorage et le sessionStorage</strong> de ton navigateur pour stocker tes préférences et résultats temporaires. Nous n'utilisons pas de cookies de tracking tiers, ni Google Analytics, ni pixels publicitaires.
+            PostureAtWork utilise le localStorage et le sessionStorage de ton navigateur pour stocker tes préférences et résultats temporaires, ainsi que <strong style={{ color: "#f0f0fa" }}>des cookies strictement nécessaires</strong> au maintien de ta session de connexion. Nous n'utilisons pas de cookies de tracking tiers, ni Google Analytics, ni pixels publicitaires.
           </p>
         </Section>
 
         <Section title="8. Contact">
           <p>
             Pour toute question concernant cette politique :<br />
-            <a href="mailto:contact@postureatwork.app" style={{ color: "#6f9bff" }}>contact@postureatwork.app</a>
+            <a href="mailto:hello@postureatwork.com" style={{ color: "#6f9bff" }}>hello@postureatwork.com</a>
           </p>
         </Section>
       </div>
