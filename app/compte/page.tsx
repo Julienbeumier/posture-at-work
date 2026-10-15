@@ -207,10 +207,10 @@ export default function ComptePage() {
               Vous êtes administrateur d&apos;un espace entreprise. S&apos;il n&apos;y a pas d&apos;autre administrateur, l&apos;espace entreprise et ses données seront supprimés aussi.
             </Notice>
           )}
-          {premium && companyRole !== "employee" && (
-            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", margin: "0 0 10px", lineHeight: 1.6 }}>
-              Votre accès premium sera perdu, sans remboursement automatique.
-            </p>
+          {premium && (
+            <Notice kind="error">
+              Attention : la suppression du compte entraîne la perte définitive de tous les avantages Premium{companyRole === "employee" ? " (offerts par votre employeur)" : ""}. Aucun remboursement n&apos;est effectué.
+            </Notice>
           )}
           <input
             type="text"

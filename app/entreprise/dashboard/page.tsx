@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import ManagerToolkit from "@/components/dashboard/ManagerToolkit";
+import ActionTracker from "@/components/dashboard/ActionTracker";
 import { analyzeCollectiveVideo, VideoRevealBlock } from "@/components/dashboard/VideoCollective";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { Company } from "@/lib/supabase";
@@ -2163,6 +2164,7 @@ export default function EntrepriseDashboard() {
           {/* ── TAB RESSOURCES ── */}
           {activeTab === "resources" && (
             <motion.div key="resources" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+              {company?.id && <ActionTracker c={c} companyId={company.id} />}
               <ManagerToolkit c={c} />
               <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 {RESOURCES.map((cat, ci) => (
