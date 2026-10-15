@@ -18,10 +18,10 @@ export type Plan = {
 };
 
 export const PLANS: Plan[] = [
-  { key: "essentiel", name: "Essentiel", maxEmployees: 15, price: 590 },
-  { key: "pme", name: "PME", maxEmployees: 50, price: 1490 },
-  { key: "croissance", name: "Croissance", maxEmployees: 100, price: 2490 },
-  { key: "entreprise", name: "Entreprise", maxEmployees: null, price: null },
+  { key: "essentiel", name: "Petite équipe", maxEmployees: 15, price: 590 },
+  { key: "pme", name: "Équipe", maxEmployees: 50, price: 1490 },
+  { key: "croissance", name: "Société", maxEmployees: 100, price: 2490 },
+  { key: "entreprise", name: "Sur mesure", maxEmployees: null, price: null },
 ];
 
 /** Nombre de jours d'absence (coût direct) dont le coût égale le prix du forfait. */

@@ -95,7 +95,7 @@ export default function AdminPage() {
 
           <div>
             <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "var(--t55)", marginBottom: 8 }}>
-              Forfait (paiement unique)
+              Diagnostic PAW — forfait (paiement unique)
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8, marginBottom: 10 }}>
               {PLANS.map(pl => {

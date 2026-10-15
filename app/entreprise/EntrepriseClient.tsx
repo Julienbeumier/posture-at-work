@@ -68,7 +68,7 @@ function PlanSelector({
         Tarifs
       </p>
       <h2 style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 22 : 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
-        Un forfait clair, en paiement unique.
+        Le Diagnostic PAW : un forfait clair, en paiement unique.
       </h2>
       <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textMuted, marginBottom: 28, lineHeight: 1.65, maxWidth: 580 }}>
         Choisissez la taille de votre entreprise. Pas d&apos;abonnement : un diagnostic complet de vos équipes, et le premium PAW à vie pour chaque employé.
@@ -145,7 +145,7 @@ function PlanSelector({
                 <span aria-hidden="true" style={{ textAlign: "center", fontFamily: fonts.h, fontWeight: 900, fontSize: 18, color: c.textMuted }}>≥</span>
                 <div style={{ textAlign: "center", padding: "14px 10px", borderRadius: 14, background: "rgba(63,224,160,0.12)", border: "1px solid rgba(63,224,160,0.4)" }}>
                   <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#3fe0a0", margin: "0 0 2px" }}>{plan.price.toLocaleString("fr-FR")} €</p>
-                  <p style={{ fontFamily: fonts.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.4 }}>le prix du forfait<br />{plan.name}</p>
+                  <p style={{ fontFamily: fonts.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.4 }}>le prix du Diagnostic<br />{plan.name}</p>
                 </div>
               </div>
               <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, margin: "0 0 10px", lineHeight: 1.65, textAlign: "center" }}>
@@ -180,7 +180,7 @@ function PlanSelector({
             {/* 5. CTA */}
             <a href="#contact" style={{ textDecoration: "none" }}>
               <span style={{ display: "block", textAlign: "center", padding: "17px 0", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: fonts.h, fontWeight: 800, fontSize: 16, boxShadow: "0 6px 28px rgba(43,92,230,0.5)" }}>
-                Demander une démo — forfait {plan.name} →
+                Demander une démo — Diagnostic {plan.name} →
               </span>
             </a>
           </div>
@@ -376,7 +376,7 @@ export default function EntrepriseClient() {
                 <div>
                   <p style={{ fontFamily: T.b, fontSize: 11, color: "#6f9bff", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 6px" }}>🏢 Dashboard RH</p>
                   <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: c.textPrimary, margin: "0 0 4px" }}>Arcadia Distribution</p>
-                  <p style={{ fontFamily: T.b, fontSize: 12.5, color: c.textMuted, margin: 0 }}>Forfait PME · 47 employés inscrits · 41 bilans complétés</p>
+                  <p style={{ fontFamily: T.b, fontSize: 12.5, color: c.textMuted, margin: 0 }}>Forfait Équipe · 47 employés inscrits · 41 bilans complétés</p>
                 </div>
                 {!isMobile && (
                   <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
