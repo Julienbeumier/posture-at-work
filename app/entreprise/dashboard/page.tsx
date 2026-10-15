@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import ManagerToolkit from "@/components/dashboard/ManagerToolkit";
 import ActionTracker from "@/components/dashboard/ActionTracker";
+import { ParcoursStep, ParcoursLinkCard, PARCOURS_STEPS } from "@/components/dashboard/ParcoursStep";
 import { analyzeCollectiveVideo, VideoRevealBlock } from "@/components/dashboard/VideoCollective";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { Company } from "@/lib/supabase";
@@ -528,7 +529,7 @@ export default function EntrepriseDashboard() {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [generatingCode, setGeneratingCode] = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "employees" | "evolution" | "exercises" | "resources" | "signals">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "parcours" | "analysis" | "report" | "employees" | "evolution" | "exercises" | "resources" | "signals">("overview");
   const [activeProfile, setActiveProfile] = useState<"bureau" | "debout">("bureau");
   const [expandedEmployee, setExpandedEmployee] = useState<string | null>(null);
   const [relanceSent, setRelanceSent] = useState(false);
@@ -799,12 +800,15 @@ export default function EntrepriseDashboard() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
           role="tablist" aria-label="Sections du dashboard"
           style={{
-            display: "flex", gap: 4, padding: 5, borderRadius: 20,
+            display: "flex", gap: 4, padding: 5, borderRadius: 20, overflowX: "auto",
             background: c.bgCard2, border: `1px solid ${c.border}`,
             marginBottom: 20,
           }}>
           {([
             { key: "overview", label: isMobile ? "📊" : "📊 Vue d'ensemble", name: "Vue d'ensemble" },
+            { key: "parcours", label: isMobile ? "🧭" : "🧭 Parcours", name: "Parcours d'amélioration" },
+            { key: "analysis", label: isMobile ? "🔬" : "🔬 Analyse", name: "Analyse" },
+            { key: "report", label: isMobile ? "📋" : "📋 Rapport", name: "Rapport" },
             { key: "employees", label: isMobile ? "👥" : "👥 Équipe", name: "Équipe" },
             { key: "evolution", label: isMobile ? "📈" : "📈 Évolution", name: "Évolution" },
             { key: "exercises", label: isMobile ? "🏋️" : "🏋️ Exercices", name: "Exercices" },
@@ -812,7 +816,7 @@ export default function EntrepriseDashboard() {
             { key: "signals", label: isMobile ? "💬" : "💬 Signalements", name: "Signalements" },
           ] as const).map(tab => (
             <button key={tab.key} role="tab" aria-selected={activeTab === tab.key} aria-label={tab.name} onClick={() => setActiveTab(tab.key)} style={{
-              flex: 1, padding: "10px 0", borderRadius: 15, border: "none",
+              flex: "1 0 auto", padding: isMobile ? "10px 0" : "10px 14px", minWidth: isMobile ? 36 : undefined, whiteSpace: "nowrap", borderRadius: 15, border: "none",
               boxShadow: activeTab === tab.key ? "0 4px 14px rgba(43,92,230,0.5)" : "none",
               background: activeTab === tab.key ? "#2b5ce6" : "transparent",
               color: activeTab === tab.key ? "#fff" : c.textMuted,
@@ -862,6 +866,74 @@ export default function EntrepriseDashboard() {
                 );
               })()}
 
+              {/* Parcours d'amélioration : accès rapide */}
+              <div style={{ borderRadius: 20, padding: "20px 22px", background: c.cardGrad, border: `1px solid ${c.border}`, marginBottom: 16 }}>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: "0 0 4px" }}>
+                  <Ico e="🧭" />Votre parcours d&apos;amélioration
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: "0 0 14px", lineHeight: 1.6 }}>
+                  Cinq étapes pour réduire concrètement les TMS dans votre équipe, dans l&apos;ordre.
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
+                  {PARCOURS_STEPS.map(s => (
+                    <button key={s.n} type="button" onClick={() => setActiveTab("parcours")}
+                      style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", borderRadius: 100, background: c.bgCard2, border: `1px solid ${c.border}`, cursor: "pointer", fontFamily: T.b, fontSize: 12.5, fontWeight: 600, color: c.textPrimary }}>
+                      <span aria-hidden="true" style={{ width: 20, height: 20, borderRadius: "50%", background: "#2b5ce6", color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800 }}>{s.n}</span>
+                      {s.title}
+                    </button>
+                  ))}
+                </div>
+                <button type="button" onClick={() => setActiveTab("parcours")}
+                  style={{ padding: "10px 20px", borderRadius: 100, border: "none", background: "#2b5ce6", color: "#fff", fontFamily: T.b, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                  Commencer le parcours →
+                </button>
+              </div>
+
+              {/* Invitation */}
+              <div style={{ borderRadius: 20, padding: "22px 24px", background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)" }}>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}>
+                  <Ico e="🔗" />Lien d&apos;invitation
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, marginBottom: 14 }}>
+                  {employees.length - assessed.length > 0
+                    ? `${employees.length - assessed.length} employé${employees.length - assessed.length > 1 ? "s n'ont" : " n'a"} pas encore complété son bilan.`
+                    : "Partagez ce lien pour inviter de nouveaux employés."}
+                </p>
+                {inviteUrl ? (
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <div style={{ flex: 1, padding: "11px 14px", borderRadius: 12, background: c.cardGrad, border: `1px solid ${c.border2}`, fontFamily: T.b, fontSize: 13, color: c.textSecondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {inviteUrl}
+                    </div>
+                    <button onClick={copyInviteUrl} style={{ padding: "11px 18px", borderRadius: 12, border: "none", background: copied ? "#1d9e75" : "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 13, cursor: "pointer", transition: "background 0.2s", flexShrink: 0 }}>
+                      {copied ? "✓ Copié !" : "Copier"}
+                    </button>
+                  </div>
+                ) : (
+                  <button onClick={generateNewCode} disabled={generatingCode} style={{ padding: "12px 24px", borderRadius: 100, border: "none", background: "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 14, cursor: "pointer", opacity: generatingCode ? 0.7 : 1 }}>
+                    {generatingCode ? "Génération…" : "Générer un lien d'invitation"}
+                  </button>
+                )}
+                {inviteCode && (
+                  <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, marginTop: 8 }}>
+                    Code : <strong>{inviteCode}</strong> · Valable 30 jours ·{" "}
+                    <span onClick={generateNewCode} style={{ color: "#6f9bff", cursor: "pointer", textDecoration: "underline" }}>Générer un nouveau code</span>
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === "parcours" && (
+            <motion.div key="parcours" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+
+              <div style={{ borderRadius: 20, padding: "18px 22px", background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)", marginBottom: 20 }}>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: c.textPrimary, margin: "0 0 4px" }}><Ico e="🧭" />Parcours d&apos;amélioration</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.65 }}>
+                  Le chemin concret, étape par étape, pour réduire les TMS dans votre équipe : repérer les priorités, décider et suivre les actions, équiper les postes, installer des routines, puis vérifier les progrès. Les analyses détaillées sont dans l&apos;onglet Analyse.
+                </p>
+              </div>
+
+              <ParcoursStep c={c} n={1} title="Repérer" subtitle="Les priorités de votre équipe">
               {/* Actions prioritaires */}
               {priorityActions.length > 0 && (
                 <div style={{ borderRadius: 24, padding: "24px", background: "rgba(43,92,230,0.12)", border: "1px solid rgba(111,155,255,0.30)", marginBottom: 16 }}>
@@ -898,6 +970,165 @@ export default function EntrepriseDashboard() {
                   </div>
                 </div>
               )}
+
+              </ParcoursStep>
+
+              <ParcoursStep c={c} n={2} title="Décider" subtitle="Les actions à mener et leur suivi">
+              {assessed.length > 0 && (() => {
+                const r = generateReport(assessed);
+                if (!r) return null;
+                const { debout, hasGroups, allSetup, allPain, allHabits } = r;
+
+                return (
+                  <div style={{ borderRadius: 20, overflow: "hidden", border: `0.5px solid ${c.border}`, marginBottom: 16 }}>
+
+                    {/* Plan d'action employeur */}
+                    <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.cardGrad }}>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}><Ico e="🗓️" />Plan d&apos;action recommandé</p>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 16 }}>Classé par impact et faisabilité — à adapter à votre contexte.</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                        {[
+                          {
+                            horizon: "Cette semaine",
+                            color: "#ff7b7b",
+                            actions: [
+                              allSetup < 60 ? "Faire l'inventaire des postes sans rehausseur d'écran et sans clavier externe" : null,
+                              allPain < 55 ? "Identifier les 3 employés avec les scores douleurs les plus bas et les rencontrer" : null,
+                              "Envoyer le programme d'exercices collectif à toutes les équipes",
+                            ].filter(Boolean) as string[],
+                          },
+                          {
+                            horizon: "Dans le mois",
+                            color: "#ffa347",
+                            actions: [
+                              allSetup < 60 ? "Équiper les postes bureau critiques : rehausseur + clavier externe (budget ~60€/poste)" : null,
+                              hasGroups && (debout.pain ?? 100) < 55 ? "Installer des tapis anti-fatigue aux postes debout fixes (budget ~45€/poste)" : null,
+                              allHabits < 55 ? "Mettre en place un système de pause active toutes les 45 min (app, alarme partagée)" : null,
+                              "Organiser une session de formation gestes et postures avec un kinésithérapeute",
+                            ].filter(Boolean) as string[],
+                          },
+                          {
+                            horizon: "Dans les 3 mois",
+                            color: "#3fe0a0",
+                            actions: [
+                              "Refaire passer les bilans PAW aux équipes pour mesurer l'évolution",
+                              "Intégrer les résultats dans votre reporting social (CPPT, EcoVadis)",
+                              allSetup < 55 ? "Étudier l'installation de bureaux assis-debout pour les postes les plus critiques" : null,
+                              "Planifier le call de restitution trimestriel avec le kinésithérapeute PAW",
+                            ].filter(Boolean) as string[],
+                          },
+                        ].map((phase, i) => (
+                          <div key={i} style={{ padding: "14px 16px", borderRadius: 12, background: c.bgCard2, border: `1px solid ${c.borderStrong}` }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                              <span style={{ width: 10, height: 10, borderRadius: "50%", background: phase.color, flexShrink: 0 }} />
+                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: phase.color }}>{phase.horizon}</span>
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {phase.actions.map((action, j) => (
+                                <div key={j} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                  <span style={{ color: phase.color, fontSize: 12, marginTop: 2, flexShrink: 0 }}>✓</span>
+                                  <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.5 }}>{action}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+
+                  </div>
+                );
+              })()}
+                {company?.id && <ActionTracker c={c} companyId={company.id} />}
+              </ParcoursStep>
+
+              <ParcoursStep c={c} n={3} title="S'équiper" subtitle="Le matériel qui fait la différence" defaultOpen={false}>
+              {assessed.length > 0 && (() => {
+                const r = generateReport(assessed);
+                if (!r) return null;
+                const { hasGroups, allSetup, allPain } = r;
+
+                return (
+                  <div style={{ borderRadius: 20, overflow: "hidden", border: `0.5px solid ${c.border}`, marginBottom: 16 }}>
+
+                    {/* Produits recommandés par profil */}
+                    <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.cardGrad }}>
+                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}><Ico e="🛒" />Équipements recommandés</p>
+                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 16 }}>Sélection basée sur les scores de vos équipes — par profil de poste.</p>
+                      <div style={{ display: "grid", gridTemplateColumns: hasGroups && !isMobile ? "1fr 1fr" : "1fr", gap: 12 }}>
+                        {hasGroups ? (
+                          <>
+                            <div>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#6f9bff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}><Ico e="💻" />Postes bureau</p>
+                              {[
+                                ...(allSetup < 65 ? PRODUCTS_BY_ISSUE.setup_bureau : []),
+                                ...(allPain < 55 ? PRODUCTS_BY_ISSUE.douleurs_bureau : []),
+                              ].slice(0, 3).map((prod, i) => (
+                                <a key={i} href={prod.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 8 }}>
+                                    <span style={{ fontSize: 16, flexShrink: 0 }}><Ico e="🛒" style={{ marginRight: 0 }} /></span>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: c.textPrimary, margin: "0 0 2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</p>
+                                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{prod.price}</p>
+                                    </div>
+                                  </div>
+                                </a>
+                              ))}
+                            </div>
+                            <div>
+                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffa347", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}><Ico e="🏭" />Postes debout</p>
+                              {[
+                                ...PRODUCTS_BY_ISSUE.setup_debout,
+                                ...PRODUCTS_BY_ISSUE.douleurs_debout,
+                              ].slice(0, 3).map((prod, i) => (
+                                <a key={i} href={prod.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 8 }}>
+                                    <span style={{ fontSize: 16, flexShrink: 0 }}><Ico e="🛒" style={{ marginRight: 0 }} /></span>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: c.textPrimary, margin: "0 0 2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</p>
+                                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{prod.price}</p>
+                                    </div>
+                                  </div>
+                                </a>
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          [...PRODUCTS_BY_ISSUE.setup_bureau, ...PRODUCTS_BY_ISSUE.douleurs_bureau].slice(0, 4).map((prod, i) => (
+                            <a key={i} href={prod.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 8 }}>
+                                <span style={{ fontSize: 18, flexShrink: 0 }}><Ico e="🛒" style={{ marginRight: 0 }} /></span>
+                                <div style={{ flex: 1 }}>
+                                  <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: "0 0 2px" }}>{prod.name}</p>
+                                  <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>{prod.reason}</p>
+                                </div>
+                                <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#2b5ce6", flexShrink: 0 }}>{prod.price}</span>
+                              </div>
+                            </a>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+
+                  </div>
+                );
+              })()}
+              </ParcoursStep>
+
+              <ParcoursStep c={c} n={4} title="Pratiquer" subtitle="Des routines courtes, chaque semaine">
+                <ParcoursLinkCard c={c} text="Un programme de 10 minutes, 3 fois par semaine, adapté aux résultats de votre équipe (bureau et postes debout). Il peut être affiché en salle de pause ou animé par un manager." cta="Voir le programme d'exercices →" onClick={() => setActiveTab("exercises")} />
+              </ParcoursStep>
+
+              <ParcoursStep c={c} n={5} title="Mesurer" subtitle="Vérifier que ça progresse">
+                <ParcoursLinkCard c={c} text="Relancez un bilan tous les 3 mois et comparez : les scores doivent monter et les employés en zone critique diminuer. Invitez aussi les nouveaux arrivants à faire leur bilan." cta="Voir l'évolution →" onClick={() => setActiveTab("evolution")} />
+              </ParcoursStep>
+            </motion.div>
+          )}
+
+          {activeTab === "analysis" && (
+            <motion.div key="analysis" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
 
               {/* Split employeur / employé */}
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 16 }}>
@@ -1226,11 +1457,16 @@ export default function EntrepriseDashboard() {
                 />
               )}
 
-              {/* ── RAPPORT DE SYNTHÈSE ── */}
+            </motion.div>
+          )}
+
+          {activeTab === "report" && (
+            <motion.div key="report" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+
               {assessed.length > 0 && (() => {
                 const r = generateReport(assessed);
                 if (!r) return null;
-                const { bureau, debout, hasGroups, allSetup, allPain, allHabits, allSleep, criticalCount, criticalPct, bureauMainIssue, deboutMainIssue } = r;
+                const { bureau, debout, hasGroups, allSetup, allPain, allHabits, criticalCount, criticalPct, bureauMainIssue, deboutMainIssue } = r;
 
                 return (
                   <div style={{ borderRadius: 20, overflow: "hidden", border: `0.5px solid ${c.border}`, marginBottom: 16 }}>
@@ -1424,201 +1660,11 @@ export default function EntrepriseDashboard() {
                       </div>
                     </div>
 
-                    {/* Plan d'action employeur */}
-                    <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.cardGrad }}>
-                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}><Ico e="🗓️" />Plan d&apos;action recommandé</p>
-                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 16 }}>Classé par impact et faisabilité — à adapter à votre contexte.</p>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                        {[
-                          {
-                            horizon: "Cette semaine",
-                            color: "#ff7b7b",
-                            actions: [
-                              allSetup < 60 ? "Faire l'inventaire des postes sans rehausseur d'écran et sans clavier externe" : null,
-                              allPain < 55 ? "Identifier les 3 employés avec les scores douleurs les plus bas et les rencontrer" : null,
-                              "Envoyer le programme d'exercices collectif à toutes les équipes",
-                            ].filter(Boolean) as string[],
-                          },
-                          {
-                            horizon: "Dans le mois",
-                            color: "#ffa347",
-                            actions: [
-                              allSetup < 60 ? "Équiper les postes bureau critiques : rehausseur + clavier externe (budget ~60€/poste)" : null,
-                              hasGroups && (debout.pain ?? 100) < 55 ? "Installer des tapis anti-fatigue aux postes debout fixes (budget ~45€/poste)" : null,
-                              allHabits < 55 ? "Mettre en place un système de pause active toutes les 45 min (app, alarme partagée)" : null,
-                              "Organiser une session de formation gestes et postures avec un kinésithérapeute",
-                            ].filter(Boolean) as string[],
-                          },
-                          {
-                            horizon: "Dans les 3 mois",
-                            color: "#3fe0a0",
-                            actions: [
-                              "Refaire passer les bilans PAW aux équipes pour mesurer l'évolution",
-                              "Intégrer les résultats dans votre reporting social (CPPT, EcoVadis)",
-                              allSetup < 55 ? "Étudier l'installation de bureaux assis-debout pour les postes les plus critiques" : null,
-                              "Planifier le call de restitution trimestriel avec le kinésithérapeute PAW",
-                            ].filter(Boolean) as string[],
-                          },
-                        ].map((phase, i) => (
-                          <div key={i} style={{ padding: "14px 16px", borderRadius: 12, background: c.bgCard2, border: `1px solid ${c.borderStrong}` }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                              <span style={{ width: 10, height: 10, borderRadius: "50%", background: phase.color, flexShrink: 0 }} />
-                              <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: phase.color }}>{phase.horizon}</span>
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                              {phase.actions.map((action, j) => (
-                                <div key={j} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                                  <span style={{ color: phase.color, fontSize: 12, marginTop: 2, flexShrink: 0 }}>✓</span>
-                                  <span style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, lineHeight: 1.5 }}>{action}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Produits recommandés par profil */}
-                    <div style={{ padding: "20px 24px", borderBottom: `0.5px solid ${c.border}`, background: c.cardGrad }}>
-                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}><Ico e="🛒" />Équipements recommandés</p>
-                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 16 }}>Sélection basée sur les scores de vos équipes — par profil de poste.</p>
-                      <div style={{ display: "grid", gridTemplateColumns: hasGroups && !isMobile ? "1fr 1fr" : "1fr", gap: 12 }}>
-                        {hasGroups ? (
-                          <>
-                            <div>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#6f9bff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}><Ico e="💻" />Postes bureau</p>
-                              {[
-                                ...(allSetup < 65 ? PRODUCTS_BY_ISSUE.setup_bureau : []),
-                                ...(allPain < 55 ? PRODUCTS_BY_ISSUE.douleurs_bureau : []),
-                              ].slice(0, 3).map((prod, i) => (
-                                <a key={i} href={prod.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 8 }}>
-                                    <span style={{ fontSize: 16, flexShrink: 0 }}><Ico e="🛒" style={{ marginRight: 0 }} /></span>
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: c.textPrimary, margin: "0 0 2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</p>
-                                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{prod.price}</p>
-                                    </div>
-                                  </div>
-                                </a>
-                              ))}
-                            </div>
-                            <div>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffa347", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}><Ico e="🏭" />Postes debout</p>
-                              {[
-                                ...PRODUCTS_BY_ISSUE.setup_debout,
-                                ...PRODUCTS_BY_ISSUE.douleurs_debout,
-                              ].slice(0, 3).map((prod, i) => (
-                                <a key={i} href={prod.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 8 }}>
-                                    <span style={{ fontSize: 16, flexShrink: 0 }}><Ico e="🛒" style={{ marginRight: 0 }} /></span>
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: c.textPrimary, margin: "0 0 2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</p>
-                                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{prod.price}</p>
-                                    </div>
-                                  </div>
-                                </a>
-                              ))}
-                            </div>
-                          </>
-                        ) : (
-                          [...PRODUCTS_BY_ISSUE.setup_bureau, ...PRODUCTS_BY_ISSUE.douleurs_bureau].slice(0, 4).map((prod, i) => (
-                            <a key={i} href={prod.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 8 }}>
-                                <span style={{ fontSize: 18, flexShrink: 0 }}><Ico e="🛒" style={{ marginRight: 0 }} /></span>
-                                <div style={{ flex: 1 }}>
-                                  <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: "0 0 2px" }}>{prod.name}</p>
-                                  <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>{prod.reason}</p>
-                                </div>
-                                <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: "#2b5ce6", flexShrink: 0 }}>{prod.price}</span>
-                              </div>
-                            </a>
-                          ))
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Programme exercices collectif */}
-                    <div style={{ padding: "20px 24px", background: c.cardGrad }}>
-                      <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}><Ico e="🏋️" />Programme d&apos;exercices collectif recommandé</p>
-                      <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginBottom: 16 }}>À animer 3x/semaine, 10 minutes. Peut être affiché en salle de pause.</p>
-                      <div style={{ display: "grid", gridTemplateColumns: hasGroups && !isMobile ? "1fr 1fr" : "1fr", gap: 12, alignItems: "start" }}>
-                        {hasGroups ? (
-                          <>
-                            <div>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#6f9bff", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}><Ico e="💻" />Équipe bureau</p>
-                              {EXERCISES_BY_ISSUE.nuque_cervicales.concat(EXERCISES_BY_ISSUE.epaules_poignets).slice(0, 3).map((ex, i) => (
-                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 6, minHeight: 56 }}>
-                                  <span style={{ fontSize: 18, flexShrink: 0 }}><Ico e={ex.emoji} /></span>
-                                  <div style={{ flex: 1 }}>
-                                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: c.textPrimary, margin: "0 0 1px" }}>{ex.name}</p>
-                                    <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{ex.duration}</p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                            <div>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700, color: "#ffa347", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}><Ico e="🏭" />Équipe debout</p>
-                              {EXERCISES_BY_ISSUE.dos_lombaires.concat(EXERCISES_BY_ISSUE.jambes_pieds).slice(0, 3).map((ex, i) => (
-                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", borderRadius: 10, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 6, minHeight: 56 }}>
-                                  <span style={{ fontSize: 18, flexShrink: 0 }}><Ico e={ex.emoji} /></span>
-                                  <div style={{ flex: 1 }}>
-                                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: c.textPrimary, margin: "0 0 1px" }}>{ex.name}</p>
-                                    <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{ex.duration}</p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </>
-                        ) : (
-                          EXERCISES_BY_ISSUE.nuque_cervicales.concat(EXERCISES_BY_ISSUE.dos_lombaires).slice(0, 4).map((ex, i) => (
-                            <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `0.5px solid ${c.border}`, marginBottom: 8 }}>
-                              <span style={{ fontSize: 22, flexShrink: 0 }}><Ico e={ex.emoji} /></span>
-                              <div style={{ flex: 1 }}>
-                                <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13, color: c.textPrimary, margin: "0 0 2px" }}>{ex.name}</p>
-                                <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>{ex.desc}</p>
-                              </div>
-                              <span style={{ padding: "3px 10px", borderRadius: 100, background: "rgba(43,92,230,0.10)", fontFamily: T.b, fontSize: 11, color: "#6f9bff", flexShrink: 0 }}>{ex.duration}</span>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </div>
 
                   </div>
                 );
               })()}
 
-              {/* Invitation */}
-              <div style={{ borderRadius: 20, padding: "22px 24px", background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)" }}>
-                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: c.textPrimary, marginBottom: 4 }}>
-                  <Ico e="🔗" />Lien d&apos;invitation
-                </p>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, marginBottom: 14 }}>
-                  {employees.length - assessed.length > 0
-                    ? `${employees.length - assessed.length} employé${employees.length - assessed.length > 1 ? "s n'ont" : " n'a"} pas encore complété son bilan.`
-                    : "Partagez ce lien pour inviter de nouveaux employés."}
-                </p>
-                {inviteUrl ? (
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <div style={{ flex: 1, padding: "11px 14px", borderRadius: 12, background: c.cardGrad, border: `1px solid ${c.border2}`, fontFamily: T.b, fontSize: 13, color: c.textSecondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {inviteUrl}
-                    </div>
-                    <button onClick={copyInviteUrl} style={{ padding: "11px 18px", borderRadius: 12, border: "none", background: copied ? "#1d9e75" : "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 13, cursor: "pointer", transition: "background 0.2s", flexShrink: 0 }}>
-                      {copied ? "✓ Copié !" : "Copier"}
-                    </button>
-                  </div>
-                ) : (
-                  <button onClick={generateNewCode} disabled={generatingCode} style={{ padding: "12px 24px", borderRadius: 100, border: "none", background: "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 14, cursor: "pointer", opacity: generatingCode ? 0.7 : 1 }}>
-                    {generatingCode ? "Génération…" : "Générer un lien d'invitation"}
-                  </button>
-                )}
-                {inviteCode && (
-                  <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, marginTop: 8 }}>
-                    Code : <strong>{inviteCode}</strong> · Valable 30 jours ·{" "}
-                    <span onClick={generateNewCode} style={{ color: "#6f9bff", cursor: "pointer", textDecoration: "underline" }}>Générer un nouveau code</span>
-                  </p>
-                )}
-              </div>
             </motion.div>
           )}
 
@@ -2164,7 +2210,6 @@ export default function EntrepriseDashboard() {
           {/* ── TAB RESSOURCES ── */}
           {activeTab === "resources" && (
             <motion.div key="resources" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-              {company?.id && <ActionTracker c={c} companyId={company.id} />}
               <ManagerToolkit c={c} />
               <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 {RESOURCES.map((cat, ci) => (
