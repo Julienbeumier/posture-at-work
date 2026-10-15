@@ -1,5 +1,6 @@
 "use client";
 
+import { planLabel } from "@/lib/plans";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -151,7 +152,7 @@ export default function EntrepriseRapportPDF() {
             </div>
             <h1>{company?.name}</h1>
             <p style={{ marginTop: 4, color: "#64748b" }}>
-              {company?.contact_name} · Plan {company?.plan} · Généré le {new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+              {company?.contact_name} · Forfait {planLabel(company?.plan)} · Généré le {new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
             </p>
           </div>
           <div style={{ textAlign: "right" }}>

@@ -1,5 +1,6 @@
 "use client";
 
+import { planLabel } from "@/lib/plans";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
@@ -701,7 +702,7 @@ export default function EntrepriseDashboard() {
                 {company?.name}
               </h1>
               <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0 }}>
-                Plan {company?.plan} · {employees.length} employé{employees.length > 1 ? "s" : ""} inscrit{employees.length > 1 ? "s" : ""} · {assessed.length} bilan{assessed.length > 1 ? "s" : ""} complété{assessed.length > 1 ? "s" : ""}
+                Forfait {planLabel(company?.plan)} · {employees.length} employé{employees.length > 1 ? "s" : ""} inscrit{employees.length > 1 ? "s" : ""} · {assessed.length} bilan{assessed.length > 1 ? "s" : ""} complété{assessed.length > 1 ? "s" : ""}
               </p>
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>

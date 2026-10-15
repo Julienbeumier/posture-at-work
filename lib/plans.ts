@@ -29,3 +29,11 @@ export function breakEvenDays(plan: Plan): number | null {
   if (plan.price === null) return null;
   return plan.price / COUT_JOUR_ABSENCE_DIRECT;
 }
+
+/** Libellé affichable d'un forfait stocké en base (accepte aussi les anciennes valeurs). */
+export function planLabel(plan?: string | null): string {
+  if (!plan) return "";
+  const found = PLANS.find(p => p.key === plan.toLowerCase());
+  if (found) return found.name;
+  return plan.charAt(0).toUpperCase() + plan.slice(1);
+}
