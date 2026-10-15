@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     const supabaseUser = createServerClient(cookieStore);
     const { data: { user } } = await supabaseUser.auth.getUser();
 
-    const maxEmployees = plan === "starter" ? 25 : plan === "pme" ? 100 : 999;
+    const maxEmployees = plan === "essentiel" ? 15 : plan === "pme" ? 50 : plan === "croissance" ? 100 : 999;
 
     // Créer la company
     const { data: company, error: companyError } = await supabaseAdmin

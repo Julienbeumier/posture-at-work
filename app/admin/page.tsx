@@ -1,4 +1,5 @@
 "use client";
+import { PLANS } from "@/lib/plans";
 import { useState } from "react";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
@@ -11,7 +12,7 @@ export default function AdminPage() {
     contactName: "",
     contactEmail: "",
     plan: "pme",
-    maxEmployees: 25,
+    maxEmployees: 50,
     inviteCode: "",
   });
   const [loading, setLoading] = useState(false);
@@ -94,49 +95,34 @@ export default function AdminPage() {
 
           <div>
             <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600, color: "var(--t55)", marginBottom: 8 }}>
-              Nombre d&apos;employés
+              Forfait (paiement unique)
             </p>
-
-            <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 10 }}>
-              <input type="number" min={10} max={500} value={form.maxEmployees}
-                onChange={e => {
-                  const n = Math.max(10, Number(e.target.value));
-                  const plan = n < 50 ? "pme" : n < 150 ? "croissance" : "entreprise";
-                  setForm(prev => ({ ...prev, maxEmployees: n, plan }));
-                }}
-                style={{ width: 80, padding: "8px 10px", borderRadius: 8, outline: "none",
-                  background: "var(--bg-card2)", border: "1px solid var(--border2)",
-                  color: "var(--text-primary)", fontFamily: T.b, fontSize: 16,
-                  fontWeight: 700, textAlign: "center" }} />
-              <input type="range" min={10} max={200} step={1}
-                value={Math.min(form.maxEmployees, 200)}
-                onChange={e => {
-                  const n = Number(e.target.value);
-                  const plan = n < 50 ? "pme" : n < 150 ? "croissance" : "entreprise";
-                  setForm(prev => ({ ...prev, maxEmployees: n, plan }));
-                }}
-                style={{ flex: 1, accentColor: "#2b5ce6", cursor: "pointer" }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8, marginBottom: 10 }}>
+              {PLANS.map(pl => {
+                const active = form.plan === pl.key;
+                return (
+                  <button key={pl.key} type="button" onClick={() => setForm(prev => ({ ...prev, plan: pl.key, maxEmployees: pl.maxEmployees ?? Math.max(prev.maxEmployees, 101) }))}
+                    style={{ textAlign: "left", padding: "10px 12px", borderRadius: 12, cursor: "pointer",
+                      background: active ? "rgba(43,92,230,0.18)" : "var(--bg-card2)",
+                      border: active ? "1.5px solid #6f9bff" : "1px solid var(--border2)" }}>
+                    <span style={{ display: "block", fontFamily: T.h, fontWeight: 800, fontSize: 13, color: active ? "#6f9bff" : "var(--text-primary)" }}>{pl.name}</span>
+                    <span style={{ display: "block", fontFamily: T.b, fontSize: 11, color: "var(--t55)" }}>
+                      {pl.maxEmployees ? `≤ ${pl.maxEmployees} employés` : "> 100 employés"} · {pl.price !== null ? `${pl.price} €` : "sur devis"}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
-
-            <div style={{ padding: "10px 14px", borderRadius: 10,
-              background: "rgba(43,92,230,0.08)", border: "0.5px solid rgba(43,92,230,0.2)" }}>
-              {form.maxEmployees >= 150 ? (
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "#c4b5fd", margin: 0 }}>
-                  Sur devis — 150+ employés
-                </p>
-              ) : (
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)" }}>
-                    {form.maxEmployees} × {form.maxEmployees < 50 ? "25" : "20"}€/an
-                  </span>
-                  <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "#2b5ce6" }}>
-                    {form.maxEmployees < 50
-                      ? form.maxEmployees * 25
-                      : form.maxEmployees * 20}€/an
-                  </span>
-                </div>
-              )}
-            </div>
+            {form.plan === "entreprise" && (
+              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)" }}>Employés max :</span>
+                <input type="number" min={101} max={2000} value={form.maxEmployees}
+                  onChange={e => setForm(prev => ({ ...prev, maxEmployees: Math.max(101, Number(e.target.value)) }))}
+                  style={{ width: 90, padding: "8px 10px", borderRadius: 8, outline: "none",
+                    background: "var(--bg-card2)", border: "1px solid var(--border2)",
+                    color: "var(--text-primary)", fontFamily: T.b, fontSize: 15, fontWeight: 700, textAlign: "center" }} />
+              </div>
+            )}
           </div>
         </div>
 
@@ -172,9 +158,7 @@ export default function AdminPage() {
             )}
             {result.success && (
               <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t50)", marginTop: 6 }}>
-                Prix indicatif : {form.maxEmployees < 50
-                  ? `${form.maxEmployees} × 25€ = ${form.maxEmployees * 25}€/an`
-                  : `${form.maxEmployees} × 20€ = ${form.maxEmployees * 20}€/an`}
+                Forfait {PLANS.find(pl => pl.key === form.plan)?.name} : {PLANS.find(pl => pl.key === form.plan)?.price !== null ? `${PLANS.find(pl => pl.key === form.plan)?.price} € (paiement unique)` : "sur devis"} · {form.maxEmployees} employés max
               </p>
             )}
           </div>

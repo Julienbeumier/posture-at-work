@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useTheme } from "@/contexts/ThemeContext";
 import { ParcoursStep } from "@/components/dashboard/ParcoursStep";
+import { PLANS, breakEvenDays, COUT_JOUR_ABSENCE_DIRECT, COUT_JOUR_ABSENCE_COMPLET, SECUREX_URL, type PlanKey } from "@/lib/plans";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
@@ -29,20 +30,6 @@ const FEATURES = [
   },
 ];
 
-// Coût moyen d'un jour d'absence (salaire garanti) pour un employeur belge — Securex, baromètre de l'absentéisme 2022 :
-// 321 € de coûts directs + 802 € de coûts indirects = 1 123 € par jour d'absence (salaire garanti).
-const COUT_JOUR_ABSENCE = 1123;
-const SECUREX_URL = "https://www.securex.be/getmedia/a13c68a1-07b4-46b8-a7d9-21e046b77cfa/WhitePaper-Absenteisme-2022-fr.pdf?ext=.pdf";
-const SLIDER_MIN = 10;
-const SLIDER_MAX = 150;
-
-function pricing(employees: number) {
-  const n = Math.max(SLIDER_MIN, employees);
-  if (n >= 150) return { devis: true as const, n, perEmployee: 0, totalYear: 0, tier: "Entreprise" };
-  const perEmployee = n < 50 ? 25 : 20;
-  return { devis: false as const, n, perEmployee, totalYear: n * perEmployee, tier: n < 50 ? "PME" : "Croissance" };
-}
-
 const OUTCOMES = [
   {
     icon: "🔎", color: "#6f9bff", title: "Voir",
@@ -57,11 +44,11 @@ const OUTCOMES = [
   {
     icon: "📈", color: "#ffa347", title: "Prouver",
     text: "Des résultats que vous pouvez montrer à votre direction et à vos équipes.",
-    items: ["Rapport trimestriel PDF", "Rapport bien-être valorisable"],
+    items: ["Rapport PDF pour votre direction", "Rapport bien-être valorisable"],
   },
 ];
 
-function InvestmentCalculator({
+function PlanSelector({
   isMobile, c, T: fonts, fadeUp: fu,
 }: {
   isMobile: boolean;
@@ -69,12 +56,11 @@ function InvestmentCalculator({
   T: { h: string; b: string };
   fadeUp: (delay?: number) => object;
 }) {
-  const [employees, setEmployees] = useState(30);
-  const p = pricing(employees);
-  const monthly = p.totalYear / 12;
-  const perEmployeeMonth = p.perEmployee / 12;
-  const breakEvenDays = p.totalYear / COUT_JOUR_ABSENCE;
-  const marks = [10, 25, 50, 100, 150];
+  const [selected, setSelected] = useState<PlanKey>("pme");
+  const plan = PLANS.find(p => p.key === selected) ?? PLANS[1];
+  const days = breakEvenDays(plan);
+  const daysCeil = days === null ? 0 : Math.ceil(days);
+  const employeesPerDay = days !== null && plan.maxEmployees ? Math.round(plan.maxEmployees / days) : 0;
 
   return (
     <motion.div {...fu(0.1)} style={{ marginBottom: 72 }}>
@@ -82,52 +68,43 @@ function InvestmentCalculator({
         Tarifs
       </p>
       <h2 style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 22 : 28, color: c.textPrimary, marginBottom: 8, letterSpacing: "-0.5px" }}>
-        Un prix clair. Rentabilisé dès les premiers jours d&apos;absence évités.
+        Un forfait clair, en paiement unique.
       </h2>
-      <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textMuted, marginBottom: 28, lineHeight: 1.65, maxWidth: 560 }}>
-        Faites glisser pour votre équipe. Le premium PAW est inclus pour chaque employé.
+      <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textMuted, marginBottom: 28, lineHeight: 1.65, maxWidth: 580 }}>
+        Choisissez la taille de votre entreprise. Pas d&apos;abonnement : un diagnostic complet de vos équipes, et le premium PAW à vie pour chaque employé.
       </p>
 
-      <div style={{ borderRadius: 28, overflow: "hidden", border: `1px solid ${c.borderStrong}`, background: c.cardGrad }}>
-        {/* 1. Curseur */}
-        <div style={{ padding: isMobile ? "24px 18px 8px" : "32px 40px 12px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
-            <label htmlFor="invest-employees" style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, fontWeight: 600 }}>
-              Combien d&apos;employés dans votre entreprise ?
-            </label>
-            <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 30 : 38, color: "#6f9bff", lineHeight: 1 }}>
-              {employees}{employees >= SLIDER_MAX ? "+" : ""}
-            </span>
-          </div>
-          <input
-            id="invest-employees"
-            type="range"
-            min={SLIDER_MIN}
-            max={SLIDER_MAX}
-            step={5}
-            value={employees}
-            onChange={e => setEmployees(Number(e.target.value))}
-            aria-valuetext={`${employees} employés`}
-            style={{ width: "100%", accentColor: "#2b5ce6", cursor: "pointer", height: 28 }}
-          />
-          <div style={{ position: "relative", height: 20, marginTop: 2 }}>
-            {marks.map(m => (
-              <span key={m} style={{
-                position: "absolute", left: `${((m - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * 100}%`,
-                transform: m === SLIDER_MAX ? "translateX(-100%)" : m === SLIDER_MIN ? "none" : "translateX(-50%)",
-                fontFamily: fonts.b, fontSize: 11, color: c.textMuted,
-              }}>{m === SLIDER_MAX ? "150+" : m}</span>
-            ))}
-          </div>
+      <div style={{ borderRadius: 28, overflow: "hidden", border: `1px solid ${c.borderStrong}`, background: c.cardGrad, padding: isMobile ? "20px 14px" : "32px 36px" }}>
+        {/* 1. Choix du forfait */}
+        <div role="radiogroup" aria-label="Taille de votre entreprise" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 10, marginBottom: 22 }}>
+          {PLANS.map(p => {
+            const active = p.key === selected;
+            return (
+              <button key={p.key} type="button" role="radio" aria-checked={active} onClick={() => setSelected(p.key)}
+                style={{
+                  textAlign: "left", padding: isMobile ? "14px 12px" : "16px 16px", borderRadius: 18, cursor: "pointer",
+                  background: active ? "linear-gradient(145deg, rgba(43,92,230,0.40), rgba(111,155,255,0.14))" : c.bgCard2,
+                  border: active ? "1.5px solid #6f9bff" : `1px solid ${c.border}`,
+                  boxShadow: active ? "0 10px 30px rgba(43,92,230,0.28)" : "none",
+                }}>
+                <span style={{ display: "block", fontFamily: fonts.h, fontWeight: 800, fontSize: 14, color: active ? "#6f9bff" : c.textPrimary, marginBottom: 2 }}>{p.name}</span>
+                <span style={{ display: "block", fontFamily: fonts.b, fontSize: 12, color: c.textMuted, marginBottom: 8 }}>
+                  {p.maxEmployees ? `jusqu'à ${p.maxEmployees} employés` : "plus de 100 employés"}
+                </span>
+                <span style={{ display: "block", fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 20 : 24, color: c.textPrimary, letterSpacing: "-1px" }}>
+                  {p.price !== null ? `${p.price.toLocaleString("fr-FR")} €` : "Sur devis"}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        {p.devis ? (
-          <div style={{ padding: isMobile ? "28px 18px 32px" : "36px 40px 44px", textAlign: "center" }}>
-            <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 34 : 44, color: c.textPrimary, margin: "0 0 8px" }}>Sur devis</p>
-            <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textMuted, margin: "0 auto 8px", lineHeight: 1.65, maxWidth: 520 }}>
-              Au-delà de 150 employés, nous construisons une offre sur mesure : plusieurs sites, intégration SIRH, accompagnement dédié.
+        {plan.price === null ? (
+          <div style={{ textAlign: "center", padding: isMobile ? "12px 4px 8px" : "16px 20px 8px" }}>
+            <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textMuted, margin: "0 auto 8px", lineHeight: 1.65, maxWidth: 540 }}>
+              Au-delà de 100 employés, nous construisons une offre sur mesure : plusieurs sites, intégration SIRH, accompagnement dédié.
             </p>
-            <p style={{ fontFamily: fonts.b, fontSize: 13, color: "#6f9bff", margin: "0 0 26px" }}>Tarif négocié · Déploiement accompagné</p>
+            <p style={{ fontFamily: fonts.b, fontSize: 13, color: "#6f9bff", margin: "0 0 24px" }}>Tarif négocié · Déploiement accompagné</p>
             <a href="#contact" style={{ textDecoration: "none" }}>
               <span style={{ display: "inline-block", padding: "15px 34px", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: fonts.h, fontWeight: 800, fontSize: 15, boxShadow: "0 6px 26px rgba(43,92,230,0.45)" }}>
                 Demander un devis →
@@ -135,69 +112,54 @@ function InvestmentCalculator({
             </a>
           </div>
         ) : (
-          <div style={{ padding: isMobile ? "8px 18px 28px" : "12px 40px 40px" }}>
+          <div>
             {/* 2. Prix */}
-            <div style={{ borderRadius: 22, padding: isMobile ? "22px 18px" : "28px 32px", marginBottom: 16, textAlign: "center", background: "linear-gradient(145deg, rgba(43,92,230,0.38), rgba(111,155,255,0.12))", border: "1px solid rgba(111,155,255,0.45)", boxShadow: "0 12px 40px rgba(43,92,230,0.22)" }}>
-              <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 100, background: "rgba(111,155,255,0.18)", color: "#6f9bff", fontFamily: fonts.b, fontWeight: 700, fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 10 }}>
-                Offre {p.tier}
-              </span>
+            <div style={{ textAlign: "center", marginBottom: 20 }}>
               <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
                 <span style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: isMobile ? 52 : 68, color: c.textPrimary, letterSpacing: "-3px", lineHeight: 1 }}>
-                  {p.totalYear.toLocaleString("fr-FR")} €
+                  {plan.price.toLocaleString("fr-FR")} €
                 </span>
-                <span style={{ fontFamily: fonts.b, fontSize: 15, color: c.textMuted }}>par an, HT</span>
+                <span style={{ fontFamily: fonts.b, fontSize: 15, color: c.textMuted }}>paiement unique</span>
               </div>
-              <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, margin: "10px 0 0", lineHeight: 1.6 }}>
-                Soit <strong style={{ color: c.textPrimary }}>{Math.round(monthly).toLocaleString("fr-FR")} € par mois</strong> pour toute l&apos;équipe, ou{" "}
-                <strong style={{ color: c.textPrimary }}>{perEmployeeMonth.toFixed(2).replace(".", ",")} € par employé et par mois</strong>.
+              <p style={{ fontFamily: fonts.b, fontSize: 13.5, color: c.textSecondary, margin: "8px 0 0", lineHeight: 1.6 }}>
+                Jusqu&apos;à <strong style={{ color: c.textPrimary }}>{plan.maxEmployees} employés</strong> · dashboard RH accessible 12 mois · premium à vie pour chaque employé
               </p>
-              {p.n < 50 && (
-                <p style={{ fontFamily: fonts.b, fontSize: 12.5, color: "#3fe0a0", fontWeight: 600, margin: "10px 0 0" }}>
-                  Dès 50 employés, le tarif passe à 20 € par employé et par an.
-                </p>
-              )}
-              {p.tier === "Croissance" && (
-                <p style={{ fontFamily: fonts.b, fontSize: 12.5, color: "#3fe0a0", fontWeight: 600, margin: "10px 0 0" }}>
-                  🎉 Tarif dégressif : vous économisez {(p.n * 5).toLocaleString("fr-FR")} € par an par rapport au tarif PME.
-                </p>
-              )}
+              <p style={{ fontFamily: fonts.b, fontSize: 11.5, color: c.textMuted, margin: "6px 0 0" }}>TVA précisée sur le devis.</p>
             </div>
 
-            {/* 3. Rentabilité : comparaison simple, chiffre belge sourcé */}
+            {/* 3. Rentabilité : jours d'absence évités */}
             <div style={{ borderRadius: 18, padding: isMobile ? "18px 14px" : "22px 24px", marginBottom: 22, background: "rgba(63,224,160,0.08)", border: "1px solid rgba(63,224,160,0.28)" }}>
-              <p style={{ fontFamily: fonts.h, fontWeight: 800, fontSize: isMobile ? 15 : 17, color: c.textPrimary, margin: "0 0 14px", textAlign: "center" }}>
-                💡 En clair : {breakEvenDays <= 1 ? "PAW coûte moins qu'une journée d'absence" : `PAW coûte l'équivalent de ${Math.ceil(breakEvenDays)} jours d'absence`}
+              <p style={{ fontFamily: fonts.h, fontWeight: 800, fontSize: isMobile ? 15 : 17, color: c.textPrimary, margin: "0 0 14px", textAlign: "center", lineHeight: 1.4 }}>
+                💡 Rentabilisé dès {daysCeil} jours d&apos;absence évités sur {plan.maxEmployees} employés
               </p>
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr auto 1fr auto 1fr", alignItems: "center", gap: isMobile ? 8 : 12, marginBottom: 14 }}>
                 <div style={{ textAlign: "center", padding: "14px 10px", borderRadius: 14, background: "rgba(255,123,123,0.10)", border: "1px solid rgba(255,123,123,0.3)" }}>
-                  <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#ff7b7b", margin: "0 0 2px" }}>{COUT_JOUR_ABSENCE.toLocaleString("fr-FR")} €</p>
+                  <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#ff7b7b", margin: "0 0 2px" }}>{COUT_JOUR_ABSENCE_DIRECT} €</p>
                   <p style={{ fontFamily: fonts.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.4 }}>coûte en moyenne<br />1 jour d&apos;absence</p>
                 </div>
-                <span aria-hidden="true" style={{ textAlign: "center", fontFamily: fonts.h, fontWeight: 900, fontSize: 18, color: c.textMuted }}>vs</span>
+                <span aria-hidden="true" style={{ textAlign: "center", fontFamily: fonts.h, fontWeight: 900, fontSize: 18, color: c.textMuted }}>×</span>
                 <div style={{ textAlign: "center", padding: "14px 10px", borderRadius: 14, background: "rgba(43,92,230,0.14)", border: "1px solid rgba(111,155,255,0.4)" }}>
-                  <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#6f9bff", margin: "0 0 2px" }}>{p.totalYear.toLocaleString("fr-FR")} €</p>
-                  <p style={{ fontFamily: fonts.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.4 }}>coûte PAW pour<br />{p.n} employés, 1 an</p>
+                  <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#6f9bff", margin: "0 0 2px" }}>{daysCeil} jours</p>
+                  <p style={{ fontFamily: fonts.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.4 }}>d&apos;absence évités<br />sur {plan.maxEmployees} employés</p>
                 </div>
-                <span aria-hidden="true" style={{ textAlign: "center", fontFamily: fonts.h, fontWeight: 900, fontSize: 18, color: c.textMuted }}>=</span>
+                <span aria-hidden="true" style={{ textAlign: "center", fontFamily: fonts.h, fontWeight: 900, fontSize: 18, color: c.textMuted }}>≥</span>
                 <div style={{ textAlign: "center", padding: "14px 10px", borderRadius: 14, background: "rgba(63,224,160,0.12)", border: "1px solid rgba(63,224,160,0.4)" }}>
-                  <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#3fe0a0", margin: "0 0 2px" }}>{breakEvenDays.toFixed(1).replace(".", ",")} jour{breakEvenDays >= 2 ? "s" : ""}</p>
-                  <p style={{ fontFamily: fonts.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.4 }}>d&apos;absence<br />seulement</p>
+                  <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#3fe0a0", margin: "0 0 2px" }}>{plan.price.toLocaleString("fr-FR")} €</p>
+                  <p style={{ fontFamily: fonts.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.4 }}>le prix du forfait<br />{plan.name}</p>
                 </div>
               </div>
               <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, margin: "0 0 10px", lineHeight: 1.65, textAlign: "center" }}>
-                {breakEvenDays <= 1
-                  ? "Éviter une seule journée d'absence dans l'année suffit déjà à couvrir le coût de PAW."
-                  : `Éviter ${Math.ceil(breakEvenDays)} jours d'absence dans l'année suffit à couvrir le coût de PAW.`}
+                Soit environ <strong style={{ color: c.textPrimary }}>1 jour d&apos;absence évité pour {employeesPerDay} employés</strong>. Et davantage si l&apos;on compte le remplacement et la réorganisation.
               </p>
               <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: 0, lineHeight: 1.55, textAlign: "center" }}>
-                Un jour d&apos;absence = salaire garanti versé (321 €) + coûts indirects : remplacement, réorganisation, perte de production (802 €).{" "}
+                {COUT_JOUR_ABSENCE_DIRECT} € = salaire garanti versé pour un jour d&apos;absence. Avec les coûts indirects, Securex estime le coût complet à {COUT_JOUR_ABSENCE_COMPLET.toLocaleString("fr-FR")} € par jour.{" "}
                 Source :{" "}
                 <a href={SECUREX_URL} target="_blank" rel="noopener noreferrer" style={{ color: "#6f9bff" }}>Securex, L&apos;absentéisme en 2022</a>
                 {" "}(moyenne belge, à titre indicatif). PAW ne garantit pas un nombre de jours évités.
               </p>
             </div>
 
-            {/* 4. Ce que vous recevez */}
+            {/* 4. Ce que vous obtenez */}
             <p style={{ fontFamily: fonts.b, fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: c.textMuted, textTransform: "uppercase", margin: "0 0 12px" }}>
               Ce que vous obtenez
             </p>
@@ -214,14 +176,11 @@ function InvestmentCalculator({
                 </div>
               ))}
             </div>
-            <p style={{ fontFamily: fonts.b, fontSize: 12.5, color: c.textMuted, textAlign: "center", margin: "0 0 20px" }}>
-              Inclus pour vos {p.n} employés : {p.n} bilans premium PAW et {p.n} analyses vidéo IA.
-            </p>
 
             {/* 5. CTA */}
             <a href="#contact" style={{ textDecoration: "none" }}>
               <span style={{ display: "block", textAlign: "center", padding: "17px 0", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: fonts.h, fontWeight: 800, fontSize: 16, boxShadow: "0 6px 28px rgba(43,92,230,0.5)" }}>
-                Demander une démo pour {p.n} employés →
+                Demander une démo — forfait {plan.name} →
               </span>
             </a>
           </div>
@@ -417,7 +376,7 @@ export default function EntrepriseClient() {
                 <div>
                   <p style={{ fontFamily: T.b, fontSize: 11, color: "#6f9bff", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 6px" }}>🏢 Dashboard RH</p>
                   <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: c.textPrimary, margin: "0 0 4px" }}>Arcadia Distribution</p>
-                  <p style={{ fontFamily: T.b, fontSize: 12.5, color: c.textMuted, margin: 0 }}>Plan Croissance · 47 employés inscrits · 41 bilans complétés</p>
+                  <p style={{ fontFamily: T.b, fontSize: 12.5, color: c.textMuted, margin: 0 }}>Forfait PME · 47 employés inscrits · 41 bilans complétés</p>
                 </div>
                 {!isMobile && (
                   <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
@@ -649,7 +608,7 @@ export default function EntrepriseClient() {
         </motion.div>
 
         {/* ── 5. TARIFS + RENTABILITÉ ── */}
-        <InvestmentCalculator isMobile={isMobile} c={c} T={T} fadeUp={fadeUp} />
+        <PlanSelector isMobile={isMobile} c={c} T={T} fadeUp={fadeUp} />
 
         {/* ESG discret */}
         <motion.div {...fadeUp(0.05)} style={{ marginBottom: 40 }}>
