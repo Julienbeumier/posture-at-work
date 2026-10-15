@@ -1014,6 +1014,11 @@ export default function QuestionnairePage() {
         window.location.href = "/onboarding";
         return;
       }
+      // Le profil (prénom, âge, métier) se renseigne dans l'onboarding avant le bilan
+      if (!localStorage.getItem("paw_firstname") || !localStorage.getItem("paw_job_type")) {
+        window.location.href = "/onboarding";
+        return;
+      }
       localStorage.removeItem("paw_example_mode");
       sessionStorage.removeItem("paw_example_mode");
       setJobType(localStorage.getItem("paw_job_type") ?? "bureau");

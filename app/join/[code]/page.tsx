@@ -22,6 +22,7 @@ export default function JoinPage() {
   const [company, setCompany] = useState<Company | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isNewUser, setIsNewUser] = useState(true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -95,6 +96,10 @@ export default function JoinPage() {
 
   async function handleAuth() {
     if (!email || !password || !company) return;
+    if (isNewUser) {
+      if (password.length < 8) { setError("Mot de passe : 8 caractères minimum"); return; }
+      if (password !== passwordConfirm) { setError("Les mots de passe ne correspondent pas"); return; }
+    }
     setLoading(true);
     setError("");
 
@@ -292,14 +297,26 @@ export default function JoinPage() {
               placeholder="Mot de passe"
               value={password}
               onChange={e => setPassword(e.target.value)}
+              autoComplete={isNewUser ? "new-password" : "current-password"}
               style={{ padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `1px solid ${c.border2}`, color: c.textPrimary, fontFamily: T.b, fontSize: 14, outline: "none" }}
             />
+            {isNewUser && (
+              <input
+                type="password"
+                placeholder="Confirmer le mot de passe (8 caractères min.)"
+                value={passwordConfirm}
+                onChange={e => setPasswordConfirm(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && handleAuth()}
+                autoComplete="new-password"
+                style={{ padding: "12px 14px", borderRadius: 12, background: c.bgCard2, border: `1px solid ${passwordConfirm && passwordConfirm !== password ? "#e24b4a" : c.border2}`, color: c.textPrimary, fontFamily: T.b, fontSize: 14, outline: "none" }}
+              />
+            )}
             {error && (
               <p style={{ fontFamily: T.b, fontSize: 12, color: "#e24b4a" }}>{error}</p>
             )}
             <button
               onClick={handleAuth}
-              disabled={!email || !password || loading}
+              disabled={!email || !password || (isNewUser && !passwordConfirm) || loading}
               style={{
                 padding: "14px 0", borderRadius: 100, border: "none",
                 background: email && password ? "#2b5ce6" : c.bgCard2,
