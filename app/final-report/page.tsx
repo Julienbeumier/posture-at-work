@@ -884,9 +884,7 @@ export default function FinalReportPage() {
       .eq("role", "employee")
       .maybeSingle()
       .then(({ data: membership }) => {
-        const companyId = membership?.company_id
-          ?? localStorage.getItem("paw_company_id")
-          ?? null;
+        const companyId = membership?.company_id ?? null;
         return saveAssessmentForUser(
           user.id, scores, answers,
           videoAnalysis as Record<string, unknown> | null,

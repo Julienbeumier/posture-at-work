@@ -363,23 +363,18 @@ export default function ResultsPage() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) { return; }
 
-        let companyId = localStorage.getItem("paw_company_id");
-        if (!companyId) {
-          const { data: membership } = await supabase
-            .from("company_memberships")
-            .select("company_id")
-            .eq("user_id", user.id)
-            .eq("role", "employee")
-            .maybeSingle();
-          if (membership?.company_id) {
-            companyId = membership.company_id;
-            localStorage.setItem("paw_company_id", membership.company_id);
-          }
-        }
+        // L'entreprise vient de l'appartenance réelle du compte (jamais du navigateur)
+        const { data: membership } = await supabase
+          .from("company_memberships")
+          .select("company_id")
+          .eq("user_id", user.id)
+          .eq("role", "employee")
+          .maybeSingle();
+        const companyId = membership?.company_id ?? null;
 
         const { error } = await saveAssessmentForUser(user.id, s as unknown as Record<string, number>, a as Record<string, unknown>, null, companyId);
         if (error) console.error("[PAW] Erreur sauvegarde:", error);
-        else console.log("[PAW] Bilan sauvegardé ✅");
+
       } catch (e) {
         console.error("[PAW] Exception sauvegarde:", e);
       }

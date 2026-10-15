@@ -1,5 +1,6 @@
 "use client";
 
+import { cachePremium } from "@/lib/premium";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -128,7 +129,7 @@ function SuccessContent() {
         .maybeSingle();
 
       if (profile?.is_premium) {
-        localStorage.setItem("paw_premium", "true");
+        cachePremium(user.id);
         clearInterval(interval);
         await recoverAndSavePendingAssessment(user.id, supabase);
         setStatus("success");
@@ -138,7 +139,6 @@ function SuccessContent() {
 
       if (attempts >= 20) {
         clearInterval(interval);
-        localStorage.setItem("paw_premium", "true");
         setStatus("success");
       }
     }, 1500);

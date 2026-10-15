@@ -79,6 +79,12 @@ export default function Navbar() {
   async function signOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
+    // Efface tout ce qui est propre au compte pour qu'il ne passe pas à la personne suivante
+    try {
+      ["paw_premium", "paw_premium_uid", "paw_premium_since", "paw_company_id", "paw_is_b2b",
+       "paw_firstname", "paw_age", "paw_job_type", "paw_hours_week", "paw_onboarding"]
+        .forEach(k => localStorage.removeItem(k));
+    } catch { /* stockage indisponible */ }
     setUser(null);
     router.push("/");
     setMenuOpen(false);

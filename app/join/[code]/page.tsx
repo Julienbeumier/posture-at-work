@@ -42,9 +42,7 @@ export default function JoinPage() {
     }
 
     // Le premium B2B est activé côté serveur par /api/entreprise/join
-    localStorage.setItem("paw_company_id", companyId);
-    localStorage.setItem("paw_is_b2b", "true");
-    localStorage.setItem("paw_premium", "true");
+    void companyId;
     setStep("done");
     setTimeout(() => router.push("/onboarding"), 2000);
   }, [code, router, supabase]);
