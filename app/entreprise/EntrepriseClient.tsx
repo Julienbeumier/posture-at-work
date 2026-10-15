@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useTheme } from "@/contexts/ThemeContext";
+import { ParcoursStep } from "@/components/dashboard/ParcoursStep";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
@@ -563,109 +564,115 @@ export default function EntrepriseClient() {
               </div>
             </div>
 
-            {/* Dashboard preview */}
-            <div style={{ background: "#1f2d4d", padding: isMobile ? "16px" : "20px", maxHeight: 520, overflow: "hidden", position: "relative" }}>
-              {/* Mini header */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            {/* Dashboard preview — mêmes cartes, couleurs et thème que le vrai dashboard */}
+            <div style={{ background: c.bgPrimary, padding: isMobile ? "16px 12px" : "24px", maxHeight: isMobile ? 560 : 640, overflow: "hidden", position: "relative" }}>
+              {/* En-tête */}
+              <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", gap: 12, marginBottom: 20 }}>
                 <div>
-                  <div style={{ fontFamily: T.h, fontWeight: 900, fontSize: 16, color: "#fff" }}>Arcadia Distribution</div>
-                  <div style={{ fontFamily: T.b, fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
-                    Plan Croissance · 47 employés · 41 bilans
+                  <p style={{ fontFamily: T.b, fontSize: 11, color: "#6f9bff", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 6px" }}>🏢 Dashboard RH</p>
+                  <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 24, color: c.textPrimary, margin: "0 0 4px" }}>Arcadia Distribution</p>
+                  <p style={{ fontFamily: T.b, fontSize: 12.5, color: c.textMuted, margin: 0 }}>Plan Croissance · 47 employés inscrits · 41 bilans complétés</p>
+                </div>
+                {!isMobile && (
+                  <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                    {[
+                      { t: "🔗 Inviter des employés", bg: "rgba(43,92,230,0.15)", col: "#6f9bff" },
+                      { t: "📊 Exporter Excel (CSV)", bg: "rgba(111,155,255,0.15)", col: "#6f9bff" },
+                      { t: "📄 Exporter PDF", bg: "rgba(29,158,117,0.15)", col: "#1d9e75" },
+                    ].map(b => (
+                      <span key={b.t} style={{ padding: "8px 14px", borderRadius: 100, background: b.bg, color: b.col, fontFamily: T.b, fontWeight: 600, fontSize: 12, whiteSpace: "nowrap" }}>{b.t}</span>
+                    ))}
                   </div>
-                </div>
-                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 100, background: "rgba(212,162,42,0.12)", border: "1px solid rgba(212,162,42,0.3)" }}>
-                  <span style={{ fontSize: 14 }}>🥈</span>
-                  <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, color: "#d4a22a" }}>Score Social Silver</span>
-                </div>
+                )}
               </div>
 
-              {/* Score + KPIs */}
-              <div style={{ borderRadius: 16, padding: "16px", background: "rgba(63,224,160,0.06)", border: "0.5px solid rgba(63,224,160,0.2)", marginBottom: 12 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
-                  <div style={{ width: 56, height: 56, borderRadius: "50%", border: "2.5px solid #3fe0a0", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0, background: "rgba(63,224,160,0.1)" }}>
-                    <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: "#3fe0a0", lineHeight: 1 }}>67</span>
-                    <span style={{ fontFamily: T.b, fontSize: 8, color: "rgba(255,255,255,0.3)" }}>/100</span>
-                  </div>
-                  <div>
-                    <div style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff", marginBottom: 3 }}>Score santé entreprise</div>
-                    <div style={{ fontFamily: T.b, fontSize: 12, color: "rgba(255,255,255,0.45)", lineHeight: 1.4 }}>
-                      Des améliorations importantes identifiées — 11 employés en zone critique
+              {/* Score santé entreprise */}
+              <div style={{ borderRadius: 20, padding: isMobile ? "16px" : "24px", marginBottom: 18, background: "linear-gradient(145deg, #ffa34738, rgba(43,92,230,0.22))", border: "1px solid #ffa34777", boxShadow: "0 10px 34px #ffa34722" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+                  <div style={{ width: 72, height: 72, borderRadius: "50%", position: "relative", display: "grid", placeItems: "center", flexShrink: 0, background: `conic-gradient(#ffa347 0 67%, ${c.border} 0)`, boxShadow: "0 0 22px #ffa34744" }}>
+                    <div style={{ position: "absolute", inset: 6, borderRadius: "50%", background: c.bgPrimary }} />
+                    <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                      <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "#ffa347", lineHeight: 1 }}>67</span>
+                      <span style={{ fontFamily: T.b, fontSize: 9, color: c.textMuted, marginTop: 2 }}>/ 100</span>
                     </div>
                   </div>
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: c.textPrimary, margin: "0 0 4px" }}>Score santé entreprise</p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.5 }}>Des améliorations sont possibles.</p>
+                  </div>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 8 }}>
                   {[
-                    { val: "11", label: "Critique", bg: "rgba(255,123,123,0.1)", color: "#ff7b7b" },
-                    { val: "19", label: "À améliorer", bg: "rgba(255,163,71,0.1)", color: "#ffa347" },
-                    { val: "11", label: "Bon niveau", bg: "rgba(63,224,160,0.1)", color: "#3fe0a0" },
-                    { val: "87%", label: "Participation", bg: "rgba(43,92,230,0.1)", color: "#6f9bff" },
-                  ].map((k, i) => (
-                    <div key={i} style={{ padding: "8px 6px", borderRadius: 10, background: k.bg, textAlign: "center" }}>
-                      <div style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18, color: k.color }}>{k.val}</div>
-                      <div style={{ fontFamily: T.b, fontSize: 9, color: "rgba(255,255,255,0.35)", marginTop: 1 }}>{k.label}</div>
+                    { label: "Zone critique", value: "11", color: "#ff7b7b" },
+                    { label: "À améliorer", value: "19", color: "#ffa347" },
+                    { label: "Bon niveau", value: "11", color: "#3fe0a0" },
+                    { label: "Participation", value: "87%", color: "#6f9bff" },
+                  ].map(z => (
+                    <div key={z.label} style={{ textAlign: "center", padding: "14px 12px", borderRadius: 18, background: `linear-gradient(160deg, ${z.color}55, ${z.color}1f)`, border: `1px solid ${z.color}aa`, boxShadow: `0 8px 24px ${z.color}2a` }}>
+                      <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 28, color: z.color, margin: "0 0 4px" }}>{z.value}</p>
+                      <p style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted, margin: 0 }}>{z.label}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Alertes */}
-              <div style={{ marginBottom: 12 }}>
-                {[
-                  { color: "rgba(255,123,123,0.08)", border: "rgba(255,123,123,0.2)", text: "🔴 Douleurs lombaires critiques — 8 employés entrepôt. Formation gestes et postures urgente." },
-                  { color: "rgba(255,163,71,0.06)", border: "rgba(255,163,71,0.18)", text: "🟠 11 employés bureau sur laptop sans rehausseur — flexion de nuque prolongée." },
-                ].map((a, i) => (
-                  <div key={i} style={{ padding: "10px 12px", borderRadius: 10, background: a.color, border: `0.5px solid ${a.border}`, marginBottom: 6, fontFamily: T.b, fontSize: 11, color: "rgba(255,255,255,0.6)", lineHeight: 1.4 }}>
-                    {a.text}
-                  </div>
-                ))}
-              </div>
-
-              {/* Tabs mini */}
-              <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
-                {["📊 Vue d'ensemble", "🧭 Parcours", "🔬 Analyse", "📋 Rapport", "👥 Équipe"].map((tab, i) => (
-                  <div key={i} style={{
-                    padding: "5px 10px", borderRadius: 7,
-                    background: i === 1 ? "#2b5ce6" : "rgba(255,255,255,0.04)",
-                    fontFamily: T.b, fontSize: 10, fontWeight: 600,
-                    color: i === 1 ? "#fff" : "rgba(255,255,255,0.35)",
-                    border: i === 1 ? "none" : "0.5px solid rgba(255,255,255,0.08)",
-                  }}>
-                    {tab}
-                  </div>
+              {/* Onglets */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4, padding: 5, borderRadius: 20, background: c.bgCard2, border: `1px solid ${c.border}`, marginBottom: 18 }}>
+                {["📊 Vue d'ensemble", "🧭 Parcours", "🔬 Analyse", "📋 Rapport", "👥 Équipe", "📈 Évolution", "🏋️ Exercices", "📚 Ressources"].map((tab, i) => (
+                  <span key={tab} style={{ flex: "1 1 auto", textAlign: "center", padding: isMobile ? "8px 10px" : "10px 8px", borderRadius: 15, whiteSpace: "nowrap", fontFamily: T.b, fontWeight: 600, fontSize: isMobile ? 12 : 13, background: i === 1 ? "#2b5ce6" : "transparent", color: i === 1 ? "#fff" : c.textMuted, boxShadow: i === 1 ? "0 4px 14px rgba(43,92,230,0.5)" : "none" }}>{tab}</span>
                 ))}
               </div>
 
               {/* Parcours d'amélioration */}
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "0.5px solid rgba(255,255,255,0.06)", borderRadius: 14, padding: "14px" }}>
-                <div style={{ fontFamily: T.b, fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
-                  🧭 Parcours d&apos;amélioration
-                </div>
-                {[
-                  { n: 1, name: "Repérer", sub: "Vos 3 priorités : lombaires entrepôt, laptops sans rehausseur, pauses", open: true },
-                  { n: 2, name: "Décider", sub: "Plan d'action suivi : statut, responsable, échéance", open: true },
-                  { n: 3, name: "S'équiper", sub: "Le matériel utile, classé par poste", open: false },
-                  { n: 4, name: "Pratiquer", sub: "Routines de 10 minutes, 3 fois par semaine", open: false },
-                  { n: 5, name: "Mesurer", sub: "Réévaluation trimestrielle et progression", open: false },
-                ].map(st => (
-                  <div key={st.n} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", marginBottom: 6, borderRadius: 10, background: st.open ? "rgba(43,92,230,0.10)" : "rgba(255,255,255,0.03)", border: st.open ? "0.5px solid rgba(43,92,230,0.3)" : "0.5px solid rgba(255,255,255,0.06)" }}>
-                    <span style={{ width: 22, height: 22, borderRadius: "50%", background: "#2b5ce6", color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: T.h, fontWeight: 900, fontSize: 11, flexShrink: 0 }}>{st.n}</span>
-                    <span style={{ minWidth: 0 }}>
-                      <span style={{ display: "block", fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#fff" }}>{st.name}</span>
-                      <span style={{ display: "block", fontFamily: T.b, fontSize: 10.5, color: "rgba(255,255,255,0.45)" }}>{st.sub}</span>
-                    </span>
-                  </div>
-                ))}
-                <div style={{ marginTop: 8, padding: "8px 10px", borderRadius: 10, background: "rgba(63,224,160,0.07)", border: "0.5px solid rgba(63,224,160,0.2)", fontFamily: T.b, fontSize: 10.5, color: "rgba(255,255,255,0.55)" }}>
-                  🔬 Le détail des analyses (vidéo, douleurs, postes) reste disponible dans l&apos;onglet Analyse.
-                </div>
+              <div style={{ borderRadius: 20, padding: "18px 22px", background: "rgba(43,92,230,0.06)", border: "0.5px solid rgba(43,92,230,0.18)", marginBottom: 20 }}>
+                <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: c.textPrimary, margin: "0 0 4px" }}>🧭 Parcours d&apos;amélioration</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0, lineHeight: 1.65 }}>
+                  Le chemin concret, étape par étape, pour réduire les TMS dans votre équipe : repérer les priorités, décider et suivre les actions, équiper les postes, installer des routines, puis vérifier les progrès.
+                </p>
               </div>
 
-              {/* Gradient fade */}
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 100, background: "linear-gradient(to bottom, transparent, #1f2d4d)", pointerEvents: "none" }} />
+              <ParcoursStep c={c} n={1} title="Repérer" subtitle="Les priorités de votre équipe">
+                <div style={{ borderRadius: 24, padding: isMobile ? "18px" : "24px", background: "rgba(43,92,230,0.12)", border: "1px solid rgba(111,155,255,0.30)", marginBottom: 16 }}>
+                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: "0 0 4px" }}>🎯 Actions prioritaires pour votre équipe</p>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: "0 0 18px" }}>
+                    Basées sur les scores les plus bas de vos employés — sur les dimensions que vous pouvez directement améliorer.
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {[
+                      { action: "Identifier les postes à risque et adapter l'environnement", emoji: "🩺", label: "Douleurs", avg: 52, impact: "Prévention des arrêts de travail" },
+                      { action: "Auditer les postes de travail — écrans, chaises, claviers", emoji: "💻", label: "Setup", avg: 58, impact: "Impact direct sur 3 dimensions" },
+                      { action: "Mettre en place des pauses actives toutes les 45 minutes", emoji: "⏱️", label: "Habitudes", avg: 61, impact: "Réduction immédiate des TMS chroniques" },
+                    ].map((a, i) => (
+                      <div key={a.label} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", borderRadius: 18, background: c.cardGrad, border: `1px solid ${c.border}` }}>
+                        <div style={{ width: 32, height: 32, borderRadius: "50%", flexShrink: 0, background: "#2b5ce6", boxShadow: "0 3px 10px rgba(43,92,230,0.45)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: T.h, fontWeight: 900, fontSize: 12, color: "#fff" }}>{i + 1}</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 14, color: c.textPrimary, margin: "0 0 2px" }}>{a.action}</p>
+                          <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: 0 }}>
+                            {a.emoji} {a.label} · Score moyen : <span style={{ color: "#ffa347", fontWeight: 600 }}>{a.avg}/100</span> · {a.impact}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ParcoursStep>
+
+              <ParcoursStep c={c} n={2} title="Décider" subtitle="Les actions à mener et leur suivi" defaultOpen={false}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0 }}>Plan d&apos;action classé par impact, avec statut, responsable et échéance.</p>
+              </ParcoursStep>
+              <ParcoursStep c={c} n={3} title="S'équiper" subtitle="Le matériel qui fait la différence" defaultOpen={false}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0 }}>Équipements recommandés par type de poste.</p>
+              </ParcoursStep>
+              <ParcoursStep c={c} n={4} title="Pratiquer" subtitle="Des routines courtes, chaque semaine" defaultOpen={false}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0 }}>Programme de 10 minutes, 3 fois par semaine.</p>
+              </ParcoursStep>
+
+              {/* Fondu */}
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 120, background: `linear-gradient(to bottom, transparent, ${c.bgPrimary})`, pointerEvents: "none" }} />
             </div>
 
             {/* CTA overlay */}
-            <div style={{ background: "#1f2d4d", padding: "16px 20px", textAlign: "center", borderTop: "0.5px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ background: c.bgPrimary, padding: "16px 20px", textAlign: "center", borderTop: `0.5px solid ${c.border}` }}>
               <a href="#contact" style={{ textDecoration: "none" }}>
                 <div style={{ display: "inline-block", padding: "11px 24px", borderRadius: 100, background: "#2b5ce6", color: "#fff", fontFamily: T.h, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
                   Voir une démo complète →
