@@ -544,8 +544,8 @@ export default function EntrepriseClient() {
             <span style={{ color: "#2b5ce6" }}>Rien de superflu.</span>
           </h2>
           <p style={{ fontFamily: T.b, fontSize: 14, color: c.textMuted, marginBottom: 28, lineHeight: 1.65, maxWidth: 520 }}>
-            En un coup d&apos;œil : qui est à risque, pourquoi, et quoi faire en priorité.
-            Données anonymisées, conformes RGPD.
+            En un coup d&apos;œil : où sont les risques, pourquoi, et quoi faire en priorité.
+            Données anonymisées, conformes RGPD. (Exemple illustratif.)
           </p>
 
           <div style={{ borderRadius: 20, overflow: "hidden", border: "1px solid rgba(43,92,230,0.3)", boxShadow: "0 24px 64px rgba(0,0,0,0.4)" }}>
@@ -622,39 +622,42 @@ export default function EntrepriseClient() {
 
               {/* Tabs mini */}
               <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
-                {["📊 Vue d'ensemble", "👥 Équipe", "📈 Évolution", "🏋️ Exercices"].map((tab, i) => (
+                {["📊 Vue d'ensemble", "🧭 Parcours", "🔬 Analyse", "📋 Rapport", "👥 Équipe"].map((tab, i) => (
                   <div key={i} style={{
                     padding: "5px 10px", borderRadius: 7,
-                    background: i === 0 ? "#2b5ce6" : "rgba(255,255,255,0.04)",
+                    background: i === 1 ? "#2b5ce6" : "rgba(255,255,255,0.04)",
                     fontFamily: T.b, fontSize: 10, fontWeight: 600,
-                    color: i === 0 ? "#fff" : "rgba(255,255,255,0.35)",
-                    border: i === 0 ? "none" : "0.5px solid rgba(255,255,255,0.08)",
+                    color: i === 1 ? "#fff" : "rgba(255,255,255,0.35)",
+                    border: i === 1 ? "none" : "0.5px solid rgba(255,255,255,0.08)",
                   }}>
                     {tab}
                   </div>
                 ))}
               </div>
 
-              {/* Scores dimensions */}
+              {/* Parcours d'amélioration */}
               <div style={{ background: "rgba(255,255,255,0.02)", border: "0.5px solid rgba(255,255,255,0.06)", borderRadius: 14, padding: "14px" }}>
                 <div style={{ fontFamily: T.b, fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
-                  Scores par dimension
+                  🧭 Parcours d&apos;amélioration
                 </div>
                 {[
-                  { emoji: "💻", name: "Setup", score: 58, color: "#ffa347", w: "58%" },
-                  { emoji: "🩺", name: "Douleurs", score: 52, color: "#ff7b7b", w: "52%" },
-                  { emoji: "⏱️", name: "Habitudes", score: 61, color: "#ffa347", w: "61%" },
-                  { emoji: "🌙", name: "Sommeil", score: 72, color: "#3fe0a0", w: "72%" },
-                ].map((d, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7 }}>
-                    <span style={{ fontSize: 13, width: 18 }}>{d.emoji}</span>
-                    <span style={{ fontFamily: T.b, fontSize: 11, color: "rgba(255,255,255,0.6)", flex: 1 }}>{d.name}</span>
-                    <div style={{ width: 100, height: 4, borderRadius: 100, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-                      <div style={{ width: d.w, height: "100%", borderRadius: 100, background: d.color }} />
-                    </div>
-                    <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 12, color: d.color, width: 24, textAlign: "right" }}>{d.score}</span>
+                  { n: 1, name: "Repérer", sub: "Vos 3 priorités : lombaires entrepôt, laptops sans rehausseur, pauses", open: true },
+                  { n: 2, name: "Décider", sub: "Plan d'action suivi : statut, responsable, échéance", open: true },
+                  { n: 3, name: "S'équiper", sub: "Le matériel utile, classé par poste", open: false },
+                  { n: 4, name: "Pratiquer", sub: "Routines de 10 minutes, 3 fois par semaine", open: false },
+                  { n: 5, name: "Mesurer", sub: "Réévaluation trimestrielle et progression", open: false },
+                ].map(st => (
+                  <div key={st.n} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", marginBottom: 6, borderRadius: 10, background: st.open ? "rgba(43,92,230,0.10)" : "rgba(255,255,255,0.03)", border: st.open ? "0.5px solid rgba(43,92,230,0.3)" : "0.5px solid rgba(255,255,255,0.06)" }}>
+                    <span style={{ width: 22, height: 22, borderRadius: "50%", background: "#2b5ce6", color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: T.h, fontWeight: 900, fontSize: 11, flexShrink: 0 }}>{st.n}</span>
+                    <span style={{ minWidth: 0 }}>
+                      <span style={{ display: "block", fontFamily: T.h, fontWeight: 800, fontSize: 12, color: "#fff" }}>{st.name}</span>
+                      <span style={{ display: "block", fontFamily: T.b, fontSize: 10.5, color: "rgba(255,255,255,0.45)" }}>{st.sub}</span>
+                    </span>
                   </div>
                 ))}
+                <div style={{ marginTop: 8, padding: "8px 10px", borderRadius: 10, background: "rgba(63,224,160,0.07)", border: "0.5px solid rgba(63,224,160,0.2)", fontFamily: T.b, fontSize: 10.5, color: "rgba(255,255,255,0.55)" }}>
+                  🔬 Le détail des analyses (vidéo, douleurs, postes) reste disponible dans l&apos;onglet Analyse.
+                </div>
               </div>
 
               {/* Gradient fade */}
@@ -674,7 +677,7 @@ export default function EntrepriseClient() {
           {/* Points clés */}
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 10, marginTop: 16 }}>
             {[
-              { icon: "🎯", text: "Actions prioritaires identifiées automatiquement" },
+              { icon: "🧭", text: "Un parcours d'amélioration en 5 étapes : on vous dit quoi faire, pas seulement quoi mesurer" },
               { icon: "🔒", text: "Aucune donnée individuelle visible par l'employeur — vous ne voyez que des résultats agrégés" },
               { icon: "📈", text: "Suivi de l'évolution trimestrielle en temps réel" },
             ].map((p, i) => (
