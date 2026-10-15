@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { analyzeCollectiveVideo, VideoRevealBlock } from "@/components/dashboard/VideoCollective";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { Company } from "@/lib/supabase";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
@@ -404,229 +405,6 @@ function analyzeEmployee(emp: EmployeeRow): {
   }
 }
 
-function analyzeCollectiveVideo(employees: EmployeeRow[], assessed: EmployeeRow[]) {
-  const withVideo = employees.filter(e => e.video_analysis !== null);
-  if (withVideo.length === 0) return null;
-
-  const bureauWithVideo = withVideo.filter(e => e.job_type === "bureau");
-  const deboutWithVideo = withVideo.filter(e => e.job_type === "debout");
-
-  function getStatus(emp: EmployeeRow, zone: string): string | null {
-    const va = emp.video_analysis as Record<string, unknown>;
-    if (!va) return null;
-    // Bureau : personne.posture_analysis.{zone}.status
-    // Debout : debout.posture_analysis.{zone}.status
-    const source = (va.personne as Record<string, unknown>) ?? (va.debout as Record<string, unknown>);
-    if (!source) return null;
-    const posture = source.posture_analysis as Record<string, unknown>;
-    if (!posture) return null;
-    const item = posture[zone] as Record<string, unknown>;
-    return item?.status as string ?? null;
-  }
-
-  function getPostureScore(emp: EmployeeRow): number | null {
-    const va = emp.video_analysis as Record<string, unknown>;
-    if (!va) return null;
-    const source = (va.personne as Record<string, unknown>) ?? (va.debout as Record<string, unknown>);
-    const posture = source?.posture_analysis as Record<string, unknown>;
-    return posture?.score as number ?? null;
-  }
-
-  function countStatus(group: EmployeeRow[], zone: string, status: string): number {
-    return group.filter(e => getStatus(e, zone) === status).length;
-  }
-
-  function avgPostureScore(group: EmployeeRow[]): number | null {
-    const scores = group.map(getPostureScore).filter((s): s is number => s !== null);
-    return scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null;
-  }
-
-  // Scores questionnaire pour croisement
-  function avgDimAssessed(group: EmployeeRow[], key: string): number | null {
-    const vals = group.map(e => e.scores?.[key]).filter((v): v is number => v !== null && v !== undefined);
-    return vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
-  }
-
-  const bureauAssessed = assessed.filter(e => e.job_type === "bureau");
-  const deboutAssessed = assessed.filter(e => e.job_type === "debout");
-
-  // Tendances bureau
-  const bureauTrends = bureauWithVideo.length > 0 ? [
-    {
-      zone: "Projection de tête",
-      emoji: "🦆",
-      critique: countStatus(bureauWithVideo, "head_position", "critique"),
-      attention: countStatus(bureauWithVideo, "head_position", "attention"),
-      bon: countStatus(bureauWithVideo, "head_position", "bon"),
-      total: bureauWithVideo.length,
-      consequence: "Charge cervicale +8-12kg en permanence",
-    },
-    {
-      zone: "Épaules enroulées",
-      emoji: "🦅",
-      critique: countStatus(bureauWithVideo, "shoulders", "critique"),
-      attention: countStatus(bureauWithVideo, "shoulders", "attention"),
-      bon: countStatus(bureauWithVideo, "shoulders", "bon"),
-      total: bureauWithVideo.length,
-      consequence: "Tensions trapèzes et risque tendinopathie",
-    },
-    {
-      zone: "Posture tronc",
-      emoji: "🌿",
-      critique: countStatus(bureauWithVideo, "trunk", "critique"),
-      attention: countStatus(bureauWithVideo, "trunk", "attention"),
-      bon: countStatus(bureauWithVideo, "trunk", "bon"),
-      total: bureauWithVideo.length,
-      consequence: "Compression discale et lombalgies chroniques",
-    },
-  ] : [];
-
-  // Tendances debout
-  const deboutTrends = deboutWithVideo.length > 0 ? [
-    {
-      zone: "Position tronc",
-      emoji: "🌿",
-      critique: countStatus(deboutWithVideo, "trunk", "critique"),
-      attention: countStatus(deboutWithVideo, "trunk", "attention"),
-      bon: countStatus(deboutWithVideo, "trunk", "bon"),
-      total: deboutWithVideo.length,
-      consequence: "Lombalgies par flexion répétée lors de la manutention",
-    },
-    {
-      zone: "Position épaules",
-      emoji: "🦅",
-      critique: countStatus(deboutWithVideo, "shoulders", "critique"),
-      attention: countStatus(deboutWithVideo, "shoulders", "attention"),
-      bon: countStatus(deboutWithVideo, "shoulders", "bon"),
-      total: deboutWithVideo.length,
-      consequence: "Risque tendinopathie par gestes répétitifs",
-    },
-    {
-      zone: "Position tête/cou",
-      emoji: "🦆",
-      critique: countStatus(deboutWithVideo, "head_position", "critique"),
-      attention: countStatus(deboutWithVideo, "head_position", "attention"),
-      bon: countStatus(deboutWithVideo, "head_position", "bon"),
-      total: deboutWithVideo.length,
-      consequence: "Tensions cervicales lors des tâches à hauteur inadaptée",
-    },
-  ] : [];
-
-  // ── NARRATIVE ENRICHIE ──
-  const bureauPainScore = avgDimAssessed(bureauAssessed, "pain");
-  const bureauSetupScore = avgDimAssessed(bureauAssessed, "setup");
-  const deboutPainScore = avgDimAssessed(deboutAssessed, "pain");
-  const deboutHabitsScore = avgDimAssessed(deboutAssessed, "habits");
-
-  const bureauHeadCritique = countStatus(bureauWithVideo, "head_position", "critique");
-  const bureauShoulderIssue = countStatus(bureauWithVideo, "shoulders", "attention") + countStatus(bureauWithVideo, "shoulders", "critique");
-  const deboutTrunkIssue = countStatus(deboutWithVideo, "trunk", "attention") + countStatus(deboutWithVideo, "trunk", "critique");
-
-  // Narrative bureau
-  let bureauNarrative = "";
-  let bureauActions: string[] = [];
-  let bureauPositif = "";
-
-  if (bureauWithVideo.length > 0) {
-    const headPct = Math.round((bureauHeadCritique / bureauWithVideo.length) * 100);
-    const shoulderPct = Math.round((bureauShoulderIssue / bureauWithVideo.length) * 100);
-
-    if (headPct >= 50) {
-      bureauNarrative = `${bureauHeadCritique}/${bureauWithVideo.length} employés bureau présentent une projection de tête critique à la vidéo.`;
-      if (bureauPainScore && bureauPainScore < 55) {
-        bureauNarrative += ` Ce résultat est confirmé par le questionnaire : score douleurs nuque moyen ${bureauPainScore}/100 — les deux sources convergent vers le même problème.`;
-      } else {
-        bureauNarrative += ` Le questionnaire n'avait pas pleinement capté cette problématique — la vidéo révèle une cause posturale sous-jacente.`;
-      }
-      bureauNarrative += ` Cause probable à vérifier : laptops utilisés sans rehausseur d'écran (setup moyen ${bureauSetupScore}/100).`;
-      bureauActions = [
-        `Rehausseur d'écran + clavier et souris externes pour les postes en laptop seul`,
-        `Exercice rétraction cervicale collectif — 5 min, 3x/semaine`,
-        `Vérifier que tous les laptops ont un support`,
-      ];
-    } else if (shoulderPct >= 50) {
-      bureauNarrative = `${bureauShoulderIssue}/${bureauWithVideo.length} employés bureau présentent des épaules enroulées à la vidéo.`;
-      if (bureauSetupScore && bureauSetupScore < 60) {
-        bureauNarrative += ` Le questionnaire confirme un setup inadapté (${bureauSetupScore}/100) — position clavier/souris incorrecte.`;
-      } else {
-        bureauNarrative += ` Le questionnaire n'avait pas détecté ce problème — découverte spécifique à l'analyse vidéo.`;
-      }
-      bureauActions = [
-        `Vérifier la hauteur du clavier — doit être au niveau des coudes`,
-        `Souris verticale pour les cas de douleurs poignets`,
-        `Exercice ouverture pectorale — 30 sec, matin et soir`,
-      ];
-    } else {
-      bureauNarrative = `Posture globalement satisfaisante pour l'équipe bureau. Score posture moyen ${avgPostureScore(bureauWithVideo)}/100.`;
-      if (bureauPainScore && bureauPainScore > 60) {
-        bureauNarrative += ` Le questionnaire confirme un niveau de douleurs correct (${bureauPainScore}/100).`;
-      }
-      bureauActions = [`Maintenir les bonnes habitudes et continuer les pauses actives`];
-    }
-
-    // Point positif bureau
-    const bonTronc = countStatus(bureauWithVideo, "trunk", "bon");
-    if (bonTronc >= bureauWithVideo.length * 0.6) {
-      bureauPositif = `✅ Point positif : ${bonTronc}/${bureauWithVideo.length} employés ont une posture de tronc correcte.`;
-    }
-  }
-
-  // Narrative debout
-  let deboutNarrative = "";
-  let deboutActions: string[] = [];
-  let deboutPositif = "";
-
-  if (deboutWithVideo.length > 0) {
-    const trunkPct = Math.round((deboutTrunkIssue / deboutWithVideo.length) * 100);
-
-    if (trunkPct >= 50) {
-      deboutNarrative = `${deboutTrunkIssue}/${deboutWithVideo.length} employés debout présentent des contraintes lombaires à la vidéo.`;
-      if (deboutPainScore && deboutPainScore < 55) {
-        deboutNarrative += ` Cohérent avec le questionnaire : score douleurs dos moyen ${deboutPainScore}/100 — les deux sources confirment le problème.`;
-      } else {
-        deboutNarrative += ` Le questionnaire signalait des douleurs modérées — la vidéo révèle que la cause posturale est plus prononcée qu'attendu.`;
-      }
-      if (deboutHabitsScore && deboutHabitsScore < 55) {
-        deboutNarrative += ` Les mauvaises habitudes de levage (${deboutHabitsScore}/100) aggravent ce risque.`;
-      }
-      deboutActions = [
-        `Formation gestes et postures de levage — priorité absolue`,
-        `Installer des tapis anti-fatigue aux postes debout fixes`,
-        `Exercice flexion lombaire debout — 5 min en fin de journée`,
-      ];
-    } else {
-      deboutNarrative = `Contraintes lombaires modérées pour l'équipe debout. Score posture moyen ${avgPostureScore(deboutWithVideo)}/100.`;
-      deboutActions = [`Maintenir la formation gestes et postures`, `Tapis anti-fatigue recommandés`];
-    }
-
-    // Point positif debout
-    const bonTete = countStatus(deboutWithVideo, "head_position", "bon");
-    const bonEpaules = countStatus(deboutWithVideo, "shoulders", "bon");
-    if (bonTete >= deboutWithVideo.length * 0.6) {
-      deboutPositif = `✅ Point positif : ${bonTete}/${deboutWithVideo.length} employés ont une position tête/cou correcte — bon signe pour les tâches à hauteur adaptée.`;
-    } else if (bonEpaules >= deboutWithVideo.length * 0.6) {
-      deboutPositif = `✅ Point positif : ${bonEpaules}/${deboutWithVideo.length} employés ont des épaules bien positionnées.`;
-    }
-  }
-
-  return {
-    total: withVideo.length,
-    bureauCount: bureauWithVideo.length,
-    deboutCount: deboutWithVideo.length,
-    avgScoreBureau: avgPostureScore(bureauWithVideo),
-    avgScoreDebout: avgPostureScore(deboutWithVideo),
-    bureauTrends,
-    deboutTrends,
-    bureauNarrative,
-    bureauActions,
-    bureauPositif,
-    deboutNarrative,
-    deboutActions,
-    deboutPositif,
-    notFilmed: employees.filter(e => e.video_analysis === null && e.global_score !== null).length,
-  };
-}
-
 export default function EntrepriseDemoDashboard() {
   const authorized = useDemoAuth();
   if (!authorized) return null;
@@ -977,6 +755,11 @@ function DemoDashboardInner() {
                               {collective.total} employé{collective.total > 1 ? "s" : ""} filmé{collective.total > 1 ? "s" : ""} sur {assessed.length} bilans complétés
                               {collective.notFilmed > 0 && ` · ${collective.notFilmed} non filmé${collective.notFilmed > 1 ? "s" : ""}`}
                             </p>
+                            {collective.simulated && (
+                              <span style={{ display: "inline-block", marginTop: 6, padding: "2px 10px", borderRadius: 100, fontFamily: T.b, fontSize: 10, fontWeight: 700, color: "#6f9bff", background: "rgba(43,92,230,0.22)", border: "1px solid rgba(111,155,255,0.5)" }}>
+                                Démo : analyses vidéo simulées
+                              </span>
+                            )}
                           </div>
                         </div>
                         <div style={{ display: "flex", gap: 8 }}>
@@ -1052,6 +835,7 @@ function DemoDashboardInner() {
 
                     {/* Tendances */}
                     <div style={{ padding: "18px 20px", background: c.bgCard }}>
+                      <VideoRevealBlock collective={collective} c={c} isMobile={isMobile} />
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : collective.bureauTrends.length > 0 && collective.deboutTrends.length > 0 ? "1fr 1fr" : "1fr", gap: 16 }}>
 
                         {/* Bureau */}
