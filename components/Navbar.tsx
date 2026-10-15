@@ -223,12 +223,15 @@ export default function Navbar() {
                 </div>
               </div>
               {menuOpen && (
-                <div style={{ position: "absolute", right: 0, top: 42, width: 180, borderRadius: 16, background: "rgba(18,18,30,0.98)", border: "0.5px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.5)", overflow: "hidden" }}>
+                <div style={{ position: "absolute", right: 0, top: 42, width: 220, borderRadius: 16, background: "rgba(18,18,30,0.98)", border: "0.5px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.5)", overflow: "hidden" }}>
                   <div style={{ padding: "12px 16px", borderBottom: "0.5px solid var(--border)" }}>
                     <p style={{ color: "var(--t55)", fontSize: 11, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</p>
                   </div>
                   <div onClick={() => { router.push("/dashboard"); setMenuOpen(false); }} style={{ padding: "10px 16px", color: "var(--t75)", fontSize: 13, cursor: "pointer" }}>
-                    📊 Mon compte
+                    📊 Mon espace
+                  </div>
+                  <div onClick={() => { router.push("/compte"); setMenuOpen(false); }} style={{ padding: "10px 16px", color: "var(--t75)", fontSize: 13, cursor: "pointer" }}>
+                    ⚙️ Paramètres du compte
                   </div>
                   <div onClick={signOut} style={{ padding: "10px 16px", color: "#ff7b7b", fontSize: 13, cursor: "pointer" }}>
                     → Déconnexion
@@ -299,6 +302,12 @@ export default function Navbar() {
           {user && (
             <Link href="/questionnaire" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
               🎯 Mon bilan
+            </Link>
+          )}
+
+          {user && (
+            <Link href="/compte" onClick={() => setIsMenuOpen(false)} style={menuItemStyle}>
+              ⚙️ Paramètres du compte
             </Link>
           )}
 

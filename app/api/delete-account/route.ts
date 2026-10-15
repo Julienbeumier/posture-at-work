@@ -60,8 +60,13 @@ export async function DELETE() {
       await supabaseAdmin.from("company_memberships").delete().eq("user_id", user.id);
     }
 
-    // 3. Supprimer le compte auth
-    await supabaseAdmin.auth.admin.deleteUser(user.id);
+    // 3. Détacher les références qui bloqueraient la suppression, puis supprimer le compte auth
+    await supabaseAdmin.from("company_invites").update({ used_by: null }).eq("used_by", user.id);
+    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user.id);
+    if (deleteError) {
+      console.error("[delete-account] deleteUser", deleteError);
+      return NextResponse.json({ error: "Suppression impossible, contactez le support" }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
   } catch (err) {

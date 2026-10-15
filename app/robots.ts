@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/dashboard", "/analyzing", "/rapport-pdf"],
+      disallow: ["/api/", "/dashboard", "/compte", "/analyzing", "/rapport-pdf"],
     },
     sitemap: "https://postureatwork.com/sitemap.xml",
   };

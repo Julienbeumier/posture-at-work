@@ -111,7 +111,7 @@ export default function PolitiqueConfidentialite() {
             <a href="mailto:hello@postureatwork.com?subject=Suppression de compte" style={{ color: "#ff7b7b" }}>hello@postureatwork.com</a>{" "}
             avec l&apos;objet "Suppression de compte". Nous procéderons sous 72h.
           </p>
-          <p style={{ marginTop: 8 }}>Tu peux aussi supprimer ton compte directement depuis ton tableau de bord.</p>
+          <p style={{ marginTop: 8 }}>Tu peux aussi supprimer ton compte toi-même depuis « Paramètres du compte » (menu en haut à droite), et y télécharger une copie de tes données.</p>
         </Section>
 
         <Section title="7. Cookies et stockage local">
