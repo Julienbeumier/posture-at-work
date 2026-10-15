@@ -419,7 +419,7 @@ function DemoDashboardInner() {
   const [employees, setEmployees] = useState<EmployeeRow[]>([]);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"overview" | "parcours" | "analysis" | "report" | "employees" | "evolution" | "exercises" | "resources" | "signals">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "parcours" | "analysis" | "report" | "employees" | "evolution" | "exercises" | "resources">("overview");
   const [activeProfile, setActiveProfile] = useState<"bureau" | "debout">("bureau");
   const [expandedEmployee, setExpandedEmployee] = useState<string | null>(null);
   const signals: { id: string; category: string; message: string; treated: boolean; created_at: string }[] = [];
@@ -602,10 +602,9 @@ function DemoDashboardInner() {
             { key: "evolution", label: isMobile ? "📈" : "📈 Évolution" },
             { key: "exercises", label: isMobile ? "🏋️" : "🏋️ Exercices" },
             { key: "resources", label: isMobile ? "📚" : "📚 Ressources" },
-            { key: "signals", label: isMobile ? "💬" : "💬 Signalements" },
           ] as const).map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
-              flex: "1 0 auto", padding: isMobile ? "10px 0" : "10px 14px", minWidth: isMobile ? 36 : undefined, whiteSpace: "nowrap", borderRadius: 10, border: "none",
+              flex: "1 1 auto", padding: isMobile ? "10px 0" : "10px 8px", minWidth: isMobile ? 36 : undefined, whiteSpace: "nowrap", borderRadius: 10, border: "none",
               background: activeTab === tab.key ? "#2b5ce6" : "transparent",
               color: activeTab === tab.key ? "#fff" : c.textMuted,
               fontFamily: T.b, fontWeight: 600, fontSize: 13,
@@ -1377,6 +1376,70 @@ function DemoDashboardInner() {
                 );
               })()}
 
+
+              {/* ── Signalements des équipes ── */}
+              <div style={{ marginTop: 28 }}>
+              <div style={{ borderRadius: 20, padding: "22px 24px", background: c.bgCard, border: `0.5px solid ${c.border}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: 0 }}>
+                    💬 Signalements de vos équipes
+                  </p>
+                  <span style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted }}>
+                    {signals.filter(s => !s.treated).length} non traité{signals.filter(s => !s.treated).length > 1 ? "s" : ""}
+                  </span>
+                </div>
+
+                {signals.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "32px 0" }}>
+                    <p style={{ fontSize: 32, marginBottom: 8 }}>📭</p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted }}>Aucun signalement pour l&apos;instant.</p>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginTop: 4 }}>
+                      Vos employés peuvent signaler des problèmes ergonomiques après leur bilan.
+                    </p>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {signals.map((signal, i) => (
+                      <div key={i} style={{
+                        padding: "14px 16px", borderRadius: 12,
+                        background: signal.treated ? c.bgCard2 : "rgba(43,92,230,0.05)",
+                        border: `0.5px solid ${signal.treated ? c.border : "rgba(43,92,230,0.2)"}`,
+                        display: "flex", gap: 14, alignItems: "flex-start",
+                        opacity: signal.treated ? 0.6 : 1,
+                      }}>
+                        <span style={{ fontSize: 20, flexShrink: 0 }}>
+                          {signal.category === "eclairage" ? "💡"
+                            : signal.category === "temperature" ? "🌡️"
+                            : signal.category === "bruit" ? "🔊"
+                            : signal.category === "poste_travail" ? "🪑"
+                            : signal.category === "espace" ? "📐"
+                            : signal.category === "manutention" ? "📦"
+                            : "💬"}
+                        </span>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                            <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(43,92,230,0.10)", fontFamily: T.b, fontSize: 10, fontWeight: 600, color: "#6f9bff", textTransform: "capitalize" }}>
+                              {signal.category.replace("_", " ")}
+                            </span>
+                            <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>
+                              {new Date(signal.created_at).toLocaleDateString("fr-FR")}
+                            </span>
+                            {signal.treated && (
+                              <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(29,158,117,0.12)", fontFamily: T.b, fontSize: 10, color: "#1d9e75" }}>
+                                ✓ Traité
+                              </span>
+                            )}
+                          </div>
+                          <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.6 }}>
+                            {signal.message}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              </div>
             </motion.div>
           )}
 
@@ -1948,72 +2011,6 @@ function DemoDashboardInner() {
                     </button>
                   </a>
                 </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* ── TAB SIGNALEMENTS ── */}
-          {activeTab === "signals" && (
-            <motion.div key="signals" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-              <div style={{ borderRadius: 20, padding: "22px 24px", background: c.bgCard, border: `0.5px solid ${c.border}` }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                  <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: 0 }}>
-                    💬 Signalements de vos équipes
-                  </p>
-                  <span style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted }}>
-                    {signals.filter(s => !s.treated).length} non traité{signals.filter(s => !s.treated).length > 1 ? "s" : ""}
-                  </span>
-                </div>
-
-                {signals.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "32px 0" }}>
-                    <p style={{ fontSize: 32, marginBottom: 8 }}>📭</p>
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted }}>Aucun signalement pour l&apos;instant.</p>
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, marginTop: 4 }}>
-                      Vos employés peuvent signaler des problèmes ergonomiques après leur bilan.
-                    </p>
-                  </div>
-                ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {signals.map((signal, i) => (
-                      <div key={i} style={{
-                        padding: "14px 16px", borderRadius: 12,
-                        background: signal.treated ? c.bgCard2 : "rgba(43,92,230,0.05)",
-                        border: `0.5px solid ${signal.treated ? c.border : "rgba(43,92,230,0.2)"}`,
-                        display: "flex", gap: 14, alignItems: "flex-start",
-                        opacity: signal.treated ? 0.6 : 1,
-                      }}>
-                        <span style={{ fontSize: 20, flexShrink: 0 }}>
-                          {signal.category === "eclairage" ? "💡"
-                            : signal.category === "temperature" ? "🌡️"
-                            : signal.category === "bruit" ? "🔊"
-                            : signal.category === "poste_travail" ? "🪑"
-                            : signal.category === "espace" ? "📐"
-                            : signal.category === "manutention" ? "📦"
-                            : "💬"}
-                        </span>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                            <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(43,92,230,0.10)", fontFamily: T.b, fontSize: 10, fontWeight: 600, color: "#6f9bff", textTransform: "capitalize" }}>
-                              {signal.category.replace("_", " ")}
-                            </span>
-                            <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>
-                              {new Date(signal.created_at).toLocaleDateString("fr-FR")}
-                            </span>
-                            {signal.treated && (
-                              <span style={{ padding: "2px 8px", borderRadius: 100, background: "rgba(29,158,117,0.12)", fontFamily: T.b, fontSize: 10, color: "#1d9e75" }}>
-                                ✓ Traité
-                              </span>
-                            )}
-                          </div>
-                          <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.6 }}>
-                            {signal.message}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
             </motion.div>
           )}

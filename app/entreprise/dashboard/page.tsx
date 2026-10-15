@@ -529,7 +529,7 @@ export default function EntrepriseDashboard() {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [generatingCode, setGeneratingCode] = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "parcours" | "analysis" | "report" | "employees" | "evolution" | "exercises" | "resources" | "signals">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "parcours" | "analysis" | "report" | "employees" | "evolution" | "exercises" | "resources">("overview");
   const [activeProfile, setActiveProfile] = useState<"bureau" | "debout">("bureau");
   const [expandedEmployee, setExpandedEmployee] = useState<string | null>(null);
   const [relanceSent, setRelanceSent] = useState(false);
@@ -800,7 +800,7 @@ export default function EntrepriseDashboard() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
           role="tablist" aria-label="Sections du dashboard"
           style={{
-            display: "flex", gap: 4, padding: 5, borderRadius: 20, overflowX: "auto",
+            display: "flex", gap: 4, padding: 5, borderRadius: 20, flexWrap: "wrap",
             background: c.bgCard2, border: `1px solid ${c.border}`,
             marginBottom: 20,
           }}>
@@ -813,10 +813,9 @@ export default function EntrepriseDashboard() {
             { key: "evolution", label: isMobile ? "📈" : "📈 Évolution", name: "Évolution" },
             { key: "exercises", label: isMobile ? "🏋️" : "🏋️ Exercices", name: "Exercices" },
             { key: "resources", label: isMobile ? "📚" : "📚 Ressources", name: "Ressources" },
-            { key: "signals", label: isMobile ? "💬" : "💬 Signalements", name: "Signalements" },
           ] as const).map(tab => (
             <button key={tab.key} role="tab" aria-selected={activeTab === tab.key} aria-label={tab.name} onClick={() => setActiveTab(tab.key)} style={{
-              flex: "1 0 auto", padding: isMobile ? "10px 0" : "10px 14px", minWidth: isMobile ? 36 : undefined, whiteSpace: "nowrap", borderRadius: 15, border: "none",
+              flex: "1 1 auto", padding: isMobile ? "10px 0" : "10px 8px", minWidth: isMobile ? 36 : undefined, whiteSpace: "nowrap", borderRadius: 15, border: "none",
               boxShadow: activeTab === tab.key ? "0 4px 14px rgba(43,92,230,0.5)" : "none",
               background: activeTab === tab.key ? "#2b5ce6" : "transparent",
               color: activeTab === tab.key ? "#fff" : c.textMuted,
@@ -1665,6 +1664,99 @@ export default function EntrepriseDashboard() {
                 );
               })()}
 
+
+              {/* ── Signalements des équipes ── */}
+              <div style={{ marginTop: 28 }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+                  marginBottom: 20 }}>
+                  <div>
+                    <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18,
+                      color: c.textPrimary, margin: "0 0 4px" }}>
+                      <Ico e="💬" />Signalements de vos équipes
+                    </p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0 }}>
+                      {signals.length} signalement{signals.length > 1 ? "s" : ""} reçu{signals.length > 1 ? "s" : ""}
+                      {" · "}Données anonymisées
+                    </p>
+                  </div>
+                </div>
+
+                {signals.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "48px 24px" }}>
+                    <span style={{ fontSize: 40, display: "block", marginBottom: 12 }}><Ico e="💬" style={{ marginRight: 0 }} /></span>
+                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 16,
+                      color: c.textPrimary, marginBottom: 8 }}>
+                      Aucun signalement pour l&apos;instant
+                    </p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, lineHeight: 1.65 }}>
+                      Vos employés peuvent signaler des problèmes depuis leur dashboard personnel.
+                      Les signalements apparaîtront ici de façon anonyme.
+                    </p>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {signals.map(signal => {
+                      const typeConfig: Record<string, { emoji: string; color: string; bg: string; border: string }> = {
+                        douleur: { emoji: "🩺", color: "#ff7b7b", bg: "rgba(255,123,123,0.06)", border: "rgba(255,123,123,0.2)" },
+                        equipement: { emoji: "🪑", color: "#6f9bff", bg: "rgba(43,92,230,0.06)", border: "rgba(43,92,230,0.2)" },
+                        contrainte: { emoji: "⚠️", color: "#ffa347", bg: "rgba(255,163,71,0.06)", border: "rgba(255,163,71,0.2)" },
+                        autre: { emoji: "💬", color: c.textMuted, bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.08)" },
+                      };
+                      const cfg = typeConfig[signal.type] ?? typeConfig.autre;
+                      const date = new Date(signal.created_at).toLocaleDateString("fr-FR", {
+                        day: "numeric", month: "long",
+                      });
+
+                      return (
+                        <div key={signal.id} style={{ padding: "16px 18px", borderRadius: 16,
+                          background: cfg.bg, border: `0.5px solid ${cfg.border}` }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                            <span style={{ fontSize: 18 }}><Ico e={cfg.emoji} /></span>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                                <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
+                                  color: cfg.color }}>
+                                  {signal.type === "douleur" ? "Douleur physique"
+                                    : signal.type === "equipement" ? "Problème d'équipement"
+                                    : signal.type === "contrainte" ? "Contrainte posturale"
+                                    : "Autre"}
+                                </span>
+                                {signal.zone && (
+                                  <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted,
+                                    padding: "2px 8px", borderRadius: 100,
+                                    background: "rgba(255,255,255,0.06)" }}>
+                                    {signal.zone}
+                                  </span>
+                                )}
+                                {signal.intensity && (
+                                  <span style={{ fontFamily: T.b, fontSize: 11, color: "#ff7b7b" }}>
+                                    Intensité {signal.intensity}/5
+                                  </span>
+                                )}
+                              </div>
+                              <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>
+                                {signal.anonymous_id} · {date}
+                              </span>
+                            </div>
+                            <div style={{ padding: "3px 10px", borderRadius: 100, flexShrink: 0,
+                              background: signal.status === "nouveau" ? "rgba(43,92,230,0.15)" : "rgba(63,224,160,0.15)",
+                              fontFamily: T.b, fontSize: 10, fontWeight: 700,
+                              color: signal.status === "nouveau" ? "#6f9bff" : "#3fe0a0" }}>
+                              {signal.status === "nouveau" ? "Nouveau" : "Traité"}
+                            </div>
+                          </div>
+                          <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary,
+                            lineHeight: 1.6, margin: 0 }}>
+                            {signal.description}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+              </div>
             </motion.div>
           )}
 
@@ -2256,101 +2348,6 @@ export default function EntrepriseDashboard() {
                     </button>
                   </a>
                 </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* ── TAB SIGNALEMENTS ── */}
-          {activeTab === "signals" && (
-            <motion.div key="signals" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-              <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-                  marginBottom: 20 }}>
-                  <div>
-                    <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 18,
-                      color: c.textPrimary, margin: "0 0 4px" }}>
-                      <Ico e="💬" />Signalements de vos équipes
-                    </p>
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: 0 }}>
-                      {signals.length} signalement{signals.length > 1 ? "s" : ""} reçu{signals.length > 1 ? "s" : ""}
-                      {" · "}Données anonymisées
-                    </p>
-                  </div>
-                </div>
-
-                {signals.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "48px 24px" }}>
-                    <span style={{ fontSize: 40, display: "block", marginBottom: 12 }}><Ico e="💬" style={{ marginRight: 0 }} /></span>
-                    <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 16,
-                      color: c.textPrimary, marginBottom: 8 }}>
-                      Aucun signalement pour l&apos;instant
-                    </p>
-                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, lineHeight: 1.65 }}>
-                      Vos employés peuvent signaler des problèmes depuis leur dashboard personnel.
-                      Les signalements apparaîtront ici de façon anonyme.
-                    </p>
-                  </div>
-                ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {signals.map(signal => {
-                      const typeConfig: Record<string, { emoji: string; color: string; bg: string; border: string }> = {
-                        douleur: { emoji: "🩺", color: "#ff7b7b", bg: "rgba(255,123,123,0.06)", border: "rgba(255,123,123,0.2)" },
-                        equipement: { emoji: "🪑", color: "#6f9bff", bg: "rgba(43,92,230,0.06)", border: "rgba(43,92,230,0.2)" },
-                        contrainte: { emoji: "⚠️", color: "#ffa347", bg: "rgba(255,163,71,0.06)", border: "rgba(255,163,71,0.2)" },
-                        autre: { emoji: "💬", color: c.textMuted, bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.08)" },
-                      };
-                      const cfg = typeConfig[signal.type] ?? typeConfig.autre;
-                      const date = new Date(signal.created_at).toLocaleDateString("fr-FR", {
-                        day: "numeric", month: "long",
-                      });
-
-                      return (
-                        <div key={signal.id} style={{ padding: "16px 18px", borderRadius: 16,
-                          background: cfg.bg, border: `0.5px solid ${cfg.border}` }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                            <span style={{ fontSize: 18 }}><Ico e={cfg.emoji} /></span>
-                            <div style={{ flex: 1 }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                                <span style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
-                                  color: cfg.color }}>
-                                  {signal.type === "douleur" ? "Douleur physique"
-                                    : signal.type === "equipement" ? "Problème d'équipement"
-                                    : signal.type === "contrainte" ? "Contrainte posturale"
-                                    : "Autre"}
-                                </span>
-                                {signal.zone && (
-                                  <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted,
-                                    padding: "2px 8px", borderRadius: 100,
-                                    background: "rgba(255,255,255,0.06)" }}>
-                                    {signal.zone}
-                                  </span>
-                                )}
-                                {signal.intensity && (
-                                  <span style={{ fontFamily: T.b, fontSize: 11, color: "#ff7b7b" }}>
-                                    Intensité {signal.intensity}/5
-                                  </span>
-                                )}
-                              </div>
-                              <span style={{ fontFamily: T.b, fontSize: 11, color: c.textMuted }}>
-                                {signal.anonymous_id} · {date}
-                              </span>
-                            </div>
-                            <div style={{ padding: "3px 10px", borderRadius: 100, flexShrink: 0,
-                              background: signal.status === "nouveau" ? "rgba(43,92,230,0.15)" : "rgba(63,224,160,0.15)",
-                              fontFamily: T.b, fontSize: 10, fontWeight: 700,
-                              color: signal.status === "nouveau" ? "#6f9bff" : "#3fe0a0" }}>
-                              {signal.status === "nouveau" ? "Nouveau" : "Traité"}
-                            </div>
-                          </div>
-                          <p style={{ fontFamily: T.b, fontSize: 13, color: c.textSecondary,
-                            lineHeight: 1.6, margin: 0 }}>
-                            {signal.description}
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
               </div>
             </motion.div>
           )}
