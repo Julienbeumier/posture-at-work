@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import { secureCode } from "@/lib/server-auth";
+import { secureCode, isPlatformAdmin } from "@/lib/server-auth";
 import { createServerClient } from "@/lib/supabase";
 import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
   try {
+    // Création d'entreprise réservée à l'admin PAW (après paiement / devis).
+    if (!(await isPlatformAdmin(req))) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
     const { name, contactName, contactEmail, plan } = await req.json();
     if (!name || !contactEmail) {
       return NextResponse.json({ error: "Champs manquants" }, { status: 400 });
