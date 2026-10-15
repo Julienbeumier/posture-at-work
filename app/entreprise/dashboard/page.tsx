@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
+import ManagerToolkit from "@/components/dashboard/ManagerToolkit";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { Company } from "@/lib/supabase";
 import { buildTeamInsights, SOURCES, EVIDENCE_LABEL } from "@/lib/ergo-knowledge";
@@ -1002,6 +1003,41 @@ export default function EntrepriseDashboard() {
     };
   });
 
+  // Export CSV : uniquement des données agrégées (jamais de réponse individuelle)
+  function exportCsv() {
+    const esc = (v: string | number | null) => {
+      const t = String(v ?? "");
+      return /[";\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+    };
+    const rows: (string | number | null)[][] = [
+      ["PostureAtWork — export des résultats collectifs"],
+      ["Entreprise", company?.name ?? ""],
+      ["Date d'export", new Date().toLocaleDateString("fr-FR")],
+      [],
+      ["Indicateur", "Valeur"],
+      ["Employés inscrits", employees.length],
+      ["Bilans complétés", assessed.length],
+      ["Participation (%)", participation],
+      ["Score santé moyen (/100)", avgGlobal],
+      ["Employés en zone critique (<50)", zoneCounts.critique],
+      ["Employés à améliorer (50-69)", zoneCounts.ameliorer],
+      ["Employés en bon niveau (70+)", zoneCounts.bon],
+      [],
+      ["Dimension", "Score moyen (/100)"],
+      ...dimAvgs.map(d => [d.meta.label, d.avg]),
+      [],
+      ["Mois", "Score moyen global", "Bureau", "Debout", "Nombre de bilans"],
+      ...evolutionData.map(r => [r.mois, r.global, r.bureau, r.debout, r.count]),
+    ];
+    const csv = "\uFEFF" + rows.map(r => r.map(esc).join(";")).join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `paw-resultats-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   const employerDims = dimAvgs.filter(d => d.meta.type === "employeur");
   const employeeDims = dimAvgs.filter(d => d.meta.type === "employe");
 
@@ -1048,6 +1084,13 @@ export default function EntrepriseDashboard() {
                   {copied ? "✓ Lien copié !" : withIcons("🔗 Inviter des employés")}
                 </button>
               )}
+              <button type="button" onClick={exportCsv} style={{
+                padding: "9px 16px", borderRadius: 100, border: "none",
+                background: "rgba(111,155,255,0.15)", color: "#6f9bff",
+                fontFamily: T.b, fontWeight: 600, fontSize: 13, cursor: "pointer",
+              }}>
+                <Ico e="📊" />Exporter Excel (CSV)
+              </button>
               <a href="/entreprise/rapport-pdf" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
                 <button style={{
                   padding: "9px 16px", borderRadius: 100, border: "none",
@@ -1124,20 +1167,21 @@ export default function EntrepriseDashboard() {
 
         {/* ── TABS ── */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
+          role="tablist" aria-label="Sections du dashboard"
           style={{
             display: "flex", gap: 4, padding: 5, borderRadius: 20,
             background: c.bgCard2, border: `1px solid ${c.border}`,
             marginBottom: 20,
           }}>
           {([
-            { key: "overview", label: isMobile ? "📊" : "📊 Vue d'ensemble" },
-            { key: "employees", label: isMobile ? "👥" : "👥 Équipe" },
-            { key: "evolution", label: isMobile ? "📈" : "📈 Évolution" },
-            { key: "exercises", label: isMobile ? "🏋️" : "🏋️ Exercices" },
-            { key: "resources", label: isMobile ? "📚" : "📚 Ressources" },
-            { key: "signals", label: isMobile ? "💬" : "💬 Signalements" },
+            { key: "overview", label: isMobile ? "📊" : "📊 Vue d'ensemble", name: "Vue d'ensemble" },
+            { key: "employees", label: isMobile ? "👥" : "👥 Équipe", name: "Équipe" },
+            { key: "evolution", label: isMobile ? "📈" : "📈 Évolution", name: "Évolution" },
+            { key: "exercises", label: isMobile ? "🏋️" : "🏋️ Exercices", name: "Exercices" },
+            { key: "resources", label: isMobile ? "📚" : "📚 Ressources", name: "Ressources" },
+            { key: "signals", label: isMobile ? "💬" : "💬 Signalements", name: "Signalements" },
           ] as const).map(tab => (
-            <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
+            <button key={tab.key} role="tab" aria-selected={activeTab === tab.key} aria-label={tab.name} onClick={() => setActiveTab(tab.key)} style={{
               flex: 1, padding: "10px 0", borderRadius: 15, border: "none",
               boxShadow: activeTab === tab.key ? "0 4px 14px rgba(43,92,230,0.5)" : "none",
               background: activeTab === tab.key ? "#2b5ce6" : "transparent",
@@ -1155,6 +1199,38 @@ export default function EntrepriseDashboard() {
           {/* ── TAB OVERVIEW ── */}
           {activeTab === "overview" && (
             <motion.div key="overview" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+
+              {/* Objectif et tendance */}
+              {avgGlobal !== null && (() => {
+                const TARGET = 70; // seuil « bon niveau » utilisé partout dans le dashboard
+                const gap = Math.max(0, TARGET - avgGlobal);
+                const lastRow = evolutionData[evolutionData.length - 1];
+                const prevRow = evolutionData[evolutionData.length - 2];
+                const trend = lastRow?.global != null && prevRow?.global != null ? lastRow.global - prevRow.global : null;
+                const pct = Math.min(100, Math.round((avgGlobal / TARGET) * 100));
+                return (
+                  <div style={{ borderRadius: 24, padding: "20px 22px", background: c.cardGrad, border: `1px solid ${c.borderStrong}`, marginBottom: 16 }}>
+                    <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: c.textPrimary, margin: "0 0 4px" }}>
+                      <Ico e="🏁" />Objectif : atteindre le bon niveau ({TARGET}/100)
+                    </p>
+                    <p style={{ fontFamily: T.b, fontSize: 13, color: c.textMuted, margin: "0 0 12px", lineHeight: 1.6 }}>
+                      {gap === 0
+                        ? "Votre score moyen est dans la zone « bon niveau ». L'objectif est maintenant de le maintenir et de réduire les zones critiques."
+                        : `Il manque ${gap} point${gap > 1 ? "s" : ""} au score moyen de l'équipe (${avgGlobal}/100) pour atteindre le bon niveau.`}
+                      {trend !== null && ` Par rapport au mois précédent : ${trend > 0 ? "+" : ""}${trend} point${Math.abs(trend) > 1 ? "s" : ""}.`}
+                    </p>
+                    <div role="progressbar" aria-valuenow={avgGlobal} aria-valuemin={0} aria-valuemax={TARGET} aria-label="Progression vers l'objectif"
+                      style={{ height: 10, borderRadius: 100, background: c.border, overflow: "hidden" }}>
+                      <div style={{ width: `${pct}%`, height: "100%", borderRadius: 100, background: scoreColor(avgGlobal), boxShadow: `0 0 12px ${scoreColor(avgGlobal)}88` }} />
+                    </div>
+                    <p style={{ fontFamily: T.b, fontSize: 12, color: c.textMuted, margin: "10px 0 0", lineHeight: 1.5 }}>
+                      {zoneCounts.critique > 0
+                        ? `Priorité : accompagner d'abord les ${zoneCounts.critique} personne${zoneCounts.critique > 1 ? "s" : ""} en zone critique (sans les identifier), puis agir sur les actions ci-dessous.`
+                        : "Aucune personne en zone critique : concentrez-vous sur les actions ci-dessous pour consolider."}
+                    </p>
+                  </div>
+                );
+              })()}
 
               {/* Actions prioritaires */}
               {priorityActions.length > 0 && (
@@ -2458,6 +2534,7 @@ export default function EntrepriseDashboard() {
           {/* ── TAB RESSOURCES ── */}
           {activeTab === "resources" && (
             <motion.div key="resources" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+              <ManagerToolkit c={c} />
               <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 {RESOURCES.map((cat, ci) => (
                   <div key={ci}>
