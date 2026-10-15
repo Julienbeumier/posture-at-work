@@ -407,7 +407,7 @@ export default function LandingClient() {
                   </div>
                 </Link>
                 <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", margin: 0 }}>
-                  Résultats immédiats · Accès à vie · Moins cher qu'une séance kiné
+                  Résultats immédiats · Accès à vie · Moins cher qu&apos;une séance kiné
                 </p>
               </div>
             </div>

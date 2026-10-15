@@ -629,9 +629,12 @@ function analyzeCollectiveVideo(employees: EmployeeRow[], assessed: EmployeeRow[
 
 export default function EntrepriseDemoDashboard() {
   const authorized = useDemoAuth();
-  const { c } = useTheme();
-
   if (!authorized) return null;
+  return <DemoDashboardInner />;
+}
+
+function DemoDashboardInner() {
+  const { c } = useTheme();
 
   const [company, setCompany] = useState<Company | null>(null);
   const [employees, setEmployees] = useState<EmployeeRow[]>([]);

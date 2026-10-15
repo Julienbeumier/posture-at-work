@@ -450,7 +450,7 @@ export default function MobilitePage() {
           </div>
           {discreetMode && (
             <div style={{ marginTop: 10, padding: "8px 14px", borderRadius: 10, background: "rgba(63,224,160,0.10)", border: "0.5px solid rgba(63,224,160,0.25)" }}>
-              <p style={{ fontFamily: T.b, fontSize: 12, color: "#3fe0a0", margin: 0 }}>✓ Invisible pour les collègues — seuls les exercices discrets s'affichent</p>
+              <p style={{ fontFamily: T.b, fontSize: 12, color: "#3fe0a0", margin: 0 }}>✓ Invisible pour les collègues — seuls les exercices discrets s&apos;affichent</p>
             </div>
           )}
         </div>

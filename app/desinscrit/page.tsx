@@ -39,7 +39,7 @@ function DesincritContent() {
         )}
         <Link href="/" style={{ textDecoration: "none" }}>
           <div style={{ padding: "13px 28px", borderRadius: 100, background: "#2b5ce6", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff", display: "inline-block" }}>
-            Retour à l'accueil →
+            Retour à l&apos;accueil →
           </div>
         </Link>
       </div>

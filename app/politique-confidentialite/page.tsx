@@ -44,7 +44,7 @@ export default function PolitiqueConfidentialite() {
             <li>Tes réponses au questionnaire santé</li>
             <li>Tes scores calculés par dimension</li>
             <li>Tes check-ins quotidiens (exercices, hydratation, douleurs)</li>
-            <li>Des frames vidéo temporaires lors de l'analyse posturale (non stockées — voir section 4)</li>
+            <li>Des frames vidéo temporaires lors de l&apos;analyse posturale (non stockées — voir section 4)</li>
           </ul>
         </Section>
 
@@ -75,9 +75,9 @@ export default function PolitiqueConfidentialite() {
         <Section title="4. Analyse vidéo IA">
           <div style={{ borderRadius: 16, padding: "16px 18px", background: "rgba(124,58,237,0.08)", border: "0.5px solid rgba(124,58,237,0.25)", marginBottom: 12 }}>
             <p style={{ margin: 0 }}>
-              Les frames extraites de ta vidéo sont envoyées à l'API Anthropic Claude pour analyse posturale.
+              Les frames extraites de ta vidéo sont envoyées à l&apos;API Anthropic Claude pour analyse posturale.
               Elles <strong style={{ color: "#f0f0fa" }}>ne sont pas stockées sur nos serveurs</strong>.
-              La vidéo complète n'est jamais uploadée — seules 4 à 7 images fixes (JPEG) sont transmises, puis immédiatement supprimées après l'analyse.
+              La vidéo complète n&apos;est jamais uploadée — seules 4 à 7 images fixes (JPEG) sont transmises, puis immédiatement supprimées après l&apos;analyse.
             </p>
           </div>
           <p>Anthropic est soumis à sa propre politique de confidentialité disponible sur <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: "#6f9bff" }}>anthropic.com/privacy</a>.</p>
@@ -109,14 +109,14 @@ export default function PolitiqueConfidentialite() {
           <p>
             Pour demander la suppression complète de ton compte et de toutes tes données, envoie un email à{" "}
             <a href="mailto:hello@postureatwork.com?subject=Suppression de compte" style={{ color: "#ff7b7b" }}>hello@postureatwork.com</a>{" "}
-            avec l'objet "Suppression de compte". Nous procéderons sous 72h.
+            avec l&apos;objet "Suppression de compte". Nous procéderons sous 72h.
           </p>
           <p style={{ marginTop: 8 }}>Tu peux aussi supprimer ton compte directement depuis ton tableau de bord.</p>
         </Section>
 
         <Section title="7. Cookies et stockage local">
           <p>
-            PostureAtWork utilise le localStorage et le sessionStorage de ton navigateur pour stocker tes préférences et résultats temporaires, ainsi que <strong style={{ color: "#f0f0fa" }}>des cookies strictement nécessaires</strong> au maintien de ta session de connexion. Nous n'utilisons pas de cookies de tracking tiers, ni Google Analytics, ni pixels publicitaires.
+            PostureAtWork utilise le localStorage et le sessionStorage de ton navigateur pour stocker tes préférences et résultats temporaires, ainsi que <strong style={{ color: "#f0f0fa" }}>des cookies strictement nécessaires</strong> au maintien de ta session de connexion. Nous n&apos;utilisons pas de cookies de tracking tiers, ni Google Analytics, ni pixels publicitaires.
           </p>
         </Section>
 
