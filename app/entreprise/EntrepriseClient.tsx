@@ -30,9 +30,8 @@ const FEATURES = [
 ];
 
 // Coût moyen d'un jour d'absence (salaire garanti) pour un employeur belge — Securex, baromètre de l'absentéisme 2022 :
-// 321 € de coûts directs + 802 € de coûts indirects = 1 123 € par jour ; 6,07 jours par travailleur à temps plein.
+// 321 € de coûts directs + 802 € de coûts indirects = 1 123 € par jour d'absence (salaire garanti).
 const COUT_JOUR_ABSENCE = 1123;
-const JOURS_ABSENCE_PAR_TRAVAILLEUR = 6.07;
 const SECUREX_URL = "https://www.securex.be/getmedia/a13c68a1-07b4-46b8-a7d9-21e046b77cfa/WhitePaper-Absenteisme-2022-fr.pdf?ext=.pdf";
 const SLIDER_MIN = 10;
 const SLIDER_MAX = 150;
@@ -75,8 +74,6 @@ function InvestmentCalculator({
   const monthly = p.totalYear / 12;
   const perEmployeeMonth = p.perEmployee / 12;
   const breakEvenDays = p.totalYear / COUT_JOUR_ABSENCE;
-  const breakEvenLabel = breakEvenDays < 1 ? "moins d'un jour d'absence" : `${Math.ceil(breakEvenDays)} jours d'absence`;
-  const absenceCostTeam = Math.round(p.n * JOURS_ABSENCE_PAR_TRAVAILLEUR * COUT_JOUR_ABSENCE);
   const marks = [10, 25, 50, 100, 150];
 
   return (
@@ -166,20 +163,37 @@ function InvestmentCalculator({
               )}
             </div>
 
-            {/* 3. Rentabilité (chiffre sourcé) */}
-            <div style={{ borderRadius: 18, padding: isMobile ? "16px" : "18px 22px", marginBottom: 22, background: "rgba(63,224,160,0.08)", border: "1px solid rgba(63,224,160,0.28)" }}>
-              <p style={{ fontFamily: fonts.h, fontWeight: 800, fontSize: isMobile ? 15 : 16, color: c.textPrimary, margin: "0 0 6px", lineHeight: 1.45 }}>
-                💡 PAW est rentabilisé dès que votre équipe évite {breakEvenLabel} sur l&apos;année.
+            {/* 3. Rentabilité : comparaison simple, chiffre belge sourcé */}
+            <div style={{ borderRadius: 18, padding: isMobile ? "18px 14px" : "22px 24px", marginBottom: 22, background: "rgba(63,224,160,0.08)", border: "1px solid rgba(63,224,160,0.28)" }}>
+              <p style={{ fontFamily: fonts.h, fontWeight: 800, fontSize: isMobile ? 15 : 17, color: c.textPrimary, margin: "0 0 14px", textAlign: "center" }}>
+                💡 En clair : {breakEvenDays <= 1 ? "PAW coûte moins qu'une journée d'absence" : `PAW coûte l'équivalent de ${Math.ceil(breakEvenDays)} jours d'absence`}
               </p>
-              <p style={{ fontFamily: fonts.b, fontSize: 13, color: c.textSecondary, margin: 0, lineHeight: 1.65 }}>
-                Un jour d&apos;absence coûte en moyenne <strong style={{ color: c.textPrimary }}>{COUT_JOUR_ABSENCE.toLocaleString("fr-FR")} €</strong> à un employeur belge
-                (coûts directs et indirects). Pour {p.n} employés, les absences sous salaire garanti représentent en moyenne{" "}
-                <strong style={{ color: c.textPrimary }}>{absenceCostTeam.toLocaleString("fr-FR")} € par an</strong>.
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr auto 1fr auto 1fr", alignItems: "center", gap: isMobile ? 8 : 12, marginBottom: 14 }}>
+                <div style={{ textAlign: "center", padding: "14px 10px", borderRadius: 14, background: "rgba(255,123,123,0.10)", border: "1px solid rgba(255,123,123,0.3)" }}>
+                  <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#ff7b7b", margin: "0 0 2px" }}>{COUT_JOUR_ABSENCE.toLocaleString("fr-FR")} €</p>
+                  <p style={{ fontFamily: fonts.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.4 }}>coûte en moyenne<br />1 jour d&apos;absence</p>
+                </div>
+                <span aria-hidden="true" style={{ textAlign: "center", fontFamily: fonts.h, fontWeight: 900, fontSize: 18, color: c.textMuted }}>vs</span>
+                <div style={{ textAlign: "center", padding: "14px 10px", borderRadius: 14, background: "rgba(43,92,230,0.14)", border: "1px solid rgba(111,155,255,0.4)" }}>
+                  <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#6f9bff", margin: "0 0 2px" }}>{p.totalYear.toLocaleString("fr-FR")} €</p>
+                  <p style={{ fontFamily: fonts.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.4 }}>coûte PAW pour<br />{p.n} employés, 1 an</p>
+                </div>
+                <span aria-hidden="true" style={{ textAlign: "center", fontFamily: fonts.h, fontWeight: 900, fontSize: 18, color: c.textMuted }}>=</span>
+                <div style={{ textAlign: "center", padding: "14px 10px", borderRadius: 14, background: "rgba(63,224,160,0.12)", border: "1px solid rgba(63,224,160,0.4)" }}>
+                  <p style={{ fontFamily: fonts.h, fontWeight: 900, fontSize: 24, color: "#3fe0a0", margin: "0 0 2px" }}>{breakEvenDays.toFixed(1).replace(".", ",")} jour{breakEvenDays >= 2 ? "s" : ""}</p>
+                  <p style={{ fontFamily: fonts.b, fontSize: 12, color: c.textMuted, margin: 0, lineHeight: 1.4 }}>d&apos;absence<br />seulement</p>
+                </div>
+              </div>
+              <p style={{ fontFamily: fonts.b, fontSize: 14, color: c.textSecondary, margin: "0 0 10px", lineHeight: 1.65, textAlign: "center" }}>
+                {breakEvenDays <= 1
+                  ? "Éviter une seule journée d'absence dans l'année suffit déjà à couvrir le coût de PAW."
+                  : `Éviter ${Math.ceil(breakEvenDays)} jours d'absence dans l'année suffit à couvrir le coût de PAW.`}
               </p>
-              <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: "8px 0 0", lineHeight: 1.5 }}>
+              <p style={{ fontFamily: fonts.b, fontSize: 11, color: c.textMuted, margin: 0, lineHeight: 1.55, textAlign: "center" }}>
+                Un jour d&apos;absence = salaire garanti versé (321 €) + coûts indirects : remplacement, réorganisation, perte de production (802 €).{" "}
                 Source :{" "}
                 <a href={SECUREX_URL} target="_blank" rel="noopener noreferrer" style={{ color: "#6f9bff" }}>Securex, L&apos;absentéisme en 2022</a>
-                {" "}(1 123 € par jour = 321 € directs + 802 € indirects ; {JOURS_ABSENCE_PAR_TRAVAILLEUR.toString().replace(".", ",")} jours par travailleur). Moyenne belge indicative, sans garantie de résultat.
+                {" "}(moyenne belge, à titre indicatif). PAW ne garantit pas un nombre de jours évités.
               </p>
             </div>
 
