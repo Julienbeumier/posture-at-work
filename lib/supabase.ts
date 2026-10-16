@@ -86,7 +86,8 @@ export async function saveAssessmentForUser(
   scores: Record<string, number>,
   answers: Record<string, unknown>,
   videoAnalysis: Record<string, unknown> | null,
-  companyId: string | null
+  companyId: string | null,
+  jobType?: string | null
 ): Promise<{ error: Error | null }> {
   const client = createClient();
 
@@ -110,6 +111,7 @@ export async function saveAssessmentForUser(
         answers,
         global_score: scores.global ?? 0,
         company_id: companyId,
+        ...(jobType ? { job_type: jobType } : {}),
         ...(videoAnalysis ? { video_analysis: videoAnalysis } : {}),
       })
       .eq("id", existing.id);
@@ -122,6 +124,7 @@ export async function saveAssessmentForUser(
     answers,
     global_score: scores.global ?? 0,
     company_id: companyId,
+    ...(jobType ? { job_type: jobType } : {}),
     ...(videoAnalysis ? { video_analysis: videoAnalysis } : {}),
   }]);
   return { error: error as Error | null };

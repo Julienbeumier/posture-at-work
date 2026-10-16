@@ -17,13 +17,15 @@ export const PARCOURS_STEPS = [
 
 /** Étape numérotée du parcours d'amélioration, repliable. */
 export function ParcoursStep({
-  c, n, title, subtitle, defaultOpen = true, children,
+  c, n, title, subtitle, defaultOpen = true, status, statusColor, children,
 }: {
-  c: ThemeLike; n: number; title: string; subtitle: string; defaultOpen?: boolean; children: ReactNode;
+  c: ThemeLike; n: number; title: string; subtitle: string; defaultOpen?: boolean;
+  /** Petit libellé d'état affiché à droite (ex. « Fait », « 1/3 »). */
+  status?: string; statusColor?: string; children: ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <section aria-labelledby={`parcours-step-${n}`} style={{ marginBottom: 22 }}>
+    <section id={`parcours-etape-${n}`} aria-labelledby={`parcours-step-${n}`} style={{ marginBottom: 22, scrollMarginTop: 90 }}>
       <button
         type="button"
         aria-expanded={open}
@@ -44,6 +46,12 @@ export function ParcoursStep({
           </span>
           <span style={{ display: "block", fontFamily: T.b, fontSize: 12, color: c.textMuted }}>{subtitle}</span>
         </span>
+        {status && (
+          <span style={{
+            flexShrink: 0, fontFamily: T.b, fontWeight: 700, fontSize: 12, padding: "4px 10px", borderRadius: 100,
+            color: statusColor ?? c.textMuted, background: `${statusColor ?? "#ffffff"}22`,
+          }}>{status}</span>
+        )}
         <span aria-hidden="true" style={{ color: c.textMuted, fontSize: 18 }}>{open ? "−" : "+"}</span>
       </button>
       {open && children}

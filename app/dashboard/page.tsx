@@ -1,35 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase";
+import { createClient, saveAssessmentForUser } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 import { useTheme } from "@/contexts/ThemeContext";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
+import { ParcoursStep, ParcoursLinkCard } from "@/components/dashboard/ParcoursStep";
+import DailyChecklist from "@/components/dashboard/DailyChecklist";
+import SignalForm from "@/components/dashboard/SignalForm";
+import RemindersButton from "@/components/dashboard/RemindersButton";
+import {
+  EXERCISE_GOAL, REBILAN_DAYS, buildChecklist, dimensionScores, focusLabel,
+  nextStep, scoreColor, tipOfDay,
+} from "@/lib/dashboard";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+interface Issue { zone?: string; element?: string; severity: string; consequence?: string; fix?: string }
+
+interface VideoAnalysis {
+  personne?: { globalPostureScore?: number; mainIssues?: Issue[] };
+  debout?: { globalPostureScore?: number; mainIssues?: Issue[] };
+  poste?: { globalSetupScore?: number; mainIssues?: Issue[] };
+}
 
 interface Assessment {
   id: string;
   created_at: string;
   global_score: number;
   scores: Record<string, number>;
-  answers: Record<string, unknown>;
-  job_type?: string;
-  video_analysis: {
-    personne?: Record<string, unknown>;
-    poste?: Record<string, unknown>;
-    analyzed_at?: string;
-  } | null;
+  video_analysis: VideoAnalysis | null;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function sc(s: number) { return s >= 70 ? "#3fe0a0" : s >= 50 ? "#ffa347" : "#ff7b7b"; }
 
 function fadeUp(delay = 0) {
   return {
@@ -39,16 +47,22 @@ function fadeUp(delay = 0) {
   };
 }
 
+const sevColor = (s: string) => (s === "élevé" ? "#ff7b7b" : s === "modéré" ? "#ffa347" : "#3fe0a0");
+
+function fmtDate(iso: string, withYear = false) {
+  return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", ...(withYear ? { year: "numeric" } : {}) });
+}
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function HeroCircle({ score }: { score: number }) {
-  const size = 70; const sw = 5;
+  const size = 104; const sw = 8;
   const r = (size - sw) / 2;
   const circ = 2 * Math.PI * r;
-  const color = sc(score);
+  const color = scoreColor(score);
   return (
-    <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
-      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+    <div role="img" aria-label={`Score global : ${score} sur 100`} style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
+      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }} aria-hidden="true">
         <circle cx={size / 2} cy={size / 2} r={r} fill="rgba(43,92,230,0.12)" stroke="rgba(43,92,230,0.35)" strokeWidth={sw} />
         <motion.circle
           cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={sw}
@@ -59,8 +73,8 @@ function HeroCircle({ score }: { score: number }) {
         />
       </svg>
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 20, color: "#a8c0ff", lineHeight: 1 }}>{score}</span>
-        <span style={{ fontSize: 8, color: "var(--t40)" }}>/100</span>
+        <span style={{ fontFamily: T.h, fontWeight: 900, fontSize: 34, color: "var(--text-primary)", lineHeight: 1 }}>{score}</span>
+        <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>/100</span>
       </div>
     </div>
   );
@@ -70,246 +84,19 @@ function Skeleton() {
   return <div style={{ height: 80, borderRadius: 18, background: "var(--bg-card-2)", animation: "pulse 1.5s ease-in-out infinite" }} />;
 }
 
-// ─── SignalForm ───────────────────────────────────────────────────────────────
-
-function SignalForm({ companyId, anonymousId, onSent }: {
-  companyId: string;
-  anonymousId: string;
-  onSent: () => void;
-}) {
-  const supabase = createClient();
-  const [type, setType] = useState("");
-  const [zone, setZone] = useState("");
-  const [description, setDescription] = useState("");
-  const [intensity, setIntensity] = useState(3);
-  const [loading, setLoading] = useState(false);
-
-  const types = [
-    { key: "douleur",    label: "🩺 Douleur physique",     showZone: true,  showIntensity: true },
-    { key: "equipement", label: "🪑 Problème d'équipement", showZone: false, showIntensity: false },
-    { key: "contrainte", label: "⚠️ Contrainte posturale",  showZone: true,  showIntensity: false },
-    { key: "autre",      label: "💬 Autre",                 showZone: false, showIntensity: false },
-  ];
-  const zones = ["Lombaires / dos bas", "Cervicales / nuque", "Épaules", "Poignets / mains", "Jambes / genoux", "Pieds", "Autre"];
-  const selectedType = types.find(t => t.key === type);
-
-  async function handleSubmit() {
-    if (!type || !description.trim()) return;
-    setLoading(true);
-    await supabase.from("signals").insert({
-      company_id: companyId, anonymous_id: anonymousId, type,
-      zone: zone || null, description: description.trim(),
-      intensity: selectedType?.showIntensity ? intensity : null,
-    });
-    setLoading(false);
-    onSent();
-  }
-
+function Pill({ color, children }: { color: string; children: React.ReactNode }) {
   return (
-    <div style={{ borderRadius: 20, padding: "20px 22px", background: "var(--bg-card)", border: "0.5px solid var(--border)" }}>
-      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: "0 0 14px" }}>
-        📣 Signalement entreprise
-      </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-          {types.map(t => (
-            <button key={t.key} onClick={() => setType(t.key)}
-              style={{ padding: "10px 12px", borderRadius: 10, cursor: "pointer",
-                background: type === t.key ? "rgba(255,163,71,0.15)" : "rgba(255,255,255,0.04)",
-                border: `0.5px solid ${type === t.key ? "rgba(255,163,71,0.4)" : "rgba(255,255,255,0.08)"}`,
-                fontFamily: T.b, fontSize: 12, fontWeight: 600,
-                color: type === t.key ? "#ffa347" : "rgba(255,255,255,0.5)", textAlign: "left" as const }}>
-              {t.label}
-            </button>
-          ))}
-        </div>
-        {selectedType?.showZone && (
-          <select value={zone} onChange={e => setZone(e.target.value)}
-            style={{ padding: "10px 12px", borderRadius: 10, outline: "none",
-              background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.1)",
-              color: zone ? "var(--text-primary)" : "rgba(255,255,255,0.35)", fontFamily: T.b, fontSize: 13 }}>
-            <option value="">Zone concernée (optionnel)</option>
-            {zones.map(z => <option key={z} value={z}>{z}</option>)}
-          </select>
-        )}
-        {selectedType?.showIntensity && (
-          <div>
-            <p style={{ fontFamily: T.b, fontSize: 12, color: "rgba(255,255,255,0.45)", marginBottom: 6 }}>
-              Intensité : <strong style={{ color: "#ffa347" }}>{intensity}/5</strong>
-            </p>
-            <input type="range" min={1} max={5} step={1} value={intensity}
-              onChange={e => setIntensity(Number(e.target.value))}
-              style={{ width: "100%", accentColor: "#ffa347" }} />
-          </div>
-        )}
-        {type && (
-          <textarea placeholder="Décrivez brièvement le problème…"
-            value={description} onChange={e => setDescription(e.target.value)} rows={3}
-            style={{ padding: "10px 12px", borderRadius: 10, outline: "none", resize: "none",
-              background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.1)",
-              color: "var(--text-primary)", fontFamily: T.b, fontSize: 13, lineHeight: 1.5 }} />
-        )}
-        {type && description.trim() && (
-          <button onClick={handleSubmit} disabled={loading}
-            style={{ padding: "12px 0", borderRadius: 100, border: "none", cursor: "pointer",
-              background: "#ffa347", color: "#fff", opacity: loading ? 0.7 : 1,
-              fontFamily: T.h, fontWeight: 700, fontSize: 14 }}>
-            {loading ? "Envoi…" : "Envoyer le signalement →"}
-          </button>
-        )}
-      </div>
-    </div>
+    <span style={{
+      fontFamily: T.b, fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 100,
+      color, background: `${color}22`, border: `1px solid ${color}44`,
+    }}>{children}</span>
   );
 }
 
-// ─── DailyChecklist ──────────────────────────────────────────────────────────
-
-function DailyChecklist({ scores }: { scores: Record<string, number> | null }) {
-  const allTasks: Array<{ id: string; text: string; dim: string }> = [];
-  const s = scores ?? {};
-
-  if ((s.setup ?? 100) < 75) {
-    allTasks.push({ id: "screen_height", dim: "setup",
-      text: "Vérifie que le haut de ton écran est au niveau de tes yeux" });
-    allTasks.push({ id: "chair_position", dim: "setup",
-      text: "Pieds à plat, genoux à 90°, lombaires contre le dossier" });
-  }
-  if ((s.habits ?? s.habitudes ?? 100) < 75) {
-    allTasks.push({ id: "break_alarm", dim: "habitudes",
-      text: "Programme une alarme dans 45 min pour te lever" });
-    allTasks.push({ id: "lunch_break", dim: "habitudes",
-      text: "Mange loin de ton écran aujourd'hui" });
-  }
-  if ((s.pain ?? 100) < 75) {
-    allTasks.push({ id: "chin_tuck", dim: "douleurs",
-      text: "Fais 10 rétractions cervicales maintenant (rentre le menton)" });
-    allTasks.push({ id: "stretch_break", dim: "douleurs",
-      text: "2 minutes d'étirements dos/nuque avant 12h" });
-  }
-  if ((s.nutrition ?? 100) < 75) {
-    allTasks.push({ id: "water", dim: "nutrition",
-      text: "Bois un grand verre d'eau maintenant" });
-    allTasks.push({ id: "protein_lunch", dim: "nutrition",
-      text: "Prévois une source de protéine à chaque repas aujourd'hui" });
-  }
-  if ((s.sleep_energy ?? s.mode_de_vie ?? 100) < 75) {
-    allTasks.push({ id: "screen_off", dim: "mode-de-vie",
-      text: "Coupe les écrans 30 min avant de dormir ce soir" });
-  }
-  allTasks.push({ id: "posture_check", dim: "setup",
-    text: "Fais un check de ta posture maintenant — dos droit, épaules relâchées" });
-  allTasks.push({ id: "water_2", dim: "nutrition",
-    text: "1,5L d'eau aujourd'hui — tu en es où ?" });
-
-  const tasks = allTasks.slice(0, 4);
-
-  const todayKey = `paw_checklist_${new Date().toISOString().split("T")[0]}`;
-  const [checked, setChecked] = useState<Record<string, boolean>>(() => {
-    try { return JSON.parse(localStorage.getItem(todayKey) ?? "{}"); }
-    catch { return {}; }
-  });
-
-  function toggle(id: string) {
-    const next = { ...checked, [id]: !checked[id] };
-    setChecked(next);
-    try { localStorage.setItem(todayKey, JSON.stringify(next)); } catch {}
-  }
-
-  const doneCount = Object.values(checked).filter(Boolean).length;
-  const totalCount = tasks.length;
-
-  const dimColors: Record<string, string> = {
-    setup: "#6f9bff",
-    habitudes: "#ffa347",
-    douleurs: "#ff7b7b",
-    nutrition: "#3fe0a0",
-    "mode-de-vie": "#c4b5fd",
-  };
-
-  return (
-    <div style={{ padding: "20px 24px", borderRadius: 20,
-      background: "var(--bg-card)", border: "0.5px solid var(--border)",
-      marginBottom: 14 }}>
-
-      <div style={{ display: "flex", alignItems: "center",
-        justifyContent: "space-between", marginBottom: 14 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 18 }}>✅</span>
-          <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16,
-            color: "var(--text-primary)", margin: 0 }}>
-            Checklist du jour
-          </p>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ height: 4, width: 80, borderRadius: 100,
-            background: "var(--border)", overflow: "hidden" }}>
-            <div style={{ height: "100%", borderRadius: 100,
-              background: doneCount === totalCount ? "#3fe0a0" : "#2b5ce6",
-              width: `${(doneCount / totalCount) * 100}%`,
-              transition: "width 0.3s ease" }} />
-          </div>
-          <span style={{ fontFamily: T.b, fontSize: 12, color: "var(--t45)" }}>
-            {doneCount}/{totalCount}
-          </span>
-        </div>
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {tasks.map(task => (
-          <motion.div key={task.id}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => toggle(task.id)}
-            style={{ display: "flex", alignItems: "center", gap: 12,
-              padding: "10px 14px", borderRadius: 12, cursor: "pointer",
-              background: checked[task.id] ? "rgba(63,224,160,0.06)" : "var(--bg-card-2)",
-              border: `0.5px solid ${checked[task.id] ? "rgba(63,224,160,0.2)" : "var(--border)"}`,
-              transition: "all 0.15s" }}>
-
-            <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0,
-              border: `2px solid ${checked[task.id] ? "#3fe0a0" : "var(--border-2)"}`,
-              background: checked[task.id] ? "#3fe0a0" : "transparent",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              transition: "all 0.15s" }}>
-              {checked[task.id] && (
-                <span style={{ color: "#fff", fontSize: 11, fontWeight: 800 }}>✓</span>
-              )}
-            </div>
-
-            <p style={{ fontFamily: T.b, fontSize: 13, margin: 0,
-              flex: 1, lineHeight: 1.4,
-              color: checked[task.id] ? "var(--t40)" : "var(--t65)",
-              textDecoration: checked[task.id] ? "line-through" : "none",
-              transition: "all 0.15s" }}>
-              {task.text}
-            </p>
-
-            <span style={{ fontFamily: T.b, fontSize: 10, fontWeight: 600,
-              padding: "2px 8px", borderRadius: 100, flexShrink: 0,
-              color: dimColors[task.dim] ?? "var(--t40)",
-              background: `${dimColors[task.dim] ?? "var(--t40)"}15` }}>
-              {task.dim}
-            </span>
-          </motion.div>
-        ))}
-      </div>
-
-      {doneCount === totalCount && (
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{ marginTop: 12, padding: "10px 14px", borderRadius: 10,
-            background: "rgba(63,224,160,0.08)",
-            border: "0.5px solid rgba(63,224,160,0.25)",
-            textAlign: "center" }}>
-          <p style={{ fontFamily: T.h, fontWeight: 700, fontSize: 13,
-            color: "#3fe0a0", margin: 0 }}>
-            🎉 Checklist complète — excellent travail aujourd&apos;hui !
-          </p>
-        </motion.div>
-      )}
-    </div>
-  );
-}
+const ctaStyle: React.CSSProperties = {
+  display: "inline-block", padding: "13px 24px", borderRadius: 100, background: "#2b5ce6", color: "#fff",
+  fontFamily: T.h, fontWeight: 700, fontSize: 14, textDecoration: "none", minHeight: 44, boxSizing: "border-box",
+};
 
 // ─── Main dashboard ───────────────────────────────────────────────────────────
 
@@ -320,44 +107,47 @@ export default function DashboardPage() {
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [loading, setLoading] = useState(true);
   const [firstname, setFirstname] = useState("");
-  const [showIosBanner, setShowIosBanner] = useState(false);
   const [showFeedbackBanner, setShowFeedbackBanner] = useState(false);
   const [notAdminError, setNotAdminError] = useState(false);
   const [isB2B, setIsB2B] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [anonymousId, setAnonymousId] = useState<string | null>(null);
-  const [signalSent, setSignalSent] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useSyncExternalStore(
+    cb => { window.addEventListener("resize", cb); return () => window.removeEventListener("resize", cb); },
+    () => window.innerWidth < 768,
+    () => false,
+  );
+  const [exerciseDays, setExerciseDays] = useState(0);
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [dayKey, setDayKey] = useState("");
+  const [nowMs, setNowMs] = useState(0);
 
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
+  // Bilan fait avant la création du compte : on l'enregistre maintenant.
   useEffect(() => {
     async function recoverPendingAssessment() {
       const pending = localStorage.getItem("paw_pending_assessment");
       if (!pending) return;
-      const { scores, answers, jobType, savedAt } = JSON.parse(pending);
-      if (Date.now() - new Date(savedAt).getTime() > 4 * 60 * 60 * 1000) {
-        localStorage.removeItem("paw_pending_assessment"); return;
+      try {
+        const { scores, answers, jobType, savedAt } = JSON.parse(pending);
+        if (Date.now() - new Date(savedAt).getTime() > 4 * 60 * 60 * 1000) {
+          localStorage.removeItem("paw_pending_assessment"); return;
+        }
+        const supabase = createClient();
+        const { data: { user: u } } = await supabase.auth.getUser();
+        if (!u || !scores) return;
+        const parsedScores = JSON.parse(scores);
+        const parsedAnswers = answers ? JSON.parse(answers) : {};
+        const { error } = await saveAssessmentForUser(u.id, parsedScores, parsedAnswers, null, null, jobType ?? "bureau");
+        // En cas d'échec on garde le bilan en attente : nouvelle tentative à la prochaine visite.
+        if (error) return;
+        sessionStorage.setItem("postureatwork_scores", scores);
+        if (answers) sessionStorage.setItem("postureatwork_answers", answers);
+        if (jobType) localStorage.setItem("paw_job_type", jobType);
+        localStorage.removeItem("paw_pending_assessment");
+        router.push("/results");
+      } catch {
+        localStorage.removeItem("paw_pending_assessment");
       }
-      const supabase = createClient();
-      const { data: { user: u } } = await supabase.auth.getUser();
-      if (!u) return;
-      if (scores) sessionStorage.setItem("postureatwork_scores", scores);
-      if (answers) sessionStorage.setItem("postureatwork_answers", answers);
-      if (jobType) localStorage.setItem("paw_job_type", jobType);
-      const parsedScores = JSON.parse(scores);
-      const parsedAnswers = answers ? JSON.parse(answers) : {};
-      await supabase.from("assessments").upsert({
-        user_id: u.id, global_score: parsedScores.global,
-        scores: parsedScores, answers: parsedAnswers, job_type: jobType ?? "bureau",
-      }, { onConflict: "user_id" });
-      localStorage.removeItem("paw_pending_assessment");
-      router.push("/results");
     }
     recoverPendingAssessment();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -396,13 +186,26 @@ export default function DashboardPage() {
       setFirstname(metaName || localName || u.email?.split("@")[0] || "");
       localStorage.setItem("paw_user_email", u.email ?? "");
 
+      const now = Date.now();
+      const today = new Date(now).toLocaleDateString("sv-SE");
+      const weekStart = new Date(now - 6 * 86400000).toLocaleDateString("sv-SE");
+      setNowMs(now);
+      setDayKey(today);
+      try { setChecked(JSON.parse(localStorage.getItem(`paw_checklist_${today}`) ?? "{}")); } catch { setChecked({}); }
+
       const { data: assessmentsData } = await supabase
-        .from("assessments").select("*").eq("user_id", u.id)
-        .order("created_at", { ascending: false });
-      if (assessmentsData && assessmentsData.length > 0) setAssessments(assessmentsData);
+        .from("assessments").select("id, created_at, global_score, scores, video_analysis")
+        .eq("user_id", u.id).order("created_at", { ascending: false });
+      if (assessmentsData && assessmentsData.length > 0) setAssessments(assessmentsData as Assessment[]);
+
+      // Séances d'exercices des 7 derniers jours
+      const { data: checkins } = await supabase
+        .from("daily_checkins").select("date, exercises_done")
+        .eq("user_id", u.id).gte("date", weekStart);
+      setExerciseDays((checkins ?? []).filter(r => r.exercises_done).length);
 
       const { data: membershipData } = await supabase
-        .from("company_memberships").select("company_id, anonymous_id, role, companies(name)")
+        .from("company_memberships").select("company_id, anonymous_id, role")
         .eq("user_id", u.id).maybeSingle();
       if (membershipData?.role === "employee") {
         setIsB2B(true);
@@ -410,60 +213,57 @@ export default function DashboardPage() {
         setAnonymousId(membershipData.anonymous_id);
       }
 
+      const feedbackKey = `paw_feedback_shown_${u.id}`;
+      const premiumSince = localStorage.getItem("paw_premium_since");
+      if (!localStorage.getItem(feedbackKey) && premiumSince &&
+          now - new Date(premiumSince).getTime() >= 48 * 60 * 60 * 1000) {
+        setShowFeedbackBanner(true);
+      }
+
       setLoading(false);
 
-      if (typeof window !== "undefined") {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get("error") === "not_admin") {
-          setNotAdminError(true);
-          window.history.replaceState({}, "", "/dashboard");
-        }
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("error") === "not_admin") {
+        setNotAdminError(true);
+        window.history.replaceState({}, "", "/dashboard");
       }
 
-      if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/sw.js").catch(() => {});
-        const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) &&
-          !(window.navigator as unknown as Record<string, unknown>)["standalone"];
-        if (isIos && !("Notification" in window)) {
-          setTimeout(() => setShowIosBanner(true), 3000);
-        } else if ("Notification" in window && Notification.permission === "default") {
-          setTimeout(() => requestNotificationPermission(), 3000);
-        }
-      }
+      // Nécessaire aux rappels (activés seulement si la personne le demande)
+      if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});
     };
     loadDashboard();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!user) return;
-    const key = `paw_feedback_shown_${user.id}`;
-    if (localStorage.getItem(key)) return;
-    const premiumSince = localStorage.getItem("paw_premium_since");
-    if (!premiumSince) return;
-    if (Date.now() - new Date(premiumSince).getTime() >= 48 * 60 * 60 * 1000) setShowFeedbackBanner(true);
-  }, [user]);
-
-  async function requestNotificationPermission() {
-    if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
-    try {
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") return;
-      const reg = await navigator.serviceWorker.ready;
-      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-      if (!vapidKey) return;
-      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: vapidKey });
-      await fetch("/api/send-notification", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscription: sub, action: "save" }),
-      });
-    } catch { /* user denied */ }
+  function toggleTask(id: string) {
+    const next = { ...checked, [id]: !checked[id] };
+    setChecked(next);
+    try { localStorage.setItem(`paw_checklist_${dayKey}`, JSON.stringify(next)); } catch { /* stockage indisponible */ }
   }
 
   // ─── Computed ────────────────────────────────────────────────────────────────
 
-  const latestAssessment = assessments[0] ?? null;
+  const latest = assessments[0] ?? null;
+  const previous = assessments[1] ?? null;
   const displayName = firstname || user?.user_metadata?.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "";
+
+  const dims = dimensionScores(latest?.scores);
+  const tasks = buildChecklist(dims);
+  const checklistDone = tasks.filter(t => checked[t.id]).length;
+  const va = latest?.video_analysis ?? null;
+  const hasVideo = !!va;
+  const postureScore = va?.personne?.globalPostureScore ?? va?.debout?.globalPostureScore;
+  const setupScore = va?.poste?.globalSetupScore;
+  const videoIssues: Issue[] = [
+    ...(va?.personne?.mainIssues ?? va?.debout?.mainIssues ?? []).slice(0, 2),
+    ...(va?.poste?.mainIssues ?? []).slice(0, 2),
+  ].slice(0, 3);
+  const daysSince = latest && nowMs ? Math.floor((nowMs - new Date(latest.created_at).getTime()) / 86400000) : 0;
+  const daysLeft = Math.max(REBILAN_DAYS - daysSince, 0);
+  const delta = latest && previous ? latest.global_score - previous.global_score : null;
+  const next = nextStep({ hasVideo, exerciseDays, checklistDone, checklistTotal: tasks.length, daysSinceBilan: daysSince });
+  const openStep = next.step ?? 5;
+  const score = latest?.global_score ?? 0;
 
   // ─── Loading ─────────────────────────────────────────────────────────────────
 
@@ -484,491 +284,248 @@ export default function DashboardPage() {
     <main style={{ minHeight: "100vh", background: c.mainBg }}>
       <div style={{ maxWidth: 800, margin: "0 auto", padding: isMobile ? "80px 16px 40px" : "100px 24px 60px" }}>
 
-        {/* ── ALERTS ── */}
+        {/* ── Alertes ── */}
         {notAdminError && (
-          <div style={{ padding: "12px 16px", borderRadius: 12, marginBottom: 14,
-            background: "rgba(255,163,71,0.1)", border: "0.5px solid rgba(255,163,71,0.3)",
-            display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 16 }}>⚠️</span>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: "#ffa347", margin: 0 }}>
+          <div role="alert" style={{ padding: "12px 16px", borderRadius: 12, marginBottom: 14,
+            background: "rgba(255,163,71,0.1)", border: "1px solid rgba(255,163,71,0.3)" }}>
+            <p style={{ fontFamily: T.b, fontSize: 14, color: "#ffa347", margin: 0 }}>
               Tu n&apos;as pas accès au dashboard entreprise. Contacte ton administrateur PAW.
             </p>
           </div>
         )}
 
         {showFeedbackBanner && (
-          <motion.div {...fadeUp(0)} style={{ marginBottom: 14,
-            borderRadius: 18, padding: "18px 20px",
-            background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)",
+          <motion.div {...fadeUp(0)} style={{ marginBottom: 14, borderRadius: 18, padding: "18px 20px",
+            background: "rgba(43,92,230,0.10)", border: "1px solid rgba(43,92,230,0.25)",
             display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-            <div style={{ fontSize: 28 }}>💬</div>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "var(--text-primary)", margin: "0 0 4px" }}>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: "var(--text-primary)", margin: "0 0 4px" }}>
                 2 minutes pour améliorer PAW ?
               </p>
-              <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", margin: 0 }}>
-                Ton avis est précieux pour nous aider à construire le meilleur outil de santé au travail.
+              <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", margin: 0 }}>
+                Ton avis nous aide à construire un meilleur outil de santé au travail.
               </p>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
-              <Link href="/feedback" style={{ textDecoration: "none" }}>
-                <button style={{ padding: "9px 18px", borderRadius: 100, border: "none",
-                  background: "#2b5ce6", color: "#fff",
-                  fontFamily: T.h, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-                  Donner mon avis →
-                </button>
-              </Link>
-              <button
+              <Link href="/feedback" style={{ ...ctaStyle, padding: "10px 18px", fontSize: 13 }}>Donner mon avis</Link>
+              <button type="button"
                 onClick={() => { setShowFeedbackBanner(false); localStorage.setItem(`paw_feedback_shown_${user!.id}`, "true"); }}
-                style={{ padding: "9px 14px", borderRadius: 100,
-                  background: "transparent", border: "0.5px solid var(--border-2)",
-                  color: "var(--t50)", fontFamily: T.b, fontSize: 12, cursor: "pointer" }}>
+                style={{ padding: "10px 16px", borderRadius: 100, background: "transparent", border: "1px solid var(--border-2)",
+                  color: "var(--t55)", fontFamily: T.b, fontSize: 13, cursor: "pointer", minHeight: 44 }}>
                 Plus tard
               </button>
             </div>
           </motion.div>
         )}
 
-        {showIosBanner && (
-          <motion.div {...fadeUp(0)} style={{ marginBottom: 14,
-            borderRadius: 16, padding: "14px 18px",
-            background: "rgba(43,92,230,0.10)", border: "0.5px solid rgba(43,92,230,0.25)",
-            display: "flex", alignItems: "flex-start", gap: 12 }}>
-            <span style={{ fontSize: 18, flexShrink: 0 }}>📱</span>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 13, color: "var(--text-primary)", margin: "0 0 4px" }}>
-                Active les rappels
-              </p>
-              <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t55)", margin: 0, lineHeight: 1.5 }}>
-                Sur iOS, ajoute l&apos;app à ton écran d&apos;accueil pour recevoir des rappels posture.
-              </p>
-            </div>
-            <button onClick={() => setShowIosBanner(false)}
-              style={{ background: "none", border: "none", color: "var(--t30)", fontSize: 16, cursor: "pointer", padding: 0 }}>
-              ✕
-            </button>
-          </motion.div>
-        )}
-
-        {/* ── 1. HEADER SCORE ── */}
-        <motion.div {...fadeUp(0)} style={{
-          padding: "24px", borderRadius: 20,
-          background: "var(--bg-card)", border: "0.5px solid var(--border)",
-          marginBottom: 16,
-          display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-
-          <HeroCircle score={latestAssessment?.global_score ?? 0} />
-
-          <div style={{ flex: 1, minWidth: 160 }}>
-            <p style={{ fontFamily: T.h, fontWeight: 900,
-              fontSize: isMobile ? 22 : 26, color: "var(--text-primary)", margin: "0 0 4px" }}>
-              Bonjour{displayName ? ` ${displayName}` : ""} 👋
+        {/* ── Score ── */}
+        <motion.div {...fadeUp(0)} style={{ padding: "24px", borderRadius: 20, background: "var(--bg-card)",
+          border: "1px solid var(--border)", marginBottom: 16, display: "flex", alignItems: "center", gap: 22, flexWrap: "wrap" }}>
+          {latest && <HeroCircle score={score} />}
+          <div style={{ flex: 1, minWidth: 180 }}>
+            <h1 style={{ fontFamily: T.h, fontWeight: 900, fontSize: isMobile ? 24 : 28, color: "var(--text-primary)", margin: "0 0 4px" }}>
+              Bonjour{displayName ? ` ${displayName}` : ""}
+            </h1>
+            <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)", margin: "0 0 10px" }}>
+              {latest ? `Bilan du ${fmtDate(latest.created_at)}` : "Pas encore de bilan"}
             </p>
-            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", margin: "0 0 10px" }}>
-              {latestAssessment
-                ? `Bilan du ${new Date(latestAssessment.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}`
-                : "Pas encore de bilan"}
-            </p>
-            <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600,
-              padding: "4px 12px", borderRadius: 100,
-              background: (latestAssessment?.global_score ?? 0) >= 70
-                ? "rgba(63,224,160,0.15)" : "rgba(255,163,71,0.15)",
-              color: (latestAssessment?.global_score ?? 0) >= 70 ? "#3fe0a0" : "#ffa347",
-              border: `0.5px solid ${(latestAssessment?.global_score ?? 0) >= 70
-                ? "rgba(63,224,160,0.3)" : "rgba(255,163,71,0.3)"}` }}>
-              {(latestAssessment?.global_score ?? 0) >= 70 ? "✅ Bon niveau" :
-               (latestAssessment?.global_score ?? 0) >= 50 ? "🟠 À améliorer" :
-               "🔴 Points critiques"}
-            </span>
+            {latest && (
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                <Pill color={scoreColor(score)}>
+                  {score >= 70 ? "Bon niveau" : score >= 50 ? "À améliorer" : "Points critiques"}
+                </Pill>
+                {delta !== null && (
+                  <Pill color={delta > 0 ? "#3fe0a0" : delta < 0 ? "#ff7b7b" : "#6f9bff"}>
+                    {delta > 0 ? `+${delta} points` : delta < 0 ? `${delta} points` : "Stable"} depuis le bilan précédent
+                  </Pill>
+                )}
+              </div>
+            )}
           </div>
-
-          <Link href="/questionnaire" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-              style={{ padding: "12px 20px", borderRadius: 100,
-                background: "#2b5ce6", color: "#fff",
-                fontFamily: T.h, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
-              Nouveau bilan →
-            </motion.div>
-          </Link>
         </motion.div>
 
-        {latestAssessment && (
+        {latest && (
           <>
-            {/* ── 2. DEUX GRANDES CARDS ── */}
-            <div style={{ display: "grid",
-              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-              gap: 14, marginBottom: 14 }}>
+            {/* ── Prochaine étape ── */}
+            <motion.div {...fadeUp(0.05)} style={{ padding: "22px 24px", borderRadius: 20, marginBottom: 26,
+              background: "rgba(43,92,230,0.12)", border: "1px solid rgba(43,92,230,0.4)" }}>
+              <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase",
+                color: "#8fb0ff", margin: "0 0 8px" }}>
+                {next.step ? `Prochaine étape · Étape ${next.step} sur 5` : "Ton parcours"}
+              </p>
+              <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 21, color: "var(--text-primary)", margin: "0 0 6px" }}>{next.title}</h2>
+              <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t65)", lineHeight: 1.6, margin: next.cta ? "0 0 16px" : 0 }}>{next.text}</p>
+              {next.cta && next.href && (next.href.startsWith("#")
+                ? <a href={next.href} style={ctaStyle}>{next.cta}</a>
+                : <Link href={next.href} style={ctaStyle}>{next.cta}</Link>)}
+            </motion.div>
 
-              {/* Card Scores */}
-              <motion.div {...fadeUp(0.06)}>
-                <Link href="/results" style={{ textDecoration: "none" }}>
-                  <motion.div whileHover={{ scale: 1.01, y: -2 }}
-                    style={{ padding: "24px", borderRadius: 20, cursor: "pointer",
-                      background: "var(--bg-card)", border: "0.5px solid var(--border)",
-                      height: "100%", minHeight: 200 }}>
+            {/* ── Parcours d'amélioration ── */}
+            <motion.div {...fadeUp(0.08)}>
+              <h2 style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", margin: "0 0 6px" }}>
+                Ton parcours d&apos;amélioration
+              </h2>
+              <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)", lineHeight: 1.6, margin: "0 0 18px" }}>
+                Cinq étapes, dans l&apos;ordre, pour passer de ton bilan à un poste et des habitudes qui te ménagent.
+              </p>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                      <span style={{ fontSize: 24 }}>📊</span>
-                      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18,
-                        color: "var(--text-primary)", margin: 0 }}>
-                        Mes scores
-                      </p>
+              <ParcoursStep c={c} n={1} title="Comprendre" subtitle="Ton score et tes priorités"
+                status="Fait" statusColor="#3fe0a0" defaultOpen={false}>
+                <ul style={{ listStyle: "none", margin: "0 0 12px", padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                  {dims.slice(0, 3).map((d, i) => (
+                    <li key={d.slug}>
+                      <Link href={`/conseils/${d.slug}`} style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 12,
+                        padding: "12px 14px", borderRadius: 12, background: "var(--bg-card-2)", border: "1px solid var(--border)", minHeight: 48 }}>
+                        <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, color: "var(--t55)", width: 18 }}>{i + 1}</span>
+                        <span style={{ fontFamily: T.b, fontSize: 14, fontWeight: 600, color: "var(--text-primary)", flex: 1 }}>{d.label}</span>
+                        <span aria-hidden="true" style={{ width: 80, height: 6, borderRadius: 100, background: "var(--border)", overflow: "hidden" }}>
+                          <span style={{ display: "block", width: `${d.score}%`, height: "100%", borderRadius: 100, background: scoreColor(d.score) }} />
+                        </span>
+                        <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 15, color: scoreColor(d.score), width: 28, textAlign: "right" }}>{d.score}</span>
+                        <span aria-hidden="true" style={{ color: "var(--t55)" }}>›</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <ParcoursLinkCard c={c}
+                  text="Ce sont tes trois dimensions les plus faibles, donc celles qui rapportent le plus. Chacune a sa page de conseils."
+                  cta="Voir tous mes résultats" onClick={() => router.push("/results")} />
+              </ParcoursStep>
+
+              <ParcoursStep c={c} n={2} title="Corriger ton poste" subtitle="Ce que la vidéo révèle"
+                status={hasVideo ? "Fait" : "À faire"} statusColor={hasVideo ? "#3fe0a0" : "#ffa347"} defaultOpen={openStep === 2}>
+                {hasVideo ? (
+                  <>
+                    <div style={{ display: "grid", gridTemplateColumns: setupScore !== undefined && postureScore !== undefined ? "1fr 1fr" : "1fr", gap: 10, marginBottom: 14 }}>
+                      {[
+                        { label: "Posture observée", value: postureScore, good: "Bonne posture globale", mid: "Quelques corrections", bad: "Points critiques" },
+                        { label: "Poste observé", value: setupScore, good: "Poste bien configuré", mid: "Ajustements recommandés", bad: "Poste à reconfigurer" },
+                      ].filter(t => t.value !== undefined).map(t => {
+                        const v = t.value as number;
+                        return (
+                          <div key={t.label} style={{ padding: "14px 16px", borderRadius: 14, background: `${scoreColor(v)}14`, border: `1px solid ${scoreColor(v)}33` }}>
+                            <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, color: "var(--t55)", margin: "0 0 6px" }}>{t.label}</p>
+                            <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 30, color: scoreColor(v), margin: "0 0 4px", lineHeight: 1 }}>
+                              {v}<span style={{ fontSize: 14, fontWeight: 600, color: "var(--t45)" }}>/100</span>
+                            </p>
+                            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", margin: 0 }}>{v >= 70 ? t.good : v >= 50 ? t.mid : t.bad}</p>
+                          </div>
+                        );
+                      })}
                     </div>
-
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
-                      {Object.entries(latestAssessment.scores ?? {})
-                        .filter(([k]) => k !== "global" && k !== "job_type")
-                        .sort(([, a], [, b]) => (a as number) - (b as number))
-                        .slice(0, 3)
-                        .map(([key, score]) => {
-                          const labels: Record<string, string> = {
-                            setup: "💻 Setup",
-                            pain: "🩺 Douleurs",
-                            habits: "⏱️ Habitudes",
-                            sleep_energy: "🌙 Mode de vie",
-                            mode_de_vie: "🌙 Mode de vie",
-                            nutrition: "🍽️ Nutrition",
-                            lifestyle: "🏃 Lifestyle",
-                          };
-                          const s = score as number;
-                          const color = s >= 70 ? "#3fe0a0" : s >= 50 ? "#ffa347" : "#ff7b7b";
+                    {videoIssues.length > 0 && (
+                      <ul style={{ listStyle: "none", margin: "0 0 14px", padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                        {videoIssues.map((issue, i) => {
+                          const detail = issue.fix ?? issue.consequence;
                           return (
-                            <div key={key} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                              <span style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", flex: 1 }}>
-                                {labels[key] ?? key}
-                              </span>
-                              <div style={{ width: 80, height: 4, borderRadius: 100,
-                                background: "var(--border)", overflow: "hidden" }}>
-                                <div style={{ width: `${s}%`, height: "100%",
-                                  borderRadius: 100, background: color }} />
+                            <li key={i} style={{ padding: "12px 14px", borderRadius: 12, background: "var(--bg-card-2)", border: "1px solid var(--border)" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                <span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: "50%", background: sevColor(issue.severity), flexShrink: 0 }} />
+                                <span style={{ fontFamily: T.b, fontSize: 14, fontWeight: 600, color: "var(--text-primary)", flex: 1 }}>{issue.zone ?? issue.element}</span>
+                                <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, color: sevColor(issue.severity), padding: "2px 10px", borderRadius: 100, background: `${sevColor(issue.severity)}22` }}>{issue.severity}</span>
                               </div>
-                              <span style={{ fontFamily: T.h, fontWeight: 700,
-                                fontSize: 14, color, width: 28, textAlign: "right" }}>
-                                {s}
-                              </span>
-                            </div>
+                              {detail && <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.55, margin: "8px 0 0 18px" }}>{detail}</p>}
+                            </li>
                           );
                         })}
-                    </div>
-
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "#6f9bff", fontWeight: 600, margin: 0 }}>
-                      Voir toutes mes dimensions →
-                    </p>
-                  </motion.div>
-                </Link>
-              </motion.div>
-
-              {/* Card Exercices */}
-              <motion.div {...fadeUp(0.08)}>
-                <Link href="/mobilite" style={{ textDecoration: "none" }}>
-                  <motion.div whileHover={{ scale: 1.01, y: -2 }}
-                    style={{ padding: "24px", borderRadius: 20, cursor: "pointer",
-                      background: "var(--bg-card)", border: "0.5px solid var(--border)",
-                      height: "100%", minHeight: 200 }}>
-
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                      <span style={{ fontSize: 24 }}>🧘</span>
-                      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18,
-                        color: "var(--text-primary)", margin: 0 }}>
-                        Mes exercices
-                      </p>
-                    </div>
-
-                    {(() => {
-                      const lowestDim = Object.entries(latestAssessment.scores ?? {})
-                        .filter(([k]) => k !== "global" && k !== "job_type")
-                        .sort(([, a], [, b]) => (a as number) - (b as number))
-                        [0]?.[0];
-                      const focusMap: Record<string, string> = {
-                        setup: "Posture et nuque",
-                        pain: "Soulagement des douleurs",
-                        habits: "Mobilité au bureau",
-                        sleep_energy: "Récupération",
-                        mode_de_vie: "Récupération",
-                        nutrition: "Bien-être global",
-                        lifestyle: "Activité physique",
-                      };
-                      return (
-                        <div>
-                          <div style={{ padding: "10px 14px", borderRadius: 10,
-                            background: "rgba(63,224,160,0.08)",
-                            border: "0.5px solid rgba(63,224,160,0.2)", marginBottom: 10 }}>
-                            <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600,
-                              color: "#3fe0a0", margin: "0 0 4px" }}>
-                              🎯 Focus du moment
-                            </p>
-                            <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t65)", margin: 0 }}>
-                              {focusMap[lowestDim ?? "setup"] ?? "Bien-être général"}
-                            </p>
-                          </div>
-                          <p style={{ fontFamily: T.b, fontSize: 12,
-                            color: "var(--t45)", margin: "0 0 12px", lineHeight: 1.5 }}>
-                            Programme adapté à tes résultats · 10 min/jour
-                          </p>
-                        </div>
-                      );
-                    })()}
-
-                    <p style={{ fontFamily: T.b, fontSize: 12, color: "#6f9bff", fontWeight: 600, margin: 0 }}>
-                      Voir mon programme →
-                    </p>
-                  </motion.div>
-                </Link>
-              </motion.div>
-            </div>
-
-            {/* ── 3. CHECKLIST DU JOUR ── */}
-            <motion.div {...fadeUp(0.09)}>
-              <DailyChecklist scores={latestAssessment.scores} />
-            </motion.div>
-
-            {/* ── 4. CARTE ANALYSE VIDÉO ── */}
-            <motion.div {...fadeUp(0.1)} style={{ marginBottom: 14 }}>
-              <Link href={latestAssessment?.video_analysis ? "/final-report" : "/video-intro"}
-                style={{ textDecoration: "none" }}>
-                <motion.div whileHover={{ scale: 1.01, y: -2 }}
-                  style={{ padding: "24px", borderRadius: 20, cursor: "pointer",
-                    background: latestAssessment?.video_analysis
-                      ? "rgba(43,92,230,0.08)"
-                      : "rgba(43,92,230,0.06)",
-                    border: `1px solid ${latestAssessment?.video_analysis
-                      ? "rgba(43,92,230,0.3)" : "rgba(43,92,230,0.2)"}` }}>
-
-                  {/* Header */}
-                  <div style={{ display: "flex", alignItems: "center",
-                    justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontSize: 24 }}>🎥</span>
-                      <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 18,
-                        color: "var(--text-primary)", margin: 0 }}>
-                        Analyse vidéo IA
-                      </p>
-                    </div>
-                    {latestAssessment?.video_analysis && (
-                      <span style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700,
-                        padding: "4px 12px", borderRadius: 100,
-                        background: "rgba(63,224,160,0.15)", color: "#3fe0a0",
-                        border: "0.5px solid rgba(63,224,160,0.3)" }}>
-                        ✅ Complétée
-                      </span>
+                      </ul>
                     )}
+                    <ParcoursLinkCard c={c} text="Le rapport complet détaille chaque point et la façon de le corriger." cta="Voir mon rapport complet" onClick={() => router.push("/final-report")} />
+                  </>
+                ) : (
+                  <ParcoursLinkCard c={c}
+                    text="Le questionnaire montre ce que tu penses de ta posture. La vidéo montre ce que ton corps fait réellement, en 40 secondes depuis ton PC ou ton mobile."
+                    cta="Analyser ma posture" onClick={() => router.push("/video-intro")} />
+                )}
+              </ParcoursStep>
+
+              <ParcoursStep c={c} n={3} title="Soulager" subtitle="Des exercices ciblés sur ta priorité"
+                status={`${Math.min(exerciseDays, EXERCISE_GOAL)}/${EXERCISE_GOAL} cette semaine`}
+                statusColor={exerciseDays >= EXERCISE_GOAL ? "#3fe0a0" : exerciseDays > 0 ? "#6f9bff" : "#ffa347"}
+                defaultOpen={openStep === 3}>
+                <div style={{ padding: "14px 16px", borderRadius: 14, marginBottom: 12, background: "rgba(63,224,160,0.08)", border: "1px solid rgba(63,224,160,0.25)" }}>
+                  <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, color: "#3fe0a0", margin: "0 0 4px" }}>Focus du moment</p>
+                  <p style={{ fontFamily: T.b, fontSize: 15, color: "var(--text-primary)", margin: "0 0 12px" }}>{focusLabel(dims)}</p>
+                  <div style={{ display: "flex", gap: 6 }} role="img" aria-label={`${Math.min(exerciseDays, EXERCISE_GOAL)} séances sur ${EXERCISE_GOAL} cette semaine`}>
+                    {Array.from({ length: EXERCISE_GOAL }, (_, i) => (
+                      <span key={i} style={{ flex: 1, height: 6, borderRadius: 100, background: i < exerciseDays ? "#3fe0a0" : "var(--border)" }} />
+                    ))}
                   </div>
+                </div>
+                <ParcoursLinkCard c={c}
+                  text={`Des séances courtes, adaptées à tes résultats. Objectif : ${EXERCISE_GOAL} séances par semaine.`}
+                  cta="Voir mon programme" onClick={() => router.push("/mobilite")} />
+              </ParcoursStep>
 
-                  {latestAssessment?.video_analysis ? (() => {
-                    const va = latestAssessment.video_analysis as {
-                      personne?: { globalPostureScore?: number; mainIssues?: Array<{ zone: string; severity: string; consequence?: string }> };
-                      poste?: { globalSetupScore?: number; mainIssues?: Array<{ element: string; severity: string; fix?: string }> };
-                      debout?: { globalPostureScore?: number; mainIssues?: Array<{ zone: string; severity: string; consequence?: string }> };
-                    };
+              <ParcoursStep c={c} n={4} title="Ancrer" subtitle="Les bons réflexes du quotidien"
+                status={`${checklistDone}/${tasks.length} aujourd'hui`}
+                statusColor={checklistDone === tasks.length ? "#3fe0a0" : "#6f9bff"} defaultOpen={openStep === 4}>
+                <DailyChecklist tasks={tasks} checked={checked} onToggle={toggleTask} />
+                <RemindersButton />
+              </ParcoursStep>
 
-                    const postureScore = va?.personne?.globalPostureScore ?? va?.debout?.globalPostureScore;
-                    const setupScore = va?.poste?.globalSetupScore;
-                    const postureIssues = va?.personne?.mainIssues ?? va?.debout?.mainIssues ?? [];
-                    const setupIssues = va?.poste?.mainIssues ?? [];
-
-                    const getColor = (s: number) => s >= 70 ? "#3fe0a0" : s >= 50 ? "#ffa347" : "#ff7b7b";
-                    const getBg = (s: number) => s >= 70 ? "rgba(63,224,160,0.08)" : s >= 50 ? "rgba(255,163,71,0.08)" : "rgba(255,123,123,0.08)";
-                    const getBorder = (s: number) => s >= 70 ? "rgba(63,224,160,0.2)" : s >= 50 ? "rgba(255,163,71,0.2)" : "rgba(255,123,123,0.2)";
-
-                    const allIssues = [...postureIssues.slice(0, 2), ...setupIssues.slice(0, 1)];
-
-                    return (
-                      <div>
-                        {/* Scores */}
-                        <div style={{ display: "grid",
-                          gridTemplateColumns: setupScore !== undefined ? "1fr 1fr" : "1fr",
-                          gap: 10, marginBottom: 16 }}>
-
-                          {postureScore !== undefined && (
-                            <div style={{ padding: "14px 16px", borderRadius: 14,
-                              background: getBg(postureScore),
-                              border: `0.5px solid ${getBorder(postureScore)}` }}>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600,
-                                color: "var(--t45)", margin: "0 0 6px",
-                                textTransform: "uppercase" as const, letterSpacing: "0.06em" }}>
-                                Posture
-                              </p>
-                              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 32,
-                                color: getColor(postureScore), margin: "0 0 4px", lineHeight: 1,
-                                letterSpacing: "-1px" }}>
-                                {postureScore}
-                                <span style={{ fontSize: 14, fontWeight: 400, color: "var(--t35)" }}>/100</span>
-                              </p>
-                              <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0 }}>
-                                {postureScore >= 70 ? "Bonne posture globale" :
-                                 postureScore >= 50 ? "Quelques corrections nécessaires" :
-                                 "Points critiques identifiés"}
-                              </p>
-                            </div>
+              <ParcoursStep c={c} n={5} title="Mesurer" subtitle="Vérifier que ça progresse"
+                status={daysSince >= REBILAN_DAYS ? "À refaire" : `Dans ${daysLeft} j`}
+                statusColor={daysSince >= REBILAN_DAYS ? "#ffa347" : "#6f9bff"} defaultOpen={openStep === 5}>
+                {assessments.length > 1 && (
+                  <ul style={{ listStyle: "none", margin: "0 0 12px", padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                    {assessments.slice(0, 5).map((a, i) => {
+                      const older = assessments[i + 1];
+                      const d = older ? a.global_score - older.global_score : null;
+                      return (
+                        <li key={a.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 12, background: "var(--bg-card-2)", border: "1px solid var(--border)" }}>
+                          <span style={{ fontFamily: T.b, fontSize: 14, color: "var(--text-primary)", flex: 1 }}>{fmtDate(a.created_at, true)}</span>
+                          {d !== null && (
+                            <span style={{ fontFamily: T.b, fontSize: 13, fontWeight: 700, color: d > 0 ? "#3fe0a0" : d < 0 ? "#ff7b7b" : "var(--t55)" }}>
+                              {d > 0 ? `+${d}` : d}
+                            </span>
                           )}
-
-                          {setupScore !== undefined && (
-                            <div style={{ padding: "14px 16px", borderRadius: 14,
-                              background: getBg(setupScore),
-                              border: `0.5px solid ${getBorder(setupScore)}` }}>
-                              <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600,
-                                color: "var(--t45)", margin: "0 0 6px",
-                                textTransform: "uppercase" as const, letterSpacing: "0.06em" }}>
-                                Setup
-                              </p>
-                              <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 32,
-                                color: getColor(setupScore), margin: "0 0 4px", lineHeight: 1,
-                                letterSpacing: "-1px" }}>
-                                {setupScore}
-                                <span style={{ fontSize: 14, fontWeight: 400, color: "var(--t35)" }}>/100</span>
-                              </p>
-                              <p style={{ fontFamily: T.b, fontSize: 11, color: "var(--t45)", margin: 0 }}>
-                                {setupScore >= 70 ? "Poste bien configuré" :
-                                 setupScore >= 50 ? "Ajustements recommandés" :
-                                 "Poste à reconfigurer"}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Issues */}
-                        {allIssues.length > 0 && (
-                          <div style={{ marginBottom: 14 }}>
-                            <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700,
-                              color: "var(--t40)", textTransform: "uppercase" as const,
-                              letterSpacing: "0.06em", margin: "0 0 8px" }}>
-                              Points identifiés
-                            </p>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                              {allIssues.map((issue: { zone?: string; element?: string; severity: string }, i) => {
-                                const sevColor = issue.severity === "élevé" ? "#ff7b7b" :
-                                                 issue.severity === "modéré" ? "#ffa347" : "#3fe0a0";
-                                return (
-                                  <div key={i} style={{ display: "flex", alignItems: "center",
-                                    gap: 10, padding: "8px 12px", borderRadius: 10,
-                                    background: "var(--bg-card-2)", border: "0.5px solid var(--border)" }}>
-                                    <div style={{ width: 8, height: 8, borderRadius: "50%",
-                                      background: sevColor, flexShrink: 0 }} />
-                                    <span style={{ fontFamily: T.b, fontSize: 12,
-                                      color: "var(--t65)", flex: 1 }}>
-                                      {issue.zone ?? issue.element}
-                                    </span>
-                                    <span style={{ fontFamily: T.b, fontSize: 11, fontWeight: 600,
-                                      color: sevColor, padding: "2px 8px", borderRadius: 100,
-                                      background: `${sevColor}15` }}>
-                                      {issue.severity}
-                                    </span>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        )}
-
-                        <p style={{ fontFamily: T.b, fontSize: 13, color: "#6f9bff",
-                          fontWeight: 600, margin: 0 }}>
-                          Voir mon rapport complet →
-                        </p>
-                      </div>
-                    );
-                  })() : (
-                    <div>
-                      <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)",
-                        lineHeight: 1.7, margin: "0 0 14px" }}>
-                        Le questionnaire révèle ce que tu <em>penses</em> de ta posture.
-                        La vidéo montre ce que ton corps <em>fait réellement</em> —
-                        en 40 secondes depuis ton PC ou ton mobile.
-                      </p>
-                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-                        {["40 secondes", "IA posturale", "Rapport immédiat", "PC ou mobile"].map((tag, i) => (
-                          <span key={i} style={{ fontFamily: T.b, fontSize: 12, fontWeight: 600,
-                            padding: "4px 12px", borderRadius: 100,
-                            background: "rgba(43,92,230,0.12)", color: "#6f9bff",
-                            border: "0.5px solid rgba(43,92,230,0.2)" }}>
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      <div style={{ display: "inline-block", padding: "12px 24px",
-                        borderRadius: 100, background: "#2b5ce6", color: "#fff",
-                        fontFamily: T.h, fontWeight: 700, fontSize: 14 }}>
-                        Analyser ma posture →
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              </Link>
+                          <span style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: scoreColor(a.global_score), width: 32, textAlign: "right" }}>{a.global_score}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+                <ParcoursLinkCard c={c}
+                  text={daysSince >= REBILAN_DAYS
+                    ? "Ton dernier bilan date d'il y a plus de 4 semaines. Refais-le pour voir ce qui a bougé."
+                    : `Un nouveau bilan est conseillé environ 4 semaines après le précédent, pour laisser le temps aux changements de se voir. C'est dans ${daysLeft} jour${daysLeft > 1 ? "s" : ""}, mais tu peux le refaire quand tu veux.`}
+                  cta="Refaire mon bilan" onClick={() => router.push("/questionnaire")} />
+              </ParcoursStep>
             </motion.div>
 
-            {/* ── 5. TIP DU JOUR ── */}
-            {(() => {
-              const ALL_TIPS = [
-                "Plus ta tête est inclinée vers l'avant, plus la charge sur tes cervicales augmente.",
-                "Se lever et marcher quelques minutes régulièrement soulage le dos (EU-OSHA : micro-pause toutes les 20 à 30 min).",
-                "Un écran trop bas force ta nuque en flexion permanente. Le haut de l'écran doit être au niveau des yeux.",
-                "La règle 20-20-20 : toutes les 20 min, fixe un point à 6m pendant 20 secondes.",
-                "Un sommeil insuffisant peut augmenter la sensibilité à la douleur.",
-                "Manger devant l'écran réduit l'attention portée au repas.",
-                "Une hydratation insuffisante peut favoriser la fatigue et réduire la concentration.",
-                "Travailler depuis le canapé expose à des postures prolongées défavorables pour la nuque et le dos.",
-                "Le stress chronique maintient les muscles en tension : c'est un facteur de risque de TMS reconnu (EU-OSHA).",
-                "Un petit-déjeuner riche en protéines aide à tenir jusqu'au déjeuner.",
-                "Les disques intervertébraux contiennent beaucoup d'eau : boire régulièrement fait partie d'une bonne hygiène de vie pour le dos.",
-                "Une vraie pause déjeuner sans écran aide à réduire la fatigue musculaire de l'après-midi.",
-                "Régler sa chaise correctement aide à réduire la pression lombaire.",
-                "5 min de cohérence cardiaque (respiration lente) : une technique simple pour favoriser la détente.",
-                "Un laptop seul sans rehausseur impose une flexion de nuque prolongée.",
-              ];
-              const tip = ALL_TIPS[Math.floor(Date.now() / 86400000) % ALL_TIPS.length];
-              return (
-                <motion.div {...fadeUp(0.12)}>
-                  <div style={{ padding: "16px 20px", borderRadius: 16,
-                    background: "var(--bg-card)", border: "0.5px solid var(--border)",
-                    display: "flex", gap: 12, alignItems: "flex-start" }}>
-                    <span style={{ fontSize: 18, flexShrink: 0 }}>💡</span>
-                    <div>
-                      <p style={{ fontFamily: T.b, fontSize: 11, fontWeight: 700,
-                        color: "var(--t40)", textTransform: "uppercase",
-                        letterSpacing: "0.06em", margin: "0 0 4px" }}>
-                        Tip du jour
-                      </p>
-                      <p style={{ fontFamily: T.b, fontSize: 14,
-                        color: "var(--text-primary)", margin: 0, lineHeight: 1.65 }}>
-                        {tip}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })()}
-
-            {/* ── 6. SIGNALEMENT B2B ── */}
-            {isB2B && !signalSent && (
-              <motion.div {...fadeUp(0.14)} style={{ marginTop: 14 }}>
-                <SignalForm
-                  companyId={companyId!}
-                  anonymousId={anonymousId!}
-                  onSent={() => setSignalSent(true)}
-                />
+            {/* ── Entreprise ── */}
+            {isB2B && companyId && anonymousId && (
+              <motion.div {...fadeUp(0.1)} style={{ marginBottom: 14 }}>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t55)", lineHeight: 1.6, margin: "0 0 12px" }}>
+                  Ton entreprise participe au Diagnostic PAW. Ton employeur ne voit jamais ton nom : tes résultats lui sont présentés sous un identifiant anonyme.
+                </p>
+                <SignalForm companyId={companyId} anonymousId={anonymousId} />
               </motion.div>
             )}
+
+            {/* ── Astuce du jour ── */}
+            <motion.div {...fadeUp(0.12)}>
+              <div style={{ padding: "16px 20px", borderRadius: 16, background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+                <p style={{ fontFamily: T.b, fontSize: 12, fontWeight: 700, color: "var(--t55)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>
+                  Astuce du jour
+                </p>
+                <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--text-primary)", margin: 0, lineHeight: 1.65 }}>{tipOfDay(nowMs)}</p>
+              </div>
+            </motion.div>
           </>
         )}
 
         {/* ── État vide ── */}
-        {!latestAssessment && (
+        {!latest && (
           <motion.div {...fadeUp(0.05)} style={{ textAlign: "center", padding: "48px 24px" }}>
-            <span style={{ fontSize: 52, display: "block", marginBottom: 16 }}>📋</span>
-            <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22,
-              color: "var(--text-primary)", marginBottom: 8 }}>
+            <p style={{ fontFamily: T.h, fontWeight: 900, fontSize: 22, color: "var(--text-primary)", marginBottom: 8 }}>
               Tu n&apos;as pas encore fait ton bilan
             </p>
-            <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)",
-              lineHeight: 1.65, maxWidth: 380, margin: "0 auto 24px" }}>
-              10 minutes pour comprendre ce que ton corps essaie de te dire au travail.
+            <p style={{ fontFamily: T.b, fontSize: 14, color: "var(--t55)", lineHeight: 1.65, maxWidth: 380, margin: "0 auto 24px" }}>
+              5 minutes pour comprendre ce que ton corps essaie de te dire au travail.
             </p>
-            <Link href="/questionnaire" style={{ textDecoration: "none" }}>
-              <div style={{ display: "inline-block", padding: "15px 32px",
-                borderRadius: 100, background: "#2b5ce6", color: "#fff",
-                fontFamily: T.h, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
-                Commencer mon bilan →
-              </div>
-            </Link>
+            <Link href="/questionnaire" style={{ ...ctaStyle, padding: "15px 32px", fontSize: 15 }}>Commencer mon bilan</Link>
           </motion.div>
         )}
 
