@@ -531,7 +531,6 @@ function nutritionAdvice(answers: QuestionnaireAnswers, scores: Scores): Dimensi
 
   const nutritionProducts: string[] = [];
   if ((answers.q19 ?? 0) <= 4) nutritionProducts.push("gourde_graduee");
-  if (answers.qn2 === "crash" || scores.nutrition < 50) nutritionProducts.push("luminette");
   if (nutritionProducts.length === 0) nutritionProducts.push("gourde_graduee");
 
   return {

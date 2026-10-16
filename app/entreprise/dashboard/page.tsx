@@ -15,6 +15,7 @@ import type { TeamInsight } from "@/lib/ergo-knowledge";
 import { Ico, withIcons } from "@/components/Ico";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
+import { productUrl } from "@/lib/products";
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
 const DIM_META: Record<string, { label: string; emoji: string; color: string; type: "employeur" | "employe" }> = {
@@ -115,27 +116,27 @@ const RESOURCES = [
 
 const PRODUCTS_BY_ISSUE: Record<string, { name: string; url: string; price: string; reason: string }[]> = {
   setup_bureau: [
-    { name: "Rehausseur écran GRIFEMA", url: "https://www.amazon.fr/s?k=Rehausseur+%C3%A9cran+GRIFEMA&tag=postureatwo09-21", price: "~28€", reason: "Corrige la hauteur d'écran — limite la flexion de nuque" },
-    { name: "Support laptop ergonomique", url: "https://www.amazon.fr/s?k=Support+laptop+ergonomique&tag=postureatwo09-21", price: "~30€", reason: "Utile pour tout usage prolongé d'un laptop : permet de relever l'écran à hauteur des yeux" },
-    { name: "Souris verticale Trust Verto", url: "https://www.amazon.fr/s?k=Souris+verticale+Trust+Verto&tag=postureatwo09-21", price: "~25€", reason: "Remet le poignet en position plus neutre (à essayer individuellement)" },
+    { name: "Rehausseur écran GRIFEMA", url: productUrl("rehausseur_ecran"), price: "~28€", reason: "Corrige la hauteur d'écran — limite la flexion de nuque" },
+    { name: "Support laptop ergonomique", url: productUrl("support_laptop"), price: "~30€", reason: "Utile pour tout usage prolongé d'un laptop : permet de relever l'écran à hauteur des yeux" },
+    { name: "Souris verticale Trust Verto", url: productUrl("souris_verticale"), price: "~25€", reason: "Remet le poignet en position plus neutre (à essayer individuellement)" },
   ],
   setup_debout: [
-    { name: "Tapis anti-fatigue", url: "https://www.amazon.fr/s?k=Tapis+anti-fatigue&tag=postureatwo09-21", price: "~45€", reason: "Aide à réduire la fatigue des jambes et lombaires en station debout prolongée" },
-    { name: "Semelles orthopédiques", url: "https://www.amazon.fr/s?k=Semelles+orthop%C3%A9diques&tag=postureatwo09-21", price: "~30€", reason: "Amorti et soutien de la voûte plantaire — peut aider sur les postes debout prolongés (à essayer individuellement)" },
-    { name: "Chaussettes de compression", url: "https://www.amazon.fr/s?k=Chaussettes+de+compression&tag=postureatwo09-21", price: "~20€", reason: "Aide à soulager les jambes lourdes" },
+    { name: "Tapis anti-fatigue", url: productUrl("tapis_anti_fatigue"), price: "~45€", reason: "Aide à réduire la fatigue des jambes et lombaires en station debout prolongée" },
+    { name: "Semelles orthopédiques de travail", url: productUrl("semelles"), price: "~30€", reason: "Amorti et soutien de la voûte plantaire — peut aider sur les postes debout prolongés (à essayer individuellement)" },
+    { name: "Chaussettes de compression graduée", url: productUrl("chaussettes"), price: "~20€", reason: "Aide à soulager les jambes lourdes" },
   ],
   douleurs_bureau: [
-    { name: "Coussin lombaire FORTEM", url: "https://www.amazon.fr/s?k=Coussin+lombaire+FORTEM&tag=postureatwo09-21", price: "~30€", reason: "Soutient la courbure lombaire en position assise — peut aider à réduire la gêne lombaire" },
-    { name: "Balle de massage BLACKROLL", url: "https://www.amazon.fr/s?k=Balle+de+massage+BLACKROLL&tag=postureatwo09-21", price: "~15€", reason: "Permet un auto-massage des zones de tension nuque et épaules" },
+    { name: "Coussin lombaire FORTEM", url: productUrl("coussin_lombaire"), price: "~30€", reason: "Soutient la courbure lombaire en position assise — peut aider à réduire la gêne lombaire" },
+    { name: "Balle de massage BLACKROLL", url: productUrl("balle_massage"), price: "~15€", reason: "Permet un auto-massage des zones de tension nuque et épaules" },
   ],
   douleurs_debout: [
-    { name: "Balle massage plantaire", url: "https://www.amazon.fr/s?k=Balle+massage+plantaire&tag=postureatwo09-21", price: "~15€", reason: "Peut soulager les tensions du pied après journée debout" },
-    { name: "Coussin surélévation jambes", url: "https://www.amazon.fr/s?k=Coussin+sur%C3%A9l%C3%A9vation+jambes&tag=postureatwo09-21", price: "~35€", reason: "Jambes surélevées en fin de journée — aide à soulager les jambes lourdes" },
-    { name: "Foam roller", url: "https://www.amazon.fr/s?k=Foam+roller&tag=postureatwo09-21", price: "~25€", reason: "5 minutes soir pour relâcher mollets, ischio-jambiers et bas du dos" },
+    { name: "Balle de massage BLACKROLL", url: productUrl("balle_massage"), price: "~15€", reason: "Peut soulager les tensions du pied après journée debout" },
+    { name: "Coussin de surélévation des jambes", url: productUrl("coussin_jambes"), price: "~30€", reason: "Jambes surélevées en fin de journée — aide à soulager les jambes lourdes" },
+    { name: "Foam roller", url: productUrl("foam_roller"), price: "~25€", reason: "5 minutes soir pour relâcher mollets, ischio-jambiers et bas du dos" },
   ],
   habits: [
-    { name: "Bureau assis-debout SONGMICS", url: "https://www.amazon.fr/s?k=Bureau+assis-debout+SONGMICS&tag=postureatwo09-21", price: "~200€", reason: "Alterner assis/debout aide à réduire les douleurs lombaires" },
-    { name: "Coussin d'équilibre BODYMATE", url: "https://www.amazon.fr/s?k=Coussin+d%27%C3%A9quilibre+BODYMATE&tag=postureatwo09-21", price: "~30€", reason: "Active les muscles posturaux profonds passivement" },
+    { name: "Bureau assis-debout SONGMICS", url: productUrl("bureau_assis_debout"), price: "~200€", reason: "Alterner assis/debout aide à réduire les douleurs lombaires" },
+    { name: "Coussin d'équilibre BODYMATE", url: productUrl("coussin_equilibre"), price: "~30€", reason: "Active les muscles posturaux profonds passivement" },
   ],
 };
 

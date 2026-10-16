@@ -18,6 +18,7 @@ import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { getJobContent } from "@/lib/job-content";
 import { useTheme } from "@/contexts/ThemeContext";
 
+import { productUrl } from "@/lib/products";
 const T = {
   h: "var(--font-nunito), sans-serif",
   b: "var(--font-jakarta), sans-serif",
@@ -95,20 +96,20 @@ function ScoreCircle({ score, isPartial = false }: { score: number; isPartial?: 
 // ─── Inline product per dimension ────────────────────────────────────────────
 
 const DIM_INLINE_PRODUCTS: Record<string, { name: string; url: string; reason: string; price: string }> = {
-  "/conseils/setup":        { name: "Rehausseur écran GRIFEMA",           url: "https://www.amazon.fr/s?k=Rehausseur+%C3%A9cran+GRIFEMA&tag=postureatwo09-21", reason: "Écran trop bas → nuque en flexion prolongée",    price: "~28€" },
-  "/conseils/douleurs":     { name: "Coussin lombaire FORTEM",             url: "https://www.amazon.fr/s?k=Coussin+lombaire+FORTEM&tag=postureatwo09-21", reason: "Soutient la courbure lombaire en position assise — peut aider à réduire la gêne", price: "~30€" },
-  "/conseils/habitudes":    { name: "Bureau assis-debout SONGMICS",        url: "https://www.amazon.fr/s?k=Bureau+assis-debout+SONGMICS&tag=postureatwo09-21", reason: "Alterner assis/debout aide à réduire les douleurs lombaires", price: "~200€" },
-  "/conseils/mode-de-vie":  { name: "Lunettes anti-lumière bleue Horus X", url: "https://www.amazon.fr/s?k=Lunettes+anti-lumi%C3%A8re+bleue+Horus+X&tag=postureatwo09-21", reason: "Un petit plus de confort pour les soirées devant l'écran — à associer à une coupure des écrans avant le coucher",  price: "~30€" },
-  "/conseils/nutrition":    { name: "Gourde graduée avec horaires 1.5L",   url: "https://www.amazon.fr/s?k=Gourde+gradu%C3%A9e+avec+horaires+1.5L&tag=postureatwo09-21", reason: "Rappel d'hydratation tout au long de la journée",          price: "~15€" },
+  "/conseils/setup":        { name: "Rehausseur écran GRIFEMA",           url: productUrl("rehausseur_ecran"), reason: "Écran trop bas → nuque en flexion prolongée",    price: "~28€" },
+  "/conseils/douleurs":     { name: "Coussin lombaire FORTEM",             url: productUrl("coussin_lombaire"), reason: "Soutient la courbure lombaire en position assise — peut aider à réduire la gêne", price: "~30€" },
+  "/conseils/habitudes":    { name: "Bureau assis-debout SONGMICS",        url: productUrl("bureau_assis_debout"), reason: "Alterner assis/debout aide à réduire les douleurs lombaires", price: "~200€" },
+  "/conseils/mode-de-vie":  { name: "Lunettes anti-lumière bleue Horus X", url: productUrl("lunettes_lumiere_bleue"), reason: "Un petit plus de confort pour les soirées devant l'écran — à associer à une coupure des écrans avant le coucher",  price: "~30€" },
+  "/conseils/nutrition":    { name: "Gourde graduée 1,5 L",   url: productUrl("gourde"), reason: "Rappel d'hydratation tout au long de la journée",          price: "~15€" },
 };
 
 const DIM_INLINE_PRODUCTS_DEBOUT: Record<string, { name: string; url: string; reason: string; price: string }> = {
-  "/conseils/setup":     { name: "Tapis anti-fatigue ergonomique",  url: "https://www.amazon.fr/s?k=Tapis+anti-fatigue+ergonomique&tag=postureatwo09-21",          reason: "Sol dur sans amorti = fatigue musculaire x3 en fin de journée",               price: "~45€" },
-  "/conseils/douleurs":  { name: "Semelles orthopédiques de travail", url: "https://www.amazon.fr/s?k=Semelles+orthop%C3%A9diques+de+travail&tag=postureatwo09-21", reason: "Amorties et soutien de voûte plantaire pour journées debout",                 price: "~35€" },
-  "/conseils/sommeil":   { name: "Chaussettes de compression graduée", url: "https://www.amazon.fr/s?k=Chaussettes+de+compression+gradu%C3%A9e&tag=postureatwo09-21", reason: "À enfiler le matin avant de se lever — peut soulager les jambes lourdes", price: "~20€" },
-  "/conseils/lifestyle": { name: "Balle de massage plantaire",       url: "https://www.amazon.fr/s?k=Balle+de+massage+plantaire&tag=postureatwo09-21",        reason: "Auto-massage sous le pied après le service — soulage les tensions en 5 min", price: "~15€" },
-  "/conseils/habitudes": { name: "Repose-pieds ergonomique",         url: "https://www.amazon.fr/s?k=Repose-pieds+ergonomique&tag=postureatwo09-21",                                                                 reason: "Permet d'alterner l'appui et peut soulager le bas du dos",                   price: "~35€" },
-  "/conseils/nutrition": { name: "Gourde 1.5L graduée",              url: "https://www.amazon.fr/s?k=Gourde+1.5L+gradu%C3%A9e&tag=postureatwo09-21",                                                                 reason: "Hydratation critique pour les métiers debout — boire sans y penser",          price: "~15€" },
+  "/conseils/setup":     { name: "Tapis anti-fatigue",  url: productUrl("tapis_anti_fatigue"),          reason: "Sol dur sans amorti = fatigue musculaire x3 en fin de journée",               price: "~45€" },
+  "/conseils/douleurs":  { name: "Semelles orthopédiques de travail", url: productUrl("semelles"), reason: "Amorties et soutien de voûte plantaire pour journées debout",                 price: "~30€" },
+  "/conseils/sommeil":   { name: "Chaussettes de compression graduée", url: productUrl("chaussettes"), reason: "À enfiler le matin avant de se lever — peut soulager les jambes lourdes", price: "~20€" },
+  "/conseils/lifestyle": { name: "Balle de massage BLACKROLL",       url: productUrl("balle_massage"),        reason: "Auto-massage sous le pied après le service — soulage les tensions en 5 min", price: "~15€" },
+  "/conseils/habitudes": { name: "Repose-pieds ergonomique",         url: productUrl("repose_pieds"),                                                                 reason: "Permet d'alterner l'appui et peut soulager le bas du dos",                   price: "~35€" },
+  "/conseils/nutrition": { name: "Gourde graduée 1,5 L",              url: productUrl("gourde"),                                                                 reason: "Hydratation critique pour les métiers debout — boire sans y penser",          price: "~15€" },
 };
 
 // ─── Sub-score bar ────────────────────────────────────────────────────────────

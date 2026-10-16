@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { rateLimit, clientIp } from "@/lib/server-auth";
+import { CATALOG, CATALOG_SEARCH_TERMS, matchCatalog } from "@/lib/products";
 import type { AnalysisReport, PersonneAnalysis, PosteAnalysis, DeboutAnalysis } from "@/lib/analysis-types";
 
 export const maxDuration = 60;
@@ -97,10 +98,10 @@ Tu dois analyser et retourner un JSON avec cette structure exacte :
   ],
   "products": [
     {
-      "name": "Nom du produit",
+      "name": "Nom exact du produit, choisi dans la liste fermée ci-dessous",
       "reason": "pourquoi ce produit pour cette personne spécifiquement",
       "priority": "haute" | "moyenne" | "optionnel",
-      "amazon_search": "terme de recherche Amazon exact"
+      "amazon_search": "le terme de recherche exact de la liste fermée ci-dessous"
     }
   ],
   "final_message": "message personnalisé bienveillant de 2-3 phrases comme un kiné qui conclut une consultation"
@@ -153,7 +154,7 @@ Règles :
 - Adapte l'analyse aux réponses du questionnaire (si douleurs cervicales déclarées, focus dessus)
 - priority_actions : exactement 3 actions, triées du plus urgent au moins urgent
 - exercises : exactement 3 exercices ciblés selon les zones détectées
-- products : 2-4 produits maximum, pertinents pour ce profil spécifique
+- products : 2-4 produits maximum, pertinents pour ce profil spécifique, choisis UNIQUEMENT dans cette liste fermée (n'invente aucun autre produit) : ${CATALOG_SEARCH_TERMS.join(" ; ")}
 - Si les images sont floues ou la posture difficile à évaluer, base-toi sur les réponses du questionnaire
 - Retourne UNIQUEMENT le JSON valide, sans texte avant ou après, sans markdown
 `;
@@ -259,22 +260,16 @@ function buildFallbackReport(): AnalysisReport {
     ],
     products: [
       {
-        name: "Support laptop réglable",
+        name: CATALOG.support_laptop.name,
         reason: "Élève l'écran à hauteur des yeux pour supprimer la flexion cervicale.",
         priority: "haute",
-        amazon_search: "support laptop ergonomique réglable aluminium",
+        amazon_search: CATALOG.support_laptop.search,
       },
       {
-        name: "Clavier et souris externes",
-        reason: "Indispensables avec un support laptop pour garder les bras dans le bon axe.",
-        priority: "haute",
-        amazon_search: "clavier sans fil compact ergonomique bureau",
-      },
-      {
-        name: "Coussin lombaire",
+        name: CATALOG.coussin_lombaire.name,
         reason: "Maintient la lordose naturelle quand ton dossier de chaise est insuffisant.",
         priority: "moyenne",
-        amazon_search: "coussin lombaire chaise bureau ergonomique",
+        amazon_search: CATALOG.coussin_lombaire.search,
       },
     ],
     final_message:
@@ -775,6 +770,14 @@ export async function POST(req: NextRequest) {
     if (!textBlock || textBlock.type !== "text") return NextResponse.json(buildFallbackReport());
 
     const report: AnalysisReport = parseJSON(textBlock.text);
+    // Les produits proposés par l'IA sont ramenés au catalogue ; tout le reste est écarté.
+    const seen = new Set<string>();
+    report.products = (report.products ?? []).flatMap((pr) => {
+      const id = matchCatalog(pr.name ?? "", pr.amazon_search);
+      if (!id || seen.has(id)) return [];
+      seen.add(id);
+      return [{ ...pr, name: CATALOG[id].name, amazon_search: CATALOG[id].search }];
+    });
     return NextResponse.json(report);
   } catch (err) {
     console.error("[analyze-video] error:", err);

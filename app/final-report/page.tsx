@@ -19,6 +19,7 @@ import { saveAssessmentForUser, createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import { readSignals } from "@/lib/ergo-knowledge";
+import { CATALOG, urlFromSearch } from "@/lib/products";
 
 const T = { h: "var(--font-nunito), sans-serif", b: "var(--font-jakarta), sans-serif" };
 
@@ -234,7 +235,6 @@ const SEGMENT_EXERCISE: Record<string, { name: string; instruction: string; link
 
 function buildPersonalizedProducts(
   answers: Record<string, unknown> | null,
-  scores: Record<string, number> | null,
 ): Array<{ name: string; reason: string; priority: string; amazon_search: string }> {
   if (!answers) return [];
   const a = answers;
@@ -242,60 +242,41 @@ function buildPersonalizedProducts(
 
   // Équipement : laptop seul → support laptop en priorité absolue
   if (a.q1 === "laptop" && (a.q_double_ecran === "laptop_seul" || !a.q_double_ecran)) {
-    products.push({ name: "Support laptop réglable", reason: `Un laptop posé à plat impose une flexion de nuque prolongée : le rehausser et utiliser clavier et souris externes est la correction de base.`, priority: "haute", amazon_search: "support laptop ergonomique réglable aluminium" });
+    products.push({ name: CATALOG.support_laptop.name, reason: `Un laptop posé à plat impose une flexion de nuque prolongée : le rehausser et utiliser clavier et souris externes est la correction de base.`, priority: "haute", amazon_search: CATALOG.support_laptop.search });
   }
 
   // Écran trop bas
   if (a.q3 === "no" || a.q_hauteur_bureau === "trop_bas") {
-    if (!products.find(p => p.name === "Support laptop réglable")) {
-      products.push({ name: "Rehausseur d'écran", reason: "L'écran trop bas oblige à baisser la tête en permanence — peut contribuer à tes douleurs cervicales.", priority: "haute", amazon_search: "rehausseur ecran bureau ergonomique réglable" });
+    if (!products.find(p => p.name === CATALOG.support_laptop.name)) {
+      products.push({ name: CATALOG.rehausseur_ecran.name, reason: "L'écran trop bas oblige à baisser la tête en permanence — peut contribuer à tes douleurs cervicales.", priority: "haute", amazon_search: CATALOG.rehausseur_ecran.search });
     }
   }
 
   // Douleurs poignets → repose-poignets
   const poignets = Number(a.q9 ?? 0);
   if (poignets >= 2) {
-    products.push({ name: "Repose-poignets gel clavier", reason: `Tes douleurs aux poignets (${poignets}/5) peuvent venir d'un appui sur le poignet ; un repose-poignets aide à garder l'axe neutre (le réglage de la position clavier/souris reste prioritaire).`, priority: poignets >= 4 ? "haute" : "moyenne", amazon_search: "repose poignets clavier bureau ergonomique gel" });
+    products.push({ name: CATALOG.repose_poignets.name, reason: `Tes douleurs aux poignets (${poignets}/5) peuvent venir d'un appui sur le poignet ; un repose-poignets aide à garder l'axe neutre (le réglage de la position clavier/souris reste prioritaire).`, priority: poignets >= 4 ? "haute" : "moyenne", amazon_search: CATALOG.repose_poignets.search });
     if (poignets >= 3) {
-      products.push({ name: "Souris verticale ergonomique", reason: `Une douleur poignets à ${poignets}/5 peut venir d'une mauvaise position du poignet. La souris verticale aide certaines personnes à le garder dans l'axe (à essayer).`, priority: "haute", amazon_search: "souris verticale ergonomique sans fil" });
+      products.push({ name: CATALOG.souris_verticale.name, reason: `Une douleur poignets à ${poignets}/5 peut venir d'une mauvaise position du poignet. La souris verticale aide certaines personnes à le garder dans l'axe (à essayer).`, priority: "haute", amazon_search: CATALOG.souris_verticale.search });
     }
   }
 
   // Chaise inadaptée → coussin lombaire
   if (a.q5b === "couch" || a.q5b === "fixed" || a.q5b === "other") {
     const dosBas = Number(a.q8 ?? 0);
-    products.push({ name: "Coussin lombaire mémoire de forme", reason: `Ta chaise ne soutient pas le bas du dos${dosBas >= 3 ? ` — tes douleurs lombaires à ${dosBas}/5 le confirment` : ""}. Le coussin lombaire comble le vide entre la chaise et ta lordose naturelle.`, priority: dosBas >= 3 ? "haute" : "moyenne", amazon_search: "coussin lombaire chaise bureau mémoire de forme" });
+    products.push({ name: CATALOG.coussin_lombaire.name, reason: `Ta chaise ne soutient pas le bas du dos${dosBas >= 3 ? ` — tes douleurs lombaires à ${dosBas}/5 le confirment` : ""}. Le coussin lombaire comble le vide entre la chaise et ta lordose naturelle.`, priority: dosBas >= 3 ? "haute" : "moyenne", amazon_search: CATALOG.coussin_lombaire.search });
   }
 
   // Douleurs nuque / cou → boule cervicale ou oreiller
   const nuque = Number(a.q6 ?? 0);
   if (nuque >= 3 && !products.find(p => p.name.includes("Support laptop") || p.name.includes("Rehausseur"))) {
-    products.push({ name: "Oreiller cervical ergonomique", reason: `Tes douleurs cervicales (${nuque}/5) persistent le soir — un oreiller ergonomique permet de récupérer pendant la nuit.`, priority: "moyenne", amazon_search: "oreiller cervical ergonomique mémoire de forme" });
+    products.push({ name: CATALOG.oreiller_cervical.name, reason: `Tes douleurs cervicales (${nuque}/5) persistent le soir — un oreiller ergonomique permet de récupérer pendant la nuit.`, priority: "moyenne", amazon_search: CATALOG.oreiller_cervical.search });
   }
 
   // Yeux / maux de tête → filtre lumière bleue
   const yeux = Number(a.q10 ?? 0);
   if (yeux >= 3) {
-    products.push({ name: "Lunettes anti-lumière bleue", reason: `Tes maux de tête / fatigue visuelle (${yeux}/5) peuvent venir de l'écran (reflets, distance, pauses insuffisantes). Un confort supplémentaire en soirée devant l'écran, à associer à un bon éclairage, une bonne distance d'écran et des pauses visuelles.`, priority: "moyenne", amazon_search: "lunettes anti lumière bleue travail ordinateur" });
-  }
-
-  // Éclairage insuffisant → lampe bureau
-  if (["contre_jour", "reflets", "artificiel"].includes(String(a.q_eclairage ?? "")) || (scores?.setup && scores.setup < 55)) {
-    if (!products.find(p => p.name.includes("Lunettes"))) {
-      products.push({ name: "Lampe bureau LED réglable", reason: "Un éclairage insuffisant force tes yeux à accommoder en permanence — source de fatigue visuelle et de maux de tête.", priority: "moyenne", amazon_search: "lampe bureau LED réglable 3000K lumière naturelle" });
-    }
-  }
-
-  // Sédentarité / pas de pause → minuterie ou balle anti-stress
-  const heures = Number(a.q13 ?? 0);
-  if (heures >= 9 || a.q14 === "never" || a.q14 === "1x") {
-    products.push({ name: "Minuterie de bureau (pause active)", reason: `${heures >= 9 ? `${heures}h assis par jour` : "Pas de pauses régulières"} — un rappel régulier aide à interrompre la position statique (repère EU-OSHA : micro-pause toutes les 20 à 30 min).`, priority: "optionnel", amazon_search: "minuterie timer bureau pause active ergonomie" });
-  }
-
-  // Sommeil insuffisant → masque sommeil ou aide récupération
-  const sommeil = Number(a.q17 ?? 8);
-  if (sommeil <= 6 && scores?.sleep_energy && scores.sleep_energy < 55) {
-    products.push({ name: "Masque de sommeil contour 3D", reason: `${sommeil}h de sommeil seulement — un environnement de sommeil optimisé améliore la récupération musculaire et réduit les douleurs chroniques.`, priority: "optionnel", amazon_search: "masque sommeil 3D contour yeux récupération" });
+    products.push({ name: CATALOG.lunettes_lumiere_bleue.name, reason: `Tes maux de tête / fatigue visuelle (${yeux}/5) peuvent venir de l'écran (reflets, distance, pauses insuffisantes). Un confort supplémentaire en soirée devant l'écran, à associer à un bon éclairage, une bonne distance d'écran et des pauses visuelles.`, priority: "moyenne", amazon_search: CATALOG.lunettes_lumiere_bleue.search });
   }
 
   return products.slice(0, 5);
@@ -530,7 +511,7 @@ function buildCrossedSynthesis(
     dailyChecklist.push("3 respirations profondes en cas de tension dans la nuque");
   }
 
-  const products = buildPersonalizedProducts(answers, scores);
+  const products = buildPersonalizedProducts(answers);
 
   return { globalScore, scoreLabel, scoreColor, narrative, confirmations, weekPlan, positivePoints, dailyChecklist, products };
 }
@@ -694,7 +675,7 @@ function PersonalizedProductsBlock({ products }: { products: Array<{ name: strin
         {products.map((product, i) => {
           const pColor = product.priority === "haute" ? "#ff7b7b" : product.priority === "moyenne" ? "#ffa347" : "var(--t35)";
           const pLabel = product.priority === "haute" ? "Priorité haute" : product.priority === "moyenne" ? "Priorité moyenne" : "Optionnel";
-          const amazonUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(product.amazon_search)}&tag=postureatwo09-21`;
+          const amazonUrl = urlFromSearch(product.amazon_search);
           return (
             <div key={i} style={{ borderRadius: 16, padding: "14px 16px", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, marginBottom: 6 }}>
@@ -1216,11 +1197,10 @@ export default function FinalReportPage() {
 
     // Rule-based products
     const products: Array<{ name: string; reason: string; priority: string; amazon_search: string }> = [];
-    if (po.elements.ecran.type === "laptop_seul") products.push({ name: "Support laptop réglable", reason: "Élève l'écran à hauteur des yeux — indispensable sans écran externe.", priority: "haute", amazon_search: "support laptop ergonomique réglable aluminium" });
-    if (po.elements.ecran.hauteur === "trop_bas") products.push({ name: "Rehausseur d'écran", reason: "Corrige la hauteur de l'écran pour supprimer la flexion cervicale.", priority: "haute", amazon_search: "rehausseur ecran bureau ergonomique réglable" });
-    if (po.elements.chaise.type && !po.elements.chaise.type.toLowerCase().includes("ergo")) products.push({ name: "Coussin lombaire", reason: "Maintient la lordose naturelle quand la chaise est basique.", priority: "moyenne", amazon_search: "coussin lombaire chaise bureau ergonomique" });
-    if (po.elements.clavier_souris.repose_poignets === false) products.push({ name: "Repose-poignets clavier", reason: "Aide à garder le poignet dans l'axe.", priority: "moyenne", amazon_search: "repose poignets clavier bureau ergonomique" });
-    if (po.elements.organisation.eclairage === "mauvais") products.push({ name: "Lampe bureau LED", reason: "Réduit la fatigue visuelle — éclairage insuffisant détecté.", priority: "moyenne", amazon_search: "lampe bureau LED réglable lumière naturelle" });
+    if (po.elements.ecran.type === "laptop_seul") products.push({ name: CATALOG.support_laptop.name, reason: "Élève l'écran à hauteur des yeux — indispensable sans écran externe.", priority: "haute", amazon_search: CATALOG.support_laptop.search });
+    if (po.elements.ecran.hauteur === "trop_bas") products.push({ name: CATALOG.rehausseur_ecran.name, reason: "Corrige la hauteur de l'écran pour supprimer la flexion cervicale.", priority: "haute", amazon_search: CATALOG.rehausseur_ecran.search });
+    if (po.elements.chaise.type && !po.elements.chaise.type.toLowerCase().includes("ergo")) products.push({ name: CATALOG.coussin_lombaire.name, reason: "Maintient la lordose naturelle quand la chaise est basique.", priority: "moyenne", amazon_search: CATALOG.coussin_lombaire.search });
+    if (po.elements.clavier_souris.repose_poignets === false) products.push({ name: CATALOG.repose_poignets.name, reason: "Aide à garder le poignet dans l'axe.", priority: "moyenne", amazon_search: CATALOG.repose_poignets.search });
 
     // Exercises from bad segments
     const badSegments = (Object.entries(pa.segments) as [string, PersonneSegment][])
@@ -1431,7 +1411,7 @@ export default function FinalReportPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {products.map((product, i) => {
                   const pCfg = PRIORITY_COLOR[product.priority] ?? PRIORITY_COLOR.optionnel;
-                  const amazonUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(product.amazon_search)}&tag=postureatwo09-21`;
+                  const amazonUrl = urlFromSearch(product.amazon_search);
                   return (
                     <motion.div key={i} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.07 }}
                       style={{ borderRadius: 18, padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
@@ -1687,7 +1667,7 @@ export default function FinalReportPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {report!.products.map((product, i) => {
               const pCfg = PRIORITY_COLOR[product.priority] ?? PRIORITY_COLOR.optionnel;
-              const amazonUrl = `https://www.amazon.fr/s?k=${encodeURIComponent(product.amazon_search)}&tag=postureatwo09-21`;
+              const amazonUrl = urlFromSearch(product.amazon_search);
               return (
                 <motion.div key={i} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.07 }}
                   style={{ borderRadius: 20, padding: "16px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
