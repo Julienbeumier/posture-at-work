@@ -43,13 +43,13 @@ export const metadata: Metadata = {
     siteName: "PostureAtWork",
     title: "PostureAtWork — Bilan ergonomique gratuit en 5 minutes",
     description: "Analyse ta posture, tes douleurs et tes habitudes au travail en 5 minutes. Conseils personnalisés et analyse IA.",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "PostureAtWork — Bilan ergonomique gratuit" }],
+    images: [{ url: "/og-paw-2026.png", width: 1200, height: 630, alt: "Posture At Work — Votre bilan ergonomique en 5 minutes" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "PostureAtWork — Bilan ergonomique gratuit en 5 minutes",
     description: "Analyse ta posture et tes douleurs au travail en 5 minutes. Gratuit.",
-    images: ["/og-image.png"],
+    images: ["/og-paw-2026.png"],
   },
   robots: {
     index: true,
