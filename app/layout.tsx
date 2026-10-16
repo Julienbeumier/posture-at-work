@@ -43,13 +43,13 @@ export const metadata: Metadata = {
     siteName: "PostureAtWork",
     title: "Posture At Work — Bilan ergonomique en 5 minutes",
     description: "Analyse ta posture, tes douleurs et tes habitudes au travail en 5 minutes, puis suis un parcours d'amélioration personnalisé.",
-    images: [{ url: "/og-paw-parcours.png", width: 1200, height: 630, alt: "Posture At Work — Prévenir les TMS, étape par étape : comprendre, corriger, soulager, ancrer, mesurer" }],
+    images: [{ url: "/og-paw-bilan.png", width: 1200, height: 630, alt: "Posture At Work — La santé au travail, vue dans son ensemble : aperçu d'un bilan avec les scores Setup, Douleurs, Habitudes et Nutrition" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Posture At Work — Bilan ergonomique en 5 minutes",
     description: "Analyse ta posture et tes douleurs au travail en 5 minutes, puis suis un parcours d'amélioration personnalisé.",
-    images: ["/og-paw-parcours.png"],
+    images: ["/og-paw-bilan.png"],
   },
   robots: {
     index: true,
