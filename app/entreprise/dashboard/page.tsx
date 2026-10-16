@@ -607,7 +607,7 @@ export default function EntrepriseDashboard() {
   async function handleRelance() {
     if (inviteUrl) {
       navigator.clipboard.writeText(
-        `Bonjour, votre employeur vous invite à compléter votre bilan santé au travail PAW. C'est gratuit, confidentiel et prend 5 minutes : ${inviteUrl}`
+        `Bonjour, votre employeur vous invite à compléter votre bilan santé au travail PAW. C'est offert par votre employeur, confidentiel et ça prend 5 minutes : ${inviteUrl}`
       );
       setRelanceSent(true);
       setTimeout(() => setRelanceSent(false), 4000);

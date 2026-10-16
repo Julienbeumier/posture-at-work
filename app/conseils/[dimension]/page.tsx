@@ -377,7 +377,7 @@ export default function DimensionPage() {
             </div>
           </Link>
           <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t30)", margin: 0 }}>
-            Gratuit · Sans inscription · 5 minutes
+            Questionnaire gratuit · Sans inscription · 5 minutes
           </p>
         </div>
       </main>

@@ -203,7 +203,7 @@ export default function PartagePage() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
             <span style={{ fontFamily: T.b, fontSize: 10, color: "rgba(220,220,245,0.42)" }}>postureatwork.com</span>
             <div style={{ padding: "4px 12px", borderRadius: 100, background: "rgba(43,92,230,0.20)", border: "0.5px solid rgba(43,92,230,0.35)" }}>
-              <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#6f9bff" }}>Fais ton bilan gratuit →</span>
+              <span style={{ fontFamily: T.b, fontWeight: 700, fontSize: 10, color: "#6f9bff" }}>Fais ton bilan en 5 min →</span>
             </div>
           </div>
         </div>

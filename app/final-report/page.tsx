@@ -1160,10 +1160,10 @@ export default function FinalReportPage() {
                 <motion.div key="unauthenticated" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <div style={{ fontSize: 24, marginBottom: 10 }}>💾</div>
                   <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", marginBottom: 6 }}>Sauvegarder mon rapport</p>
-                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", marginBottom: 20, lineHeight: 1.65 }}>Crée un compte gratuit pour accéder à ton bilan depuis n&apos;importe où.</p>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", marginBottom: 20, lineHeight: 1.65 }}>Crée ton compte pour retrouver ton bilan depuis n&apos;importe où.</p>
                   <div onClick={() => router.push("/auth?redirect=/final-report")}
                     style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
-                    Créer mon compte gratuit →
+                    Créer mon compte →
                   </div>
                 </motion.div>
               ) : (
@@ -1403,7 +1403,7 @@ export default function FinalReportPage() {
                             {isPosture ? "Posture" : "Setup"}
                           </span>
                           {isPosture
-                            ? <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: "rgba(63,224,160,0.12)", color: "#3fe0a0" }}>Gratuit — correction immédiate</span>
+                            ? <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: "rgba(63,224,160,0.12)", color: "#3fe0a0" }}>Sans coût — correction immédiate</span>
                             : rec.cost && <span style={{ padding: "2px 8px", borderRadius: 100, fontFamily: T.b, fontWeight: 600, fontSize: 10, background: "rgba(255,163,71,0.12)", color: "#ffa347" }}>{rec.cost}</span>
                           }
                         </div>
@@ -1509,10 +1509,10 @@ export default function FinalReportPage() {
                 <motion.div key="unauthenticated" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <div style={{ fontSize: 24, marginBottom: 10 }}>💾</div>
                   <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", marginBottom: 6 }}>Sauvegarder mon rapport</p>
-                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", marginBottom: 20, lineHeight: 1.65 }}>Crée un compte gratuit pour accéder à ton bilan depuis n&apos;importe où.</p>
+                  <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", marginBottom: 20, lineHeight: 1.65 }}>Crée ton compte pour retrouver ton bilan depuis n&apos;importe où.</p>
                   <div onClick={() => router.push("/auth?redirect=/final-report")}
                     style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
-                    Créer mon compte gratuit →
+                    Créer mon compte →
                   </div>
                 </motion.div>
               ) : (
@@ -1769,10 +1769,10 @@ export default function FinalReportPage() {
               <motion.div key="unauthenticated" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <div style={{ fontSize: 24, marginBottom: 10 }}>💾</div>
                 <p style={{ fontFamily: T.h, fontWeight: 800, fontSize: 16, color: "var(--text-primary)", marginBottom: 6 }}>Sauvegarder mon rapport</p>
-                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", marginBottom: 20, lineHeight: 1.65 }}>Crée un compte gratuit pour accéder à ton bilan depuis n&apos;importe où.</p>
+                <p style={{ fontFamily: T.b, fontSize: 13, color: "var(--t50)", marginBottom: 20, lineHeight: 1.65 }}>Crée ton compte pour retrouver ton bilan depuis n&apos;importe où.</p>
                 <div onClick={() => router.push("/auth?redirect=/final-report")}
                   style={{ padding: "14px 0", borderRadius: 100, textAlign: "center", cursor: "pointer", background: "#2b5ce6", boxShadow: "0 4px 24px rgba(43,92,230,0.35)", fontFamily: T.h, fontWeight: 800, fontSize: 14, color: "#fff" }}>
-                  Créer mon compte gratuit →
+                  Créer mon compte →
                 </div>
                 <p style={{ fontFamily: T.b, fontSize: 12, color: "var(--t35)", textAlign: "center", marginTop: 12 }}>
                   Déjà un compte ?{" "}
